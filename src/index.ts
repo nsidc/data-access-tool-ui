@@ -1,8 +1,8 @@
 import * as ol from "openlayers";
-import 'openlayers/dist/ol.css';
+import "openlayers/dist/ol.css";
 
-var map = new ol.Map({
-    target: 'everest-ui',
+let map = new ol.Map({
+    target: "everest-ui",
     layers: [
         new ol.layer.Tile({
             source: new ol.source.OSM()
