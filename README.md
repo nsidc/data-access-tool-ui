@@ -28,6 +28,14 @@ With npm:
 
 TBD
 
+## Build
+
+To build the app:
+
+        $ npm run build
+
+Verify the build by opening the output `dist/index.html` in a browser.
+
 ## Deployment
 
-TBD
+TBD -- Where will the build artifacts be deployed to?
