@@ -4,7 +4,7 @@ A user interface for placing Hermes data orders on a dataproduct landing page.
 
 ## Requirements
 
-NodeJS (and npm!)
+NodeJS 8.x (and npm!)
 
 ## Install dependencies:
 With npm:
