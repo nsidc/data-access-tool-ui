@@ -8,7 +8,8 @@
     "clean": "rm -rf dist",
     "build": "webpack -p",
     "dev": "webpack --watch",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",
@@ -21,6 +22,7 @@
     "source-map-loader": "0.2.3",
     "style-loader": "^0.20.3",
     "ts-loader": "3.1.1",
+    "tslint": "^5.9.1",
     "typescript": "2.6.1",
     "webpack": "3.8.1",
     "webpack-dev-server": "2.9.4"
