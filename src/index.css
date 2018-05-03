@@ -4,13 +4,14 @@ body {
 }
 
 #globe {
-    width: 600px;
+    width: 800px;
     height: 600px;
     border: 2px solid;
 }
 
 .dropdown {
-    width: 600px;
+    width: 800px;
+    font-size: 18px;
 }
 
 table {
@@ -18,7 +19,7 @@ table {
     border-collapse: collapse;
     table-layout: auto;
     height: 500px;
-    width: 1000px;
+    width: 800px;
     overflow-y: scroll;
 }
 

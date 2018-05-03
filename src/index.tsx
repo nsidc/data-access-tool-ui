@@ -1,10 +1,17 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import * as fetch from 'isomorphic-fetch';
 
+let Cesium = require('cesium/Cesium');
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+
 import './index.css';
+// TODO: How? This gives a webpack error due to a png
+require('cesium/Widgets/widgets.css');
 
 
+// TODO: we will want short_name and version_id
+// Weird, but true: when we make the graule query we pass short_name
+// and version, not version_id.
 const CMR_COLLECTION_URL = 'https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name';
 
 class SpatialUI extends React.Component {
@@ -12,7 +19,7 @@ class SpatialUI extends React.Component {
         return (
             <div>
               <CollectionSelector/>
-              <div id="globe"></div>
+              <Globe/>
               <button type="button" name="Go!" placeholder="">Go!</button>
               <GranuleList/>
             </div>
@@ -53,6 +60,30 @@ class CollectionSelector extends React.Component<{}, CollectionsState> {
             <select className="dropdown" name="collections">
               {collectionOptions}
             </select>
+        )
+    }
+}
+
+class Globe extends React.Component {
+    componentDidMount() {
+        new Cesium.Viewer('globe', {
+            animation: false,
+            baseLayerPicker: false,
+            fullscreenButton: false,
+            geocoder: false,
+            homeButton: false,
+            infoBox: false,
+            sceneModePicker: false,
+            selectionIndicator: false,
+            timeline: false,
+            navigationHelpButton: false,
+            navigationInstructionsInitiallyVisible: false
+        });
+    }
+
+    render() {
+        return (
+            <div id="globe"></div>
         )
     }
 }
