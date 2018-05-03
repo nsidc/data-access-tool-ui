@@ -12,9 +12,9 @@ class Component extends React.Component<GranuleListProps, {}> {
 
   dateString(date: moment.Moment | null) {
     if (date) {
-      return date.toString()
+      return date.toString();
     } else {
-      return "Please input a date"
+      return "Please input a date";
     }
   }
 

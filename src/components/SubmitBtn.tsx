@@ -24,7 +24,7 @@ class Component extends React.Component<SubmitButtonProps, {}> {
     if (this.props.collectionId && this.props.temporalLowerBound && this.props.temporalUpperBound) {
       this.CmrRequest(this.props.collectionId, this.props.temporalLowerBound, this.props.temporalUpperBound);
     } else {
-      console.log('Insufficient props provided.');
+      console.log("Insufficient props provided.");
     }
     return;
   }
