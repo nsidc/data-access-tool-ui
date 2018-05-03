@@ -31,17 +31,21 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
             }));
     }
 
+    change(event: any) {
+        this.props.onCollectionChange(event.target.value);
+    }
+
     render() {
         let collectionOptions = null;
 
         if (this.state.collections) {
             collectionOptions = this.state.collections.map((c:any) => (
-                <option key={c.dataset_id}>{c.dataset_id}</option>
+                <option key={c.id} value={c.id}>{c.dataset_id}</option>
             ));
         }
 
         return (
-            <select className="dropdown" name="collections" onChange={this.props.onCollectionChange}>
+            <select className="dropdown" name="collections" onChange={this.change.bind(this)}>
               {collectionOptions}
             </select>
         )
