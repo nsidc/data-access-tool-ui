@@ -5,6 +5,7 @@ interface GranuleListProps {
   collectionId: string;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
+  granuleList: any;
 }
 
 class Component extends React.Component<GranuleListProps, {}> {
@@ -19,6 +20,15 @@ class Component extends React.Component<GranuleListProps, {}> {
   }
 
   render() {
+    const granuleList = this.props.granuleList.map((g: any) => (
+      <tr>
+        <td>{g.producer_granule_id}</td>
+        <td>{g.granule_size}</td>
+        <td>{g.time_start}</td>
+        <td>{g.time_end}</td>
+      </tr>
+    ));
+
     return (
       <div>
         <h3>{"Selected collection: " + this.props.collectionId}</h3>
@@ -30,13 +40,14 @@ class Component extends React.Component<GranuleListProps, {}> {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>ID</th>
-              <th>Summary</th>
-              <th>Granules</th>
+              <th>Granule ID</th>
+              <th>Size (Hectares)</th>
+              <th>Start Time</th>
+              <th>End Time</th>
             </tr>
           </thead>
           <tbody>
+            {granuleList}
           </tbody>
         </table>
       </div>

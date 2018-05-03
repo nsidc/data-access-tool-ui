@@ -11,6 +11,7 @@ interface EverestState {
   selectedCollection: string;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
+  granules: any;
 }
 
 class EverestUI extends React.Component<{}, EverestState> {
@@ -21,10 +22,12 @@ class EverestUI extends React.Component<{}, EverestState> {
       this.handleCollectionChange = this.handleCollectionChange.bind(this);
       this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
       this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
+      this.handleGranules = this.handleGranules.bind(this);
       this.state = {
         "selectedCollection": "",
         "temporalFilterLowerBound": null,
         "temporalFilterUpperBound": null,
+        "granules": [{}],
       };
     }
 
@@ -38,6 +41,10 @@ class EverestUI extends React.Component<{}, EverestState> {
 
     handleTemporalUpperChange(date: moment.Moment) {
       this.setState({"temporalFilterUpperBound": date});
+    }
+
+    handleGranules(cmrResponse: any) {
+      this.setState({"granules": cmrResponse});
     }
 
     render() {
@@ -57,11 +64,13 @@ class EverestUI extends React.Component<{}, EverestState> {
               <SubmitBtn
                   collectionId={this.state.selectedCollection}
                   temporalLowerBound={this.state.temporalFilterLowerBound}
-                  temporalUpperBound={this.state.temporalFilterUpperBound} />
+                  temporalUpperBound={this.state.temporalFilterUpperBound}
+                  onGranuleResponse={this.handleGranules} />
               <GranuleList
                   collectionId={this.state.selectedCollection}
                   temporalFilterLowerBound={this.state.temporalFilterLowerBound}
-                  temporalFilterUpperBound={this.state.temporalFilterUpperBound}/>
+                  temporalFilterUpperBound={this.state.temporalFilterUpperBound}
+                  granuleList={this.state.granules} />
             </div>
         );
     }
