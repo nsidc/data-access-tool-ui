@@ -8,7 +8,8 @@ import TemporalFilter from "./components/TemporalFilter";
 
 interface EverestState {
   selectedCollection: string;
-  temporalFilterBounds: any;
+  temporalFilterLowerBound: any;
+  temporalFilterUpperBound: any;
 }
 
 class EverestUI extends React.Component<{}, EverestState> {
@@ -17,14 +18,25 @@ class EverestUI extends React.Component<{}, EverestState> {
     constructor(props: any) {
       super(props);
       this.handleCollectionChange = this.handleCollectionChange.bind(this);
+      this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
+      this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
       this.state = {
         "selectedCollection": "",
-        "temporalFilterBounds": [],
+        "temporalFilterLowerBound": "",
+        "temporalFilterUpperBound": "",
       }
     }
 
     handleCollectionChange(collection: string) {
       this.setState({"selectedCollection": collection});
+    }
+
+    handleTemporalLowerChange(date: string) {
+      this.setState({"temporalFilterLowerBound": date});
+    }
+
+    handleTemporalUpperChange(date: string) {
+      this.setState({"temporalFilterUpperBound": date});
     }
 
     render() {
@@ -33,11 +45,19 @@ class EverestUI extends React.Component<{}, EverestState> {
               <CollectionDropdown
                   selectedCollection={this.state.selectedCollection}
                   onCollectionChange={this.handleCollectionChange} />
-              <TemporalFilter />
+              <span>
+                  <TemporalFilter
+                      selectedDate={this.state.temporalFilterLowerBound}
+                      onDateChange={this.handleTemporalLowerChange} />
+                  <TemporalFilter
+                      selectedDate={this.state.temporalFilterUpperBound}
+                      onDateChange={this.handleTemporalUpperChange} />
+              </span>
               <SubmitBtn />
               <GranuleList
                   collectionId={this.state.selectedCollection}
-                  temporalFilterBounds={this.state.temporalFilterBounds}/>
+                  temporalFilterLowerBound={this.state.temporalFilterLowerBound}
+                  temporalFilterUpperBound={this.state.temporalFilterUpperBound}/>
             </div>
         );
     }
