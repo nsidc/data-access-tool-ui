@@ -11,7 +11,7 @@ class EverestUI extends React.Component {
     render() {
         return (
             <div className="everest-stuff">
-              <CollectionDropdown />
+              <CollectionDropdown selectedCollection={null} />
               <TemporalFilter />
               <SubmitBtn />
               <GranuleList />
