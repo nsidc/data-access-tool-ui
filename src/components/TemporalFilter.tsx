@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import * as React from "react";
 
 import DatePicker from "react-datepicker";
@@ -14,12 +15,9 @@ class Component extends React.Component<TemporalFilterProps, {}> {
   constructor(props: any) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = {
-      selectedDate: null
-    };
   }
 
-  handleChange(date: any) {
+  handleChange(date: moment.Moment | null) {
     this.props.onDateChange(date);
   }
 

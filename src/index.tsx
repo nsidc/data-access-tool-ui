@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
@@ -8,8 +9,8 @@ import TemporalFilter from "./components/TemporalFilter";
 
 interface EverestState {
   selectedCollection: string;
-  temporalFilterLowerBound: any;
-  temporalFilterUpperBound: any;
+  temporalFilterLowerBound: moment.Moment | null;
+  temporalFilterUpperBound: moment.Moment | null;
 }
 
 class EverestUI extends React.Component<{}, EverestState> {
@@ -22,8 +23,8 @@ class EverestUI extends React.Component<{}, EverestState> {
       this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
       this.state = {
         "selectedCollection": "",
-        "temporalFilterLowerBound": "",
-        "temporalFilterUpperBound": "",
+        "temporalFilterLowerBound": null,
+        "temporalFilterUpperBound": null,
       };
     }
 
@@ -31,11 +32,11 @@ class EverestUI extends React.Component<{}, EverestState> {
       this.setState({"selectedCollection": collection});
     }
 
-    handleTemporalLowerChange(date: string) {
+    handleTemporalLowerChange(date: moment.Moment) {
       this.setState({"temporalFilterLowerBound": date});
     }
 
-    handleTemporalUpperChange(date: string) {
+    handleTemporalUpperChange(date: moment.Moment) {
       this.setState({"temporalFilterUpperBound": date});
     }
 
@@ -53,7 +54,10 @@ class EverestUI extends React.Component<{}, EverestState> {
                       selectedDate={this.state.temporalFilterUpperBound}
                       onDateChange={this.handleTemporalUpperChange} />
               </span>
-              <SubmitBtn />
+              <SubmitBtn
+                  collectionId={this.state.selectedCollection}
+                  temporalLowerBound={this.state.temporalFilterLowerBound}
+                  temporalUpperBound={this.state.temporalFilterUpperBound} />
               <GranuleList
                   collectionId={this.state.selectedCollection}
                   temporalFilterLowerBound={this.state.temporalFilterLowerBound}
