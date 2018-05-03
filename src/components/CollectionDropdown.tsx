@@ -8,7 +8,7 @@ interface CollectionsState {
 
 interface CollectionsProps {
     selectedCollection: any;
-
+    onCollectionChange: any;
 }
 
 class Component extends React.Component<CollectionsProps, CollectionsState> {
@@ -16,9 +16,14 @@ class Component extends React.Component<CollectionsProps, CollectionsState> {
 
     constructor(props: any) {
         super(props);
+        this.handleChange = this.handleChange.bind(this)
         this.state = {
             collections: null
         };
+    }
+
+    handleChange(e: any) {
+      this.props.onCollectionChange(e.target.value);
     }
 
     componentDidMount() {
@@ -33,13 +38,16 @@ class Component extends React.Component<CollectionsProps, CollectionsState> {
         let collectionOptions = null;
 
         if (this.state.collections) {
-            collectionOptions = this.state.collections.map((c: any) => (
-                <option>{c.dataset_id}</option>
-            ));
+            collectionOptions = this.state.collections.map((c: any) => {
+              return (
+                <option key={c.id} value={c.id}>{c.dataset_id}</option>
+            );
+          });
         }
 
         return (
-            <select className="dropdown" name="collections">
+            <select className="dropdown" name="collections" onChange={this.handleChange}>
+              <option value="">{"Select a collection."}</option>
               {collectionOptions}
             </select>
         );
