@@ -9,7 +9,7 @@
     "build": "webpack -p",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
-    "lint": "tslint -c tslint.json 'src/**/*.ts'"
+    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",
