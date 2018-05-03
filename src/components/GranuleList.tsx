@@ -1,8 +1,10 @@
 import * as React from 'react';
 
+import { BoundingBox } from '../BoundingBox';
+
 interface GranuleListProps {
     collectionId: string,
-    boundingBox: any
+    boundingBox: BoundingBox
 }
 
 export class GranuleList extends React.Component<GranuleListProps> {

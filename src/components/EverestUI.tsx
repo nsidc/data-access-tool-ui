@@ -1,12 +1,13 @@
 import * as React from 'react';
 
+import { BoundingBox } from '../BoundingBox';
 import { CollectionDropdown } from './CollectionDropdown';
 import { Globe } from './Globe';
 import { GranuleList } from './GranuleList';
 
 interface EverestState {
     selectedCollection: string;
-    boundingBox: any;
+    boundingBox: BoundingBox;
 }
 
 export class EverestUI extends React.Component<{}, EverestState> {
@@ -16,13 +17,18 @@ export class EverestUI extends React.Component<{}, EverestState> {
         super(props);
         this.state = {
             selectedCollection: "",
-            boundingBox: [],
+            boundingBox: {
+                lower_left_lon: -180,
+                lower_left_lat: 0,
+                upper_right_lon: 180,
+                upper_right_lat: 90
+            },
         }
     }
 
     handleCollectionChange(collection: string) {
         console.log(this);
-        this.setState({"selectedCollection": collection});
+        this.setState({selectedCollection: collection});
     }
 
     render() {
