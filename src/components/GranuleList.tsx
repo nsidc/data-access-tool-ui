@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-class component extends React.Component {
+class Component extends React.Component {
   render() {
     return (
       <table>
@@ -15,8 +15,8 @@ class component extends React.Component {
         <tbody>
         </tbody>
       </table>
-    )
+    );
   }
-};
+}
 
-export default component;
+export default Component;
