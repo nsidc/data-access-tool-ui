@@ -16,7 +16,7 @@ class Component extends React.Component<CollectionsProps, CollectionsState> {
 
     constructor(props: any) {
         super(props);
-        this.handleChange = this.handleChange.bind(this)
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             collections: null
         };

@@ -24,7 +24,7 @@ class EverestUI extends React.Component<{}, EverestState> {
         "selectedCollection": "",
         "temporalFilterLowerBound": "",
         "temporalFilterUpperBound": "",
-      }
+      };
     }
 
     handleCollectionChange(collection: string) {
