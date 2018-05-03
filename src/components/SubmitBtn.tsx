@@ -34,8 +34,10 @@ class Component extends React.Component<SubmitButtonProps, SubmitButtonState> {
 
 
   cmrRequest(collectionId: string, temporalLowerBound: moment.Moment, temporalUpperBound: moment.Moment) {
-    console.log(`Request to CMR with: ${collectionId}, ${temporalLowerBound}, ${temporalUpperBound}`);
-    const URL = CMR_GRANULE_URL + `&concept_id=${this.props.collectionId}`;
+    const URL = CMR_GRANULE_URL
+      + `&concept_id=${this.props.collectionId}`
+      + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`;
+    console.log(`Request to CMR with: ${collectionId}, ${temporalLowerBound}, ${temporalUpperBound}:\n  ${URL}`);
     fetch(URL)
         .then(response => response.json())
         .then(json => this.handleCmrResponse(json));
