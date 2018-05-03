@@ -1,13 +1,20 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-class CMR extends React.Component {
+import CollectionDropdown from './components/CollectionDropdown';
+import GranuleList from './components/GranuleList';
+import SubmitBtn from './components/SubmitBtn';
+import TemporalFilter from './components/TemporalFilter';
+
+
+class EverestUI extends React.Component {
     render() {
         return (
             <div className="everest-stuff">
-              <div>
-                <span>Hey there!</span>
-              </div>
+              <CollectionDropdown />
+              <TemporalFilter />
+              <SubmitBtn />
+              <GranuleList />
             </div>
         );
     }
@@ -16,6 +23,6 @@ class CMR extends React.Component {
 // ========================================
 
 ReactDOM.render(
-    <CMR />,
+    <EverestUI />,
     document.getElementById('everest-ui')
 );

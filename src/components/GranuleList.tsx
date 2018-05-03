@@ -1,0 +1,22 @@
+import * as React from 'react';
+
+class component extends React.Component {
+  render() {
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Summary</th>
+            <th>Granules</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    )
+  }
+};
+
+export default component;
