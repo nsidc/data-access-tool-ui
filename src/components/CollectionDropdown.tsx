@@ -12,7 +12,7 @@ interface CollectionsProps {
 }
 
 class Component extends React.Component<CollectionsProps, CollectionsState> {
-    static displayName = 'CollectionDropdown'
+    static displayName = "CollectionDropdown";
 
     constructor(props: any) {
         super(props);
