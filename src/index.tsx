@@ -18,24 +18,33 @@ class SpatialUI extends React.Component {
     render() {
         return (
             <div>
-              <CollectionSelector/>
+              <CollectionSelector handler={this.collectionSelected} />
               <Globe/>
               <button type="button" name="Go!" placeholder="">Go!</button>
               <GranuleList/>
             </div>
         );
     }
+
+    collectionSelected() {
+        console.log('collection selected');
+    }
+}
+
+
+interface CollectionSelectorProps {
+    handler: any
 }
 
 interface CollectionsState {
-    collections: any
+    collections: [{}]
 }
 
-class CollectionSelector extends React.Component<{}, CollectionsState> {
+class CollectionSelector extends React.Component<CollectionSelectorProps, CollectionsState> {
     constructor(props: any) {
         super(props);
         this.state = {
-            collections: null
+            collections: [{}]
         }
     }
 
@@ -57,7 +66,7 @@ class CollectionSelector extends React.Component<{}, CollectionsState> {
         }
 
         return (
-            <select className="dropdown" name="collections">
+            <select className="dropdown" name="collections" onChange={this.props.handler}>
               {collectionOptions}
             </select>
         )
