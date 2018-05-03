@@ -1,0 +1,42 @@
+body {
+    font-family: 'Arial';
+    margin: 20px;
+}
+
+#globe {
+    width: 600px;
+    height: 600px;
+    border: 2px solid;
+}
+
+.dropdown {
+    width: 200px;
+}
+
+table {
+    display: block;
+    border-collapse: collapse;
+    table-layout: auto;
+    height: 500px;
+    width: 1000px;
+    overflow-y: scroll;
+}
+
+td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+thead {
+    background: steelblue;
+    color: white;
+}
+
+tbody tr:nth-child(odd) {
+    background: #eee;
+}
+
+tbody tr:hover {
+    background: #d7e4ef;
+}
