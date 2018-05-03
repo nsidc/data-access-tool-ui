@@ -1,7 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as fetch from 'isomorphic-fetch';
+
 import './index.css';
 
+
+const CMR_COLLECTION_URL = 'https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name';
 
 class SpatialUI extends React.Component {
     render() {
@@ -16,13 +20,38 @@ class SpatialUI extends React.Component {
     }
 }
 
-class CollectionSelector extends React.Component {
+interface CollectionsState {
+    collections: any
+}
+
+class CollectionSelector extends React.Component<{}, CollectionsState> {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            collections: null
+        }
+    }
+
+    componentDidMount() {
+        fetch(CMR_COLLECTION_URL)
+            .then(response => response.json())
+            .then(response => this.setState({
+                collections: response.feed.entry
+            }));
+    }
+
     render() {
+        let collectionOptions = null;
+
+        if (this.state.collections) {
+            collectionOptions = this.state.collections.map((c:any) => (
+                <option>{c.dataset_id}</option>
+            ));
+        }
+
         return (
             <select className="dropdown" name="collections">
-              <option>IDHDT4</option>
-              <option>ILATM1B</option>
-              <option>ILVIS2</option>
+              {collectionOptions}
             </select>
         )
     }
