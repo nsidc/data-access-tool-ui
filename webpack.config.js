@@ -9,6 +9,7 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 
 // To understand the magic used to include CesiumJS in the project,
 // see: https://cesiumjs.org/tutorials/cesium-and-webpack/
+// Also: https://github.com/AnalyticalGraphicsInc/cesium-webpack-example
 
 module.exports = {
     entry: './src/index.tsx',

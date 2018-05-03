@@ -1,12 +1,12 @@
 import * as fetch from 'isomorphic-fetch';
 
-let Cesium = require('cesium/Cesium');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import './index.css';
-// TODO: How? This gives a webpack error due to a png
+let Cesium = require('cesium/Cesium');
 require('cesium/Widgets/widgets.css');
+
+import './index.css';
 
 
 // TODO: we will want short_name and version_id
