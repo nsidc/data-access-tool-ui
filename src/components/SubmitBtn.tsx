@@ -1,6 +1,7 @@
 import * as React from "react";
 
 class Component extends React.Component {
+  displayName = 'SubmitBtn'
   render() {
     return (
       <div id="submit-container">

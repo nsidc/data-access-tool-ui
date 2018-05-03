@@ -1,6 +1,8 @@
 import * as React from "react";
 
 class Component extends React.Component {
+  displayName = 'TemporalFilter'
+
   render() {
     return (
       <div id="temporalfilter-container">
