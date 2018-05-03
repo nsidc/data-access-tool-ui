@@ -14,14 +14,38 @@ import './index.css';
 // and version, not version_id.
 const CMR_COLLECTION_URL = 'https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name';
 
-class SpatialUI extends React.Component {
+interface EverestState {
+    selectedCollection: string;
+    boundingBox: any;
+}
+
+class EverestUI extends React.Component<{}, EverestState> {
+    static displayName = "EverestUI";
+
+    constructor(props: any) {
+      super(props);
+      this.state = {
+        selectedCollection: "",
+        boundingBox: [],
+      }
+    }
+
+    handleCollectionChange(collection: string) {
+      console.log(this);
+      this.setState({"selectedCollection": collection});
+    }
+
     render() {
         return (
-            <div>
-              <CollectionSelector handler={this.collectionSelected} />
+            <div className="everest-stuff">
+              <CollectionDropdown
+                  selectedCollection={this.state.selectedCollection}
+                  onCollectionChange={this.handleCollectionChange} />
               <Globe/>
               <button type="button" name="Go!" placeholder="">Go!</button>
-              <GranuleList/>
+              <GranuleList
+                  collectionId={this.state.selectedCollection}
+                  boundingBox={this.state.boundingBox}/>
             </div>
         );
     }
@@ -31,16 +55,16 @@ class SpatialUI extends React.Component {
     }
 }
 
-
-interface CollectionSelectorProps {
-    handler: any
+interface CollectionDropdownProps {
+    selectedCollection: any,
+    onCollectionChange: any
 }
 
-interface CollectionsState {
+interface CollectionDropdownState {
     collections: [{}]
 }
 
-class CollectionSelector extends React.Component<CollectionSelectorProps, CollectionsState> {
+class CollectionDropdown extends React.Component<CollectionDropdownProps, CollectionDropdownState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -61,12 +85,12 @@ class CollectionSelector extends React.Component<CollectionSelectorProps, Collec
 
         if (this.state.collections) {
             collectionOptions = this.state.collections.map((c:any) => (
-                <option>{c.dataset_id}</option>
+                <option key={c.dataset_id}>{c.dataset_id}</option>
             ));
         }
 
         return (
-            <select className="dropdown" name="collections" onChange={this.props.handler}>
+            <select className="dropdown" name="collections" onChange={this.props.onCollectionChange}>
               {collectionOptions}
             </select>
         )
@@ -97,7 +121,12 @@ class Globe extends React.Component {
     }
 }
 
-class GranuleList extends React.Component {
+interface GranuleListProps {
+    collectionId: string,
+    boundingBox: any
+}
+
+class GranuleList extends React.Component<GranuleListProps> {
     render() {
         return (
             <table>
@@ -119,6 +148,6 @@ class GranuleList extends React.Component {
 // ========================================
 
 ReactDOM.render(
-    <SpatialUI />,
+    <EverestUI />,
     document.getElementById('everest-ui')
 );
