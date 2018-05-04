@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/index.tsx',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
@@ -11,11 +11,14 @@ module.exports = {
     devtool: 'source-map',
 
     devServer: {
-        contentBase: './dist'
+        contentBase: './dist',
+        host: '0.0.0.0',
+        port: 80,
+        disableHostCheck: true,
     },
 
     resolve: {
-        extensions: ['.webpack.js', '.web.js', '.ts', '.js']
+        extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.tsx']
     },
 
     module: {
@@ -27,8 +30,8 @@ module.exports = {
                     'css-loader'
                 ]
             },
-            { test: /\.ts$/, loader: 'ts-loader' },
-            { test: /\.js$/, enforce: 'pre', loader: 'source-map-loader' }
+            { test: /\.tsx?$/, loader: 'ts-loader' },
+            { test: /\.jsx?$/, enforce: 'pre', loader: 'source-map-loader' }
         ]
     },
 
