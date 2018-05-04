@@ -11,11 +11,11 @@ body {
 
 #toolbar {
     position: absolute;
-    top: 0px;
-    left: 0;
+    top: 40px;
+    left: 15px;
     display: inline;
     margin: 10px;
-    padding: 0px;
+    padding: 0px 5px;
     background: white;
 }
 
