@@ -1,5 +1,4 @@
 import * as fetch from "isomorphic-fetch";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
