@@ -12,15 +12,22 @@ interface CollectionDropdownProps {
 }
 
 interface CollectionDropdownState {
-    collections: [{}]
+    collections: any;
 }
 
 export class CollectionDropdown extends React.Component<CollectionDropdownProps, CollectionDropdownState> {
+    static displayName = "CollectionDropdown";
+
     constructor(props: any) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             collections: [{}]
-        }
+        };
+    }
+
+    handleChange(e: any) {
+      this.props.onCollectionChange(e.target.value);
     }
 
     componentDidMount() {
@@ -29,10 +36,6 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
             .then(response => this.setState({
                 collections: response.feed.entry
             }));
-    }
-
-    change(event: any) {
-        this.props.onCollectionChange(event.target.value);
     }
 
     render() {
@@ -45,9 +48,10 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
         }
 
         return (
-            <select className="dropdown" name="collections" onChange={this.change.bind(this)}>
+            <select className="dropdown" name="collections" onChange={this.handleChange}>
+              <option value="">{"Select a collection."}</option>
               {collectionOptions}
             </select>
-        )
+        );
     }
 }
