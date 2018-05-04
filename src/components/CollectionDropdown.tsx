@@ -1,14 +1,14 @@
-import * as React from 'react';
+import * as React from "react";
 
 // TODO: we will want short_name and version_id
 // Weird, but true: when we make the graule query we pass short_name
 // and version, not version_id.
-const CMR_COLLECTION_URL = 'https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name';
+const CMR_COLLECTION_URL = "https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
 
 interface CollectionDropdownProps {
-    selectedCollection: any,
-    onCollectionChange: any
+    selectedCollection: any;
+    onCollectionChange: any;
 }
 
 interface CollectionDropdownState {
@@ -42,7 +42,7 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
         let collectionOptions = null;
 
         if (this.state.collections) {
-            collectionOptions = this.state.collections.map((c:any) => (
+            collectionOptions = this.state.collections.map((c: any) => (
                 <option key={c.id} value={c.id}>{c.dataset_id}</option>
             ));
         }
