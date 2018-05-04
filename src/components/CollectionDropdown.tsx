@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // TODO: we will want short_name and version_id
-// Weird, but true: when we make the graule query we pass short_name
+// Weird, but true: when we make the granule query we pass short_name
 // and version, not version_id.
 const CMR_COLLECTION_URL = "https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 

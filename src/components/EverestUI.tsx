@@ -1,10 +1,9 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { BoundingBox } from "../BoundingBox";
+import { SpatialSelection } from "../SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
-import { Toolbar } from "./Toolbar";
 import { GranuleList } from "./GranuleList";
 import { SubmitBtn } from "./SubmitBtn";
 import { TemporalFilter } from "./TemporalFilter";
@@ -12,7 +11,7 @@ import { TemporalFilter } from "./TemporalFilter";
 
 interface EverestState {
   selectedCollection: string;
-  boundingBox: BoundingBox;
+  spatialSelection: SpatialSelection;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
   granules: any;
@@ -24,25 +23,30 @@ export class EverestUI extends React.Component<{}, EverestState> {
     constructor(props: any) {
       super(props);
       this.handleCollectionChange = this.handleCollectionChange.bind(this);
+      this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
       this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
       this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
       this.handleGranules = this.handleGranules.bind(this);
       this.state = {
-        boundingBox: {
+        spatialSelection: {
             lower_left_lon: -180,
-            lower_left_lat: 0,
+            lower_left_lat: -90,
             upper_right_lon: 180,
             upper_right_lat: 90
         },
         selectedCollection: "",
-        temporalFilterLowerBound: null,
-        temporalFilterUpperBound: null,
+        temporalFilterLowerBound: moment("20100101"),
+        temporalFilterUpperBound: moment(),
         granules: [{}],
       };
     }
 
     handleCollectionChange(collection: string) {
       this.setState({"selectedCollection": collection});
+    }
+
+    handleSpatialSelectionChange(spatialSelection: SpatialSelection) {
+      return;
     }
 
     handleTemporalLowerChange(date: moment.Moment) {
@@ -64,7 +68,6 @@ export class EverestUI extends React.Component<{}, EverestState> {
                   selectedCollection={this.state.selectedCollection}
                   onCollectionChange={this.handleCollectionChange} />
               <Globe/>
-              <Toolbar/>
               <span>
                   <TemporalFilter
                       selectedDate={this.state.temporalFilterLowerBound}
@@ -80,7 +83,7 @@ export class EverestUI extends React.Component<{}, EverestState> {
                   onGranuleResponse={this.handleGranules} />
               <GranuleList
                   collectionId={this.state.selectedCollection}
-                  boundingBox={this.state.boundingBox}
+                  spatialSelection={this.state.spatialSelection}
                   temporalFilterLowerBound={this.state.temporalFilterLowerBound}
                   temporalFilterUpperBound={this.state.temporalFilterUpperBound}
                   granules={this.state.granules} />

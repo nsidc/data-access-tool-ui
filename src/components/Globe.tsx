@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { Toolbar } from "./Toolbar";
+
 let Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 
@@ -22,7 +24,9 @@ export class Globe extends React.Component {
 
     render() {
         return (
-            <div id="globe"></div>
+            <div id="globe">
+              <Toolbar/>
+            </div>
         );
     }
 }

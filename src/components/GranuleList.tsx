@@ -1,11 +1,11 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { BoundingBox } from "../BoundingBox";
+import { SpatialSelection } from "../SpatialSelection";
 
 interface GranuleListProps {
   collectionId: string;
-  boundingBox: BoundingBox;
+  spatialSelection: SpatialSelection;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
   granules: any;
@@ -40,7 +40,11 @@ export class GranuleList extends React.Component<GranuleListProps, {}> {
           + this.dateString(this.props.temporalFilterUpperBound)}
         </div>
         <div>
-          {"Spatial bounds: " + this.props.boundingBox}
+          {"Spatial bounds: ["
+          + this.props.spatialSelection.lower_left_lat + ", "
+          + this.props.spatialSelection.lower_left_lon + "], ["
+          + this.props.spatialSelection.upper_right_lat + ", "
+          + this.props.spatialSelection.upper_right_lon + "]"}
         </div>
         <table>
           <thead>
