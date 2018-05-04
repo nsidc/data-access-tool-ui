@@ -9,6 +9,16 @@ body {
     border: 2px solid;
 }
 
+#toolbar {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    display: inline;
+    margin: 10px;
+    padding: 0px;
+    background: white;
+}
+
 .dropdown {
     width: 800px;
     font-size: 18px;

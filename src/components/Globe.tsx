@@ -1,11 +1,11 @@
-import * as React from 'react';
+import * as React from "react";
 
-let Cesium = require('cesium/Cesium');
-require('cesium/Widgets/widgets.css');
+let Cesium = require("cesium/Cesium");
+require("cesium/Widgets/widgets.css");
 
 export class Globe extends React.Component {
     componentDidMount() {
-        new Cesium.Viewer('globe', {
+        new Cesium.Viewer("globe", {
             animation: false,
             baseLayerPicker: false,
             fullscreenButton: false,
@@ -23,6 +23,6 @@ export class Globe extends React.Component {
     render() {
         return (
             <div id="globe"></div>
-        )
+        );
     }
 }

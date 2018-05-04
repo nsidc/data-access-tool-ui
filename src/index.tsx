@@ -1,13 +1,13 @@
-import * as fetch from 'isomorphic-fetch';
+import * as fetch from "isomorphic-fetch";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import './index.css';
+import "./index.css";
 
-import { EverestUI } from './components/EverestUI';
+import { EverestUI } from "./components/EverestUI";
 
 ReactDOM.render(
     <EverestUI />,
-    document.getElementById('everest-ui')
+    document.getElementById("everest-ui")
 );

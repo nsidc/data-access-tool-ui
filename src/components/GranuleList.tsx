@@ -1,11 +1,11 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { BoundingBox } from '../BoundingBox';
+import { BoundingBox } from "../BoundingBox";
 
 interface GranuleListProps {
-    collectionId: string,
-    boundingBox: BoundingBox,
-    granules: any
+    collectionId: string;
+    boundingBox: BoundingBox;
+    granules: any;
 }
 
 export class GranuleList extends React.Component<GranuleListProps> {
@@ -32,6 +32,6 @@ export class GranuleList extends React.Component<GranuleListProps> {
                 {granuleList}
               </tbody>
             </table>
-        )
+        );
     }
 }

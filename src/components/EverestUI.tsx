@@ -1,12 +1,13 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { BoundingBox } from '../BoundingBox';
-import { CollectionDropdown } from './CollectionDropdown';
-import { Globe } from './Globe';
-import { GranuleList } from './GranuleList';
+import { BoundingBox } from "../BoundingBox";
+import { CollectionDropdown } from "./CollectionDropdown";
+import { Globe } from "./Globe";
+import { Toolbar } from "./Toolbar";
+import { GranuleList } from "./GranuleList";
 
 
-const CMR_GRANULE_URL = 'https://cmr.earthdata.nasa.gov/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name';
+const CMR_GRANULE_URL = "https://cmr.earthdata.nasa.gov/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
 
 
 interface EverestState {
@@ -38,8 +39,8 @@ export class EverestUI extends React.Component<{}, EverestState> {
     }
 
     getGranules() {
-        console.log('Getting some delicious, nutritious granules');
-        let url = CMR_GRANULE_URL + `&concept_id=${this.state.selectedCollection}`
+        console.log("Getting some delicious, nutritious granules");
+        let url = CMR_GRANULE_URL + `&concept_id=${this.state.selectedCollection}`;
         fetch(url)
             .then(response => response.json())
             .then(response => this.setState({
@@ -54,6 +55,7 @@ export class EverestUI extends React.Component<{}, EverestState> {
                   selectedCollection={this.state.selectedCollection}
                   onCollectionChange={this.handleCollectionChange.bind(this)} />
               <Globe/>
+              <Toolbar/>
               <button type="button" name="Go!" onClick={this.getGranules.bind(this)}>Please Get Me Some Delicious Granules!</button>
               <GranuleList
                   collectionId={this.state.selectedCollection}
@@ -64,6 +66,6 @@ export class EverestUI extends React.Component<{}, EverestState> {
     }
 
     collectionSelected() {
-        console.log('collection selected');
+        console.log("collection selected");
     }
 }
