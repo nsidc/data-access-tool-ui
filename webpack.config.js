@@ -33,6 +33,7 @@ module.exports = {
 
     devServer: {
         contentBase: './dist',
+        host: '0.0.0.0',
         disableHostCheck: true,
     },
 
@@ -55,11 +56,9 @@ module.exports = {
             },
             { test: /\.tsx?$/, loader: 'ts-loader' },
             {
-                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000
-                }
+              test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+              loader: 'url-loader',
+              options: {}
             },
             { test: /\.jsx?$/, enforce: 'pre', loader: 'source-map-loader' }
         ]
