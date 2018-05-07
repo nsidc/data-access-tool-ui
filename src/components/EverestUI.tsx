@@ -8,7 +8,6 @@ import { GranuleList } from "./GranuleList";
 import { SubmitBtn } from "./SubmitBtn";
 import { TemporalFilter } from "./TemporalFilter";
 
-
 interface EverestState {
   selectedCollection: string;
   spatialSelection: SpatialSelection;
@@ -45,8 +44,7 @@ export class EverestUI extends React.Component<{}, EverestState> {
       this.setState({"selectedCollection": collection});
     }
 
-    handleSpatialSelectionChange(spatialSelection: SpatialSelection) {
-      return;
+    handleSpatialSelectionChange() {
     }
 
     handleTemporalLowerChange(date: moment.Moment) {
@@ -68,16 +66,17 @@ export class EverestUI extends React.Component<{}, EverestState> {
                   selectedCollection={this.state.selectedCollection}
                   onCollectionChange={this.handleCollectionChange} />
               <Globe/>
-              <span>
+              <div id="temporal-filter">
                   <TemporalFilter
                       selectedDate={this.state.temporalFilterLowerBound}
                       onDateChange={this.handleTemporalLowerChange} />
                   <TemporalFilter
                       selectedDate={this.state.temporalFilterUpperBound}
                       onDateChange={this.handleTemporalUpperChange} />
-              </span>
+              </div>
               <SubmitBtn
                   collectionId={this.state.selectedCollection}
+                  spatialSelection={this.state.spatialSelection}
                   temporalLowerBound={this.state.temporalFilterLowerBound}
                   temporalUpperBound={this.state.temporalFilterUpperBound}
                   onGranuleResponse={this.handleGranules} />

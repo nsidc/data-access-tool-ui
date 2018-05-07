@@ -3,21 +3,37 @@ body {
     margin: 20px;
 }
 
+#collections {
+    width: auto;
+}
+
 #globe {
-    width: 800px;
-    height: 600px;
+    width: auto;
+    height: auto;
     border: 2px solid;
+    margin: 0em;
+    padding: 0em;
 }
 
 #toolbar {
     position: absolute;
-    top: 40px;
-    left: 15px;
-    display: inline;
-    margin: 10px;
-    padding: 0px 5px;
+    top: 3.5em;
+    left: 2em;
+    display: block;
+    margin: 0px;
+    padding: 5px;
     background: white;
+    width: auto;
+    height: auto;
     z-index: 1000;
+}
+
+#temporal-filter {
+    margin: 1em;
+}
+
+#submit-container {
+    margin: 1em;
 }
 
 .dropdown {
@@ -51,4 +67,23 @@ tbody tr:nth-child(odd) {
 
 tbody tr:hover {
     background: #d7e4ef;
+}
+
+/* Should we be adding to this toolbar? */
+.cesium-viewer-toolbar {
+    height: 5em;
+    width: 5em;
+}
+
+/* Get rid of annoying white gap at bottom of canvas */
+#globe .cesium-widget {
+    height: 730px;
+}
+
+#globe .cesium-viewer-bottom {
+    padding: 0.5em;
+}
+
+#globe .cesium-credit-logoContainer {
+    margin-right: 1em;
 }
