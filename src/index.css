@@ -3,10 +3,6 @@ body {
     margin: 20px;
 }
 
-#collections {
-    width: auto;
-}
-
 #globe {
     width: auto;
     height: auto;
@@ -37,7 +33,7 @@ body {
 }
 
 .dropdown {
-    width: 800px;
+    width: auto;
     font-size: 18px;
 }
 
