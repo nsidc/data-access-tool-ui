@@ -78,7 +78,21 @@ class EverestUI extends React.Component<{}, EverestState> {
 
 // ========================================
 
-ReactDOM.render(
-    <EverestUI />,
-    document.getElementById("everest-ui")
-);
+const renderApp = () => {
+      ReactDOM.render(
+          <EverestUI />,
+          document.getElementById("everest-ui")
+      );
+};
+
+declare var Drupal: any;
+
+if (typeof(Drupal) !== "undefined") {
+  Drupal.behaviors.AppBehavior = {
+    attach: function(context: any, settings: any) {
+      renderApp();
+    }
+  };
+} else {
+  renderApp();
+}

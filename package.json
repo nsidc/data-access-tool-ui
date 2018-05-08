@@ -7,6 +7,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "webpack -p",
+    "build-dev": "webpack",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'"
