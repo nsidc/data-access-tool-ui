@@ -35,6 +35,8 @@ module.exports = {
         contentBase: './dist',
         host: '0.0.0.0',
         disableHostCheck: true,
+        hot: false,
+        inline: false,
     },
 
     resolve: {
