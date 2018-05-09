@@ -23,8 +23,8 @@ export class GranuleList extends React.Component<GranuleListProps, {}> {
   }
 
   render() {
-    const granuleList = this.props.granules.map((g: any) => (
-      <tr>
+    const granuleList = this.props.granules.map((g: any, i: number) => (
+      <tr key={i}>
         <td>{g.producer_granule_id}</td>
         <td>{g.granule_size}</td>
         <td>{g.time_start}</td>
