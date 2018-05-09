@@ -36,6 +36,16 @@ To build the app:
 
 Verify the build by opening the output `dist/index.html` in a browser.
 
+### For Drupal
+
+In order for the app to work in Drupal, we need to set `CESIUM_BASE_URL` to a drupal-relative location where Cesium's assets can be found:
+
+        $ npm run build-drupal
+
 ## Deployment
 
-TBD -- Where will the build artifacts be deployed to?
+TBD: This currently manual process is a proof of concept.
+
+To avoid dealing with mount dependencies, run the following on a dev VM after building for Drupal:
+
+        cp -R ./dist/* /share/apps/hermes-all/<env>/ui/*
