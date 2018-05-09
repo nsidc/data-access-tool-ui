@@ -1,0 +1,9 @@
+version: '3'
+services:
+  everest-ui:
+    build: .
+    ports:
+      - "4000:80"
+    volumes:
+      - ../everest-ui/src:/app/src
+    restart: on-failure
