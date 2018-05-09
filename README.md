@@ -44,8 +44,10 @@ In order for the app to work in Drupal, we need to set `CESIUM_BASE_URL` to a dr
 
 ## Deployment
 
-TBD: This currently manual process is a proof of concept.
+If you want to deploy to the current environment from a VM:
 
-To avoid dealing with mount dependencies, run the following on a dev VM after building for Drupal:
+        $ npm run deploy-drupal
 
-        cp -R ./dist/* /share/apps/hermes-all/<env>/ui/*
+If you're on a dev or CI VM with `/share/apps/hermes-all` mounted, you can deploy to any environment by passing an argument. For example:
+
+        $ npm run deploy-drupal -- integration

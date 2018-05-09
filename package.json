@@ -9,6 +9,7 @@
     "build": "webpack -p",
     "build-dev": "webpack",
     "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack",
+    "deploy-drupal": "./scripts/deploy.sh",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'"
