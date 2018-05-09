@@ -3,7 +3,7 @@ services:
   everest-ui:
     build: .
     ports:
-      - "4000:80"
+      - "4000:8080"
     volumes:
       - ../everest-ui/src:/app/src
     restart: on-failure
