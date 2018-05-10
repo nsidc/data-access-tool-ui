@@ -69,6 +69,19 @@ css rules for the draw helper components
     background: #eee;
 }
 
+#toolbar ul {
+    list-style-type: none;
+    -webkit-padding-start: 0px;
+    margin: 0;
+    padding: 0;
+}
+
+#toolbar ul li {
+    width: 24px;
+    margin: 2px;
+    padding: 0;
+}
+
 /*
 css rules for the infowindow
 */

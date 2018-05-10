@@ -5,7 +5,7 @@ import { Toolbar } from "./Toolbar";
 let Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 
-export class Globe extends React.Component {
+export class Globe extends React.Component<{}, {}> {
     componentDidMount() {
         new Cesium.Viewer("globe", {
             animation: false,
