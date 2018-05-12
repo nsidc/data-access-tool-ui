@@ -2,19 +2,17 @@ import * as React from "react";
 
 import "./Toolbar.css";
 
-let Cesium = require("cesium/Cesium");
-let cesiumWidget = require("cesium/Widgets/widgets.css");
 const polygon = require("./img/glyphicons_096_vector_path_polygon.png");
 const square = require("./img/glyphicons_094_vector_path_square.png");
 const reset = require("./img/glyphicons_067_cleaning.png");
 
-interface DrawingToolProps {
-  toolName: string;
+interface SpatialSelectionTypeProps {
+  name: string;
   onClick: any;
 }
 
-export class DrawingTool extends React.Component <DrawingToolProps, {}> {
-    displayName = "DrawingTool";
+export class SpatialSelectionType extends React.Component <SpatialSelectionTypeProps, {}> {
+    displayName = "SpatialSelectionType";
 
     constructor(props: any) {
         super(props);
@@ -29,7 +27,7 @@ export class DrawingTool extends React.Component <DrawingToolProps, {}> {
     render() {
       // Need a better way of assigning image!
       let img;
-      switch (this.props.toolName) {
+      switch (this.props.name) {
         case "polygon":
           img = polygon;
           break;

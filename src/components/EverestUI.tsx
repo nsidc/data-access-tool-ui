@@ -45,6 +45,7 @@ export class EverestUI extends React.Component<{}, EverestState> {
     }
 
     handleSpatialSelectionChange() {
+      console.log("spatial selection updated");
     }
 
     handleTemporalLowerChange(date: moment.Moment) {
@@ -65,7 +66,8 @@ export class EverestUI extends React.Component<{}, EverestState> {
               <CollectionDropdown
                   selectedCollection={this.state.selectedCollection}
                   onCollectionChange={this.handleCollectionChange} />
-              <Globe/>
+              <Globe
+                onSpatialSelectionChange={this.handleSpatialSelectionChange} />
               <div id="temporal-filter">
                   <TemporalFilter
                       selectedDate={this.state.temporalFilterLowerBound}

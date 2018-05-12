@@ -1,39 +1,41 @@
 import * as React from "react";
 
 import "./Toolbar.css";
-import { DrawingTool } from "./DrawingTool";
+import { SpatialSelectionType } from "./SpatialSelectionType";
 
-export class Toolbar extends React.Component {
+interface SpatialSelectionToolbarProps {
+    onShapeClick: any;
+}
+
+export class SpatialSelectionToolbar extends React.Component<SpatialSelectionToolbarProps, {}> {
     constructor(props: any) {
       super(props);
       this.handlePolygonChange = this.handlePolygonChange.bind(this);
       this.handleSquareChange = this.handleSquareChange.bind(this);
       this.handleResetChange = this.handleResetChange.bind(this);
-      this.state = {
-        polygonClicked: false,
-        squareClicked: false,
-        resetClicked: false
-      };
     }
 
     handlePolygonChange() {
       console.log("clicked polygon");
+      this.props.onShapeClick("polygon")
     }
 
     handleSquareChange() {
       console.log("clicked square");
+      this.props.onShapeClick("square")
     }
 
     handleResetChange() {
       console.log("clicked reset");
+      this.props.onShapeClick("reset")
     }
 
     render() {
       return (
         <div id="toolbar" className="toolbar">
-          <DrawingTool toolName="polygon" onClick={this.handlePolygonChange}/>
-          <DrawingTool toolName="square" onClick={this.handleSquareChange}/>
-          <DrawingTool toolName="reset" onClick={this.handleResetChange}/>
+          <SpatialSelectionType name="polygon" onClick={this.handlePolygonChange} />
+          <SpatialSelectionType name="square" onClick={this.handleSquareChange} />
+          <SpatialSelectionType name="reset" onClick={this.handleResetChange} />
         </div>
       );
     }
