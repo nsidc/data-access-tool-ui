@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import "./Toolbar.css";
+import "./SpatialSelection.css";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface SpatialSelectionToolbarProps {
