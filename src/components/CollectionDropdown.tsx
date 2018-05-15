@@ -41,8 +41,8 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
         let collectionOptions = null;
 
         if (this.state.collections) {
-            collectionOptions = this.state.collections.map((c: any) => (
-                <option key={c.id} value={c.id}>{c.dataset_id}</option>
+            collectionOptions = this.state.collections.map((c: any, i: number) => (
+                <option key={i} value={c.id}>{c.dataset_id}</option>
             ));
         }
 

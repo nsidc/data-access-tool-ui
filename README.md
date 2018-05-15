@@ -30,12 +30,35 @@ TBD
 
 ## Build
 
+### Production
+
 To build the app:
 
         $ npm run build
 
 Verify the build by opening the output `dist/index.html` in a browser.
 
+### For Drupal
+
+In order for the app to work in Drupal, we need to set `CESIUM_BASE_URL` to a drupal-relative location where Cesium's assets can be found:
+
+        $ npm run build-drupal
+
+### Development
+
+To build the app without minification for easier debugging (this is useful for
+deploying to Drupal):
+
+        $ npm run build-dev
+
+Verify the build by opening the output `dist/index.html` in a browser.
+
 ## Deployment
 
-TBD -- Where will the build artifacts be deployed to?
+If you want to deploy to the current environment from a VM:
+
+        $ npm run deploy-drupal
+
+If you're on a dev or CI VM with `/share/apps/hermes-all` mounted, you can deploy to any environment by passing an argument. For example:
+
+        $ npm run deploy-drupal -- integration
