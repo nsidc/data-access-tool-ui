@@ -49,23 +49,18 @@
 }
 
 /*
-css rules for the draw helper components
+css rules for the drawing tool components
 */
 
-.toolbar {
-    margin: 0px;
-    padding: 0px;
-    background: white;
-}
-
-.toolbar > .button {
-    margin: 5px;
-    padding: 5px;
+#toolbar > .button {
+    margin-left: 3px;
+    margin-right: 3px;
+    padding: 3px;
     border: 1px solid #eee;
     cursor: pointer;
 }
 
-.toolbar > .button:hover {
+#toolbar > .button:hover {
     background: #eee;
 }
 

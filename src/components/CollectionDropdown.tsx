@@ -5,7 +5,6 @@ import * as React from "react";
 // and version, not version_id.
 const CMR_COLLECTION_URL = "https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
-
 interface CollectionDropdownProps {
     selectedCollection: any;
     onCollectionChange: any;

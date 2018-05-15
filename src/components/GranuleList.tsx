@@ -46,7 +46,7 @@ export class GranuleList extends React.Component<GranuleListProps, {}> {
           + this.props.spatialSelection.upper_right_lat + ", "
           + this.props.spatialSelection.upper_right_lon + "]"}
         </div>
-        <table>
+        <table className="granuleList">
           <thead>
             <tr>
               <th>Granule ID</th>
