@@ -30,6 +30,8 @@ TBD
 
 ## Build
 
+### Production
+
 To build the app:
 
         $ npm run build
@@ -41,6 +43,15 @@ Verify the build by opening the output `dist/index.html` in a browser.
 In order for the app to work in Drupal, we need to set `CESIUM_BASE_URL` to a drupal-relative location where Cesium's assets can be found:
 
         $ npm run build-drupal
+
+### Development
+
+To build the app without minification for easier debugging (this is useful for
+deploying to Drupal):
+
+        $ npm run build-dev
+
+Verify the build by opening the output `dist/index.html` in a browser.
 
 ## Deployment
 
