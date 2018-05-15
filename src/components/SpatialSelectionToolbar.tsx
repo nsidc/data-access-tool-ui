@@ -4,7 +4,8 @@ import "./SpatialSelection.css";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface SpatialSelectionToolbarProps {
-    onShapeClick: any;
+    onResetClick: any;
+    onSelectionStart: any;
 }
 
 export class SpatialSelectionToolbar extends React.Component<SpatialSelectionToolbarProps, {}> {
@@ -16,18 +17,15 @@ export class SpatialSelectionToolbar extends React.Component<SpatialSelectionToo
     }
 
     handlePolygonChange() {
-      console.log("clicked polygon");
-      this.props.onShapeClick("polygon")
+      this.props.onSelectionStart("polygon");
     }
 
     handleSquareChange() {
-      console.log("clicked square");
-      this.props.onShapeClick("square")
+      this.props.onSelectionStart("square");
     }
 
     handleResetChange() {
-      console.log("clicked reset");
-      this.props.onShapeClick("reset")
+      this.props.onResetClick();
     }
 
     render() {

@@ -12,23 +12,25 @@ interface SpatialSelectionTypeProps {
 }
 
 export class SpatialSelectionType extends React.Component <SpatialSelectionTypeProps, {}> {
-    displayName = "SpatialSelectionType";
+  displayName = "SpatialSelectionType";
 
-    constructor(props: any) {
-        super(props);
-        this.state = {isClicked: false};
-        this.handleChange = this.handleChange.bind(this);
-    }
+  constructor(props: any) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      isClicked: false
+    };
+  }
 
-    handleChange(e: any) {
-      this.props.onClick(e.target.value);
-    }
+  handleChange(e: any) {
+    this.props.onClick(e.target.value);
+  }
 
-    render() {
-      // Need a better way of assigning image!
-      let img;
-      let alt;
-      switch (this.props.name) {
+  render() {
+    // This feels a bit clunky...
+    let img;
+    let alt;
+    switch (this.props.name) {
         case "polygon":
           img = polygon;
           alt = "Click to start drawing a 2D polygon";
@@ -39,12 +41,12 @@ export class SpatialSelectionType extends React.Component <SpatialSelectionTypeP
           break;
         default:
           img = reset;
-      }
-
-      return (
-        <div className="button" onClick={this.handleChange}>
-          <img className={this.props.name} src={img} alt={alt}/>
-        </div>
-      );
     }
+
+    return (
+      <div className="button" onClick={this.handleChange}>
+        <img className={this.props.name} src={img} alt={alt}/>
+      </div>
+    );
+  }
 }
