@@ -28,6 +28,9 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     this.handleLeftClick = this.handleLeftClick.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.polygonPrimitiveBuilder = this.polygonPrimitiveBuilder.bind(this);
+    this.extentPrimitiveBuilder = this.extentPrimitiveBuilder.bind(this);
+    this.polygonGeometryBuilder = this.polygonGeometryBuilder.bind(this);
+    this.extentGeometryBuilder = this.extentGeometryBuilder.bind(this);
 
     this.state = {
       scene: null,
@@ -52,22 +55,34 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
 
   handleReset() {
     console.log("Reset spatial selection");
-    let scene = this.state.scene;
-    scene.primitives.removeAll();
+
+    // Is this breaking rules about using "this.state" to set state?
+    this.state.scene.primitives.removeAll();
+    this.setState({primitiveBuilder: null});
   }
 
   handleSelectionStart(name: string) {
     console.log("Start drawing " + name);
+    let primitiveBuilder = (name === "polygon") ? this.polygonPrimitiveBuilder : this.extentPrimitiveBuilder;
     this.setState({
-      primitiveBuilder: this.polygonPrimitiveBuilder,
+      primitiveBuilder: primitiveBuilder
     });
   }
 
   handleSelectionEnd(name: string, position: any) {
     console.log("finish event on globe: " + name + " position: " + position);
 
+    if (this.state.primitiveBuilder === null) {
+      this.setState({
+        positions: []
+      });
+      return;
+    }
+
     let scene = this.state.scene;
     let primitive = this.state.primitiveBuilder();
+
+    // Is this technically changing the state?
     scene.primitives.add(primitive);
 
     this.setState({
@@ -80,19 +95,7 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
   polygonPrimitiveBuilder() {
     console.log("in polygon primitive builder");
 
-    // TODO: get rid of duplicates (e.g. from double click)
-    let positions = this.state.positions;
-    console.log("positions: " + positions);
-
-    let geometry = new Cesium.PolygonGeometry.fromPositions({
-      // Close the loop to create a complete polygon
-      positions : positions.concat([this.state.positions[0]]),
-      height : this.state.defaultShapeOptions.height,
-      vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
-      stRotation : this.state.defaultShapeOptions.textureRotationAngle,
-      ellipsoid : this.state.defaultShapeOptions.ellipsoid,
-      granularity : this.state.defaultShapeOptions.granularity
-    });
+    let geometry = this.polygonGeometryBuilder();
 
     return new Cesium.GroundPrimitive({
       geometryInstances: new Cesium.GeometryInstance({
@@ -102,6 +105,54 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
           color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5)
         }
       }),
+    });
+  }
+
+  polygonGeometryBuilder() {
+    // TODO: get rid of duplicates (e.g. from double click)
+    let positions = this.state.positions;
+    console.log("positions: " + positions);
+
+    return new Cesium.PolygonGeometry.fromPositions({
+      // Close the loop to create a complete polygon
+      positions : positions.concat([this.state.positions[0]]),
+      height : this.state.defaultShapeOptions.height,
+      vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+      stRotation : this.state.defaultShapeOptions.textureRotationAngle,
+      ellipsoid : this.state.defaultShapeOptions.ellipsoid,
+      granularity : this.state.defaultShapeOptions.granularity
+    });
+  }
+
+  extentPrimitiveBuilder() {
+    console.log("in extent primitive builder");
+
+    let geometry = this.polygonGeometryBuilder();
+
+    return new Cesium.GroundPrimitive({
+      geometryInstances: new Cesium.GeometryInstance({
+        geometry: geometry,
+        id: "polygon",
+        attributes: {
+          color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5)
+        }
+      }),
+    });
+  }
+
+  extentGeometryBuilder() {
+    // TODO: get rid of duplicates (e.g. from double click)
+    let positions = this.state.positions;
+    console.log("positions: " + positions);
+
+    return new Cesium.PolygonGeometry.fromPositions({
+      // Close the loop to create a complete polygon
+      positions : positions.concat([this.state.positions[0]]),
+      height : this.state.defaultShapeOptions.height,
+      vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+      stRotation : this.state.defaultShapeOptions.textureRotationAngle,
+      ellipsoid : this.state.defaultShapeOptions.ellipsoid,
+      granularity : this.state.defaultShapeOptions.granularity
     });
   }
 
@@ -177,7 +228,8 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
 
   render() {
     return (
-      <div id="globe">
+      <div id="spatial-selection">
+        <div id="globe"></div>
         <SpatialSelectionToolbar onSelectionStart={this.handleSelectionStart} onResetClick={this.handleReset} />
       </div>
     );

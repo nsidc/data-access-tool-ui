@@ -30,7 +30,7 @@ export class SpatialSelectionToolbar extends React.Component<SpatialSelectionToo
 
     render() {
       return (
-        <div id="toolbar" className="toolbar">
+        <div id="toolbar">
           <SpatialSelectionType name="polygon" onClick={this.handlePolygonChange} />
           <SpatialSelectionType name="square" onClick={this.handleSquareChange} />
           <SpatialSelectionType name="reset" onClick={this.handleResetChange} />
