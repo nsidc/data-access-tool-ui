@@ -30,9 +30,20 @@ TBD
 
 ## Build
 
+### Production
+
 To build the app:
 
         $ npm run build
+
+Verify the build by opening the output `dist/index.html` in a browser.
+
+### Development
+
+To build the app without minification for easier debugging (this is useful for
+deploying to Drupal):
+
+        $ npm run build-dev
 
 Verify the build by opening the output `dist/index.html` in a browser.
 

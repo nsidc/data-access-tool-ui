@@ -15,70 +15,85 @@ interface EverestState {
 }
 
 class EverestUI extends React.Component<{}, EverestState> {
-    static displayName = "EverestUI";
+  static displayName = "EverestUI";
 
-    constructor(props: any) {
-      super(props);
-      this.handleCollectionChange = this.handleCollectionChange.bind(this);
-      this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
-      this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
-      this.handleGranules = this.handleGranules.bind(this);
-      this.state = {
-        "selectedCollection": "",
-        "temporalFilterLowerBound": null,
-        "temporalFilterUpperBound": null,
-        "granules": [{}],
-      };
-    }
+  constructor(props: any) {
+    super(props);
+    this.handleCollectionChange = this.handleCollectionChange.bind(this);
+    this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
+    this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
+    this.handleGranules = this.handleGranules.bind(this);
+    this.state = {
+      "selectedCollection": "",
+      "temporalFilterLowerBound": null,
+      "temporalFilterUpperBound": null,
+      "granules": [{}],
+    };
+  }
 
-    handleCollectionChange(collection: string) {
-      this.setState({"selectedCollection": collection});
-    }
+  handleCollectionChange(collection: string) {
+    this.setState({"selectedCollection": collection});
+  }
 
-    handleTemporalLowerChange(date: moment.Moment) {
-      this.setState({"temporalFilterLowerBound": date});
-    }
+  handleTemporalLowerChange(date: moment.Moment) {
+    this.setState({"temporalFilterLowerBound": date});
+  }
 
-    handleTemporalUpperChange(date: moment.Moment) {
-      this.setState({"temporalFilterUpperBound": date});
-    }
+  handleTemporalUpperChange(date: moment.Moment) {
+    this.setState({"temporalFilterUpperBound": date});
+  }
 
-    handleGranules(cmrResponse: any) {
-      this.setState({"granules": cmrResponse});
-    }
+  handleGranules(cmrResponse: any) {
+    this.setState({"granules": cmrResponse});
+  }
 
-    render() {
-        return (
-            <div className="everest-stuff">
-              <CollectionDropdown
-                  selectedCollection={this.state.selectedCollection}
-                  onCollectionChange={this.handleCollectionChange} />
-              <span>
-                  <TemporalFilter
-                      selectedDate={this.state.temporalFilterLowerBound}
-                      onDateChange={this.handleTemporalLowerChange} />
-                  <TemporalFilter
-                      selectedDate={this.state.temporalFilterUpperBound}
-                      onDateChange={this.handleTemporalUpperChange} />
-              </span>
-              <SubmitBtn
-                  collectionId={this.state.selectedCollection}
-                  temporalLowerBound={this.state.temporalFilterLowerBound}
-                  temporalUpperBound={this.state.temporalFilterUpperBound}
-                  onGranuleResponse={this.handleGranules} />
-              <GranuleList
-                  collectionId={this.state.selectedCollection}
-                  temporalFilterLowerBound={this.state.temporalFilterLowerBound}
-                  temporalFilterUpperBound={this.state.temporalFilterUpperBound}
-                  granuleList={this.state.granules} />
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div className="everest-stuff">
+        <CollectionDropdown
+          selectedCollection={this.state.selectedCollection}
+          onCollectionChange={this.handleCollectionChange} />
+        <span>
+          <TemporalFilter
+            selectedDate={this.state.temporalFilterLowerBound}
+            onDateChange={this.handleTemporalLowerChange} />
+          <TemporalFilter
+            selectedDate={this.state.temporalFilterUpperBound}
+            onDateChange={this.handleTemporalUpperChange} />
+        </span>
+        <SubmitBtn
+          collectionId={this.state.selectedCollection}
+          temporalLowerBound={this.state.temporalFilterLowerBound}
+          temporalUpperBound={this.state.temporalFilterUpperBound}
+          onGranuleResponse={this.handleGranules} />
+        <GranuleList
+          collectionId={this.state.selectedCollection}
+          temporalFilterLowerBound={this.state.temporalFilterLowerBound}
+          temporalFilterUpperBound={this.state.temporalFilterUpperBound}
+          granuleList={this.state.granules} />
+      </div>
+    );
+  }
 }
 
 // ========================================
 
-ReactDOM.render(
-    <EverestUI />,
-    document.getElementById("everest-ui")
-);
+const renderApp = () => {
+  ReactDOM.render(
+      <EverestUI />,
+      document.getElementById("everest-ui")
+  );
+};
+
+declare var Drupal: any;
+
+// If the app is being rendered in Drupal, wait for the page to load first
+if (typeof(Drupal) !== "undefined") {
+  Drupal.behaviors.AppBehavior = {
+    attach: function(context: any, settings: any) {
+      renderApp();
+    }
+  };
+} else {
+  renderApp();
+}
