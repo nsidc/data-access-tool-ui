@@ -15,8 +15,9 @@ const renderApp = () => {
 
 declare var Drupal: any;
 
-// If the app is being rendered in Drupal, wait for the page to load first
 if (typeof(Drupal) !== "undefined") {
+  // By extending Drupal.behaviors with a new behavior and callback, we can
+  // ensure that the "everest-ui" element exists before we render the app.
   Drupal.behaviors.AppBehavior = {
     attach: function(context: any, settings: any) {
       renderApp();
