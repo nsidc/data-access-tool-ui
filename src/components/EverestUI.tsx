@@ -45,6 +45,9 @@ export class EverestUI extends React.Component<{}, EverestState> {
     handleCollectionChange(collection: any) {
       this.setState({"selectedCollection": collection});
       this.setState({"selectedCollectionId": collection.id});
+
+      this.handleTemporalLowerChange(moment(collection.time_start));
+      this.handleTemporalUpperChange(moment(collection.time_end));
     }
 
     handleSpatialSelectionChange(points: Array<number>) {
