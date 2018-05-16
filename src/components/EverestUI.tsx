@@ -9,7 +9,8 @@ import { SubmitBtn } from "./SubmitBtn";
 import { TemporalFilter } from "./TemporalFilter";
 
 interface EverestState {
-  selectedCollection: string;
+  selectedCollection: any;
+  selectedCollectionId: string;
   spatialSelection: SpatialSelection;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
@@ -33,15 +34,17 @@ export class EverestUI extends React.Component<{}, EverestState> {
             upper_right_lon: 180,
             upper_right_lat: 90
         },
-        selectedCollection: "",
+        selectedCollection: {},
+        selectedCollectionId: "",
         temporalFilterLowerBound: moment("20100101"),
         temporalFilterUpperBound: moment(),
         granules: [{}],
       };
     }
 
-    handleCollectionChange(collection: string) {
+    handleCollectionChange(collection: any) {
       this.setState({"selectedCollection": collection});
+      this.setState({"selectedCollectionId": collection.id});
     }
 
     handleSpatialSelectionChange(points: Array<number>) {
@@ -77,13 +80,13 @@ export class EverestUI extends React.Component<{}, EverestState> {
                       onDateChange={this.handleTemporalUpperChange} />
               </div>
               <SubmitBtn
-                  collectionId={this.state.selectedCollection}
+                  collectionId={this.state.selectedCollectionId}
                   spatialSelection={this.state.spatialSelection}
                   temporalLowerBound={this.state.temporalFilterLowerBound}
                   temporalUpperBound={this.state.temporalFilterUpperBound}
                   onGranuleResponse={this.handleGranules} />
               <GranuleList
-                  collectionId={this.state.selectedCollection}
+                  collectionId={this.state.selectedCollectionId}
                   spatialSelection={this.state.spatialSelection}
                   temporalFilterLowerBound={this.state.temporalFilterLowerBound}
                   temporalFilterUpperBound={this.state.temporalFilterUpperBound}

@@ -26,7 +26,12 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
     }
 
     handleChange(e: any) {
-      this.props.onCollectionChange(e.target.value);
+      const collectionId = e.target.value;
+      const chosenCollection = this.state.collections.find((collection: any) => {
+        return collection.id ===  collectionId;
+      });
+
+      this.props.onCollectionChange(chosenCollection);
     }
 
     componentDidMount() {
