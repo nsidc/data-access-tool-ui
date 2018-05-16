@@ -44,7 +44,7 @@ export class EverestUI extends React.Component<{}, EverestState> {
       this.setState({"selectedCollection": collection});
     }
 
-    handleSpatialSelectionChange() {
+    handleSpatialSelectionChange(points: Array<number>) {
       console.log("spatial selection updated");
     }
 
