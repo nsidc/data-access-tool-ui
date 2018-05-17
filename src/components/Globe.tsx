@@ -34,7 +34,8 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     this.handleReset = this.handleReset.bind(this);
     this.polygonPrimitiveBuilder = this.polygonPrimitiveBuilder.bind(this);
     this.extentPrimitiveBuilder = this.extentPrimitiveBuilder.bind(this);
-    this.geometryBuilder = this.geometryBuilder.bind(this);
+    this.polygonGeometryBuilder = this.polygonGeometryBuilder.bind(this);
+    this.extentGeometryBuilder = this.extentGeometryBuilder.bind(this);
     this.polygonEndTest = this.polygonEndTest.bind(this);
     this.extentEndTest = this.extentEndTest.bind(this);
 
@@ -110,9 +111,8 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     }
   }
 
-  // temporary use of 3 or more points until extent drawing is in place
   extentEndTest(action: string) {
-    if (this.state && this.state.positions && (this.state.positions.length > 2)) {
+    if (this.state && this.state.positions && (this.state.positions.length === 2 )) {
       console.log("extent end is true");
       return true;
     } else {
@@ -147,17 +147,16 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
 
   polygonPrimitiveBuilder() {
     console.log("in polygon primitive builder");
-    return this.genericPrimitiveBuilder("polygon");
+    return this.genericPrimitiveBuilder("polygon", this.polygonGeometryBuilder);
   }
 
-  geometryBuilder() {
+  polygonGeometryBuilder() {
     // TODO: get rid of duplicate points (e.g. from double click)
     let positions = this.state.positions;
     console.log("positions: " + positions);
 
     return new Cesium.PolygonGeometry.fromPositions({
-      // Close the loop to create a complete polygon
-      positions : positions.concat([this.state.positions[0]]),
+      positions : positions,
       height : this.state.defaultShapeOptions.height,
       vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
       stRotation : this.state.defaultShapeOptions.textureRotationAngle,
@@ -166,14 +165,28 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     });
   }
 
-  // Currently just builds a polygon
   extentPrimitiveBuilder() {
     console.log("in extent primitive builder");
-    return this.genericPrimitiveBuilder("square");
+    return this.genericPrimitiveBuilder("square", this.extentGeometryBuilder);
   }
 
-  genericPrimitiveBuilder(name: any) {
-    let geometry = this.geometryBuilder();
+  extentGeometryBuilder() {
+    let positions = this.state.positions;
+    console.log("positions in extent geometry: " + positions);
+
+    let rectangle = new Cesium.Rectangle.fromCartesianArray(positions);
+    return new Cesium.RectangleGeometry({
+      rectangle: rectangle,
+      ellipsoid: this.state.defaultShapeOptions.ellipsoid,
+      granularity: this.state.defaultShapeOptions.granularity,
+      height: this.state.defaultShapeOptions.height,
+      vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+      stRotation: this.state.defaultShapeOptions.textureRotationAngle,
+    });
+  }
+
+  genericPrimitiveBuilder(name: any, geometryBuilder: any) {
+    let geometry = geometryBuilder();
 
     return new Cesium.GroundPrimitive({
       geometryInstances: new Cesium.GeometryInstance({
@@ -246,7 +259,7 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
         _self.handlePolygonEnd("leftDoubleClick", movement.position);
     }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    let positions = this.positionsFromSpatialSelection(this.props.spatialSelection);
+    let positions = this.rectangleFromSpatialSelection(this.props.spatialSelection);
     this.handleSelectionStart("square");
 
     console.log("positions in cesium init: " + positions);
@@ -264,6 +277,15 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
       spatialSelection.lower_left_lon, spatialSelection.upper_right_lat, 0,
       spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0,
       spatialSelection.upper_right_lon, spatialSelection.lower_left_lat, 0,
+      spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
+    ];
+    return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
+  }
+
+  rectangleFromSpatialSelection(spatialSelection: SpatialSelection) {
+    let degArray = [
+        spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
+        spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0
     ];
     return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
   }
