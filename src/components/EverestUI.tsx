@@ -9,7 +9,8 @@ import { SubmitBtn } from "./SubmitBtn";
 import { TemporalFilter } from "./TemporalFilter";
 
 interface EverestState {
-  selectedCollection: string;
+  selectedCollection: any;
+  selectedCollectionId: string;
   spatialSelection: SpatialSelection;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
@@ -33,19 +34,56 @@ export class EverestUI extends React.Component<{}, EverestState> {
             upper_right_lon: 100,
             upper_right_lat: 80
         },
-        selectedCollection: "",
+        selectedCollection: {},
+        selectedCollectionId: "",
         temporalFilterLowerBound: moment("20100101"),
         temporalFilterUpperBound: moment(),
         granules: [{}],
       };
     }
 
-    handleCollectionChange(collection: string) {
-      this.setState({"selectedCollection": collection});
+    // take the list of boxes (e.g., ["-90 -180 90 180"]) and return a
+    // SpatialSelection encompassing them all
+    boxesToPoints(boxes: Array<string>) {
+      let souths: Array<number> = [];
+      let wests: Array<number> = [];
+      let norths: Array<number> = [];
+      let easts: Array<number> = [];
+
+      boxes.forEach((box: string) => {
+        const coords: Array<number> = box.split(" ").map((c: string) => parseInt(c, 10));
+        souths.push(coords[0]);
+        wests.push(coords[1]);
+        norths.push(coords[2]);
+        easts.push(coords[3]);
+      });
+
+      const finalSouth: number = Math.min.apply(null, souths);
+      const finalWest: number = Math.min.apply(null, wests);
+      const finalNorth: number = Math.max.apply(null, norths);
+      const finalEast: number = Math.max.apply(null, easts);
+
+      return {
+        lower_left_lat: finalSouth,
+        lower_left_lon: finalWest,
+        upper_right_lat: finalNorth,
+        upper_right_lon: finalEast
+      };
     }
 
-    handleSpatialSelectionChange(points: Array<number>) {
-      console.log("spatial selection updated");
+    handleCollectionChange(collection: any) {
+      this.setState({"selectedCollection": collection});
+      this.setState({"selectedCollectionId": collection.id});
+
+      this.handleTemporalLowerChange(moment(collection.time_start));
+      this.handleTemporalUpperChange(moment(collection.time_end));
+
+      const points = this.boxesToPoints(collection.boxes);
+      this.handleSpatialSelectionChange(points);
+    }
+
+    handleSpatialSelectionChange(spatialSelection: SpatialSelection) {
+      this.setState({"spatialSelection": spatialSelection});
     }
 
     handleTemporalLowerChange(date: moment.Moment) {
@@ -78,13 +116,13 @@ export class EverestUI extends React.Component<{}, EverestState> {
                       onDateChange={this.handleTemporalUpperChange} />
               </div>
               <SubmitBtn
-                  collectionId={this.state.selectedCollection}
+                  collectionId={this.state.selectedCollectionId}
                   spatialSelection={this.state.spatialSelection}
                   temporalLowerBound={this.state.temporalFilterLowerBound}
                   temporalUpperBound={this.state.temporalFilterUpperBound}
                   onGranuleResponse={this.handleGranules} />
               <GranuleList
-                  collectionId={this.state.selectedCollection}
+                  collectionId={this.state.selectedCollectionId}
                   spatialSelection={this.state.spatialSelection}
                   temporalFilterLowerBound={this.state.temporalFilterLowerBound}
                   temporalFilterUpperBound={this.state.temporalFilterUpperBound}
