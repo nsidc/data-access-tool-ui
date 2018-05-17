@@ -109,10 +109,10 @@ export class EverestUI extends React.Component<{}, EverestState> {
                 spatialSelection={this.state.spatialSelection}
                 onSpatialSelectionChange={this.handleSpatialSelectionChange} />
               <div id="temporal-filter">
-                  <TemporalFilter
+                  From: <TemporalFilter
                       selectedDate={this.state.temporalFilterLowerBound}
                       onDateChange={this.handleTemporalLowerChange} />
-                  <TemporalFilter
+                  To: <TemporalFilter
                       selectedDate={this.state.temporalFilterUpperBound}
                       onDateChange={this.handleTemporalUpperChange} />
               </div>
