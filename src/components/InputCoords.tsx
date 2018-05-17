@@ -1,4 +1,4 @@
-import { SpatialSelection } from '../SpatialSelection';
+import { SpatialSelection } from "../SpatialSelection";
 
 import * as React from "react";
 
@@ -17,7 +17,7 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
 
   handleChange(e: any) {
     let selectedCoords = this.props.selectedCoords;
-    selectedCoords[e.target.id] = e.target.value
+    selectedCoords[e.target.id] = e.target.value;
     this.props.onCoordChange(selectedCoords);
   }
 
@@ -34,13 +34,13 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
           <tr>
             <td>Lon:
               <input required
-                     id='lower_left_lon'
+                     id="lower_left_lon"
                      value={this.props.selectedCoords.lower_left_lon}
                      onChange={this.handleChange} />
             </td>
             <td>Lon:
               <input required
-                     id='upper_right_lon'
+                     id="upper_right_lon"
                      value={this.props.selectedCoords.upper_right_lon}
                      onChange={this.handleChange} />
             </td>
@@ -48,19 +48,19 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
           <tr>
             <td>Lat:
               <input required
-                     id='lower_left_lat'
+                     id="lower_left_lat"
                      value={this.props.selectedCoords.lower_left_lat}
                      onChange={this.handleChange} />
             </td>
             <td>Lat:
               <input required
-                     id='upper_right_lat'
+                     id="upper_right_lat"
                      value={this.props.selectedCoords.upper_right_lat}
                      onChange={this.handleChange} />
             </td>
           </tr>
         </tbody>
-			</table>
+      </table>
     );
   }
 }
