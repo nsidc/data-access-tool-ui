@@ -42,8 +42,9 @@ export class EverestUI extends React.Component<{}, EverestState> {
       };
     }
 
-    // take the list of boxes and return a box encompassing them all
-    boxesToPoints(boxes: any) {
+    // take the list of boxes (e.g., ["-90 -180 90 180"]) and return a
+    // SpatialSelection encompassing them all
+    boxesToPoints(boxes: Array<string>) {
       let souths: any = [];
       let wests: any = [];
       let norths: any = [];
@@ -62,7 +63,12 @@ export class EverestUI extends React.Component<{}, EverestState> {
       const finalNorth = Math.max.apply(null, norths);
       const finalEast = Math.max.apply(null, easts);
 
-      return [finalSouth, finalWest, finalNorth, finalEast];
+      return {
+        lower_left_lat: finalSouth,
+        lower_left_lon: finalWest,
+        upper_right_lat: finalNorth,
+        upper_right_lon: finalEast
+      };
     }
 
     handleCollectionChange(collection: any) {
@@ -76,14 +82,8 @@ export class EverestUI extends React.Component<{}, EverestState> {
       this.handleSpatialSelectionChange(points);
     }
 
-    handleSpatialSelectionChange(points: Array<number>) {
-      this.setState({"spatialSelection": {
-        lower_left_lat: points[0],
-        lower_left_lon: points[1],
-        upper_right_lat: points[2],
-        upper_right_lon: points[3],
-      }});
-      console.log("spatial selection updated");
+    handleSpatialSelectionChange(spatialSelection: SpatialSelection) {
+      this.setState({"spatialSelection": spatialSelection});
     }
 
     handleTemporalLowerChange(date: moment.Moment) {
