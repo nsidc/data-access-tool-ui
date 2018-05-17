@@ -42,12 +42,38 @@ export class EverestUI extends React.Component<{}, EverestState> {
       };
     }
 
+    // take the list of boxes and return a box encompassing them all
+    boxesToPoints(boxes: any) {
+      let souths: any = [];
+      let wests: any = [];
+      let norths: any = [];
+      let easts: any = [];
+
+      boxes.forEach((box: string) => {
+        const coords = box.split(' ');
+        souths.push(parseInt(coords[0]));
+        wests.push(parseInt(coords[1]));
+        norths.push(parseInt(coords[2]));
+        easts.push(parseInt(coords[3]));
+      });
+
+      const finalSouth = Math.min.apply(null, souths);
+      const finalWest = Math.min.apply(null, wests);
+      const finalNorth = Math.max.apply(null, norths);
+      const finalEast = Math.max.apply(null, easts);
+
+      return [finalSouth, finalWest, finalNorth, finalEast];
+    }
+
     handleCollectionChange(collection: any) {
       this.setState({"selectedCollection": collection});
       this.setState({"selectedCollectionId": collection.id});
 
       this.handleTemporalLowerChange(moment(collection.time_start));
       this.handleTemporalUpperChange(moment(collection.time_end));
+
+      const points = this.boxesToPoints(collection.boxes);
+      this.handleSpatialSelectionChange(points);
     }
 
     handleSpatialSelectionChange(points: Array<number>) {
