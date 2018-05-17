@@ -26,12 +26,8 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
     }
 
     handleChange(e: any) {
-      const collectionId = e.target.value;
-      const chosenCollection = this.state.collections.find((collection: any) => {
-        return collection.id ===  collectionId;
-      });
-
-      this.props.onCollectionChange(chosenCollection);
+      const collection = JSON.parse(e.target.value);
+      this.props.onCollectionChange(collection);
     }
 
     componentDidMount() {
@@ -47,7 +43,7 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
 
         if (this.state.collections) {
             collectionOptions = this.state.collections.map((c: any, i: number) => (
-                <option key={i} value={c.id}>{c.dataset_id}</option>
+                <option key={i} value={JSON.stringify(c)}>{c.dataset_id}</option>
             ));
         }
 
