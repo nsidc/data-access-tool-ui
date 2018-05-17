@@ -17,9 +17,6 @@ export class SpatialSelectionType extends React.Component <SpatialSelectionTypeP
   constructor(props: any) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = {
-      isClicked: false
-    };
   }
 
   handleChange(e: any) {

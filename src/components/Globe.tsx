@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { SpatialSelection } from "../SpatialSelection";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 import {polyfill} from "es6-promise";
 import {Simulate} from "react-dom/test-utils";
@@ -9,6 +10,7 @@ let Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 
 interface GlobeProps {
+  spatialSelection: SpatialSelection;
   onSpatialSelectionChange: any;
 }
 
@@ -17,9 +19,10 @@ interface GlobeState {
   viewer: any;
   positions: any;
   defaultShapeOptions: any;
-  primitiveBuilder: any;
   selectionEnd: any;
   selectionEndTest: any;
+  selectionIsDone: boolean;
+  primitiveBuilder: any;
 }
 
 export class Globe extends React.Component<GlobeProps, GlobeState> {
@@ -31,17 +34,17 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     this.handleReset = this.handleReset.bind(this);
     this.polygonPrimitiveBuilder = this.polygonPrimitiveBuilder.bind(this);
     this.extentPrimitiveBuilder = this.extentPrimitiveBuilder.bind(this);
-    this.polygonGeometryBuilder = this.polygonGeometryBuilder.bind(this);
-    this.extentGeometryBuilder = this.extentGeometryBuilder.bind(this);
+    this.geometryBuilder = this.geometryBuilder.bind(this);
     this.polygonEndTest = this.polygonEndTest.bind(this);
     this.extentEndTest = this.extentEndTest.bind(this);
 
     this.state = {
       scene: null,
       viewer: null,
-      primitiveBuilder: null,
       selectionEnd: null,
       selectionEndTest: null,
+      selectionIsDone: false,
+      primitiveBuilder: null,
       positions: [],
       defaultShapeOptions: {
         ellipsoid: Cesium.Ellipsoid.WGS84,
@@ -64,41 +67,52 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
 
     // Is this breaking rules about using "this.state" to set state?
     this.state.scene.primitives.removeAll();
-    this.setState({primitiveBuilder: null});
+    this.setState({
+      selectionEnd: null,
+      positions: []
+    });
   }
 
   handleSelectionStart(name: string) {
     console.log("Start drawing " + name);
-    let builder = null;
     let selectionEnd = null;
     let selectionEndTest = null;
+    let builder = null;
 
     if (name === "polygon") {
-      builder = this.polygonPrimitiveBuilder;
       selectionEnd = this.handlePolygonEnd;
       selectionEndTest = this.polygonEndTest;
+      builder = this.polygonPrimitiveBuilder;
     } else {
-      builder = this.extentPrimitiveBuilder;
       selectionEnd = this.handleLeftClick;
       selectionEndTest = this.extentEndTest;
+      builder = this.extentPrimitiveBuilder;
     }
     this.setState({
-      primitiveBuilder: builder,
       selectionEnd: selectionEnd,
-      selectionEndTest: selectionEndTest
+      selectionEndTest: selectionEndTest,
+      primitiveBuilder: builder,
+      selectionIsDone: false,
+      positions: []
     });
   }
 
   // Polygon ends with a double-left click, so always return false when testing
-  // "polygon end" from a single left click.
-  polygonEndTest() {
+  // "polygon end" from any other action.
+  // TODO Still need to remove extra entry (due to double click) from positions array
+  polygonEndTest(action: string) {
     console.log("test for polygon end");
-    return false;
+    if ((action === "leftDoubleClick") && this.state.positions && (this.state.positions.length >= 4)) {
+      console.log("state: " + this.state);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // temporary use of 3 or more points until extent drawing is in place
-  extentEndTest() {
-    if (this.state.positions.length > 2) {
+  extentEndTest(action: string) {
+    if (this.state && this.state.positions && (this.state.positions.length > 2)) {
       console.log("extent end is true");
       return true;
     } else {
@@ -107,44 +121,36 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
   }
 
   handlePolygonEnd(name: string, position: any) {
-    console.log("finish event on globe: " + name + " position: " + position);
     if (this.selectionOff()) {
       return;
     }
-    this.showSpatialSelection();
+    console.log("finish event on globe: " + name + " position: " + position);
+    if (this.state.selectionEndTest(name) === true) {
+      this.setState({
+        selectionIsDone: true
+      });
+    } else {
+      this.savePosition(position);
+    }
   }
 
   showSpatialSelection() {
-    let scene = this.state.scene;
-    let primitive = this.state.primitiveBuilder();
+      if (this.state.positions.length > 0 &&
+      this.state.scene &&
+      this.state.primitiveBuilder) {
+        console.log("adding primitive");
 
-    // Is this technically changing the state?
-    scene.primitives.add(primitive);
-
-    this.props.onSpatialSelectionChange(this.state.positions);
-    this.setState({
-      primitiveBuilder: null,
-      positions: []
-    });
+        // Is this technically changing the state?
+        this.state.scene.primitives.add(this.state.primitiveBuilder());
+      }
   }
 
   polygonPrimitiveBuilder() {
     console.log("in polygon primitive builder");
-
-    let geometry = this.polygonGeometryBuilder();
-
-    return new Cesium.GroundPrimitive({
-      geometryInstances: new Cesium.GeometryInstance({
-        geometry: geometry,
-        id: "polygon",
-        attributes: {
-          color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5)
-        }
-      }),
-    });
+    return this.genericPrimitiveBuilder("polygon");
   }
 
-  polygonGeometryBuilder() {
+  geometryBuilder() {
     // TODO: get rid of duplicate points (e.g. from double click)
     let positions = this.state.positions;
     console.log("positions: " + positions);
@@ -163,32 +169,20 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
   // Currently just builds a polygon
   extentPrimitiveBuilder() {
     console.log("in extent primitive builder");
+    return this.genericPrimitiveBuilder("square");
+  }
 
-    let geometry = this.polygonGeometryBuilder();
+  genericPrimitiveBuilder(name: any) {
+    let geometry = this.geometryBuilder();
 
     return new Cesium.GroundPrimitive({
       geometryInstances: new Cesium.GeometryInstance({
         geometry: geometry,
-        id: "square",
+        id: {name},
         attributes: {
           color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5)
         }
       }),
-    });
-  }
-
-  extentGeometryBuilder() {
-    let positions = this.state.positions;
-    console.log("positions: " + positions);
-
-    return new Cesium.PolygonGeometry.fromPositions({
-      // Close the loop to create a complete polygon
-      positions : positions.concat([this.state.positions[0]]),
-      height : this.state.defaultShapeOptions.height,
-      vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
-      stRotation : this.state.defaultShapeOptions.textureRotationAngle,
-      ellipsoid : this.state.defaultShapeOptions.ellipsoid,
-      granularity : this.state.defaultShapeOptions.granularity
     });
   }
 
@@ -199,8 +193,8 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
       return;
     }
     this.savePosition(position);
-    if (this.state.selectionEndTest() === true) {
-      this.showSpatialSelection();
+    if (this.state.selectionEndTest(name) === true) {
+      this.setState({selectionIsDone: true});
     }
   }
 
@@ -216,7 +210,7 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
 
   // TODO Alert user if they haven't selected a shape
   selectionOff() {
-    if (this.state.primitiveBuilder === null) {
+    if (this.state.selectionIsDone && this.state.selectionEnd) {
       console.log("Globe clicked, but no shape selected");
       return true;
     }
@@ -252,15 +246,32 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
         _self.handlePolygonEnd("leftDoubleClick", movement.position);
     }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    // not sure this is the best place to update the state, since there's no
-    // need to re-render in this case. Also, should these actually be "state"?
+    let positions = this.positionsFromSpatialSelection(this.props.spatialSelection);
+    this.handleSelectionStart("square");
+
+    console.log("positions in cesium init: " + positions);
     this.setState({
       viewer: cesiumViewer,
       scene: scene,
+      positions: positions,
     });
   }
 
+  // Should this functionality be part of the spatialSelection class itself?
+  positionsFromSpatialSelection(spatialSelection: SpatialSelection) {
+    let degArray = [
+      spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
+      spatialSelection.lower_left_lon, spatialSelection.upper_right_lat, 0,
+      spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0,
+      spatialSelection.upper_right_lon, spatialSelection.lower_left_lat, 0,
+    ];
+    return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
+  }
+
   render() {
+    // Display extent on Cesium globe
+    this.showSpatialSelection();
+
     return (
       <div id="spatial-selection">
         <div id="globe"></div>

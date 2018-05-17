@@ -28,10 +28,10 @@ export class EverestUI extends React.Component<{}, EverestState> {
       this.handleGranules = this.handleGranules.bind(this);
       this.state = {
         spatialSelection: {
-            lower_left_lon: -180,
-            lower_left_lat: -90,
-            upper_right_lon: 180,
-            upper_right_lat: 90
+            lower_left_lon: -80,
+            lower_left_lat: 40,
+            upper_right_lon: 100,
+            upper_right_lat: 80
         },
         selectedCollection: "",
         temporalFilterLowerBound: moment("20100101"),
@@ -67,6 +67,7 @@ export class EverestUI extends React.Component<{}, EverestState> {
                   selectedCollection={this.state.selectedCollection}
                   onCollectionChange={this.handleCollectionChange} />
               <Globe
+                spatialSelection={this.state.spatialSelection}
                 onSpatialSelectionChange={this.handleSpatialSelectionChange} />
               <div id="temporal-filter">
                   <TemporalFilter
