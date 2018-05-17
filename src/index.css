@@ -38,18 +38,14 @@ body {
     font-size: 18px;
 }
 
-table {
+table.granuleList {
     display: block;
     border-collapse: collapse;
     table-layout: auto;
     height: 500px;
-    width: 800px;
-    overflow-y: scroll;
-}
-
-table.granuleList {
     width: 50%;
     overflow: scroll;
+    overflow-y: scroll;
 }
 
 td, th {
