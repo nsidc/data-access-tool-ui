@@ -45,10 +45,10 @@ export class EverestUI extends React.Component<{}, EverestState> {
     // take the list of boxes (e.g., ["-90 -180 90 180"]) and return a
     // SpatialSelection encompassing them all
     boxesToPoints(boxes: Array<string>) {
-      let souths: any = [];
-      let wests: any = [];
-      let norths: any = [];
-      let easts: any = [];
+      let souths: Array<number> = [];
+      let wests: Array<number> = [];
+      let norths: Array<number> = [];
+      let easts: Array<number> = [];
 
       boxes.forEach((box: string) => {
         const coords = box.split(" ");
@@ -58,10 +58,10 @@ export class EverestUI extends React.Component<{}, EverestState> {
         easts.push(parseInt(coords[3]));
       });
 
-      const finalSouth = Math.min.apply(null, souths);
-      const finalWest = Math.min.apply(null, wests);
-      const finalNorth = Math.max.apply(null, norths);
-      const finalEast = Math.max.apply(null, easts);
+      const finalSouth: number = Math.min.apply(null, souths);
+      const finalWest: number = Math.min.apply(null, wests);
+      const finalNorth: number = Math.max.apply(null, norths);
+      const finalEast: number = Math.max.apply(null, easts);
 
       return {
         lower_left_lat: finalSouth,

@@ -26,7 +26,7 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
     }
 
     handleChange(e: any) {
-      const collection = JSON.parse(e.target.value);
+      const collection: any = JSON.parse(e.target.value);
       this.props.onCollectionChange(collection);
     }
 
