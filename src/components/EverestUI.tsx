@@ -5,6 +5,7 @@ import { SpatialSelection } from "../SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
+import { InputCoords } from "./InputCoords";
 import { SubmitBtn } from "./SubmitBtn";
 import { TemporalFilter } from "./TemporalFilter";
 
@@ -115,6 +116,9 @@ export class EverestUI extends React.Component<{}, EverestState> {
                       selectedDate={this.state.temporalFilterUpperBound}
                       onDateChange={this.handleTemporalUpperChange} />
               </div>
+              <InputCoords
+                selectedCoords={this.state.spatialSelection}
+                onCoordChange={this.handleSpatialSelectionChange} />
               <SubmitBtn
                   collectionId={this.state.selectedCollectionId}
                   spatialSelection={this.state.spatialSelection}
