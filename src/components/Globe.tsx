@@ -25,8 +25,10 @@ interface IGlobeState {
 }
 
 export class Globe extends React.Component<IGlobeProps, IGlobeState> {
-  public constructor(props: any) {
+  public constructor(props: IGlobeProps) {
+
     super(props);
+
     this.handleSelectionStart = this.handleSelectionStart.bind(this);
     this.handlePolygonEnd = this.handlePolygonEnd.bind(this);
     this.handleLeftClick = this.handleLeftClick.bind(this);
