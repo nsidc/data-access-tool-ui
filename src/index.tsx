@@ -1,4 +1,3 @@
-import * as fetch from "isomorphic-fetch";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
@@ -9,7 +8,7 @@ import { EverestUI } from "./components/EverestUI";
 const renderApp = () => {
   ReactDOM.render(
       <EverestUI />,
-      document.getElementById("everest-ui")
+      document.getElementById("everest-ui"),
   );
 };
 
@@ -19,9 +18,7 @@ if (typeof(Drupal) !== "undefined") {
   // By extending Drupal.behaviors with a new behavior and callback, we can
   // ensure that the "everest-ui" element exists before we render the app.
   Drupal.behaviors.AppBehavior = {
-    attach: function(context: any, settings: any) {
-      renderApp();
-    }
+    attach: (context: any, settings: any) => renderApp(),
   };
 } else {
   renderApp();

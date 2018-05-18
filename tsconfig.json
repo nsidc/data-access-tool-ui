@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "jsx": "React",
         "lib": ["es5", "dom.iterable", "es6"],
-        "sourceMap": true,
-        "noImplicitAny": true,
         "module": "commonjs",
-        "target": "es5",
-        "jsx": "React"
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "strict": true,
+        "target": "es5"
     }
 }

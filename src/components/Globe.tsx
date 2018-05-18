@@ -1,20 +1,19 @@
 import * as React from "react";
 
-import { SpatialSelection } from "../SpatialSelection";
+import { ISpatialSelection } from "../SpatialSelection";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
-import {polyfill} from "es6-promise";
-import {Simulate} from "react-dom/test-utils";
-import select = Simulate.select;
 
-let Cesium = require("cesium/Cesium");
+/* tslint:disable:no-var-requires */
+const Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
+/* tslint:enable:no-var-requires */
 
-interface GlobeProps {
-  spatialSelection: SpatialSelection;
+interface IGlobeProps {
+  spatialSelection: ISpatialSelection;
   onSpatialSelectionChange: any;
 }
 
-interface GlobeState {
+interface IGlobeState {
   scene: any;
   viewer: any;
   positions: any;
@@ -25,8 +24,8 @@ interface GlobeState {
   primitiveBuilder: any;
 }
 
-export class Globe extends React.Component<GlobeProps, GlobeState> {
-  constructor(props: any) {
+export class Globe extends React.Component<IGlobeProps, IGlobeState> {
+  public constructor(props: any) {
     super(props);
     this.handleSelectionStart = this.handleSelectionStart.bind(this);
     this.handlePolygonEnd = this.handlePolygonEnd.bind(this);
@@ -40,41 +39,93 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     this.extentEndTest = this.extentEndTest.bind(this);
 
     this.state = {
+      defaultShapeOptions: {
+        appearance: new Cesium.EllipsoidSurfaceAppearance({
+            aboveGround : false,
+        }),
+        asynchronous: true,
+        debugShowBoundingVolume: false,
+        ellipsoid: Cesium.Ellipsoid.WGS84,
+        granularity: Math.PI / 180.0,
+        height: 0.0,
+        material: Cesium.Material.fromType(Cesium.Material.ColorType),
+        show: true,
+        textureRotationAngle: 0.0,
+      },
+      positions: [],
+      primitiveBuilder: null,
       scene: null,
-      viewer: null,
       selectionEnd: null,
       selectionEndTest: null,
       selectionIsDone: false,
-      primitiveBuilder: null,
-      positions: [],
-      defaultShapeOptions: {
-        ellipsoid: Cesium.Ellipsoid.WGS84,
-        textureRotationAngle: 0.0,
-        height: 0.0,
-        asynchronous: true,
-        show: true,
-        debugShowBoundingVolume: false,
-        appearance: new Cesium.EllipsoidSurfaceAppearance({
-            aboveGround : false
-        }),
-        material: Cesium.Material.fromType(Cesium.Material.ColorType),
-        granularity: Math.PI / 180.0
-      }
+      viewer: null,
     };
   }
 
-  handleReset() {
+  public componentDidMount() {
+    const cesiumViewer = new Cesium.Viewer("globe", {
+            animation: false,
+            baseLayerPicker: false,
+            fullscreenButton: false,
+            geocoder: false,
+            homeButton: false,
+            infoBox: false,
+            navigationHelpButton: false,
+            navigationInstructionsInitiallyVisible: false,
+            scene3DOnly: true,
+            sceneModePicker: false,
+            selectionIndicator: false,
+            timeline: false,
+    });
+
+    const scene = cesiumViewer.scene;
+    const self = this;
+
+    const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+    handler.setInputAction(
+      (movement: any) => self.handleLeftClick("leftClick", movement.position),
+      Cesium.ScreenSpaceEventType.LEFT_CLICK,
+    );
+    handler.setInputAction(
+      (movement: any) => self.handlePolygonEnd("leftDoubleClick", movement.position),
+      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
+    );
+
+    const positions = this.rectangleFromSpatialSelection(this.props.spatialSelection);
+    this.handleSelectionStart("square");
+
+    console.log("positions in cesium init: " + positions);
+    this.setState({
+      positions,
+      scene,
+      viewer: cesiumViewer,
+    });
+  }
+
+  public render() {
+    // Display extent on Cesium globe
+    this.showSpatialSelection();
+
+    return (
+      <div id="spatial-selection">
+        <div id="globe"></div>
+        <SpatialSelectionToolbar onSelectionStart={this.handleSelectionStart} onResetClick={this.handleReset} />
+      </div>
+    );
+  }
+
+  private handleReset() {
     console.log("Reset spatial selection");
 
     // Is this breaking rules about using "this.state" to set state?
     this.state.scene.primitives.removeAll();
     this.setState({
+      positions: [],
       selectionEnd: null,
-      positions: []
     });
   }
 
-  handleSelectionStart(name: string) {
+  private handleSelectionStart(name: string) {
     console.log("Start drawing " + name);
     let selectionEnd = null;
     let selectionEndTest = null;
@@ -90,18 +141,18 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
       builder = this.extentPrimitiveBuilder;
     }
     this.setState({
-      selectionEnd: selectionEnd,
-      selectionEndTest: selectionEndTest,
+      positions: [],
       primitiveBuilder: builder,
+      selectionEnd,
+      selectionEndTest,
       selectionIsDone: false,
-      positions: []
     });
   }
 
   // Polygon ends with a double-left click, so always return false when testing
   // "polygon end" from any other action.
   // TODO Still need to remove extra entry (due to double click) from positions array
-  polygonEndTest(action: string) {
+  private polygonEndTest(action: string) {
     console.log("test for polygon end");
     if ((action === "leftDoubleClick") && this.state.positions && (this.state.positions.length >= 4)) {
       console.log("state: " + this.state);
@@ -111,7 +162,7 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     }
   }
 
-  extentEndTest(action: string) {
+  private extentEndTest(action: string) {
     if (this.state && this.state.positions && (this.state.positions.length === 2 )) {
       console.log("extent end is true");
       return true;
@@ -120,21 +171,21 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     }
   }
 
-  handlePolygonEnd(name: string, position: any) {
+  private handlePolygonEnd(name: string, position: any) {
     if (this.selectionOff()) {
       return;
     }
     console.log("finish event on globe: " + name + " position: " + position);
     if (this.state.selectionEndTest(name) === true) {
       this.setState({
-        selectionIsDone: true
+        selectionIsDone: true,
       });
     } else {
       this.savePosition(position);
     }
   }
 
-  showSpatialSelection() {
+  private showSpatialSelection() {
       if (this.state.positions.length > 0 &&
       this.state.scene &&
       this.state.primitiveBuilder) {
@@ -145,62 +196,60 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
       }
   }
 
-  polygonPrimitiveBuilder() {
+  private polygonPrimitiveBuilder() {
     console.log("in polygon primitive builder");
     return this.genericPrimitiveBuilder("polygon", this.polygonGeometryBuilder);
   }
 
-  polygonGeometryBuilder() {
+  private polygonGeometryBuilder() {
     // TODO: get rid of duplicate points (e.g. from double click)
-    let positions = this.state.positions;
+    const positions = this.state.positions;
     console.log("positions: " + positions);
 
     return new Cesium.PolygonGeometry.fromPositions({
-      positions : positions,
       height : this.state.defaultShapeOptions.height,
-      vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+      positions,
       stRotation : this.state.defaultShapeOptions.textureRotationAngle,
-      ellipsoid : this.state.defaultShapeOptions.ellipsoid,
-      granularity : this.state.defaultShapeOptions.granularity
+      vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
     });
   }
 
-  extentPrimitiveBuilder() {
+  private extentPrimitiveBuilder() {
     console.log("in extent primitive builder");
     return this.genericPrimitiveBuilder("square", this.extentGeometryBuilder);
   }
 
-  extentGeometryBuilder() {
-    let positions = this.state.positions;
+  private extentGeometryBuilder() {
+    const positions = this.state.positions;
     console.log("positions in extent geometry: " + positions);
 
-    let rectangle = new Cesium.Rectangle.fromCartesianArray(positions);
+    const rectangle = new Cesium.Rectangle.fromCartesianArray(positions);
     return new Cesium.RectangleGeometry({
-      rectangle: rectangle,
       ellipsoid: this.state.defaultShapeOptions.ellipsoid,
       granularity: this.state.defaultShapeOptions.granularity,
       height: this.state.defaultShapeOptions.height,
-      vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+      rectangle,
       stRotation: this.state.defaultShapeOptions.textureRotationAngle,
+      vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
     });
   }
 
-  genericPrimitiveBuilder(name: any, geometryBuilder: any) {
-    let geometry = geometryBuilder();
+  private genericPrimitiveBuilder(name: any, geometryBuilder: any) {
+    const geometry = geometryBuilder();
 
     return new Cesium.GroundPrimitive({
       geometryInstances: new Cesium.GeometryInstance({
-        geometry: geometry,
-        id: {name},
         attributes: {
-          color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5)
-        }
+          color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5),
+        },
+        geometry,
+        id: {name},
       }),
     });
   }
 
   // Save selected point
-  handleLeftClick(name: string, position: any) {
+  private handleLeftClick(name: string, position: any) {
     console.log("event on globe: " + name + " position: " + position);
     if (this.selectionOff()) {
       return;
@@ -211,10 +260,10 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     }
   }
 
-  savePosition(position: any) {
-    let scene = this.state.scene;
-    let ellipsoid = this.state.defaultShapeOptions.ellipsoid;
-    let cartesian = scene.camera.pickEllipsoid(position, ellipsoid);
+  private savePosition(position: any) {
+    const scene = this.state.scene;
+    const ellipsoid = this.state.defaultShapeOptions.ellipsoid;
+    const cartesian = scene.camera.pickEllipsoid(position, ellipsoid);
     if (cartesian) {
       console.log("add point " + cartesian);
       this.state.positions.push(cartesian);
@@ -222,7 +271,7 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
   }
 
   // TODO Alert user if they haven't selected a shape
-  selectionOff() {
+  private selectionOff() {
     if (this.state.selectionIsDone && this.state.selectionEnd) {
       console.log("Globe clicked, but no shape selected");
       return true;
@@ -230,49 +279,10 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     return false;
   }
 
-  componentDidMount() {
-    let cesiumViewer = new Cesium.Viewer("globe", {
-            animation: false,
-            baseLayerPicker: false,
-            fullscreenButton: false,
-            geocoder: false,
-            homeButton: false,
-            infoBox: false,
-            sceneModePicker: false,
-            scene3DOnly: true,
-            selectionIndicator: false,
-            timeline: false,
-            navigationHelpButton: false,
-            navigationInstructionsInitiallyVisible: false
-    });
-
-    let scene = cesiumViewer.scene;
-    let _self = this;
-
-    let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-    handler.setInputAction(
-      function (movement: any) {
-        _self.handleLeftClick("leftClick", movement.position);
-    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    handler.setInputAction(
-      function (movement: any) {
-        _self.handlePolygonEnd("leftDoubleClick", movement.position);
-    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-    let positions = this.rectangleFromSpatialSelection(this.props.spatialSelection);
-    this.handleSelectionStart("square");
-
-    console.log("positions in cesium init: " + positions);
-    this.setState({
-      viewer: cesiumViewer,
-      scene: scene,
-      positions: positions,
-    });
-  }
-
+  // @ts-ignore: TS6133; positionsFromSpatialSelection declared and not called
   // Should this functionality be part of the spatialSelection class itself?
-  positionsFromSpatialSelection(spatialSelection: SpatialSelection) {
-    let degArray = [
+  private positionsFromSpatialSelection(spatialSelection: ISpatialSelection) {
+    const degArray = [
       spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
       spatialSelection.lower_left_lon, spatialSelection.upper_right_lat, 0,
       spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0,
@@ -282,23 +292,11 @@ export class Globe extends React.Component<GlobeProps, GlobeState> {
     return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
   }
 
-  rectangleFromSpatialSelection(spatialSelection: SpatialSelection) {
-    let degArray = [
+  private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection) {
+    const degArray = [
         spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
-        spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0
+        spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0,
     ];
     return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
-  }
-
-  render() {
-    // Display extent on Cesium globe
-    this.showSpatialSelection();
-
-    return (
-      <div id="spatial-selection">
-        <div id="globe"></div>
-        <SpatialSelectionToolbar onSelectionStart={this.handleSelectionStart} onResetClick={this.handleReset} />
-      </div>
-    );
   }
 }
