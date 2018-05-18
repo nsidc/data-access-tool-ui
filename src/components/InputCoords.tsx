@@ -1,5 +1,3 @@
-import { SpatialSelection } from "../SpatialSelection";
-
 import * as React from "react";
 
 interface InputCoordsProps {
@@ -8,20 +6,12 @@ interface InputCoordsProps {
 }
 
 export class InputCoords extends React.Component<InputCoordsProps, {}> {
-  displayName = "InputCoords";
-
-  constructor(props: any) {
+  public constructor(props: any) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e: any) {
-    let selectedCoords = this.props.selectedCoords;
-    selectedCoords[e.target.id] = e.target.value;
-    this.props.onCoordChange(selectedCoords);
-  }
-
-  render() {
+  public render() {
     return (
       <table>
         <thead>
@@ -62,5 +52,11 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
         </tbody>
       </table>
     );
+  }
+
+  private handleChange(e: any) {
+    const selectedCoords = this.props.selectedCoords;
+    selectedCoords[e.target.id] = e.target.value;
+    this.props.onCoordChange(selectedCoords);
   }
 }
