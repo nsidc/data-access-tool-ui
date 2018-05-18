@@ -1,28 +1,18 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { SpatialSelection } from "../SpatialSelection";
+import { ISpatialSelection } from "../SpatialSelection";
 
-interface GranuleListProps {
+interface IGranuleListProps {
   collectionId: string;
-  spatialSelection: SpatialSelection;
+  spatialSelection: ISpatialSelection;
   temporalFilterLowerBound: moment.Moment | null;
   temporalFilterUpperBound: moment.Moment | null;
   granules: any;
 }
 
-export class GranuleList extends React.Component<GranuleListProps, {}> {
-  displayName = "GranuleList";
-
-  dateString(date: moment.Moment | null) {
-    if (date) {
-      return date.toString();
-    } else {
-      return "Please input a date";
-    }
-  }
-
-  render() {
+export class GranuleList extends React.Component<IGranuleListProps, {}> {
+  public render() {
     const granuleList = this.props.granules.map((g: any, i: number) => (
       <tr key={i}>
         <td>{g.producer_granule_id}</td>
@@ -61,5 +51,13 @@ export class GranuleList extends React.Component<GranuleListProps, {}> {
         </table>
       </div>
     );
+  }
+
+  private dateString(date: moment.Moment | null) {
+    if (date) {
+      return date.toString();
+    } else {
+      return "Please input a date";
+    }
   }
 }
