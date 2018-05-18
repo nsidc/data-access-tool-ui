@@ -10,7 +10,7 @@ require("cesium/Widgets/widgets.css");
 
 interface IGlobeProps {
   spatialSelection: ISpatialSelection;
-  onSpatialSelectionChange: any;
+  onSpatialSelectionChange: (s: ISpatialSelection) => void;
 }
 
 interface IGlobeState {
