@@ -4,37 +4,21 @@ import "./SpatialSelection.css";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface ISpatialSelectionToolbarProps {
-    onResetClick: any;
-    onSelectionStart: any;
+    onResetClick: () => void;
+    onSelectionStart: () => void;
 }
 
 export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionToolbarProps, {}> {
-    public constructor(props: any) {
+    public constructor(props: ISpatialSelectionToolbarProps) {
       super(props);
-      this.handlePolygonChange = this.handlePolygonChange.bind(this);
-      this.handleSquareChange = this.handleSquareChange.bind(this);
-      this.handleResetChange = this.handleResetChange.bind(this);
     }
 
     public render() {
       return (
         <div id="toolbar">
-          <SpatialSelectionType name="polygon" onClick={this.handlePolygonChange} />
-          <SpatialSelectionType name="square" onClick={this.handleSquareChange} />
-          <SpatialSelectionType name="reset" onClick={this.handleResetChange} />
+          <SpatialSelectionType name="extent" onClick={() => this.props.onSelectionStart()} />
+          <SpatialSelectionType name="reset" onClick={() => this.props.onResetClick()} />
         </div>
       );
-    }
-
-    private handlePolygonChange() {
-      this.props.onSelectionStart("polygon");
-    }
-
-    private handleSquareChange() {
-      this.props.onSelectionStart("square");
-    }
-
-    private handleResetChange() {
-      this.props.onResetClick();
     }
 }

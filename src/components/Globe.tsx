@@ -15,12 +15,11 @@ export class Globe extends React.Component<IGlobeProps, {}> {
 
   public constructor(props: IGlobeProps) {
     super(props);
-    this.cesiumAdapter = new CesiumAdapter();
+    this.cesiumAdapter = new CesiumAdapter((s: ISpatialSelection) => this.props.onSpatialSelectionChange(s));
   }
 
   public componentDidMount() {
     this.cesiumAdapter.createViewer("globe", this.props.spatialSelection);
-    this.cesiumAdapter.showSpatialSelection();
   }
 
   public render() {
@@ -28,8 +27,8 @@ export class Globe extends React.Component<IGlobeProps, {}> {
       <div id="spatial-selection">
         <div id="globe"></div>
         <SpatialSelectionToolbar
-          onSelectionStart={(name: string) => this.cesiumAdapter.handleSelectionStart}
-          onResetClick={() => this.cesiumAdapter.handleReset} />
+          onSelectionStart={() => this.cesiumAdapter.handleSelectionStart()}
+          onResetClick={() => this.cesiumAdapter.handleReset()} />
       </div>
     );
   }

@@ -9,13 +9,11 @@ export class CesiumAdapter {
     private viewer: any;
     private positions: any;
     private defaultShapeOptions: any;
-    private selectionEnd: any;
-    private selectionEndTest: any;
     private selectionIsDone: boolean;
-    private primitiveBuilder: any;
     private spatialSelection: ISpatialSelection;
+    private handleExtentSelected: (s: ISpatialSelection) => void;
 
-    constructor() {
+    constructor(extentSelected: (s: ISpatialSelection) => void) {
         this.defaultShapeOptions = {
             appearance: new Cesium.EllipsoidSurfaceAppearance({
                 aboveGround : false,
@@ -31,6 +29,7 @@ export class CesiumAdapter {
         };
         this.positions = [],
         this.selectionIsDone = false;
+        this.handleExtentSelected = extentSelected;
     }
 
     public createViewer(elementId: string, spatialSelection: ISpatialSelection) {
@@ -54,138 +53,32 @@ export class CesiumAdapter {
             (movement: any) => this.handleLeftClick("leftClick", movement.position),
             Cesium.ScreenSpaceEventType.LEFT_CLICK,
         );
-        handler.setInputAction(
-            (movement: any) => this.handlePolygonEnd("leftDoubleClick", movement.position),
-            Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
-        );
 
         this.spatialSelection = spatialSelection;
         const positions = this.rectangleFromSpatialSelection(this.spatialSelection);
-        this.handleSelectionStart("square");
 
         console.log("positions in cesium init: " + positions);
+    }
+
+    public showSpatialSelection() {
+        if (this.positions.length > 0 && this.viewer.scene) {
+            console.log("adding primitive");
+            this.viewer.scene.primitives.add(this.extentPrimitive());
+        }
     }
 
     public handleReset() {
         console.log("Reset spatial selection");
 
-        // Is this breaking rules about using "this.state" to set state?
         this.viewer.scene.primitives.removeAll();
         this.positions = [];
-        this.selectionEnd = null;
     }
 
-    public handleSelectionStart(name: string) {
-        console.log("Start drawing " + name);
-
-        if (name === "polygon") {
-            this.selectionEnd = this.handlePolygonEnd;
-            this.selectionEndTest = this.polygonEndTest;
-            this.primitiveBuilder = this.polygonPrimitiveBuilder;
-        } else {
-            this.selectionEnd = this.handleLeftClick;
-            this.selectionEndTest = this.extentEndTest;
-            this.primitiveBuilder = this.extentPrimitiveBuilder;
-        }
+    public handleSelectionStart() {
+        console.log("Start drawing extent");
 
         this.positions = [];
         this.selectionIsDone = false;
-    }
-
-    public showSpatialSelection() {
-        if (this.positions.length > 0 &&
-            this.viewer.scene &&
-            this.primitiveBuilder) {
-            console.log("adding primitive");
-
-            // Is this technically changing the state?
-            this.viewer.scene.primitives.add(this.primitiveBuilder());
-        }
-    }
-
-    // Polygon ends with a double-left click, so always return false when testing
-    // "polygon end" from any other action.
-    // TODO Still need to remove extra entry (due to double click) from positions array
-    private polygonEndTest(action: string) {
-        console.log("test for polygon end");
-        if ((action === "leftDoubleClick") && this.positions && (this.positions.length >= 4)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private extentEndTest(action: string) {
-        if (this.positions && (this.positions.length === 2 )) {
-            console.log("extent end is true");
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private handlePolygonEnd(name: string, position: any) {
-        if (this.selectionOff()) {
-            return;
-        }
-        console.log("finish event on globe: " + name + " position: " + position);
-        if (this.selectionEndTest(name) === true) {
-            this.selectionIsDone = true;
-        } else {
-            this.savePosition(position);
-        }
-    }
-
-    private polygonPrimitiveBuilder() {
-        console.log("in polygon primitive builder");
-        return this.genericPrimitiveBuilder("polygon", this.polygonGeometryBuilder);
-    }
-
-    private polygonGeometryBuilder() {
-        // TODO: get rid of duplicate points (e.g. from double click)
-        const positions = this.positions;
-        console.log("positions: " + positions);
-
-        return new Cesium.PolygonGeometry.fromPositions({
-            height : this.defaultShapeOptions.height,
-            positions,
-            stRotation : this.defaultShapeOptions.textureRotationAngle,
-            vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
-        });
-    }
-
-    private extentPrimitiveBuilder() {
-        console.log("in extent primitive builder");
-        return this.genericPrimitiveBuilder("square", this.extentGeometryBuilder);
-    }
-
-    private extentGeometryBuilder() {
-        const positions = this.positions;
-        console.log("positions in extent geometry: " + positions);
-
-        const rectangle = new Cesium.Rectangle.fromCartesianArray(positions);
-        return new Cesium.RectangleGeometry({
-            ellipsoid: this.defaultShapeOptions.ellipsoid,
-            granularity: this.defaultShapeOptions.granularity,
-            height: this.defaultShapeOptions.height,
-            rectangle,
-            stRotation: this.defaultShapeOptions.textureRotationAngle,
-            vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
-        });
-    }
-
-    private genericPrimitiveBuilder(name: any, geometryBuilder: any) {
-        const geometry = geometryBuilder();
-
-        return new Cesium.GroundPrimitive({
-            geometryInstances: new Cesium.GeometryInstance({
-                attributes: {
-                    color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5),
-                },
-                geometry,
-                id: {name},
-            }),
-        });
     }
 
     // Save selected point
@@ -195,8 +88,11 @@ export class CesiumAdapter {
             return;
         }
         this.savePosition(position);
-        if (this.selectionEndTest(name) === true) {
+        if (this.extentEndTest(name) === true) {
             this.selectionIsDone = true;
+            this.showSpatialSelection();
+            // TODO: convert our points into a spatial selection!
+            this.handleExtentSelected(this.spatialSelection);
         }
     }
 
@@ -209,34 +105,58 @@ export class CesiumAdapter {
         }
     }
 
+    private extentEndTest(action: string) {
+        if (this.positions && (this.positions.length === 2 )) {
+            console.log("extent end is true");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private extentPrimitive() {
+        console.log("in extent primitive builder");
+
+        return new Cesium.GroundPrimitive({
+            geometryInstances: new Cesium.GeometryInstance({
+                attributes: {
+                    color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5),
+                },
+                geometry: this.extentGeometry(),
+                id: {name},
+            }),
+        });
+    }
+
+    private extentGeometry() {
+        console.log("positions in extent geometry: " + this.positions);
+
+        const rectangle = new Cesium.Rectangle.fromCartesianArray(this.positions);
+        return new Cesium.RectangleGeometry({
+            ellipsoid: this.defaultShapeOptions.ellipsoid,
+            granularity: this.defaultShapeOptions.granularity,
+            height: this.defaultShapeOptions.height,
+            rectangle,
+            stRotation: this.defaultShapeOptions.textureRotationAngle,
+            vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+        });
+    }
+
     // TODO Alert user if they haven't selected a shape
     private selectionOff() {
-        if (this.selectionIsDone && this.selectionEnd) {
+        if (this.selectionIsDone) {
             console.log("Globe clicked, but no shape selected");
             return true;
         }
         return false;
     }
 
-    // @ts-ignore: TS6133; positionsFromSpatialSelection declared and not called
-    // Should this functionality be part of the spatialSelection class itself?
-    private positionsFromSpatialSelection(spatialSelection: ISpatialSelection) {
-        const degArray = [
-            spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
-            spatialSelection.lower_left_lon, spatialSelection.upper_right_lat, 0,
-            spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0,
-            spatialSelection.upper_right_lon, spatialSelection.lower_left_lat, 0,
-            spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
-        ];
-        return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
-    }
-
     private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection) {
         const degArray = [
-            spatialSelection.lower_left_lon, spatialSelection.lower_left_lat, 0,
-            spatialSelection.upper_right_lon, spatialSelection.upper_right_lat, 0,
+            spatialSelection.lower_left_lon, spatialSelection.lower_left_lat,
+            spatialSelection.upper_right_lon, spatialSelection.upper_right_lat
         ];
-        return Cesium.Cartesian3.fromDegreesArrayHeights(degArray);
+        return Cesium.Cartesian3.fromDegreesArray(degArray);
     }
 
 }

@@ -47,7 +47,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                   onCollectionChange={this.handleCollectionChange} />
               <Globe
                 spatialSelection={this.state.spatialSelection}
-                onSpatialSelectionChange={this.handleSpatialSelectionChange} />
+                onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)} />
               <div id="temporal-filter">
                   <TemporalFilter
                       selectedDate={this.state.temporalFilterLowerBound}
@@ -113,6 +113,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     }
 
     private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
+      console.log("HANDLED spatial extent bounding box thingy change!");
       this.setState({spatialSelection});
     }
 
