@@ -16,9 +16,9 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
 
   public render() {
     // This feels a bit clunky...
-    let img = reset,
-        alt = "Reset bounding box";
-    if (this.props.name == 'extent') {
+    let img = reset;
+    let alt = "Reset bounding box";
+    if (this.props.name === "extent") {
       img = square;
       alt = "Click to draw a bounding box";
     }

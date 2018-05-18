@@ -5,11 +5,16 @@ const Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
 
+interface IExtent {
+    a: any;
+    b: any;
+}
+
 export class CesiumAdapter {
     private viewer: any;
-    private positions: any;
+    private extent: IExtent;
     private defaultShapeOptions: any;
-    private selectionIsDone: boolean;
+    private extentSelectionInProgress: boolean;
     private spatialSelection: ISpatialSelection;
     private handleExtentSelected: (s: ISpatialSelection) => void;
 
@@ -27,9 +32,11 @@ export class CesiumAdapter {
             show: true,
             textureRotationAngle: 0.0,
         };
-        this.positions = [],
-        this.selectionIsDone = false;
+        this.extentSelectionInProgress = false;
         this.handleExtentSelected = extentSelected;
+
+        // TODO: Do something with this!
+        this.rectangleFromSpatialSelection(this.spatialSelection);
     }
 
     public createViewer(elementId: string, spatialSelection: ISpatialSelection) {
@@ -54,15 +61,15 @@ export class CesiumAdapter {
             Cesium.ScreenSpaceEventType.LEFT_CLICK,
         );
 
-        this.spatialSelection = spatialSelection;
-        const positions = this.rectangleFromSpatialSelection(this.spatialSelection);
+        handler.setInputAction((event: any) => this.handleMouseMove(event),
+                               Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-        console.log("positions in cesium init: " + positions);
+        this.spatialSelection = spatialSelection;
     }
 
     public showSpatialSelection() {
-        if (this.positions.length > 0 && this.viewer.scene) {
-            console.log("adding primitive");
+        if (this.extent.a && this.extent.b && this.viewer.scene) {
+            this.viewer.scene.primitives.removeAll();
             this.viewer.scene.primitives.add(this.extentPrimitive());
         }
     }
@@ -71,28 +78,36 @@ export class CesiumAdapter {
         console.log("Reset spatial selection");
 
         this.viewer.scene.primitives.removeAll();
-        this.positions = [];
+        this.extent = { a: null, b: null };
     }
 
     public handleSelectionStart() {
         console.log("Start drawing extent");
 
-        this.positions = [];
-        this.selectionIsDone = false;
+        this.extent = { a: null, b: null };
+        this.extentSelectionInProgress = true;
     }
 
     // Save selected point
     private handleLeftClick(name: string, position: any) {
-        console.log("event on globe: " + name + " position: " + position);
-        if (this.selectionOff()) {
+        if (!this.extentSelectionInProgress) {
+            console.log("Globe clicked, not currently selecting extent.");
             return;
         }
+
         this.savePosition(position);
-        if (this.extentEndTest(name) === true) {
-            this.selectionIsDone = true;
+        if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
+            this.extentSelectionInProgress = false;
             this.showSpatialSelection();
             // TODO: convert our points into a spatial selection!
             this.handleExtentSelected(this.spatialSelection);
+        }
+    }
+
+    private handleMouseMove(event: any) {
+        if (this.extentSelectionInProgress && this.extent.a) {
+            this.savePosition(event.endPosition);
+            this.showSpatialSelection();
         }
     }
 
@@ -101,22 +116,15 @@ export class CesiumAdapter {
         const cartesian = this.viewer.scene.camera.pickEllipsoid(position, ellipsoid);
         if (cartesian) {
             console.log("add point " + cartesian);
-            this.positions.push(cartesian);
-        }
-    }
-
-    private extentEndTest(action: string) {
-        if (this.positions && (this.positions.length === 2 )) {
-            console.log("extent end is true");
-            return true;
-        } else {
-            return false;
+            if (!this.extent.a) {
+                this.extent.a = cartesian;
+            } else {
+                this.extent.b = cartesian;
+            }
         }
     }
 
     private extentPrimitive() {
-        console.log("in extent primitive builder");
-
         return new Cesium.GroundPrimitive({
             geometryInstances: new Cesium.GeometryInstance({
                 attributes: {
@@ -129,9 +137,7 @@ export class CesiumAdapter {
     }
 
     private extentGeometry() {
-        console.log("positions in extent geometry: " + this.positions);
-
-        const rectangle = new Cesium.Rectangle.fromCartesianArray(this.positions);
+        const rectangle = new Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]);
         return new Cesium.RectangleGeometry({
             ellipsoid: this.defaultShapeOptions.ellipsoid,
             granularity: this.defaultShapeOptions.granularity,
@@ -142,19 +148,14 @@ export class CesiumAdapter {
         });
     }
 
-    // TODO Alert user if they haven't selected a shape
-    private selectionOff() {
-        if (this.selectionIsDone) {
-            console.log("Globe clicked, but no shape selected");
-            return true;
-        }
-        return false;
-    }
-
     private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection) {
+        if (!spatialSelection) {
+            return;
+        }
+
         const degArray = [
             spatialSelection.lower_left_lon, spatialSelection.lower_left_lat,
-            spatialSelection.upper_right_lon, spatialSelection.upper_right_lat
+            spatialSelection.upper_right_lon, spatialSelection.upper_right_lat,
         ];
         return Cesium.Cartesian3.fromDegreesArray(degArray);
     }
