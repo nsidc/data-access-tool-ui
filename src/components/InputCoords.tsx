@@ -5,6 +5,13 @@ interface InputCoordsProps {
   selectedCoords: any;
 }
 
+function spatialInputIsValid(spatialInput: any): boolean {
+  const min = Number(spatialInput.min);
+  const max = Number(spatialInput.max);
+  const spatialValue = Number(spatialInput.value);
+  return spatialValue >= min && spatialValue <= max;
+}
+
 export class InputCoords extends React.Component<InputCoordsProps, {}> {
   public constructor(props: any) {
     super(props);
@@ -23,13 +30,17 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
         <tbody>
           <tr>
             <td>Lon:
-              <input required
+              <input type="number"
+                     min={-180}
+                     max={180}
                      id="lower_left_lon"
                      value={this.props.selectedCoords.lower_left_lon}
                      onChange={this.handleChange} />
             </td>
             <td>Lon:
-              <input required
+              <input type="number"
+                     min={-180}
+                     max={180}
                      id="upper_right_lon"
                      value={this.props.selectedCoords.upper_right_lon}
                      onChange={this.handleChange} />
@@ -37,13 +48,17 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
           </tr>
           <tr>
             <td>Lat:
-              <input required
+              <input type="number"
+                     min={-90}
+                     max={90}
                      id="lower_left_lat"
                      value={this.props.selectedCoords.lower_left_lat}
                      onChange={this.handleChange} />
             </td>
             <td>Lat:
-              <input required
+              <input type="number"
+                     min={-90}
+                     max={90}
                      id="upper_right_lat"
                      value={this.props.selectedCoords.upper_right_lat}
                      onChange={this.handleChange} />
@@ -56,7 +71,9 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
 
   private handleChange(e: any) {
     const selectedCoords = this.props.selectedCoords;
-    selectedCoords[e.target.id] = e.target.value;
-    this.props.onCoordChange(selectedCoords);
+    if (spatialInputIsValid(e.target)) {
+      selectedCoords[e.target.id] = Number(e.target.value);
+      this.props.onCoordChange(selectedCoords);
+    }
   }
 }

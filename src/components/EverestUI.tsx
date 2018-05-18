@@ -24,6 +24,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleCollectionChange = this.handleCollectionChange.bind(this);
       this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
       this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
+      this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
       this.handleGranules = this.handleGranules.bind(this);
       this.state = {
         granules: [{}],
