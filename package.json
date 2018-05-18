@@ -12,7 +12,7 @@
     "deploy-drupal": "./scripts/deploy.sh",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
-    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'"
+    "lint": "scripts/lint.sh"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",

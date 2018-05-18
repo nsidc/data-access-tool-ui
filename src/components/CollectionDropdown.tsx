@@ -3,42 +3,36 @@ import * as React from "react";
 // TODO: we will want short_name and version_id
 // Weird, but true: when we make the granule query we pass short_name
 // and version, not version_id.
-const CMR_COLLECTION_URL = "https://cmr.earthdata.nasa.gov/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
+const CMR_COLLECTION_URL = "https://cmr.earthdata.nasa.gov/search/collections.json"
+                         + "?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
-interface CollectionDropdownProps {
+interface ICollectionDropdownProps {
     selectedCollection: any;
     onCollectionChange: any;
 }
 
-interface CollectionDropdownState {
+interface ICollectionDropdownState {
     collections: any;
 }
 
-export class CollectionDropdown extends React.Component<CollectionDropdownProps, CollectionDropdownState> {
-    static displayName = "CollectionDropdown";
-
-    constructor(props: any) {
+export class CollectionDropdown extends React.Component<ICollectionDropdownProps, ICollectionDropdownState> {
+    public constructor(props: any) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            collections: [{}]
+            collections: [{}],
         };
     }
 
-    handleChange(e: any) {
-      const collection: any = JSON.parse(e.target.value);
-      this.props.onCollectionChange(collection);
-    }
-
-    componentDidMount() {
+    public componentDidMount() {
         fetch(CMR_COLLECTION_URL)
-            .then(response => response.json())
-            .then(response => this.setState({
-                collections: response.feed.entry
+            .then((response) => response.json())
+            .then((response) => this.setState({
+                collections: response.feed.entry,
             }));
     }
 
-    render() {
+    public render() {
         let collectionOptions = null;
 
         if (this.state.collections) {
@@ -53,5 +47,10 @@ export class CollectionDropdown extends React.Component<CollectionDropdownProps,
               {collectionOptions}
             </select>
         );
+    }
+
+    private handleChange(e: any) {
+      const collection: any = JSON.parse(e.target.value);
+      this.props.onCollectionChange(collection);
     }
 }
