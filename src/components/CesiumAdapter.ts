@@ -147,8 +147,8 @@ export class CesiumAdapter {
   }
 
   private spatialSelectionToDegrees() {
-    let a = this.cartesianToDegrees(this.extent.a);
-    let b = this.cartesianToDegrees(this.extent.b);
+    const a = this.cartesianToDegrees(this.extent.a);
+    const b = this.cartesianToDegrees(this.extent.b);
     return {
       lower_left_lat: a.lat,
       lower_left_lon: a.lon,
@@ -158,10 +158,10 @@ export class CesiumAdapter {
   }
 
   private cartesianToDegrees(position: any) {
-    let carto  = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
+    const carto  = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
     return {
-      lon: Cesium.Math.toDegrees(carto.longitude),
       lat: Cesium.Math.toDegrees(carto.latitude),
+      lon: Cesium.Math.toDegrees(carto.longitude),
     };
   }
 }
