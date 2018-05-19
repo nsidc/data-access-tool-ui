@@ -89,15 +89,11 @@ export class CesiumAdapter {
   }
 
   public handleReset() {
-    console.log("Reset spatial selection");
-
-    this.viewer.scene.primitives.removeAll();
+    this.viewer.entities.removeAll();
     this.extent = { a: null, b: null };
   }
 
   public handleSelectionStart() {
-    console.log("Start drawing extent");
-
     this.extent = { a: null, b: null };
     this.extentSelectionInProgress = true;
   }
@@ -132,10 +128,8 @@ export class CesiumAdapter {
 
     if (cartesian) {
       if (!this.extent.a) {
-        console.log("add point a: " + cartesian);
         this.extent.a = cartesian;
       } else {
-        console.log("add point b: " + cartesian);
         this.extent.b = cartesian;
       }
     }
