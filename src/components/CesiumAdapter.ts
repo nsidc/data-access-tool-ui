@@ -21,7 +21,7 @@ export class CesiumAdapter {
     constructor(extentSelected: (s: ISpatialSelection) => void) {
         this.defaultShapeOptions = {
             appearance: new Cesium.EllipsoidSurfaceAppearance({
-                aboveGround : false,
+                aboveGround: false,
             }),
             asynchronous: true,
             debugShowBoundingVolume: false,
@@ -62,15 +62,29 @@ export class CesiumAdapter {
         );
 
         handler.setInputAction((event: any) => this.handleMouseMove(event),
-                               Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+            Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
         this.spatialSelection = spatialSelection;
     }
 
     public showSpatialSelection() {
         if (this.extent.a && this.extent.b && this.viewer.scene) {
-            this.viewer.scene.primitives.removeAll();
-            this.viewer.scene.primitives.add(this.extentPrimitive());
+            let entity = this.viewer.entities.getById('extent');
+            if (!entity) {
+                this.viewer.entities.add({
+                    id: 'extent',
+                    name: 'extent',
+                    rectangle: {
+                        coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+                        material: new Cesium.Color(0.0, 1.0, 1.0, 0.5),
+                    }
+                });
+            } else {
+                entity.rectangle = {
+                    coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+                    material: new Cesium.Color(0.0, 1.0, 1.0, 0.5),
+                };
+            }
         }
     }
 
@@ -96,9 +110,10 @@ export class CesiumAdapter {
         }
 
         this.savePosition(position);
+        this.showSpatialSelection();
+
         if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
             this.extentSelectionInProgress = false;
-            this.showSpatialSelection();
             // TODO: convert our points into a spatial selection!
             this.handleExtentSelected(this.spatialSelection);
         }
@@ -114,38 +129,16 @@ export class CesiumAdapter {
     private savePosition(position: any) {
         const ellipsoid = this.defaultShapeOptions.ellipsoid;
         const cartesian = this.viewer.scene.camera.pickEllipsoid(position, ellipsoid);
+
         if (cartesian) {
-            console.log("add point " + cartesian);
             if (!this.extent.a) {
+                console.log("add point a: " + cartesian);
                 this.extent.a = cartesian;
             } else {
+                console.log("add point b: " + cartesian);
                 this.extent.b = cartesian;
             }
         }
-    }
-
-    private extentPrimitive() {
-        return new Cesium.GroundPrimitive({
-            geometryInstances: new Cesium.GeometryInstance({
-                attributes: {
-                    color : new Cesium.ColorGeometryInstanceAttribute(0.0, 1.0, 1.0, 0.5),
-                },
-                geometry: this.extentGeometry(),
-                id: {name},
-            }),
-        });
-    }
-
-    private extentGeometry() {
-        const rectangle = new Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]);
-        return new Cesium.RectangleGeometry({
-            ellipsoid: this.defaultShapeOptions.ellipsoid,
-            granularity: this.defaultShapeOptions.granularity,
-            height: this.defaultShapeOptions.height,
-            rectangle,
-            stRotation: this.defaultShapeOptions.textureRotationAngle,
-            vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
-        });
     }
 
     private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection) {
