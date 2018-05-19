@@ -110,8 +110,7 @@ export class CesiumAdapter {
 
     if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
       this.extentSelectionInProgress = false;
-      // TODO: convert our points into a spatial selection!
-      this.handleExtentSelected(this.spatialSelection);
+      this.handleExtentSelected(this.spatialSelectionToDegrees());
     }
   }
 
@@ -147,4 +146,22 @@ export class CesiumAdapter {
     return Cesium.Cartesian3.fromDegreesArray(degArray);
   }
 
+  private spatialSelectionToDegrees() {
+    let a = this.cartesianToDegrees(this.extent.a);
+    let b = this.cartesianToDegrees(this.extent.b);
+    return {
+      lower_left_lat: a.lat,
+      lower_left_lon: a.lon,
+      upper_right_lat: b.lat,
+      upper_right_lon: b.lon,
+    };
+  }
+
+  private cartesianToDegrees(position: any) {
+    let carto  = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
+    return {
+      lon: Cesium.Math.toDegrees(carto.longitude),
+      lat: Cesium.Math.toDegrees(carto.latitude),
+    };
+  }
 }

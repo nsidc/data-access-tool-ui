@@ -29,10 +29,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
         selectedCollection: {},
         selectedCollectionId: "",
         spatialSelection: {
-            lower_left_lat: 40,
-            lower_left_lon: -80,
-            upper_right_lat: 80,
-            upper_right_lon: 100,
+            lower_left_lat: -90,
+            lower_left_lon: -180,
+            upper_right_lat: 90,
+            upper_right_lon: 180,
         },
         temporalFilterLowerBound: moment("20100101"),
         temporalFilterUpperBound: moment(),
@@ -113,7 +113,11 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     }
 
     private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
-      console.log("HANDLED spatial extent bounding box thingy change!");
+      // TODO: Collection menu selection overrides the bounding box selection.
+      // Do we care? Shouldn't be an issue in the landing page context, since
+      // the app will initialize with the collection boundaries before the user
+      // has a chance to draw a bounding box on the globe.
+      console.log("HANDLED spatial extent bounding box (or maybe collection) thingy change!");
       this.setState({spatialSelection});
     }
 
