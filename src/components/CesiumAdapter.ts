@@ -5,9 +5,17 @@ const Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
 
-interface IExtent {
-  a: any;
-  b: any;
+class Extent {
+  public a: any;
+  public b: any;
+
+  constructor(a: any = null, b: any = null) {
+    this.a = a;
+    this.b = b;
+  }
+  public valid(): boolean {
+    return (this.a && this.b);
+  }
 }
 
 export class CesiumAdapter {
@@ -15,7 +23,7 @@ export class CesiumAdapter {
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
   private viewer: any;
-  private extent: IExtent;
+  private extent: Extent;
   private extentSelectionInProgress: boolean;
   private handleExtentSelected: (s: ISpatialSelection) => void;
 
@@ -54,22 +62,25 @@ export class CesiumAdapter {
   }
 
   public updateSpatialSelection(s: ISpatialSelection) {
+    console.log(s);
     this.extent = this.extentFromSpatialSelection(s);
+    console.log(this.extent);
     this.showSpatialSelection();
   }
 
   public handleReset() {
     this.viewer.entities.removeAll();
-    this.extent = { a: null, b: null };
+    this.extent = new Extent();
+    this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
   }
 
   public handleSelectionStart() {
-    this.extent = { a: null, b: null };
+    this.extent = new Extent();
     this.extentSelectionInProgress = true;
   }
 
   private showSpatialSelection() {
-    if (this.extent.a && this.extent.b && this.viewer.scene) {
+    if (this.extent.valid() && this.viewer.scene) {
       const entity = this.viewer.entities.getById("extent");
       if (!entity) {
         this.viewer.entities.add({
@@ -123,9 +134,9 @@ export class CesiumAdapter {
     }
   }
 
-  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): IExtent {
+  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
     if (!spatialSelection) {
-      return {a: null, b: null };
+      return new Extent();
     }
 
     const degArray = [
@@ -134,10 +145,20 @@ export class CesiumAdapter {
     ];
 
     const c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
-    return { a: c3[0], b: c3[1] };
+    return new Extent(c3[0], c3[1])
   }
 
-  private spatialSelectionFromExtent(e: IExtent): ISpatialSelection {
+  private spatialSelectionFromExtent(e: Extent): ISpatialSelection {
+    if (!e || !e.valid()) {
+      console.log("Returning default globe settings");
+      return {
+        lower_left_lat: -90,
+        lower_left_lon: -180,
+        upper_right_lat: 90,
+        upper_right_lon: 180,
+      };
+    }
+
     const rect = Cesium.Rectangle.fromCartesianArray([e.a, e.b]);
     const ne = this.cartographicToDegrees(Cesium.Rectangle.northeast(rect));
     const sw = this.cartographicToDegrees(Cesium.Rectangle.southwest(rect));
