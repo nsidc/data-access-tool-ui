@@ -49,12 +49,12 @@ export class CesiumAdapter {
     handler.setInputAction((event: any) => this.handleMouseMove(event),
       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    this.extent = this.rectangleFromSpatialSelection(spatialSelection);
+    this.extent = this.extentFromSpatialSelection(spatialSelection);
     this.showSpatialSelection();
   }
 
   public updateSpatialSelection(s: ISpatialSelection) {
-    this.extent = this.rectangleFromSpatialSelection(s);
+    this.extent = this.extentFromSpatialSelection(s);
     this.showSpatialSelection();
   }
 
@@ -123,7 +123,7 @@ export class CesiumAdapter {
     }
   }
 
-  private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection): IExtent {
+  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): IExtent {
     if (!spatialSelection) {
       return {a: null, b: null };
     }
