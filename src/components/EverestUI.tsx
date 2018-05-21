@@ -5,6 +5,7 @@ import { ISpatialSelection } from "../SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
+import { InputCoords } from "./InputCoords";
 import { SubmitBtn } from "./SubmitBtn";
 import { TemporalFilter } from "./TemporalFilter";
 
@@ -23,6 +24,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleCollectionChange = this.handleCollectionChange.bind(this);
       this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
       this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
+      this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
       this.handleGranules = this.handleGranules.bind(this);
       this.state = {
         granules: [{}],
@@ -49,13 +51,16 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                 spatialSelection={this.state.spatialSelection}
                 onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)} />
               <div id="temporal-filter">
-                  <TemporalFilter
+                  From: <TemporalFilter
                       selectedDate={this.state.temporalFilterLowerBound}
                       onDateChange={this.handleTemporalLowerChange} />
-                  <TemporalFilter
+                  To: <TemporalFilter
                       selectedDate={this.state.temporalFilterUpperBound}
                       onDateChange={this.handleTemporalUpperChange} />
               </div>
+              <InputCoords
+                selectedCoords={this.state.spatialSelection}
+                onCoordChange={this.handleSpatialSelectionChange} />
               <SubmitBtn
                   collectionId={this.state.selectedCollectionId}
                   spatialSelection={this.state.spatialSelection}
