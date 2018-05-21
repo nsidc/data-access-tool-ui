@@ -11,8 +11,8 @@ interface IExtent {
 }
 
 export class CesiumAdapter {
-  static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
-  static ellipsoid = Cesium.Ellipsoid.WGS84
+  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
+  private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
   private viewer: any;
   private extent: IExtent;
@@ -133,7 +133,7 @@ export class CesiumAdapter {
       spatialSelection.upper_right_lon, spatialSelection.upper_right_lat,
     ];
 
-    let c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
+    const c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
     return { a: c3[0], b: c3[1] };
   }
 
