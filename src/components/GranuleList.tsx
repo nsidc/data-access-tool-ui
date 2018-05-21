@@ -40,7 +40,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           <thead>
             <tr>
               <th>Granule ID</th>
-              <th>Size (Hectares)</th>
+              <th>Size (MB)</th>
               <th>Start Time</th>
               <th>End Time</th>
             </tr>
