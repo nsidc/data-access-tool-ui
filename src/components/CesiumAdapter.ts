@@ -11,35 +11,17 @@ interface IExtent {
 }
 
 export class CesiumAdapter {
+  static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
+  static ellipsoid = Cesium.Ellipsoid.WGS84
+
   private viewer: any;
   private extent: IExtent;
-  private defaultShapeOptions: any;
   private extentSelectionInProgress: boolean;
-  private spatialSelection: ISpatialSelection;
   private handleExtentSelected: (s: ISpatialSelection) => void;
 
   constructor(extentSelected: (s: ISpatialSelection) => void) {
-    this.defaultShapeOptions = {
-      appearance: new Cesium.EllipsoidSurfaceAppearance({
-        aboveGround: false,
-      }),
-      asynchronous: true,
-      debugShowBoundingVolume: false,
-      ellipsoid: Cesium.Ellipsoid.WGS84,
-      granularity: Math.PI / 180.0,
-      height: 0.0,
-      material: Cesium.Material.fromType(Cesium.Material.ColorType),
-      show: true,
-      textureRotationAngle: 0.0,
-    };
     this.extentSelectionInProgress = false;
     this.handleExtentSelected = extentSelected;
-
-    // Maybe we don't need to worry about this after all? Presumably the constructor
-    // will always be starting things off with the entire globe selected. If that
-    // presumption is wrong, then yeah, we might need to do something with this.
-    // TODO: Do something with this!
-    this.rectangleFromSpatialSelection(this.spatialSelection);
   }
 
   public createViewer(elementId: string, spatialSelection: ISpatialSelection) {
@@ -67,28 +49,13 @@ export class CesiumAdapter {
     handler.setInputAction((event: any) => this.handleMouseMove(event),
       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    this.spatialSelection = spatialSelection;
+    this.extent = this.rectangleFromSpatialSelection(spatialSelection);
+    this.showSpatialSelection();
   }
 
-  public showSpatialSelection() {
-    if (this.extent.a && this.extent.b && this.viewer.scene) {
-      const entity = this.viewer.entities.getById("extent");
-      if (!entity) {
-        this.viewer.entities.add({
-          id: "extent",
-          name: "extent",
-          rectangle: {
-            coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
-            material: new Cesium.Color(0.0, 1.0, 1.0, 0.5),
-          },
-        });
-      } else {
-        entity.rectangle = {
-          coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
-          material: new Cesium.Color(0.0, 1.0, 1.0, 0.5),
-        };
-      }
-    }
+  public updateSpatialSelection(s: ISpatialSelection) {
+    this.extent = this.rectangleFromSpatialSelection(s);
+    this.showSpatialSelection();
   }
 
   public handleReset() {
@@ -101,7 +68,27 @@ export class CesiumAdapter {
     this.extentSelectionInProgress = true;
   }
 
-  // Save selected point
+  private showSpatialSelection() {
+    if (this.extent.a && this.extent.b && this.viewer.scene) {
+      const entity = this.viewer.entities.getById("extent");
+      if (!entity) {
+        this.viewer.entities.add({
+          id: "extent",
+          name: "extent",
+          rectangle: {
+            coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+            material: CesiumAdapter.extentColor,
+          },
+        });
+      } else {
+        entity.rectangle = {
+          coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+          material: CesiumAdapter.extentColor,
+        };
+      }
+    }
+  }
+
   private handleLeftClick(name: string, position: any) {
     if (!this.extentSelectionInProgress) {
       console.log("Globe clicked, not currently selecting extent.");
@@ -125,8 +112,7 @@ export class CesiumAdapter {
   }
 
   private savePosition(position: any) {
-    const ellipsoid = this.defaultShapeOptions.ellipsoid;
-    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, ellipsoid);
+    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
 
     if (cartesian) {
       if (!this.extent.a) {
@@ -137,16 +123,18 @@ export class CesiumAdapter {
     }
   }
 
-  private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection) {
+  private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection): IExtent {
     if (!spatialSelection) {
-      return;
+      return {a: null, b: null };
     }
 
     const degArray = [
       spatialSelection.lower_left_lon, spatialSelection.lower_left_lat,
       spatialSelection.upper_right_lon, spatialSelection.upper_right_lat,
     ];
-    return Cesium.Cartesian3.fromDegreesArray(degArray);
+
+    let c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
+    return { a: c3[0], b: c3[1] };
   }
 
   private spatialSelectionToDegrees() {

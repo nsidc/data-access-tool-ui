@@ -22,6 +22,10 @@ export class Globe extends React.Component<IGlobeProps, {}> {
     this.cesiumAdapter.createViewer("globe", this.props.spatialSelection);
   }
 
+  public componentDidUpdate() {
+    this.cesiumAdapter.updateSpatialSelection(this.props.spatialSelection);
+  }
+
   public render() {
     return (
       <div id="spatial-selection">
