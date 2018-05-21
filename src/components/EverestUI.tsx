@@ -86,7 +86,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       const easts: number[] = [];
 
       boxes.forEach((box: string) => {
-        const coords: number[] = box.split(" ").map((c: string) => parseInt(c, 10));
+        const coords: number[] = box.split(" ")
+                                    .map(parseFloat)
+                                    .map((f) => f.toFixed(2))
+                                    .map(parseFloat);
         souths.push(coords[0]);
         wests.push(coords[1]);
         norths.push(coords[2]);
