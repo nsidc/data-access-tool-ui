@@ -35,6 +35,9 @@ export class CesiumAdapter {
     this.extentSelectionInProgress = false;
     this.handleExtentSelected = extentSelected;
 
+    // Maybe we don't need to worry about this after all? Presumably the constructor
+    // will always be starting things off with the entire globe selected. If that
+    // presumption is wrong, then yeah, we might need to do something with this.
     // TODO: Do something with this!
     this.rectangleFromSpatialSelection(this.spatialSelection);
   }
@@ -147,18 +150,26 @@ export class CesiumAdapter {
   }
 
   private spatialSelectionToDegrees() {
-    const a = this.cartesianToDegrees(this.extent.a);
-    const b = this.cartesianToDegrees(this.extent.b);
+    const rect = Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]);
+    const ne = this.cartographicToDegrees(Cesium.Rectangle.northeast(rect));
+    const sw = this.cartographicToDegrees(Cesium.Rectangle.southwest(rect));
+
+    // I think we need to format the spatial selection using points describing a
+    // polygon (counterclockwise direction). See Icebridge Portal handling of
+    // spatial selections. The other two points in the polygon are available
+    // from the rectangle, like so:
+    // const nw = this.cartographicToDegrees(Cesium.Rectangle.northwest(rect));
+    // const se = this.cartographicToDegrees(Cesium.Rectangle.southeast(rect));
+
     return {
-      lower_left_lat: a.lat,
-      lower_left_lon: a.lon,
-      upper_right_lat: b.lat,
-      upper_right_lon: b.lon,
+      lower_left_lat: sw.lat,
+      lower_left_lon: sw.lon,
+      upper_right_lat: ne.lat,
+      upper_right_lon: ne.lon,
     };
   }
 
-  private cartesianToDegrees(position: any) {
-    const carto  = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
+  private cartographicToDegrees(carto: any) {
     return {
       lat: Cesium.Math.toDegrees(carto.latitude),
       lon: Cesium.Math.toDegrees(carto.longitude),
