@@ -118,11 +118,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     }
 
     private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
-      // TODO: Collection menu selection overrides the bounding box selection.
-      // Do we care? Shouldn't be an issue in the landing page context, since
-      // the app will initialize with the collection boundaries before the user
-      // has a chance to draw a bounding box on the globe.
-      console.log("HANDLED spatial extent bounding box (or maybe collection) thingy change!");
       this.setState({spatialSelection});
     }
 

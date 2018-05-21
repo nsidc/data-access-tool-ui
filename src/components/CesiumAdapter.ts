@@ -1,21 +1,18 @@
 import { ISpatialSelection } from "../SpatialSelection";
 
+import { Extent } from "./Extent";
+
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
-
-interface IExtent {
-  a: any;
-  b: any;
-}
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
   private viewer: any;
-  private extent: IExtent;
+  private extent: Extent;
   private extentSelectionInProgress: boolean;
   private handleExtentSelected: (s: ISpatialSelection) => void;
 
@@ -49,27 +46,30 @@ export class CesiumAdapter {
     handler.setInputAction((event: any) => this.handleMouseMove(event),
       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    this.extent = this.rectangleFromSpatialSelection(spatialSelection);
+    this.extent = this.extentFromSpatialSelection(spatialSelection);
     this.showSpatialSelection();
   }
 
   public updateSpatialSelection(s: ISpatialSelection) {
-    this.extent = this.rectangleFromSpatialSelection(s);
+    console.log(s);
+    this.extent = this.extentFromSpatialSelection(s);
+    console.log(this.extent);
     this.showSpatialSelection();
   }
 
   public handleReset() {
     this.viewer.entities.removeAll();
-    this.extent = { a: null, b: null };
+    this.extent = new Extent();
+    this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
   }
 
   public handleSelectionStart() {
-    this.extent = { a: null, b: null };
+    this.extent = new Extent();
     this.extentSelectionInProgress = true;
   }
 
   private showSpatialSelection() {
-    if (this.extent.a && this.extent.b && this.viewer.scene) {
+    if (this.extent.valid() && this.viewer.scene) {
       const entity = this.viewer.entities.getById("extent");
       if (!entity) {
         this.viewer.entities.add({
@@ -100,7 +100,7 @@ export class CesiumAdapter {
 
     if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
       this.extentSelectionInProgress = false;
-      this.handleExtentSelected(this.spatialSelectionToDegrees());
+      this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
     }
   }
 
@@ -123,9 +123,9 @@ export class CesiumAdapter {
     }
   }
 
-  private rectangleFromSpatialSelection(spatialSelection: ISpatialSelection): IExtent {
+  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
     if (!spatialSelection) {
-      return {a: null, b: null };
+      return new Extent();
     }
 
     const degArray = [
@@ -134,11 +134,21 @@ export class CesiumAdapter {
     ];
 
     const c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
-    return { a: c3[0], b: c3[1] };
+    return new Extent(c3[0], c3[1]);
   }
 
-  private spatialSelectionToDegrees() {
-    const rect = Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]);
+  private spatialSelectionFromExtent(e: Extent): ISpatialSelection {
+    if (!e || !e.valid()) {
+      console.log("Returning default globe settings");
+      return {
+        lower_left_lat: -90,
+        lower_left_lon: -180,
+        upper_right_lat: 90,
+        upper_right_lon: 180,
+      };
+    }
+
+    const rect = Cesium.Rectangle.fromCartesianArray([e.a, e.b]);
     const ne = this.cartographicToDegrees(Cesium.Rectangle.northeast(rect));
     const sw = this.cartographicToDegrees(Cesium.Rectangle.southwest(rect));
 
@@ -159,8 +169,8 @@ export class CesiumAdapter {
 
   private cartographicToDegrees(carto: any) {
     return {
-      lat: Cesium.Math.toDegrees(carto.latitude),
-      lon: Cesium.Math.toDegrees(carto.longitude),
+      lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
+      lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
     };
   }
 }

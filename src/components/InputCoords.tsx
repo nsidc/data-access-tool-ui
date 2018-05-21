@@ -33,6 +33,7 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
               <input type="number"
                      min={-180}
                      max={180}
+                     step={0.01}
                      id="lower_left_lon"
                      value={this.props.selectedCoords.lower_left_lon}
                      onChange={this.handleChange} />
@@ -41,6 +42,7 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
               <input type="number"
                      min={-180}
                      max={180}
+                     step={0.01}
                      id="upper_right_lon"
                      value={this.props.selectedCoords.upper_right_lon}
                      onChange={this.handleChange} />
@@ -51,6 +53,7 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
               <input type="number"
                      min={-90}
                      max={90}
+                     step={0.01}
                      id="lower_left_lat"
                      value={this.props.selectedCoords.lower_left_lat}
                      onChange={this.handleChange} />
@@ -59,6 +62,7 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
               <input type="number"
                      min={-90}
                      max={90}
+                     step={0.01}
                      id="upper_right_lat"
                      value={this.props.selectedCoords.upper_right_lat}
                      onChange={this.handleChange} />
