@@ -100,7 +100,7 @@ export class CesiumAdapter {
 
     if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
       this.extentSelectionInProgress = false;
-      this.handleExtentSelected(this.spatialSelectionToDegrees());
+      this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
     }
   }
 
@@ -137,8 +137,8 @@ export class CesiumAdapter {
     return { a: c3[0], b: c3[1] };
   }
 
-  private spatialSelectionToDegrees() {
-    const rect = Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]);
+  private spatialSelectionFromExtent(e: IExtent): ISpatialSelection {
+    const rect = Cesium.Rectangle.fromCartesianArray([e.a, e.b]);
     const ne = this.cartographicToDegrees(Cesium.Rectangle.northeast(rect));
     const sw = this.cartographicToDegrees(Cesium.Rectangle.southwest(rect));
 
@@ -159,8 +159,8 @@ export class CesiumAdapter {
 
   private cartographicToDegrees(carto: any) {
     return {
-      lat: Cesium.Math.toDegrees(carto.latitude),
-      lon: Cesium.Math.toDegrees(carto.longitude),
+      lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
+      lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
     };
   }
 }
