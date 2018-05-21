@@ -23,19 +23,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     ));
     return (
       <div>
-        <h3>{"Selected collection: " + this.props.collectionId}</h3>
-        <div>
-          {"Temporal bounds: "
-          + this.dateString(this.props.temporalFilterLowerBound) + ", "
-          + this.dateString(this.props.temporalFilterUpperBound)}
-        </div>
-        <div>
-          {"Spatial bounds: ["
-          + this.props.spatialSelection.lower_left_lat + ", "
-          + this.props.spatialSelection.lower_left_lon + "], ["
-          + this.props.spatialSelection.upper_right_lat + ", "
-          + this.props.spatialSelection.upper_right_lon + "]"}
-        </div>
         <table className="granuleList">
           <thead>
             <tr>
@@ -51,13 +38,5 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </table>
       </div>
     );
-  }
-
-  private dateString(date: moment.Moment | null) {
-    if (date) {
-      return date.toString();
-    } else {
-      return "Please input a date";
-    }
   }
 }
