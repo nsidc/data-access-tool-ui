@@ -1,22 +1,11 @@
 import { ISpatialSelection } from "../SpatialSelection";
 
+import { Extent } from "./Extent";
+
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
 require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
-
-class Extent {
-  public a: any;
-  public b: any;
-
-  constructor(a: any = null, b: any = null) {
-    this.a = a;
-    this.b = b;
-  }
-  public valid(): boolean {
-    return (this.a && this.b);
-  }
-}
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
@@ -145,7 +134,7 @@ export class CesiumAdapter {
     ];
 
     const c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
-    return new Extent(c3[0], c3[1])
+    return new Extent(c3[0], c3[1]);
   }
 
   private spatialSelectionFromExtent(e: Extent): ISpatialSelection {
