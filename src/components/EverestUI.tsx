@@ -27,7 +27,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
       this.handleGranules = this.handleGranules.bind(this);
       this.state = {
-        granules: [{}],
+        granules: [],
         selectedCollection: {},
         selectedCollectionId: "",
         spatialSelection: {
@@ -42,39 +42,37 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     }
 
     public render() {
-        return (
-            <div className="everest-stuff">
-              <CollectionDropdown
-                  selectedCollection={this.state.selectedCollection}
-                  onCollectionChange={this.handleCollectionChange} />
-              <Globe
-                spatialSelection={this.state.spatialSelection}
-                onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)} />
-              <div id="temporal-filter">
-                  From: <TemporalFilter
-                      selectedDate={this.state.temporalFilterLowerBound}
-                      onDateChange={this.handleTemporalLowerChange} />
-                  To: <TemporalFilter
-                      selectedDate={this.state.temporalFilterUpperBound}
-                      onDateChange={this.handleTemporalUpperChange} />
-              </div>
+      return (
+        <div>
+          <div id="everest-container">
+            <CollectionDropdown
+              selectedCollection={this.state.selectedCollection}
+              onCollectionChange={this.handleCollectionChange} />
+            <div id="selectors">
+              <TemporalFilter
+                  fromDate={this.state.temporalFilterLowerBound}
+                  onFromDateChange={this.handleTemporalLowerChange}
+                  toDate={this.state.temporalFilterUpperBound}
+                  onToDateChange={this.handleTemporalUpperChange} />
               <InputCoords
                 selectedCoords={this.state.spatialSelection}
                 onCoordChange={this.handleSpatialSelectionChange} />
-              <SubmitBtn
-                  collectionId={this.state.selectedCollectionId}
-                  spatialSelection={this.state.spatialSelection}
-                  temporalLowerBound={this.state.temporalFilterLowerBound}
-                  temporalUpperBound={this.state.temporalFilterUpperBound}
-                  onGranuleResponse={this.handleGranules} />
-              <GranuleList
-                  collectionId={this.state.selectedCollectionId}
-                  spatialSelection={this.state.spatialSelection}
-                  temporalFilterLowerBound={this.state.temporalFilterLowerBound}
-                  temporalFilterUpperBound={this.state.temporalFilterUpperBound}
-                  granules={this.state.granules} />
             </div>
-        );
+            <Globe
+              spatialSelection={this.state.spatialSelection}
+              onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)} />
+            <SubmitBtn
+              collectionId={this.state.selectedCollectionId}
+              spatialSelection={this.state.spatialSelection}
+              temporalLowerBound={this.state.temporalFilterLowerBound}
+              temporalUpperBound={this.state.temporalFilterUpperBound}
+              onGranuleResponse={this.handleGranules} />
+            <GranuleList
+              collectionId={this.state.selectedCollectionId}
+              granules={this.state.granules} />
+          </div>
+        </div>
+      );
     }
 
     // take the list of boxes (e.g., ["-90 -180 90 180"]) and return a

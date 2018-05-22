@@ -29,10 +29,11 @@ export class Globe extends React.Component<IGlobeProps, {}> {
   public render() {
     return (
       <div id="spatial-selection">
-        <div id="globe"></div>
-        <SpatialSelectionToolbar
-          onSelectionStart={() => this.cesiumAdapter.handleSelectionStart()}
-          onResetClick={() => this.cesiumAdapter.handleReset()} />
+        <div id="globe">
+          <SpatialSelectionToolbar
+            onSelectionStart={() => this.cesiumAdapter.handleSelectionStart()}
+            onResetClick={() => this.cesiumAdapter.handleReset()} />
+        </div>
       </div>
     );
   }
