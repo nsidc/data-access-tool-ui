@@ -52,9 +52,7 @@ export class CesiumAdapter {
   }
 
   public updateSpatialSelection(s: ISpatialSelection) {
-    console.log(s);
     this.extent = this.extentFromSpatialSelection(s);
-    console.log(this.extent);
     this.showSpatialSelection();
   }
 
@@ -114,6 +112,24 @@ export class CesiumAdapter {
 
   private savePosition(position: any) {
     const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
+
+    // TODO: What if instead of using the 3D cartesian coordinates and
+    // storing them in the extent, we instead convert to latitude and
+    // longitude (below) and always worked in lat/lon? It seems that
+    // drawing a rectangle with Cesium.Rectangle.fromDegrees() "works"
+    // in the sense that the resulting rectangle does not take the
+    // short route. See:
+    // https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Rectangle.html&label=Geometries
+    // This would also have the benefit of not having to do the
+    // conversions to/from the ISpatialselection that gets passed it
+    // -- we could just always work with the ISpatialSelection
+    // directly. So if it works and it's simpler, sounds like a good
+    // idea! I hope it works.
+    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+    console.log("Cartographic coordinates: "
+                + Cesium.Math.toDegrees(cartographic.longitude)
+                + ", "
+                + Cesium.Math.toDegrees(cartographic.latitude));
 
     if (cartesian) {
       if (!this.extent.a) {
