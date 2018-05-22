@@ -70,6 +70,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
             <GranuleList
               collectionId={this.state.selectedCollectionId}
               granules={this.state.granules} />
+            <div id="credit"/>
           </div>
         </div>
       );

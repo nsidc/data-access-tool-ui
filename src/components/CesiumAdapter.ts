@@ -35,6 +35,7 @@ export class CesiumAdapter {
       sceneModePicker: false,
       selectionIndicator: false,
       timeline: false,
+      creditContainer: "credit",
     });
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
