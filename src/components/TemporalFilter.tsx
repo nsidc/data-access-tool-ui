@@ -28,10 +28,16 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
         <tbody>
           <tr>
             <td>
-              <DatePicker id="from" selected={this.props.fromDate} onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
+              <DatePicker
+                id="from"
+                selected={this.props.fromDate}
+                onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
             </td>
             <td>
-              <DatePicker id="to" selected={this.props.toDate} onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
+              <DatePicker
+                id="to"
+                selected={this.props.toDate}
+                onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
             </td>
           </tr>
         </tbody>

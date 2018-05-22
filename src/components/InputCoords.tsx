@@ -20,7 +20,7 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
 
   public render() {
     return (
-      <table>
+      <table id="input-coords">
         <thead>
           <tr>
             <th colSpan={2}>Lower Left</th>

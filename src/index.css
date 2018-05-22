@@ -54,11 +54,13 @@ body {
 }
 
 #toolbar {
-  position: relative;
+  position: absolute;
+  right: 50.1%;
+  width: 36px;
   margin: 0px;
-  padding: 5px;
   background: white;
   height: auto;
+  z-index: 2;
 }
 
 #toolbar .button {
@@ -67,6 +69,7 @@ body {
 
 table.granuleList {
   display: block;
+  height: 600px;
   border-collapse: collapse;
   table-layout: fixed;
   overflow: scroll;
@@ -78,6 +81,14 @@ td, th {
   border: 1px solid #999;
   padding: 0.5rem;
   text-align: left;
+}
+
+#input-coords {
+  float: right;
+}
+
+#input-coords input {
+  width: 65px;
 }
 
 thead {
@@ -101,7 +112,7 @@ tbody tr:hover {
 
 /* Get rid of annoying white gap at bottom of canvas */
 #globe .cesium-widget {
-  height: 730px;
+  height: 600px;
 }
 
 #globe .cesium-viewer-bottom {
@@ -126,4 +137,8 @@ tbody tr:hover {
 
 .end-time-col {
   width: 25%;
+}
+
+.react-datepicker-wrapper input {
+  width: 70px;
 }
