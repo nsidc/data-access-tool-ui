@@ -15,7 +15,7 @@ interface IEverestState {
   spatialSelection: ISpatialSelection;
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
-  granules: any;
+  granules?: object[];
 }
 
 export class EverestUI extends React.Component<{}, IEverestState> {
