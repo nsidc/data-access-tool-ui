@@ -43,12 +43,11 @@ export class CesiumAdapter {
     handler.setInputAction(this.handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
     handler.setInputAction(this.handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    this.extent = this.extentFromSpatialSelection(spatialSelection);
-    this.showSpatialSelection();
+    this.updateSpatialSelection(spatialSelection);
   }
 
   public updateSpatialSelection(s: ISpatialSelection) {
-    this.extent = this.extentFromSpatialSelection(s);
+    this.extent = new Extent(s);
     this.showSpatialSelection();
   }
 
@@ -79,8 +78,9 @@ export class CesiumAdapter {
     if (!this.extent.global() && this.viewer.scene) {
       const entity = this.viewer.entities.getById("extent");
 
+      const degrees = this.extent.degreesArr();
       const rectangle = {
-        coordinates: Cesium.Rectangle.fromDegrees(...this.extent.degreesArr()),
+        coordinates: Cesium.Rectangle.fromDegrees(...degrees),
         material: CesiumAdapter.extentColor,
       };
 
@@ -107,10 +107,10 @@ export class CesiumAdapter {
     const endingExtentSelection = this.extent.startLatLon;
 
     if (startingExtentSelection) {
-      this.extent.startLatLon = latLon;
+      this.extent.startDrawing(latLon);
 
     } else if (endingExtentSelection) {
-      this.extent.endLatLon = latLon;
+      this.extent.stopDrawing(latLon);
 
       this.extentSelectionInProgress = false;
       this.handleExtentSelected(this.extent.asSpatialSelection());
@@ -124,24 +124,18 @@ export class CesiumAdapter {
     const selectionInactive = !this.extentSelectionInProgress;
     if (selectionInactive) { return; }
 
-    if (this.extent.startLatLon) {
-      this.extent.endLatLon = latLon;
-      this.showSpatialSelection();
+    const selectionStarted = !!this.extent.startLatLon;
+    if (!selectionStarted) { return; }
+
+    if (this.extent.drawDirection === null) {
+      this.extent.updateDrawDirection(latLon);
     }
+
+    this.extent.updateFromDrawing(latLon);
+    this.showSpatialSelection();
   }
 
   private latLonIsNaN(latLon: ILatLon) {
     return Number.isNaN(latLon.lat) || Number.isNaN(latLon.lon);
-  }
-
-  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
-    if (!spatialSelection) {
-      return new Extent();
-    }
-
-    return new Extent(
-      {lon: spatialSelection.lower_left_lon, lat: spatialSelection.lower_left_lat},
-      {lon: spatialSelection.upper_right_lon, lat: spatialSelection.upper_right_lat},
-    );
   }
 }

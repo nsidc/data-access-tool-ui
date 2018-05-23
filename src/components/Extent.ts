@@ -1,49 +1,110 @@
+import { ILatLon } from "../LatLon";
 import { ISpatialSelection } from "../SpatialSelection";
 
 export class Extent {
   public startLatLon: any;
   public endLatLon: any;
+  public drawDirection: any;
 
-  constructor(startLatLon: any = null, endLatLon: any = null) {
-    this.startLatLon = startLatLon;
-    this.endLatLon = endLatLon;
+  public lowerLeftLat: number;
+  public lowerLeftLon: number;
+  public upperRightLat: number;
+  public upperRightLon: number;
+
+  constructor(spatialSelection: any = null) {
+    this.startLatLon = null;
+    this.endLatLon = null;
+    this.drawDirection = null;
+
+    if (spatialSelection) {
+      this.lowerLeftLat = spatialSelection.lower_left_lat;
+      this.lowerLeftLon = spatialSelection.lower_left_lon;
+      this.upperRightLat = spatialSelection.upper_right_lat;
+      this.upperRightLon = spatialSelection.upper_right_lon;
+    }
   }
 
   public global(): boolean {
-    const deg = this.degreesArr();
-
-    return deg[0] === -180
-      && deg[1] === -90
-      && deg[2] === 180
-      && deg[3] === 90;
+    return this.lowerLeftLon === -180
+      && this.lowerLeftLat === -90
+      && this.upperRightLon === 180
+      && this.upperRightLat === 90;
   }
 
+  // [west, south, east, north]
   public degreesArr(): number[] {
-    if ((this.startLatLon === null) || (this.endLatLon === null)) {
-      return [-180, -90, 180, 90];
-    }
-
-    const leftLon = Math.min.apply(null, [this.startLatLon.lon, this.endLatLon.lon]);
-    const rightLon = Math.max.apply(null, [this.startLatLon.lon, this.endLatLon.lon]);
-    const lowerLat = Math.min.apply(null, [this.startLatLon.lat, this.endLatLon.lat]);
-    const upperLat = Math.max.apply(null, [this.startLatLon.lat, this.endLatLon.lat]);
-
     return [
-      leftLon,
-      lowerLat,
-      rightLon,
-      upperLat,
+      this.lowerLeftLon,
+      this.lowerLeftLat,
+      this.upperRightLon,
+      this.upperRightLat,
     ];
   }
 
   public asSpatialSelection(): ISpatialSelection {
-    const degrees = this.degreesArr();
-
     return {
-      lower_left_lat: degrees[1],
-      lower_left_lon: degrees[0],
-      upper_right_lat: degrees[3],
-      upper_right_lon: degrees[2],
+      lower_left_lat: this.lowerLeftLat,
+      lower_left_lon: this.lowerLeftLon,
+      upper_right_lat: this.upperRightLat,
+      upper_right_lon: this.upperRightLon,
     };
+  }
+
+  public updateDrawDirection(latLon: ILatLon) {
+    const initialLon = this.startLatLon.lon;
+    const finalLon = latLon.lon;
+
+    const deltaLon = finalLon - initialLon;
+
+    // mouse moves produce small changes; if the delta is almost 360, it's
+    // probably from moving westward past the antimeridian, from nearly -180 to
+    // nearly 180
+    if (deltaLon > 355) {
+      this.drawDirection = "west";
+    }
+
+    // if deltaLon === 0, we've only moved north/south, and can't determine an
+    // east/west direction yet
+    if (deltaLon < 0) {
+      this.drawDirection = "west";
+    } else if (deltaLon > 0) {
+      this.drawDirection = "east";
+    }
+
+    console.log("updated drawDirection to:", this.drawDirection);
+  }
+
+  public startDrawing(latLon: ILatLon) {
+    this.startLatLon = latLon;
+    this.endLatLon = null;
+    this.drawDirection = null;
+
+    this.lowerLeftLat = latLon.lat;
+    this.lowerLeftLon = latLon.lon;
+    this.upperRightLat = latLon.lat;
+    this.upperRightLon = latLon.lon;
+  }
+
+  public updateFromDrawing(latLon: ILatLon) {
+    this.endLatLon = latLon;
+
+    this.lowerLeftLat = Math.min(this.startLatLon.lat, latLon.lat);
+    this.upperRightLat = Math.max(this.startLatLon.lat, latLon.lat);
+
+    if (this.drawDirection === "west") {
+      this.upperRightLon = this.startLatLon.lon;
+      this.lowerLeftLon = this.endLatLon.lon;
+    } else if (this.drawDirection === "east") {
+      this.lowerLeftLon = this.startLatLon.lon;
+      this.upperRightLon = this.endLatLon.lon;
+    }
+  }
+
+  public stopDrawing(latLon: ILatLon) {
+    this.updateFromDrawing(latLon);
+
+    this.startLatLon = null;
+    this.endLatLon = null;
+    this.drawDirection = null;
   }
 }
