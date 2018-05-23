@@ -1,6 +1,7 @@
-import { ISpatialSelection } from "../SpatialSelection";
-
 import { Extent } from "./Extent";
+
+import { ILatLon } from "../LatLon";
+import { ISpatialSelection } from "../SpatialSelection";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -40,12 +41,14 @@ export class CesiumAdapter {
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
     handler.setInputAction(
-      (movement: any) => this.handleLeftClick("leftClick", movement.position),
+      ({position}: any) => this.handleLeftClick(this.cesiumPositionToLatLon(position)),
       Cesium.ScreenSpaceEventType.LEFT_CLICK,
     );
 
-    handler.setInputAction((event: any) => this.handleMouseMove(event),
-      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    handler.setInputAction(
+      ({endPosition}: any) => this.handleMouseMove(this.cesiumPositionToLatLon(endPosition)),
+      Cesium.ScreenSpaceEventType.MOUSE_MOVE,
+    );
 
     this.extent = this.extentFromSpatialSelection(spatialSelection);
     this.showSpatialSelection();
@@ -62,30 +65,31 @@ export class CesiumAdapter {
   }
 
   private showSpatialSelection() {
-    if (this.extent.valid() && this.viewer.scene) {
+    if (!this.extent.global() && this.viewer.scene) {
       const entity = this.viewer.entities.getById("extent");
+      const degrees = this.extent.degreesArr();
       if (!entity) {
         this.viewer.entities.add({
           id: "extent",
           name: "extent",
           rectangle: {
-            coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+            coordinates: Cesium.Rectangle.fromDegrees(...degrees),
             material: CesiumAdapter.extentColor,
           },
         });
       } else {
         entity.rectangle = {
-          coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+          coordinates: Cesium.Rectangle.fromDegrees(...degrees),
           material: CesiumAdapter.extentColor,
         };
       }
     }
   }
 
-  private handleLeftClick(name: string, position: any) {
+  private handleLeftClick(latLon: ILatLon) {
     const notSelectingExtent = !this.extentSelectionInProgress;
-    const startingExtentSelection = this.extentSelectionInProgress && !this.extent.a;
-    const endingExtentSelection = this.extentSelectionInProgress && this.extent.a;
+    const startingExtentSelection = this.extentSelectionInProgress && !this.extent.startLatLon;
+    const endingExtentSelection = this.extentSelectionInProgress && this.extent.startLatLon;
 
     if (notSelectingExtent) {
 
@@ -93,37 +97,27 @@ export class CesiumAdapter {
 
     } else if (startingExtentSelection) {
 
-      this.saveStartPosition(position);
+      this.extent.startLatLon = latLon;
 
     } else if (endingExtentSelection) {
 
-      this.saveEndPosition(position);
+      this.extent.endLatLon = latLon;
 
       this.extentSelectionInProgress = false;
-      this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
+      this.handleExtentSelected(this.extent.asSpatialSelection());
     }
 
     this.showSpatialSelection();
   }
 
-  private handleMouseMove(event: any) {
-    if (this.extentSelectionInProgress && this.extent.a) {
-      this.saveEndPosition(event.endPosition);
+  private handleMouseMove(mouseOverLatLon: ILatLon) {
+    const validLatLon = (!Number.isNaN(mouseOverLatLon.lat))
+                        && (!Number.isNaN(mouseOverLatLon.lon));
+
+    if (this.extentSelectionInProgress && this.extent.startLatLon && validLatLon) {
+      this.extent.endLatLon = mouseOverLatLon;
       this.showSpatialSelection();
     }
-  }
-
-  private cesiumPositionToCartesian(position: any) {
-    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
-    return cartesian;
-  }
-
-  private saveStartPosition(position: any) {
-    this.extent.a = this.cesiumPositionToCartesian(position);
-  }
-
-  private saveEndPosition(position: any) {
-    this.extent.b = this.cesiumPositionToCartesian(position);
   }
 
   private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
@@ -131,49 +125,27 @@ export class CesiumAdapter {
       return new Extent();
     }
 
-    const degArray = [
-      spatialSelection.lower_left_lon, spatialSelection.lower_left_lat,
-      spatialSelection.upper_right_lon, spatialSelection.upper_right_lat,
-    ];
-
-    const c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
-    return new Extent(c3[0], c3[1]);
+    return new Extent(
+      {lon: spatialSelection.lower_left_lon, lat: spatialSelection.lower_left_lat},
+      {lon: spatialSelection.upper_right_lon, lat: spatialSelection.upper_right_lat},
+    );
   }
 
-  private spatialSelectionFromExtent(e: Extent): ISpatialSelection {
-    if (!e || !e.valid()) {
-      console.log("Returning default globe settings");
-      return {
-        lower_left_lat: -90,
-        lower_left_lon: -180,
-        upper_right_lat: 90,
-        upper_right_lon: 180,
-      };
+  private cesiumPositionToLatLon(position: any): ILatLon {
+    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
+
+    // this means the position is not on the globe
+    if (cartesian === undefined) {
+      return {lat: NaN, lon: NaN};
     }
 
-    const rect = Cesium.Rectangle.fromCartesianArray([e.a, e.b]);
-    const ne = this.cartographicToDegrees(Cesium.Rectangle.northeast(rect));
-    const sw = this.cartographicToDegrees(Cesium.Rectangle.southwest(rect));
+    const carto = Cesium.Cartographic.fromCartesian(cartesian);
 
-    // I think we need to format the spatial selection using points describing a
-    // polygon (counterclockwise direction). See Icebridge Portal handling of
-    // spatial selections. The other two points in the polygon are available
-    // from the rectangle, like so:
-    // const nw = this.cartographicToDegrees(Cesium.Rectangle.northwest(rect));
-    // const se = this.cartographicToDegrees(Cesium.Rectangle.southeast(rect));
-
-    return {
-      lower_left_lat: sw.lat,
-      lower_left_lon: sw.lon,
-      upper_right_lat: ne.lat,
-      upper_right_lon: ne.lon,
-    };
-  }
-
-  private cartographicToDegrees(carto: any) {
-    return {
+    const latlon = {
       lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
       lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
     };
+
+    return latlon;
   }
 }
