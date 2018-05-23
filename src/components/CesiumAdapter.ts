@@ -40,15 +40,8 @@ export class CesiumAdapter {
     });
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-    handler.setInputAction(
-      ({position}: any) => this.handleLeftClick(this.cesiumPositionToLatLon(position)),
-      Cesium.ScreenSpaceEventType.LEFT_CLICK,
-    );
-
-    handler.setInputAction(
-      ({endPosition}: any) => this.handleMouseMove(this.cesiumPositionToLatLon(endPosition)),
-      Cesium.ScreenSpaceEventType.MOUSE_MOVE,
-    );
+    handler.setInputAction(this.handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    handler.setInputAction(this.handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
     this.extent = this.extentFromSpatialSelection(spatialSelection);
     this.showSpatialSelection();
@@ -64,74 +57,7 @@ export class CesiumAdapter {
     this.extentSelectionInProgress = true;
   }
 
-  private showSpatialSelection() {
-    if (!this.extent.global() && this.viewer.scene) {
-      const entity = this.viewer.entities.getById("extent");
-      const degrees = this.extent.degreesArr();
-      if (!entity) {
-        this.viewer.entities.add({
-          id: "extent",
-          name: "extent",
-          rectangle: {
-            coordinates: Cesium.Rectangle.fromDegrees(...degrees),
-            material: CesiumAdapter.extentColor,
-          },
-        });
-      } else {
-        entity.rectangle = {
-          coordinates: Cesium.Rectangle.fromDegrees(...degrees),
-          material: CesiumAdapter.extentColor,
-        };
-      }
-    }
-  }
-
-  private handleLeftClick(latLon: ILatLon) {
-    const notSelectingExtent = !this.extentSelectionInProgress;
-    const startingExtentSelection = this.extentSelectionInProgress && !this.extent.startLatLon;
-    const endingExtentSelection = this.extentSelectionInProgress && this.extent.startLatLon;
-
-    if (notSelectingExtent) {
-
-      console.log("Globe clicked, not currently selecting extent.");
-
-    } else if (startingExtentSelection) {
-
-      this.extent.startLatLon = latLon;
-
-    } else if (endingExtentSelection) {
-
-      this.extent.endLatLon = latLon;
-
-      this.extentSelectionInProgress = false;
-      this.handleExtentSelected(this.extent.asSpatialSelection());
-    }
-
-    this.showSpatialSelection();
-  }
-
-  private handleMouseMove(mouseOverLatLon: ILatLon) {
-    const validLatLon = (!Number.isNaN(mouseOverLatLon.lat))
-                        && (!Number.isNaN(mouseOverLatLon.lon));
-
-    if (this.extentSelectionInProgress && this.extent.startLatLon && validLatLon) {
-      this.extent.endLatLon = mouseOverLatLon;
-      this.showSpatialSelection();
-    }
-  }
-
-  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
-    if (!spatialSelection) {
-      return new Extent();
-    }
-
-    return new Extent(
-      {lon: spatialSelection.lower_left_lon, lat: spatialSelection.lower_left_lat},
-      {lon: spatialSelection.upper_right_lon, lat: spatialSelection.upper_right_lat},
-    );
-  }
-
-  private cesiumPositionToLatLon(position: any): ILatLon {
+  public cesiumPositionToLatLon(position: any): ILatLon {
     const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
 
     // this means the position is not on the globe
@@ -147,5 +73,75 @@ export class CesiumAdapter {
     };
 
     return latlon;
+  }
+
+  private showSpatialSelection() {
+    if (!this.extent.global() && this.viewer.scene) {
+      const entity = this.viewer.entities.getById("extent");
+
+      const rectangle = {
+        coordinates: Cesium.Rectangle.fromDegrees(...this.extent.degreesArr()),
+        material: CesiumAdapter.extentColor,
+      };
+
+      if (!entity) {
+        this.viewer.entities.add({
+          id: "extent",
+          name: "extent",
+          rectangle,
+        });
+      } else {
+        entity.rectangle = rectangle;
+      }
+    }
+  }
+
+  private handleLeftClick({position}: any) {
+    const latLon = this.cesiumPositionToLatLon(position);
+    if (this.latLonIsNaN(latLon)) { return; }
+
+    const selectionInactive = !this.extentSelectionInProgress;
+    if (selectionInactive) { return; }
+
+    const startingExtentSelection = !this.extent.startLatLon;
+    const endingExtentSelection = this.extent.startLatLon;
+
+    if (startingExtentSelection) {
+      this.extent.startLatLon = latLon;
+
+    } else if (endingExtentSelection) {
+      this.extent.endLatLon = latLon;
+
+      this.extentSelectionInProgress = false;
+      this.handleExtentSelected(this.extent.asSpatialSelection());
+    }
+  }
+
+  private handleMouseMove({endPosition}: any) {
+    const latLon = this.cesiumPositionToLatLon(endPosition);
+    if (this.latLonIsNaN(latLon)) { return; }
+
+    const selectionInactive = !this.extentSelectionInProgress;
+    if (selectionInactive) { return; }
+
+    if (this.extent.startLatLon) {
+      this.extent.endLatLon = latLon;
+      this.showSpatialSelection();
+    }
+  }
+
+  private latLonIsNaN(latLon: ILatLon) {
+    return Number.isNaN(latLon.lat) || Number.isNaN(latLon.lon);
+  }
+
+  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
+    if (!spatialSelection) {
+      return new Extent();
+    }
+
+    return new Extent(
+      {lon: spatialSelection.lower_left_lon, lat: spatialSelection.lower_left_lat},
+      {lon: spatialSelection.upper_right_lon, lat: spatialSelection.upper_right_lat},
+    );
   }
 }
