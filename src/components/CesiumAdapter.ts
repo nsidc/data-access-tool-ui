@@ -83,55 +83,47 @@ export class CesiumAdapter {
   }
 
   private handleLeftClick(name: string, position: any) {
-    if (!this.extentSelectionInProgress) {
+    const notSelectingExtent = !this.extentSelectionInProgress;
+    const startingExtentSelection = this.extentSelectionInProgress && !this.extent.a;
+    const endingExtentSelection = this.extentSelectionInProgress && this.extent.a;
+
+    if (notSelectingExtent) {
+
       console.log("Globe clicked, not currently selecting extent.");
-      return;
-    }
 
-    this.savePosition(position);
-    this.showSpatialSelection();
+    } else if (startingExtentSelection) {
 
-    if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
+      this.saveStartPosition(position);
+
+    } else if (endingExtentSelection) {
+
+      this.saveEndPosition(position);
+
       this.extentSelectionInProgress = false;
       this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
     }
+
+    this.showSpatialSelection();
   }
 
   private handleMouseMove(event: any) {
     if (this.extentSelectionInProgress && this.extent.a) {
-      this.savePosition(event.endPosition);
+      this.saveEndPosition(event.endPosition);
       this.showSpatialSelection();
     }
   }
 
-  private savePosition(position: any) {
+  private cesiumPositionToCartesian(position: any) {
     const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
+    return cartesian;
+  }
 
-    // TODO: What if instead of using the 3D cartesian coordinates and
-    // storing them in the extent, we instead convert to latitude and
-    // longitude (below) and always worked in lat/lon? It seems that
-    // drawing a rectangle with Cesium.Rectangle.fromDegrees() "works"
-    // in the sense that the resulting rectangle does not take the
-    // short route. See:
-    // https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Rectangle.html&label=Geometries
-    // This would also have the benefit of not having to do the
-    // conversions to/from the ISpatialselection that gets passed it
-    // -- we could just always work with the ISpatialSelection
-    // directly. So if it works and it's simpler, sounds like a good
-    // idea! I hope it works.
-    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-    console.log("Cartographic coordinates: "
-                + Cesium.Math.toDegrees(cartographic.longitude)
-                + ", "
-                + Cesium.Math.toDegrees(cartographic.latitude));
+  private saveStartPosition(position: any) {
+    this.extent.a = this.cesiumPositionToCartesian(position);
+  }
 
-    if (cartesian) {
-      if (!this.extent.a) {
-        this.extent.a = cartesian;
-      } else {
-        this.extent.b = cartesian;
-      }
-    }
+  private saveEndPosition(position: any) {
+    this.extent.b = this.cesiumPositionToCartesian(position);
   }
 
   private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
