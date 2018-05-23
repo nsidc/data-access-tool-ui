@@ -2,8 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 import { ISpatialSelection } from "../SpatialSelection";
 
-const CMR_GRANULE_URL = "https://cmr.earthdata.nasa.gov/search/granules.json"
-                      + "?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
+import { granuleRequest } from "../CMR";
 
 interface ISubmitButtonProps {
   collectionId: string;
@@ -21,7 +20,6 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
   public constructor(props: any) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
-    this.cmrRequest = this.cmrRequest.bind(this);
     this.handleCmrResponse = this.handleCmrResponse.bind(this);
     this.state = {
       cmrResponse: null,
@@ -35,23 +33,8 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
   }
 
   private handleCmrResponse(cmrResponseJSON: any) {
-    this.setState({cmrResponse: cmrResponseJSON.feed.entry});
+    this.setState({"cmrResponse": cmrResponseJSON.feed.entry});
     this.props.onGranuleResponse(this.state.cmrResponse);
-  }
-
-  private cmrRequest(collectionId: string,
-                     spatialSelection: ISpatialSelection,
-                     temporalLowerBound: moment.Moment,
-                     temporalUpperBound: moment.Moment) {
-    const URL = CMR_GRANULE_URL
-      + `&concept_id=${this.props.collectionId}`
-      + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-      + `&bounding_box=${spatialSelection.lower_left_lon},${spatialSelection.lower_left_lat}`
-      + `,${spatialSelection.upper_right_lon},${spatialSelection.upper_right_lat}`;
-    console.log(`Request to CMR with: ${collectionId}, ${temporalLowerBound}, ${temporalUpperBound}:\n  ${URL}`);
-    fetch(URL)
-        .then((response) => response.json())
-        .then((json) => this.handleCmrResponse(json));
   }
 
   private handleClick() {
@@ -59,12 +42,12 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
         && this.props.spatialSelection
         && this.props.temporalLowerBound
         && this.props.temporalUpperBound) {
-      this.cmrRequest(
+      granuleRequest(
         this.props.collectionId,
         this.props.spatialSelection,
         this.props.temporalLowerBound,
-        this.props.temporalUpperBound,
-      );
+        this.props.temporalUpperBound
+      ).then(json => this.handleCmrResponse(json));
     } else {
       console.log("Insufficient props provided.");
     }
