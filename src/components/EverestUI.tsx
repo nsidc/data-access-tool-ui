@@ -60,7 +60,8 @@ export class EverestUI extends React.Component<{}, IEverestState> {
             </div>
             <Globe
               spatialSelection={this.state.spatialSelection}
-              onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)} />
+              onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)}
+              resetSpatialSelection={() => this.setSpatialSelectionToCollectionDefault()} />
             <SubmitBtn
               collectionId={this.state.selectedCollectionId}
               spatialSelection={this.state.spatialSelection}
@@ -109,14 +110,12 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     }
 
     private handleCollectionChange(collection: any) {
-      this.setState({selectedCollection: collection});
+      this.setState({selectedCollection: collection},
+                    this.setSpatialSelectionToCollectionDefault);
       this.setState({selectedCollectionId: collection.id});
 
       this.handleTemporalLowerChange(moment(collection.time_start));
       this.handleTemporalUpperChange(moment(collection.time_end));
-
-      const points = this.boxesToPoints(collection.boxes);
-      this.handleSpatialSelectionChange(points);
     }
 
     private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
@@ -133,5 +132,11 @@ export class EverestUI extends React.Component<{}, IEverestState> {
 
     private handleGranules(cmrResponse: any) {
       this.setState({granules: cmrResponse});
+    }
+
+    private setSpatialSelectionToCollectionDefault() {
+      const boundingBoxes = this.state.selectedCollection.boxes;
+      const spatialSelection = this.boxesToPoints(boundingBoxes);
+      this.handleSpatialSelectionChange(spatialSelection);
     }
 }

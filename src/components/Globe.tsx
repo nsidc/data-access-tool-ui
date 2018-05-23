@@ -8,6 +8,7 @@ import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 interface IGlobeProps {
   spatialSelection: ISpatialSelection;
   onSpatialSelectionChange: (s: ISpatialSelection) => void;
+  resetSpatialSelection: () => void;
 }
 
 export class Globe extends React.Component<IGlobeProps, {}> {
@@ -32,7 +33,7 @@ export class Globe extends React.Component<IGlobeProps, {}> {
         <div id="globe">
           <SpatialSelectionToolbar
             onSelectionStart={() => this.cesiumAdapter.handleSelectionStart()}
-            onResetClick={() => this.cesiumAdapter.handleReset()} />
+            onResetClick={() => this.props.resetSpatialSelection()} />
         </div>
       </div>
     );
