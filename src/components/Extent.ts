@@ -24,7 +24,7 @@ export class Extent {
     }
   }
 
-  public global(): boolean {
+  public isGlobal(): boolean {
     return this.lowerLeftLon === -180
       && this.lowerLeftLat === -90
       && this.upperRightLon === 180

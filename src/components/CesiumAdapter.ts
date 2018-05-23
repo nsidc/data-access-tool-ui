@@ -75,7 +75,7 @@ export class CesiumAdapter {
   }
 
   private showSpatialSelection() {
-    if (!this.extent.global() && this.viewer.scene) {
+    if (!this.extent.isGlobal() && this.viewer.scene) {
       const entity = this.viewer.entities.getById("extent");
 
       const degrees = this.extent.degreesArr();
