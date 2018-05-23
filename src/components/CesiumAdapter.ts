@@ -96,12 +96,18 @@ export class CesiumAdapter {
     }
   }
 
+  // the cesium left click event emits an object with {position}
   private handleLeftClick({position}: any) {
-    const latLon = this.cesiumPositionToLatLon(position);
-    if (this.latLonIsNaN(latLon)) { return; }
-
+    // would be nice to have a decorator for this, to just skip the function if
+    // the selection button hasn't been pressed and we don't need to do anything
+    // with clicks anyway (these lines are also in handleMouseMove)
     const selectionInactive = !this.extentSelectionInProgress;
     if (selectionInactive) { return; }
+
+    // would be nice to have a decorator for this, to just skip the function if
+    // the position is not on the globe (these lines are also in handleMouseMove)
+    const latLon = this.cesiumPositionToLatLon(position);
+    if (this.latLonIsNaN(latLon)) { return; }
 
     const startingExtentSelection = !this.extent.startLatLon;
     const endingExtentSelection = this.extent.startLatLon;
@@ -117,12 +123,13 @@ export class CesiumAdapter {
     }
   }
 
+  // the cesium mouse move event emits an object with {startPosition, endPosition}
   private handleMouseMove({endPosition}: any) {
-    const latLon = this.cesiumPositionToLatLon(endPosition);
-    if (this.latLonIsNaN(latLon)) { return; }
-
     const selectionInactive = !this.extentSelectionInProgress;
     if (selectionInactive) { return; }
+
+    const latLon = this.cesiumPositionToLatLon(endPosition);
+    if (this.latLonIsNaN(latLon)) { return; }
 
     const selectionStarted = !!this.extent.startLatLon;
     if (!selectionStarted) { return; }
