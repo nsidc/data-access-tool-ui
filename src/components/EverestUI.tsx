@@ -77,9 +77,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       );
     }
 
-    // take the list of boxes (e.g., ["-90 -180 90 180"]) and return a
-    // SpatialSelection encompassing them all
-    private boxesToPoints(boxes: string[]) {
+    // take the list of bounding boxes from a CMR response
+    //  (e.g., ["-90 -180 90 180"]) and return a SpatialSelection encompassing
+    // them all
+    private cmrBoxArrToSpatialSelection(boxes: string[]) {
       const souths: number[] = [];
       const wests: number[] = [];
       const norths: number[] = [];
@@ -136,7 +137,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
 
     private setSpatialSelectionToCollectionDefault() {
       const boundingBoxes = this.state.selectedCollection.boxes;
-      const spatialSelection = this.boxesToPoints(boundingBoxes);
+      const spatialSelection = this.cmrBoxArrToSpatialSelection(boundingBoxes);
       this.handleSpatialSelectionChange(spatialSelection);
     }
 }
