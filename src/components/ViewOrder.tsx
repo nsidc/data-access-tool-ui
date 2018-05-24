@@ -32,7 +32,7 @@ export class ViewOrder extends React.Component<IViewOrderProps, IViewOrderState>
     if (this.state.orderDetails) {
       orderLinks = this.state.orderDetails["links"].map(
         (link: {status: string, uri: string}, index: number) => (
-          <div><a key={index} href={link.uri}>{link.uri}</a></div>
+          <div key={index}><a href={link.uri}>{link.uri}</a></div>
         )
       );
       granuleCount = this.state.orderDetails["granule_URs"].length;

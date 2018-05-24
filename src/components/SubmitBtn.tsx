@@ -8,6 +8,8 @@ import { granuleRequest } from "../CMR";
 import { submitOrder } from "../Hermes";
 import { ViewOrder } from "./ViewOrder";
 
+ReactModal.setAppElement("#everest-ui");
+
 interface ISubmitButtonProps {
   collectionId: string;
   spatialSelection: ISpatialSelection;
