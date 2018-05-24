@@ -1,9 +1,12 @@
 import * as moment from "moment";
 import * as React from "react";
-import { ISpatialSelection } from "../SpatialSelection";
 
+import * as ReactModal from "react-modal";
+
+import { ISpatialSelection } from "../SpatialSelection";
 import { granuleRequest } from "../CMR";
 import { submitOrder } from "../Hermes";
+import { ViewOrder } from "./ViewOrder";
 
 interface ISubmitButtonProps {
   collectionId: string;
@@ -14,8 +17,10 @@ interface ISubmitButtonProps {
 }
 
 interface ISubmitButtonState {
+  orderStatus: any;
   cmrResponse?: object[];
   orderSubmissionResponse?: {[index: string]: any};
+  orderDetailsDisplayed: boolean;
 }
 
 export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
@@ -23,28 +28,44 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.handleCmrResponse = this.handleCmrResponse.bind(this);
+    this.handleOpenOrderDetailModal = this.handleOpenOrderDetailModal.bind(this);
+    this.handleCloseOrderDetailModal = this.handleCloseOrderDetailModal.bind(this);
+
     this.state = {
+      orderStatus: "Submit an order, buddy!",
       cmrResponse: undefined,
       orderSubmissionResponse: undefined,
+      orderDetailsDisplayed: false,
     };
   }
 
   public render() {
-    let submissionResponseJSX: any = (<span>{'Submit an order, buddy!'}</span>);
+    let submittedOrderDetails: any = (<span>{this.state.orderStatus}</span>);
     if (this.state.orderSubmissionResponse) {
       const orderState: any = this.state.orderSubmissionResponse["message"];
-      submissionResponseJSX = Object.keys(orderState).map(
-        (key: string, index: number) => {
-          return (
-            <span key={index}><b>{key}:</b>{orderState[key]}&nbsp;</span>
-          );
-        }
+      submittedOrderDetails = (
+        <span>
+          <button
+            className="view-order-button"
+            onClick={this.handleOpenOrderDetailModal}>
+            View Details ({orderState["order_id"]})
+          </button>
+          <ReactModal
+            isOpen={this.state.orderDetailsDisplayed}
+            onRequestClose={this.handleCloseOrderDetailModal}>
+            <button onClick={this.handleCloseOrderDetailModal}>x</button>
+            <ViewOrder
+              orderId={orderState["order_id"]}
+              destination={orderState["destination"]}
+              status={orderState["status"]} />
+          </ReactModal>
+        </span>
       );
     }
     return (
       <div>
         <button className="submit-button" onClick={this.handleClick}>Search</button>
-        {submissionResponseJSX}
+        {submittedOrderDetails}
       </div>
     );
   }
@@ -55,11 +76,13 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
       const collectionIDs: string[] = this.state.cmrResponse.map((g: any) => g["dataset_id"]);
       const collectionLinks = this.state.cmrResponse.map((g: any) => g["links"].slice(-1)[0]["href"]);
       const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
+      this.setState({"orderStatus": "Order submitted, please wait..."});
       submitOrder(
         granuleURs,
         collectionInfo,
       )
-      .then(json => this.handleHermesResponse(json));
+      .then(json => this.handleHermesResponse(json))
+      .catch(err => this.setState({"orderStatus": "Order failed: " + err}));
     }
   }
 
@@ -87,5 +110,11 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
       console.log("Insufficient props provided.");
     }
     return;
+  }
+  private handleOpenOrderDetailModal() {
+    this.setState({orderDetailsDisplayed: true});
+  }
+  private handleCloseOrderDetailModal() {
+    this.setState({orderDetailsDisplayed: false});
   }
 }

@@ -1,6 +1,6 @@
 declare var Drupal: any;
 let HERMES_ORDER_URL: string;
-let user: object;
+let user: {[index: string]: string};
 if (typeof(Drupal) !== "undefined") {
   HERMES_ORDER_URL = "/order-proxy";
 } else {
@@ -29,4 +29,11 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
     headers,
     body: JSON.stringify(body)
   }).then(response => response.json());
+}
+
+export const viewOrder = (orderId: string) => {
+  let uid: string = user["uid"];
+  return fetch(HERMES_ORDER_URL + uid)
+    .then(response => response.json())
+    .then(json => json[orderId]);
 }
