@@ -1,6 +1,5 @@
 import * as moment from "moment";
 import * as React from "react";
-
 import * as ReactModal from "react-modal";
 
 import { granuleRequest } from "../CMR";
