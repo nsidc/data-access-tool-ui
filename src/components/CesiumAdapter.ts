@@ -56,12 +56,6 @@ export class CesiumAdapter {
     this.showSpatialSelection();
   }
 
-  public handleReset() {
-    this.viewer.entities.removeAll();
-    this.extent = new Extent();
-    this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
-  }
-
   public handleSelectionStart() {
     this.extent = new Extent();
     this.extentSelectionInProgress = true;
