@@ -30,9 +30,7 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
 
   public render() {
     return (
-      <div id="submit-container">
-        <button onClick={this.handleClick}>Submit</button>
-      </div>
+      <button className="submit-button" onClick={this.handleClick}>Search</button>
     );
   }
 

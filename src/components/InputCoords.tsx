@@ -20,11 +20,11 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
 
   public render() {
     return (
-      <table>
+      <table id="input-coords">
         <thead>
           <tr>
-            <th>Lower Left</th>
-            <th>Upper Right</th>
+            <th colSpan={2}>Lower Left</th>
+            <th colSpan={2}>Upper Right</th>
           </tr>
         </thead>
         <tbody>
@@ -38,17 +38,6 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
                      value={this.props.selectedCoords.lower_left_lon}
                      onChange={this.handleChange} />
             </td>
-            <td>Lon:
-              <input type="number"
-                     min={-180}
-                     max={180}
-                     step={0.01}
-                     id="upper_right_lon"
-                     value={this.props.selectedCoords.upper_right_lon}
-                     onChange={this.handleChange} />
-            </td>
-          </tr>
-          <tr>
             <td>Lat:
               <input type="number"
                      min={-90}
@@ -56,6 +45,15 @@ export class InputCoords extends React.Component<InputCoordsProps, {}> {
                      step={0.01}
                      id="lower_left_lat"
                      value={this.props.selectedCoords.lower_left_lat}
+                     onChange={this.handleChange} />
+            </td>
+            <td>Lon:
+              <input type="number"
+                     min={-180}
+                     max={180}
+                     step={0.01}
+                     id="upper_right_lon"
+                     value={this.props.selectedCoords.upper_right_lon}
                      onChange={this.handleChange} />
             </td>
             <td>Lat:
