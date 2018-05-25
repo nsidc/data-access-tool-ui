@@ -1,6 +1,6 @@
-import { collectionsRequest } from "../CMR";
-
 import * as React from "react";
+
+import { collectionsRequest } from "../CMR";
 
 interface ICollectionDropdownProps {
     selectedCollection: any;

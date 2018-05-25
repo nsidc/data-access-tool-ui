@@ -1,6 +1,5 @@
 import * as moment from "moment";
 import * as React from "react";
-
 import * as ReactModal from "react-modal";
 
 import { granuleRequest } from "../CMR";
@@ -66,7 +65,7 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
     }
     return (
       <div>
-        <button className="submit-button" onClick={this.handleClick}>Search</button>
+        <button className="submit-button" onClick={this.handleClick}>Submit</button>
         {submittedOrderDetails}
       </div>
     );

@@ -58,6 +58,15 @@ module.exports = {
             },
             { test: /\.tsx?$/, loader: 'ts-loader' },
             {
+              test: /\.tsx?$/,
+              loader: 'tslint-loader',
+              enforce: 'pre',
+              options: {
+                configFile: 'tslint.json',
+                emitErrors: true
+              }
+            },
+            {
               test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
               loader: 'url-loader',
               options: {}
