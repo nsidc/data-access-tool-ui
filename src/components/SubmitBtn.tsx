@@ -65,7 +65,7 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
     }
     return (
       <div>
-        <button className="submit-button" onClick={this.handleClick}>Search</button>
+        <button className="submit-button" onClick={this.handleClick}>Submit</button>
         {submittedOrderDetails}
       </div>
     );
