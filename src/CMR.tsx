@@ -8,7 +8,7 @@ const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&pro
 
 export const collectionsRequest = () =>
   fetch(CMR_COLLECTION_URL)
-      .then(response => response.json());
+      .then((response) => response.json());
 
 export const granuleRequest = (collectionId: string,
                                spatialSelection: ISpatialSelection,
@@ -18,5 +18,5 @@ export const granuleRequest = (collectionId: string,
     + `&concept_id=${collectionId}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`;
   return fetch(URL)
-      .then(response => response.json());
+      .then((response) => response.json());
 };
