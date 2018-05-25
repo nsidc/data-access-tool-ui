@@ -2,7 +2,6 @@ import { collectionsRequest } from "../CMR";
 
 import * as React from "react";
 
-
 interface ICollectionDropdownProps {
     selectedCollection: any;
     onCollectionChange: any;
@@ -27,7 +26,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     }
 
     public componentDidMount() {
-      collectionsRequest().then(response => this.setState({
+      collectionsRequest().then((response) => this.setState({
         collections: response.feed.entry,
       }));
     }

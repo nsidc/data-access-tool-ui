@@ -17,11 +17,11 @@ export class ViewOrder extends React.Component<IViewOrderProps, IViewOrderState>
     super(props);
     this.state = {
       orderDetails: undefined,
-    }
+    };
   }
 
   public componentDidMount() {
-    viewOrder(this.props.orderId).then(order => this.setState({
+    viewOrder(this.props.orderId).then((order) => this.setState({
       orderDetails: order,
     }));
   }
@@ -30,12 +30,11 @@ export class ViewOrder extends React.Component<IViewOrderProps, IViewOrderState>
     let orderLinks: any = "loading...";
     let granuleCount: any = "loading...";
     if (this.state.orderDetails) {
-      orderLinks = this.state.orderDetails["links"].map(
-        (link: {status: string, uri: string}, index: number) => (
-          <div key={index}><a href={link.uri}>{link.uri}</a></div>
-        )
+      orderLinks = this.state.orderDetails.links.map(
+        (link: {status: string, uri: string}, index: number) =>
+          <div key={index}><a href={link.uri}>{link.uri}</a></div>,
       );
-      granuleCount = this.state.orderDetails["granule_URs"].length;
+      granuleCount = this.state.orderDetails.granule_URs.length;
     }
     return (
       <div>
