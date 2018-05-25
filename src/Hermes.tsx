@@ -33,5 +33,5 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
 
 export const viewOrder = (orderId: string) => {
   return fetch(HERMES_ORDER_URL + orderId)
-    .then(response => response.json())
-}
+    .then((response) => response.json());
+};
