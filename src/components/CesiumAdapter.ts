@@ -41,8 +41,8 @@ export class CesiumAdapter {
     });
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-    handler.setInputAction(this.handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    handler.setInputAction(this.handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    handler.setInputAction(this.leftClickCallback.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    handler.setInputAction(this.mouseMoveCallback.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
     this.updateSpatialSelection(spatialSelection);
   }
@@ -113,9 +113,9 @@ export class CesiumAdapter {
   }
 
   @skipIfSelectionIsNotActive
-  @cesiumPositionArgToLatLon()
+  @cesiumPositionArgToLatLon("position")
   @skipIfLatLonIsInvalid()
-  private handleLeftClick(latLon: ILatLon) {
+  private leftClickCallback(latLon: ILatLon) {
     const startingExtentSelection = !this.extent.startLatLon;
     const endingExtentSelection = this.extent.startLatLon;
 
@@ -134,7 +134,7 @@ export class CesiumAdapter {
   @skipIfSelectionIsNotStarted
   @cesiumPositionArgToLatLon("endPosition")
   @skipIfLatLonIsInvalid()
-  private handleMouseMove(latLon: ILatLon) {
+  private mouseMoveCallback(latLon: ILatLon) {
     if (this.extent.drawDirection === null) {
       this.extent.updateDrawDirection(latLon);
     }
@@ -190,7 +190,7 @@ function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any)
 // matching the ILatLon interface, then calls the decorated function with that
 // latLon instead of the cesium position
 //
-// Example:
+// Example:  TODO: change this example to a callback registered on a cesium handler
 //
 // This function definition and call for `foo`...
 //
