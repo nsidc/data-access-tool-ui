@@ -12,9 +12,10 @@ export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
+  public extentSelectionInProgress: boolean;
+
   private viewer: any;
   private extent: Extent;
-  private extentSelectionInProgress: boolean;
   private handleExtentSelected: (s: ISpatialSelection) => void;
 
   constructor(extentSelected: (s: ISpatialSelection) => void) {
@@ -74,6 +75,10 @@ export class CesiumAdapter {
     return latlon;
   }
 
+  public latLonIsNaN(latLon: ILatLon) {
+    return [latLon.lat, latLon.lon].some(Number.isNaN);
+  }
+
   private clearSpatialSelection() {
     this.viewer.entities.removeById("extent");
   }
@@ -107,19 +112,10 @@ export class CesiumAdapter {
     }
   }
 
-  // the cesium left click event emits an object with {position}
-  private handleLeftClick({position}: any) {
-    // would be nice to have a decorator for this, to just skip the function if
-    // the selection button hasn't been pressed and we don't need to do anything
-    // with clicks anyway (these lines are also in handleMouseMove)
-    const selectionInactive = !this.extentSelectionInProgress;
-    if (selectionInactive) { return; }
-
-    // would be nice to have a decorator for this, to just skip the function if
-    // the position is not on the globe (these lines are also in handleMouseMove)
-    const latLon = this.cesiumPositionToLatLon(position);
-    if (this.latLonIsNaN(latLon)) { return; }
-
+  @skipIfSelectionIsNotActive
+  @cesiumPositionArgToLatLon()
+  @skipIfLatLonIsInvalid()
+  private handleLeftClick(latLon: ILatLon) {
     const startingExtentSelection = !this.extent.startLatLon;
     const endingExtentSelection = this.extent.startLatLon;
 
@@ -134,17 +130,11 @@ export class CesiumAdapter {
     }
   }
 
-  // the cesium mouse move event emits an object with {startPosition, endPosition}
-  private handleMouseMove({endPosition}: any) {
-    const selectionInactive = !this.extentSelectionInProgress;
-    if (selectionInactive) { return; }
-
-    const latLon = this.cesiumPositionToLatLon(endPosition);
-    if (this.latLonIsNaN(latLon)) { return; }
-
-    const selectionStarted = !!this.extent.startLatLon;
-    if (!selectionStarted) { return; }
-
+  @skipIfSelectionIsNotActive
+  @skipIfSelectionIsNotStarted
+  @cesiumPositionArgToLatLon("endPosition")
+  @skipIfLatLonIsInvalid()
+  private handleMouseMove(latLon: ILatLon) {
     if (this.extent.drawDirection === null) {
       this.extent.updateDrawDirection(latLon);
     }
@@ -152,8 +142,103 @@ export class CesiumAdapter {
     this.extent.updateFromDrawing(latLon);
     this.showSpatialSelection();
   }
+}
 
-  private latLonIsNaN(latLon: ILatLon) {
-    return Number.isNaN(latLon.lat) || Number.isNaN(latLon.lon);
-  }
+// decorator
+//
+// if the selection is not active, the decorated function is not called
+function skipIfSelectionIsNotActive(target: any, name: string, descriptor: any) {
+  const original = descriptor.value;
+
+  descriptor.value = function(...args: any[]) {
+    const selectionInactive = !this.extentSelectionInProgress;
+    if (selectionInactive) { return; }
+
+    return original.apply(this, args);
+  };
+
+  return descriptor;
+}
+
+// decorator
+//
+// if the selection is active but the first click on the globe has not been
+// made, the decorated function is not called
+function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any) {
+  const original = descriptor.value;
+
+  descriptor.value = function(...args: any[]) {
+    const selectionStarted = !!this.extent.startLatLon;
+    if (!selectionStarted) { return; }
+
+    return original.apply(this, args);
+  };
+
+  return descriptor;
+}
+
+// decorator factory
+// key: string - name of the key in the cesium event object that contains the
+//     relevant position; for example, the mouse click event object contains
+//     only the key "position", while the mouse move event object has
+//     "endPosition" and "startPosition"
+// index: number - position in the args array of the cesium position object
+//
+// the first argument passed to the decorated function should be a cesium event
+// object; this decorator takes one of the properties on that object (as chosen
+// by the decorator factory argument `key`) and converts it to a latLon object,
+// matching the ILatLon interface, then calls the decorated function with that
+// latLon instead of the cesium position
+//
+// Example:
+//
+// This function definition and call for `foo`...
+//
+//     @cesiumPositionArgToLatLon("startPosition")
+//     public foo(latLon) { ... }
+//
+//     cesiumEvent = {startPosition: ... }
+//     foo(cesiumEvent)
+//
+// ...is equivalent to this definition and call:
+//
+//     public foo(latLon) { ... }
+//
+//     cesiumEvent = {startPosition: ... }
+//     foo(cesiumPositionToLatLon(cesiumEvent.startPosition))
+function cesiumPositionArgToLatLon(key: string = "position", index: number = 0) {
+  return (target: any, name: string, descriptor: any) => {
+    const original = descriptor.value;
+
+    descriptor.value = function(...args: any[]) {
+      const position = args[index][key];
+      const latLon = this.cesiumPositionToLatLon(position);
+
+      const newArgs = args.slice();
+      newArgs[index] = latLon;
+
+      return original.apply(this, newArgs);
+    };
+
+    return descriptor;
+  };
+}
+
+// decorator
+// index: number - position in the args array of the latLon object
+//
+// if the latLon argument is not valid--or if either the lat or lon is NaN,
+// meaning the point is not on the globe--the decorated function is not called
+function skipIfLatLonIsInvalid(index: number = 0) {
+  return (target: any, name: string, descriptor: any) => {
+    const original = descriptor.value;
+
+    descriptor.value = function(...args: any[]) {
+      if (this.latLonIsNaN(args[index])) { return; }
+
+      return original.apply(this, args);
+    };
+
+    return descriptor;
+  };
 }
