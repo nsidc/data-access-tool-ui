@@ -74,25 +74,36 @@ export class CesiumAdapter {
     return latlon;
   }
 
+  private clearSpatialSelection() {
+    this.viewer.entities.removeById("extent");
+  }
+
   private showSpatialSelection() {
-    if (!this.extent.isGlobal() && this.viewer.scene) {
-      const entity = this.viewer.entities.getById("extent");
+    if (!this.viewer.scene) {
+      return;
+    }
 
-      const degrees = this.extent.degreesArr();
-      const rectangle = {
-        coordinates: Cesium.Rectangle.fromDegrees(...degrees),
-        material: CesiumAdapter.extentColor,
-      };
+    this.clearSpatialSelection();
 
-      if (!entity) {
-        this.viewer.entities.add({
-          id: "extent",
-          name: "extent",
-          rectangle,
-        });
-      } else {
-        entity.rectangle = rectangle;
-      }
+    if (this.extent.isGlobal()) {
+      return;
+    }
+
+    const entity = this.viewer.entities.getById("extent");
+    const degrees = this.extent.degreesArr();
+    const rectangle = {
+      coordinates: Cesium.Rectangle.fromDegrees(...degrees),
+      material: CesiumAdapter.extentColor,
+    };
+
+    if (!entity) {
+      this.viewer.entities.add({
+        id: "extent",
+        name: "extent",
+        rectangle,
+      });
+    } else {
+      entity.rectangle = rectangle;
     }
   }
 
