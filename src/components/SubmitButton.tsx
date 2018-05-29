@@ -19,7 +19,7 @@ interface ISubmitButtonState {
   orderSubmissionResponse?: {[index: string]: any};
 }
 
-export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
+export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
   public constructor(props: any) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
