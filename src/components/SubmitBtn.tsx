@@ -34,6 +34,23 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
     );
   }
 
+  public handleClick() {
+    if (this.props.collectionId
+        && this.props.spatialSelection
+        && this.props.temporalLowerBound
+        && this.props.temporalUpperBound) {
+        this.cmrRequest(
+             this.props.collectionId,
+             this.props.spatialSelection,
+             this.props.temporalLowerBound,
+             this.props.temporalUpperBound,
+        );
+    } else {
+      console.log("Insufficient props provided.");
+    }
+    return;
+  }
+
   private handleCmrResponse(cmrResponseJSON: any) {
     this.setState({cmrResponse: cmrResponseJSON.feed.entry});
     this.props.onGranuleResponse(this.state.cmrResponse);
@@ -52,22 +69,5 @@ export class SubmitBtn extends React.Component<ISubmitButtonProps, ISubmitButton
     fetch(URL)
         .then((response) => response.json())
         .then((json) => this.handleCmrResponse(json));
-  }
-
-  private handleClick() {
-    if (this.props.collectionId
-        && this.props.spatialSelection
-        && this.props.temporalLowerBound
-        && this.props.temporalUpperBound) {
-      this.cmrRequest(
-        this.props.collectionId,
-        this.props.spatialSelection,
-        this.props.temporalLowerBound,
-        this.props.temporalUpperBound,
-      );
-    } else {
-      console.log("Insufficient props provided.");
-    }
-    return;
   }
 }

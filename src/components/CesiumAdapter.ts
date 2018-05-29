@@ -146,3 +146,5 @@ export class CesiumAdapter {
     return Number.isNaN(latLon.lat) || Number.isNaN(latLon.lon);
   }
 }
+
+export default CesiumAdapter;

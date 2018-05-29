@@ -28,6 +28,14 @@ With npm:
 
 TBD
 
+### Testing
+
+    npx jest --debug
+
+### Linting
+
+    npm run lint
+
 ## Build
 
 ### Production
