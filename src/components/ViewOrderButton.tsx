@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { viewOrder} from "../Hermes";
+import { getOrder} from "../Hermes";
 import { ViewOrder } from "./ViewOrder";
 
 interface IViewOrderButtonProps {
@@ -63,7 +63,7 @@ export class ViewOrderButton extends React.Component<IViewOrderButtonProps, IVie
 
   private requestOrder() {
     const orderId = this.props.orderSubmitResponse.message.order_id;
-    viewOrder(this.props.orderSubmitResponse.message.order_id)
+    getOrder(this.props.orderSubmitResponse.message.order_id)
       .then((orderResponse: any) => this.props.onViewOrderResponse(orderResponse))
       .then(() => { console.log("Order data received for " + orderId); });
   }
