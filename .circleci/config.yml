@@ -13,6 +13,7 @@ jobs:
           command: |
             npm install
             npm run lint
+            npx jest
 
 workflows:
   version: 2
