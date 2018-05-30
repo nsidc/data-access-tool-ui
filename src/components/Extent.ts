@@ -70,8 +70,6 @@ export class Extent {
     } else if (deltaLon > 0) {
       this.drawDirection = "east";
     }
-
-    console.log("updated drawDirection to:", this.drawDirection);
   }
 
   public startDrawing(latLon: ILatLon) {
