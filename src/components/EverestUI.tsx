@@ -79,7 +79,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                 onSubmitOrderResponse={this.handleSubmitOrderResponse} />
               <ViewOrderButton
                 onViewOrderResponse={this.handleViewOrderResponse}
-                orderDetails={this.state.orderViewResponse}
+                orderViewResponse={this.state.orderViewResponse}
                 orderSubmitResponse={this.state.orderSubmitResponse} />
             </div>
             <GranuleList

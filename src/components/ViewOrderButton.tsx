@@ -1,18 +1,16 @@
 import * as React from "react";
-import * as ReactModal from "react-modal";
 
+import { viewOrder} from "../Hermes";
 import { ViewOrder } from "./ViewOrder";
-
-ReactModal.setAppElement("#everest-ui");
 
 interface IViewOrderButtonProps {
   onViewOrderResponse: any;
-  orderDetails: any;
+  orderViewResponse?: any;
   orderSubmitResponse?: any;
 }
 
 interface IViewOrderButtonState {
-  orderDetailsDisplayed: boolean;
+  orderModalDisplayed: boolean;
 }
 
 export class ViewOrderButton extends React.Component<IViewOrderButtonProps, IViewOrderButtonState> {
@@ -20,9 +18,10 @@ export class ViewOrderButton extends React.Component<IViewOrderButtonProps, IVie
     super(props);
     this.handleOpenOrderDetailModal = this.handleOpenOrderDetailModal.bind(this);
     this.handleCloseOrderDetailModal = this.handleCloseOrderDetailModal.bind(this);
+    this.requestOrder = this.requestOrder.bind(this);
 
     this.state = {
-      orderDetailsDisplayed: false,
+      orderModalDisplayed: false,
     };
   }
 
@@ -37,16 +36,15 @@ export class ViewOrderButton extends React.Component<IViewOrderButtonProps, IVie
             onClick={this.handleOpenOrderDetailModal}>
             View Details ({orderState.order_id})
           </button>
-          <ReactModal
-            isOpen={this.state.orderDetailsDisplayed}
-            onRequestClose={this.handleCloseOrderDetailModal}>
-            <button onClick={this.handleCloseOrderDetailModal}>x</button>
-            <button>Refresh</button>
-            <ViewOrder
-              orderId={orderState.order_id}
-              destination={orderState.destination}
-              status={orderState.status} />
-          </ReactModal>
+          <ViewOrder
+            orderId={orderState.order_id}
+            destination={orderState.destination}
+            status={orderState.status}
+            orderDetails={this.props.orderViewResponse}
+            orderSubmitResponse={this.props.orderSubmitResponse}
+            onRequestOrder={this.requestOrder}
+            onCloseOrderDetailModal={this.handleCloseOrderDetailModal}
+            orderModalDisplayed={this.state.orderModalDisplayed} />
         </span>
       );
 
@@ -56,11 +54,25 @@ export class ViewOrderButton extends React.Component<IViewOrderButtonProps, IVie
     return orderViewButton;
   }
 
+  public componentDidUpdate(prevProps: IViewOrderButtonProps) {
+    if (this.props.orderSubmitResponse
+        && this.props.orderSubmitResponse !== prevProps.orderSubmitResponse) {
+      this.requestOrder();
+    }
+  }
+
+  private requestOrder() {
+    const orderId = this.props.orderSubmitResponse.message.order_id;
+    viewOrder(this.props.orderSubmitResponse.message.order_id)
+      .then((orderResponse: any) => this.props.onViewOrderResponse(orderResponse))
+      .then(() => { console.log("Order data received for " + orderId); });
+  }
+
   private handleOpenOrderDetailModal() {
-    this.setState({orderDetailsDisplayed: true});
+    this.setState({orderModalDisplayed: true});
   }
 
   private handleCloseOrderDetailModal() {
-    this.setState({orderDetailsDisplayed: false});
+    this.setState({orderModalDisplayed: false});
   }
 }
