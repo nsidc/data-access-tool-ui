@@ -21,6 +21,13 @@ interface IEverestState {
   orderViewResponse?: object;
 }
 
+const defaultSpatialSelection = {
+    lower_left_lat: -90,
+    lower_left_lon: -180,
+    upper_right_lat: 90,
+    upper_right_lon: 180,
+};
+
 export class EverestUI extends React.Component<{}, IEverestState> {
     public constructor(props: any) {
       super(props);
@@ -37,12 +44,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
         orderViewResponse: undefined,
         selectedCollection: {},
         selectedCollectionId: "",
-        spatialSelection: {
-            lower_left_lat: -90,
-            lower_left_lon: -180,
-            upper_right_lat: 90,
-            upper_right_lon: 180,
-        },
+        spatialSelection: defaultSpatialSelection,
         temporalFilterLowerBound: moment("20100101"),
         temporalFilterUpperBound: moment(),
       };
@@ -95,6 +97,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     //  (e.g., ["-90 -180 90 180"]) and return a SpatialSelection encompassing
     // them all
     private cmrBoxArrToSpatialSelection(boxes: string[]) {
+      if (!boxes) {
+        return defaultSpatialSelection;
+      }
+
       const souths: number[] = [];
       const wests: number[] = [];
       const norths: number[] = [];
