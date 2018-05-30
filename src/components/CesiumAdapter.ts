@@ -113,7 +113,7 @@ export class CesiumAdapter {
   }
 
   @skipIfSelectionIsNotActive
-  @cesiumPositionArgToLonLat("position")
+  @canvasPositionArgToLonLat("position")
   @skipIfLonLatIsInvalid()
   private leftClickCallback(lonLat: ILonLat) {
     const startingExtentSelection = !this.extent.startLonLat;
@@ -132,7 +132,7 @@ export class CesiumAdapter {
 
   @skipIfSelectionIsNotActive
   @skipIfSelectionIsNotStarted
-  @cesiumPositionArgToLonLat("endPosition")
+  @canvasPositionArgToLonLat("endPosition")
   @skipIfLonLatIsInvalid()
   private mouseMoveCallback(lonLat: ILonLat) {
     if (this.extent.drawDirection === null) {
@@ -193,7 +193,7 @@ function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any)
 //
 // Example:
 //
-//     @cesiumPositionArgToLonLat("position")
+//     @canvasPositionArgToLonLat("position")
 //     public leftClickCallback(lonLat) { ... }
 //
 //     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
@@ -202,7 +202,7 @@ function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any)
 // When the LEFT_CLICK event fires, Cesium will call leftClickCallback, passing
 // in an object with the "position" key, and this decorator will translate that
 // position to a lonLat before passing it on to leftClickCallback
-function cesiumPositionArgToLonLat(key: string = "position", index: number = 0) {
+function canvasPositionArgToLonLat(key: string = "position", index: number = 0) {
   return (target: any, name: string, descriptor: any) => {
     const original = descriptor.value;
 
