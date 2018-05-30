@@ -184,28 +184,24 @@ function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any)
 //     "endPosition" and "startPosition"
 // index: number - position in the args array of the cesium position object
 //
-// the first argument passed to the decorated function should be a cesium event
+// The first argument passed to the decorated function should be a cesium event
 // object; this decorator takes one of the properties on that object (as chosen
 // by the decorator factory argument `key`) and converts it to a latLon object,
 // matching the ILatLon interface, then calls the decorated function with that
-// latLon instead of the cesium position
+// latLon instead of the cesium position. We don't call this directly, instead
+// registering it with Cesium as an event handler.
 //
-// Example:  TODO: change this example to a callback registered on a cesium handler
+// Example:
 //
-// This function definition and call for `foo`...
+//     @cesiumPositionArgToLatLon("position")
+//     public leftClickCallback(latLon) { ... }
 //
-//     @cesiumPositionArgToLatLon("startPosition")
-//     public foo(latLon) { ... }
+//     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+//     handler.setInputAction(this.leftClickCallback.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
 //
-//     cesiumEvent = {startPosition: ... }
-//     foo(cesiumEvent)
-//
-// ...is equivalent to this definition and call:
-//
-//     public foo(latLon) { ... }
-//
-//     cesiumEvent = {startPosition: ... }
-//     foo(cesiumPositionToLatLon(cesiumEvent.startPosition))
+// When the LEFT_CLICK event fires, Cesium will call leftClickCallback, passing
+// in an object with the "position" key, and this decorator will translate that
+// position to a latLon before passing it on to leftClickCallback
 function cesiumPositionArgToLatLon(key: string = "position", index: number = 0) {
   return (target: any, name: string, descriptor: any) => {
     const original = descriptor.value;
