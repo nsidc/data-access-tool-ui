@@ -1,9 +1,9 @@
-import { ILatLon } from "../LatLon";
+import { ILonLat } from "../LonLat";
 import { ISpatialSelection } from "../SpatialSelection";
 
 export class Extent {
-  public startLatLon: any;
-  public endLatLon: any;
+  public startLonLat: any;
+  public endLonLat: any;
   public drawDirection: any;
 
   public lowerLeftLat: number;
@@ -12,8 +12,8 @@ export class Extent {
   public upperRightLon: number;
 
   constructor(spatialSelection: any = null) {
-    this.startLatLon = null;
-    this.endLatLon = null;
+    this.startLonLat = null;
+    this.endLonLat = null;
     this.drawDirection = null;
 
     if (spatialSelection) {
@@ -50,9 +50,9 @@ export class Extent {
     };
   }
 
-  public updateDrawDirection(latLon: ILatLon) {
-    const initialLon = this.startLatLon.lon;
-    const finalLon = latLon.lon;
+  public updateDrawDirection(lonLat: ILonLat) {
+    const initialLon = this.startLonLat.lon;
+    const finalLon = lonLat.lon;
 
     const deltaLon = finalLon - initialLon;
 
@@ -72,37 +72,37 @@ export class Extent {
     }
   }
 
-  public startDrawing(latLon: ILatLon) {
-    this.startLatLon = latLon;
-    this.endLatLon = null;
+  public startDrawing(lonLat: ILonLat) {
+    this.startLonLat = lonLat;
+    this.endLonLat = null;
     this.drawDirection = null;
 
-    this.lowerLeftLat = latLon.lat;
-    this.lowerLeftLon = latLon.lon;
-    this.upperRightLat = latLon.lat;
-    this.upperRightLon = latLon.lon;
+    this.lowerLeftLat = lonLat.lat;
+    this.lowerLeftLon = lonLat.lon;
+    this.upperRightLat = lonLat.lat;
+    this.upperRightLon = lonLat.lon;
   }
 
-  public updateFromDrawing(latLon: ILatLon) {
-    this.endLatLon = latLon;
+  public updateFromDrawing(lonLat: ILonLat) {
+    this.endLonLat = lonLat;
 
-    this.lowerLeftLat = Math.min(this.startLatLon.lat, latLon.lat);
-    this.upperRightLat = Math.max(this.startLatLon.lat, latLon.lat);
+    this.lowerLeftLat = Math.min(this.startLonLat.lat, lonLat.lat);
+    this.upperRightLat = Math.max(this.startLonLat.lat, lonLat.lat);
 
     if (this.drawDirection === "west") {
-      this.upperRightLon = this.startLatLon.lon;
-      this.lowerLeftLon = this.endLatLon.lon;
+      this.upperRightLon = this.startLonLat.lon;
+      this.lowerLeftLon = this.endLonLat.lon;
     } else if (this.drawDirection === "east") {
-      this.lowerLeftLon = this.startLatLon.lon;
-      this.upperRightLon = this.endLatLon.lon;
+      this.lowerLeftLon = this.startLonLat.lon;
+      this.upperRightLon = this.endLonLat.lon;
     }
   }
 
-  public stopDrawing(latLon: ILatLon) {
-    this.updateFromDrawing(latLon);
+  public stopDrawing(lonLat: ILonLat) {
+    this.updateFromDrawing(lonLat);
 
-    this.startLatLon = null;
-    this.endLatLon = null;
+    this.startLonLat = null;
+    this.endLonLat = null;
     this.drawDirection = null;
   }
 }

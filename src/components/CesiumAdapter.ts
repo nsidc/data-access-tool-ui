@@ -1,6 +1,6 @@
 import { Extent } from "./Extent";
 
-import { ILatLon } from "../LatLon";
+import { ILonLat } from "../LonLat";
 import { ISpatialSelection } from "../SpatialSelection";
 
 /* tslint:disable:no-var-requires */
@@ -57,7 +57,7 @@ export class CesiumAdapter {
     this.extentSelectionInProgress = true;
   }
 
-  public cesiumPositionToLatLon(position: any): ILatLon {
+  public cesiumPositionToLonLat(position: any): ILonLat {
     const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
 
     // this means the position is not on the globe
@@ -67,16 +67,16 @@ export class CesiumAdapter {
 
     const carto = Cesium.Cartographic.fromCartesian(cartesian);
 
-    const latlon = {
+    const lonLat = {
       lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
       lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
     };
 
-    return latlon;
+    return lonLat;
   }
 
-  public latLonIsNaN(latLon: ILatLon) {
-    return [latLon.lat, latLon.lon].some(Number.isNaN);
+  public lonLatIsNaN(lonLat: ILonLat) {
+    return [lonLat.lat, lonLat.lon].some(Number.isNaN);
   }
 
   private clearSpatialSelection() {
@@ -113,17 +113,17 @@ export class CesiumAdapter {
   }
 
   @skipIfSelectionIsNotActive
-  @cesiumPositionArgToLatLon("position")
-  @skipIfLatLonIsInvalid()
-  private leftClickCallback(latLon: ILatLon) {
-    const startingExtentSelection = !this.extent.startLatLon;
-    const endingExtentSelection = this.extent.startLatLon;
+  @cesiumPositionArgToLonLat("position")
+  @skipIfLonLatIsInvalid()
+  private leftClickCallback(lonLat: ILonLat) {
+    const startingExtentSelection = !this.extent.startLonLat;
+    const endingExtentSelection = this.extent.startLonLat;
 
     if (startingExtentSelection) {
-      this.extent.startDrawing(latLon);
+      this.extent.startDrawing(lonLat);
 
     } else if (endingExtentSelection) {
-      this.extent.stopDrawing(latLon);
+      this.extent.stopDrawing(lonLat);
 
       this.extentSelectionInProgress = false;
       this.handleExtentSelected(this.extent.asSpatialSelection());
@@ -132,14 +132,14 @@ export class CesiumAdapter {
 
   @skipIfSelectionIsNotActive
   @skipIfSelectionIsNotStarted
-  @cesiumPositionArgToLatLon("endPosition")
-  @skipIfLatLonIsInvalid()
-  private mouseMoveCallback(latLon: ILatLon) {
+  @cesiumPositionArgToLonLat("endPosition")
+  @skipIfLonLatIsInvalid()
+  private mouseMoveCallback(lonLat: ILonLat) {
     if (this.extent.drawDirection === null) {
-      this.extent.updateDrawDirection(latLon);
+      this.extent.updateDrawDirection(lonLat);
     }
 
-    this.extent.updateFromDrawing(latLon);
+    this.extent.updateFromDrawing(lonLat);
     this.showSpatialSelection();
   }
 }
@@ -168,7 +168,7 @@ function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any)
   const original = descriptor.value;
 
   descriptor.value = function(...args: any[]) {
-    const selectionStarted = !!this.extent.startLatLon;
+    const selectionStarted = !!this.extent.startLonLat;
     if (!selectionStarted) { return; }
 
     return original.apply(this, args);
@@ -186,32 +186,32 @@ function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any)
 //
 // The first argument passed to the decorated function should be a cesium event
 // object; this decorator takes one of the properties on that object (as chosen
-// by the decorator factory argument `key`) and converts it to a latLon object,
-// matching the ILatLon interface, then calls the decorated function with that
-// latLon instead of the cesium position. We don't call this directly, instead
+// by the decorator factory argument `key`) and converts it to a lonLat object,
+// matching the ILonLat interface, then calls the decorated function with that
+// lonLat instead of the cesium position. We don't call this directly, instead
 // registering it with Cesium as an event handler.
 //
 // Example:
 //
-//     @cesiumPositionArgToLatLon("position")
-//     public leftClickCallback(latLon) { ... }
+//     @cesiumPositionArgToLonLat("position")
+//     public leftClickCallback(lonLat) { ... }
 //
 //     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
 //     handler.setInputAction(this.leftClickCallback.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
 //
 // When the LEFT_CLICK event fires, Cesium will call leftClickCallback, passing
 // in an object with the "position" key, and this decorator will translate that
-// position to a latLon before passing it on to leftClickCallback
-function cesiumPositionArgToLatLon(key: string = "position", index: number = 0) {
+// position to a lonLat before passing it on to leftClickCallback
+function cesiumPositionArgToLonLat(key: string = "position", index: number = 0) {
   return (target: any, name: string, descriptor: any) => {
     const original = descriptor.value;
 
     descriptor.value = function(...args: any[]) {
       const position = args[index][key];
-      const latLon = this.cesiumPositionToLatLon(position);
+      const lonLat = this.cesiumPositionToLonLat(position);
 
       const newArgs = args.slice();
-      newArgs[index] = latLon;
+      newArgs[index] = lonLat;
 
       return original.apply(this, newArgs);
     };
@@ -221,16 +221,16 @@ function cesiumPositionArgToLatLon(key: string = "position", index: number = 0) 
 }
 
 // decorator
-// index: number - position in the args array of the latLon object
+// index: number - position in the args array of the lonLat object
 //
-// if the latLon argument is not valid--or if either the lat or lon is NaN,
+// if the lonLat argument is not valid--or if either the lat or lon is NaN,
 // meaning the point is not on the globe--the decorated function is not called
-function skipIfLatLonIsInvalid(index: number = 0) {
+function skipIfLonLatIsInvalid(index: number = 0) {
   return (target: any, name: string, descriptor: any) => {
     const original = descriptor.value;
 
     descriptor.value = function(...args: any[]) {
-      if (this.latLonIsNaN(args[index])) { return; }
+      if (this.lonLatIsNaN(args[index])) { return; }
 
       return original.apply(this, args);
     };
