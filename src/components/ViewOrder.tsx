@@ -1,8 +1,6 @@
 import * as React from "react";
 import * as ReactModal from "react-modal";
 
-ReactModal.setAppElement("#everest-ui");
-
 interface IViewOrderProps {
   orderId: string;
   destination: string;
