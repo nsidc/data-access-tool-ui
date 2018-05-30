@@ -1,7 +1,6 @@
-import { Extent } from "./Extent";
-
-import { ILatLon } from "../LatLon";
 import { ISpatialSelection } from "../SpatialSelection";
+
+import { Extent } from "./Extent";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -26,7 +25,6 @@ export class CesiumAdapter {
     this.viewer = new Cesium.Viewer(elementId, {
       animation: false,
       baseLayerPicker: false,
-      creditContainer: "credit",
       fullscreenButton: false,
       geocoder: false,
       homeButton: false,
@@ -40,15 +38,29 @@ export class CesiumAdapter {
     });
 
     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-    handler.setInputAction(this.handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    handler.setInputAction(this.handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    handler.setInputAction(
+      (movement: any) => this.handleLeftClick("leftClick", movement.position),
+      Cesium.ScreenSpaceEventType.LEFT_CLICK,
+    );
 
-    this.updateSpatialSelection(spatialSelection);
+    handler.setInputAction((event: any) => this.handleMouseMove(event),
+      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+    this.extent = this.extentFromSpatialSelection(spatialSelection);
+    this.showSpatialSelection();
   }
 
   public updateSpatialSelection(s: ISpatialSelection) {
-    this.extent = new Extent(s);
+    console.log(s);
+    this.extent = this.extentFromSpatialSelection(s);
+    console.log(this.extent);
     this.showSpatialSelection();
+  }
+
+  public handleReset() {
+    this.viewer.entities.removeAll();
+    this.extent = new Extent();
+    this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
   }
 
   public handleSelectionStart() {
@@ -56,95 +68,109 @@ export class CesiumAdapter {
     this.extentSelectionInProgress = true;
   }
 
-  public cesiumPositionToLatLon(position: any): ILatLon {
-    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
-
-    // this means the position is not on the globe
-    if (cartesian === undefined) {
-      return {lat: NaN, lon: NaN};
-    }
-
-    const carto = Cesium.Cartographic.fromCartesian(cartesian);
-
-    const latlon = {
-      lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
-      lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
-    };
-
-    return latlon;
-  }
-
   private showSpatialSelection() {
-    if (!this.extent.isGlobal() && this.viewer.scene) {
+    if (this.extent.valid() && this.viewer.scene) {
       const entity = this.viewer.entities.getById("extent");
-
-      const degrees = this.extent.degreesArr();
-      const rectangle = {
-        coordinates: Cesium.Rectangle.fromDegrees(...degrees),
-        material: CesiumAdapter.extentColor,
-      };
-
       if (!entity) {
         this.viewer.entities.add({
           id: "extent",
           name: "extent",
-          rectangle,
+          rectangle: {
+            coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+            material: CesiumAdapter.extentColor,
+          },
         });
       } else {
-        entity.rectangle = rectangle;
+        entity.rectangle = {
+          coordinates: Cesium.Rectangle.fromCartesianArray([this.extent.a, this.extent.b]),
+          material: CesiumAdapter.extentColor,
+        };
       }
     }
   }
 
-  // the cesium left click event emits an object with {position}
-  private handleLeftClick({position}: any) {
-    // would be nice to have a decorator for this, to just skip the function if
-    // the selection button hasn't been pressed and we don't need to do anything
-    // with clicks anyway (these lines are also in handleMouseMove)
-    const selectionInactive = !this.extentSelectionInProgress;
-    if (selectionInactive) { return; }
-
-    // would be nice to have a decorator for this, to just skip the function if
-    // the position is not on the globe (these lines are also in handleMouseMove)
-    const latLon = this.cesiumPositionToLatLon(position);
-    if (this.latLonIsNaN(latLon)) { return; }
-
-    const startingExtentSelection = !this.extent.startLatLon;
-    const endingExtentSelection = this.extent.startLatLon;
-
-    if (startingExtentSelection) {
-      this.extent.startDrawing(latLon);
-
-    } else if (endingExtentSelection) {
-      this.extent.stopDrawing(latLon);
-
-      this.extentSelectionInProgress = false;
-      this.handleExtentSelected(this.extent.asSpatialSelection());
-    }
-  }
-
-  // the cesium mouse move event emits an object with {startPosition, endPosition}
-  private handleMouseMove({endPosition}: any) {
-    const selectionInactive = !this.extentSelectionInProgress;
-    if (selectionInactive) { return; }
-
-    const latLon = this.cesiumPositionToLatLon(endPosition);
-    if (this.latLonIsNaN(latLon)) { return; }
-
-    const selectionStarted = !!this.extent.startLatLon;
-    if (!selectionStarted) { return; }
-
-    if (this.extent.drawDirection === null) {
-      this.extent.updateDrawDirection(latLon);
+  private handleLeftClick(name: string, position: any) {
+    if (!this.extentSelectionInProgress) {
+      console.log("Globe clicked, not currently selecting extent.");
+      return;
     }
 
-    this.extent.updateFromDrawing(latLon);
+    this.savePosition(position);
     this.showSpatialSelection();
+
+    if (this.extentSelectionInProgress && this.extent.a && this.extent.b) {
+      this.extentSelectionInProgress = false;
+      this.handleExtentSelected(this.spatialSelectionFromExtent(this.extent));
+    }
   }
 
-  private latLonIsNaN(latLon: ILatLon) {
-    return Number.isNaN(latLon.lat) || Number.isNaN(latLon.lon);
+  private handleMouseMove(event: any) {
+    if (this.extentSelectionInProgress && this.extent.a) {
+      this.savePosition(event.endPosition);
+      this.showSpatialSelection();
+    }
+  }
+
+  private savePosition(position: any) {
+    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
+
+    if (cartesian) {
+      if (!this.extent.a) {
+        this.extent.a = cartesian;
+      } else {
+        this.extent.b = cartesian;
+      }
+    }
+  }
+
+  private extentFromSpatialSelection(spatialSelection: ISpatialSelection): Extent {
+    if (!spatialSelection) {
+      return new Extent();
+    }
+
+    const degArray = [
+      spatialSelection.lower_left_lon, spatialSelection.lower_left_lat,
+      spatialSelection.upper_right_lon, spatialSelection.upper_right_lat,
+    ];
+
+    const c3 = Cesium.Cartesian3.fromDegreesArray(degArray);
+    return new Extent(c3[0], c3[1]);
+  }
+
+  private spatialSelectionFromExtent(e: Extent): ISpatialSelection {
+    if (!e || !e.valid()) {
+      console.log("Returning default globe settings");
+      return {
+        lower_left_lat: -90,
+        lower_left_lon: -180,
+        upper_right_lat: 90,
+        upper_right_lon: 180,
+      };
+    }
+
+    const rect = Cesium.Rectangle.fromCartesianArray([e.a, e.b]);
+    const ne = this.cartographicToDegrees(Cesium.Rectangle.northeast(rect));
+    const sw = this.cartographicToDegrees(Cesium.Rectangle.southwest(rect));
+
+    // I think we need to format the spatial selection using points describing a
+    // polygon (counterclockwise direction). See Icebridge Portal handling of
+    // spatial selections. The other two points in the polygon are available
+    // from the rectangle, like so:
+    // const nw = this.cartographicToDegrees(Cesium.Rectangle.northwest(rect));
+    // const se = this.cartographicToDegrees(Cesium.Rectangle.southeast(rect));
+
+    return {
+      lower_left_lat: sw.lat,
+      lower_left_lon: sw.lon,
+      upper_right_lat: ne.lat,
+      upper_right_lon: ne.lon,
+    };
+  }
+
+  private cartographicToDegrees(carto: any) {
+    return {
+      lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
+      lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
+    };
   }
 }
-
-export default CesiumAdapter;
