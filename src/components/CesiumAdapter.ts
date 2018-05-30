@@ -57,22 +57,22 @@ export class CesiumAdapter {
     this.extentSelectionInProgress = true;
   }
 
-  public cesiumPositionToLonLat(position: any): ILonLat {
-    const cartesian = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
+  public canvasPositionToLonLatDegrees(position: any): ILonLat {
+    const cartesianProjectedXY = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
 
     // this means the position is not on the globe
-    if (cartesian === undefined) {
+    if (cartesianProjectedXY === undefined) {
       return {lat: NaN, lon: NaN};
     }
 
-    const carto = Cesium.Cartographic.fromCartesian(cartesian);
+    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianProjectedXY);
 
-    const lonLat = {
-      lat: Number.parseFloat(Cesium.Math.toDegrees(carto.latitude).toFixed(2)),
-      lon: Number.parseFloat(Cesium.Math.toDegrees(carto.longitude).toFixed(2)),
+    const lonLatDegrees = {
+      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude).toFixed(2)),
+      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude).toFixed(2)),
     };
 
-    return lonLat;
+    return lonLatDegrees;
   }
 
   public lonLatIsNaN(lonLat: ILonLat) {
@@ -208,7 +208,7 @@ function cesiumPositionArgToLonLat(key: string = "position", index: number = 0) 
 
     descriptor.value = function(...args: any[]) {
       const position = args[index][key];
-      const lonLat = this.cesiumPositionToLonLat(position);
+      const lonLat = this.canvasPositionToLonLatDegrees(position);
 
       const newArgs = args.slice();
       newArgs[index] = lonLat;
