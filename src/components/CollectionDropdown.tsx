@@ -1,6 +1,6 @@
-import { collectionsRequest } from "../CMR";
-
 import * as React from "react";
+
+import { collectionsRequest } from "../CMR";
 
 interface ICollectionDropdownProps {
     selectedCollection: any;
@@ -18,6 +18,11 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
         this.state = {
             collections: [{}],
         };
+    }
+
+    public handleChange(e: any) {
+      const collection: any = JSON.parse(e.target.value);
+      this.props.onCollectionChange(collection);
     }
 
     public componentDidMount() {
@@ -41,10 +46,5 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
               {collectionOptions}
             </select>
         );
-    }
-
-    private handleChange(e: any) {
-      const collection: any = JSON.parse(e.target.value);
-      this.props.onCollectionChange(collection);
     }
 }

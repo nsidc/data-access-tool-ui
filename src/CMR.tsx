@@ -10,8 +10,10 @@ export const collectionsRequest = () =>
   fetch(CMR_COLLECTION_URL)
       .then((response) => response.json());
 
-export const granuleRequest = (collectionId: string, spatialSelection: ISpatialSelection,
-                               temporalLowerBound: moment.Moment, temporalUpperBound: moment.Moment) => {
+export const granuleRequest = (collectionId: string,
+                               spatialSelection: ISpatialSelection,
+                               temporalLowerBound: moment.Moment,
+                               temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL
     + `&concept_id=${collectionId}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
