@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { ISpatialSelection } from "../SpatialSelection";
 
-import { CesiumAdapter } from "./CesiumAdapter";
+import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
