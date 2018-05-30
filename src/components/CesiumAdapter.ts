@@ -1,4 +1,4 @@
-import { Extent } from "./Extent";
+import { Extent } from "../utils/Extent";
 
 import { ILonLat } from "../LonLat";
 import { ISpatialSelection } from "../SpatialSelection";
