@@ -23,12 +23,14 @@ export class ViewOrder extends React.Component<IViewOrderProps, {}> {
   public render() {
     let orderLinks: any = "loading...";
     let granuleCount: any = "loading...";
+    let orderStatus: string = this.props.status;
     if (this.props.orderDetails) {
       orderLinks = this.props.orderDetails.links.map(
         (link: {status: string, uri: string}, index: number) =>
           <div key={index}><a href={link.uri}>{link.uri}</a></div>,
       );
       granuleCount = this.props.orderDetails.granule_URs.length;
+      orderStatus = this.props.orderDetails.status;
     }
     return (
       <ReactModal
@@ -38,8 +40,8 @@ export class ViewOrder extends React.Component<IViewOrderProps, {}> {
         <button onClick={this.handleRefreshOrder}>Refresh</button>
         <h2>Order ID: {this.props.orderId}</h2>
         <h3>Destination: {this.props.destination}</h3>
-        <h3>Status: {this.props.status}</h3>
         <h3>Count: {granuleCount} granules</h3>
+        <h3>Status: {orderStatus}</h3>
         <div>
           {orderLinks}
         </div>
