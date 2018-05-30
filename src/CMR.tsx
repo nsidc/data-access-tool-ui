@@ -1,5 +1,3 @@
-import { ISpatialSelection } from "./SpatialSelection";
-
 import * as moment from "moment";
 
 import { ISpatialSelection } from "./SpatialSelection";
