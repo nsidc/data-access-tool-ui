@@ -5,8 +5,9 @@ if (typeof(Drupal) !== "undefined") {
   HERMES_ORDER_URL = "/order-proxy";
 } else {
   // Only populate and submit the user if we're not in the Drupal context. The
-  // order proxy endpoint will inject the user in Drupal.
-  user = {uid: "foo"};
+  // order proxy endpoint will inject the user in Drupal. This is a placeholder
+  // username to hopefully avoid collisions with other users.
+  user = {uid: "__everestui-standalone__"};
   HERMES_ORDER_URL = "https://dev.hermes.mfisher.dev.int.nsidc.org/api/order/";
 }
 
