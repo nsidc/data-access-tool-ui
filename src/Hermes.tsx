@@ -8,7 +8,7 @@ if (typeof(Drupal) !== "undefined") {
   // order proxy endpoint will inject the user in Drupal. This is a placeholder
   // username to hopefully avoid collisions with other users.
   user = {uid: "__everestui-standalone__"};
-  HERMES_ORDER_URL = "https://dev.hermes.mfisher.dev.int.nsidc.org/api/order/";
+  HERMES_ORDER_URL = "https://dev.hermes.mfisher.dev.int.nsidc.org/api/orders/";
 }
 
 export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) => {
