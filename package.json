@@ -12,7 +12,8 @@
     "deploy-drupal": "./scripts/deploy.sh",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
-    "lint": "scripts/lint.sh"
+    "lint": "scripts/lint.sh",
+    "test": "npx jest"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",

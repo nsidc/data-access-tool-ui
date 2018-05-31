@@ -30,7 +30,11 @@ TBD
 
 ### Testing
 
-    npx jest --debug
+    npm test
+
+To see extra detail:
+
+    npm test -- --debug
 
 ### Linting
 
