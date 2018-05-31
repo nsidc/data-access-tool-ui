@@ -1,9 +1,12 @@
 declare var Drupal: any;
 let HERMES_ORDER_URL: string;
+let inDrupal: boolean;
 let user: {[index: string]: string};
 if (typeof(Drupal) !== "undefined") {
+  inDrupal = true;
   HERMES_ORDER_URL = "/order-proxy";
 } else {
+  inDrupal = false;
   // Only populate and submit the user if we're not in the Drupal context. The
   // order proxy endpoint will inject the user in Drupal. This is a placeholder
   // username to hopefully avoid collisions with other users.
@@ -33,6 +36,13 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
 };
 
 export const getOrder = (orderId: string) => {
-  return fetch(HERMES_ORDER_URL + orderId)
-    .then((response) => response.json());
+  if (inDrupal) {
+    // In Drupal, we use the proxy to get orders by user ID
+    return fetch(HERMES_ORDER_URL)
+      .then((response) => response.json())
+      .then((json) => json[orderId]);
+  } else {
+    return fetch(HERMES_ORDER_URL + orderId)
+      .then((response) => response.json());
+  }
 };
