@@ -21,7 +21,7 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
   let body: object = {
     collection_info: collectionInfo,
     destination: "archive",
-    format: "",
+    format: "files",
     granule_URs: granuleURs,
   };
   if (user) {
