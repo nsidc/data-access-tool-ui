@@ -16,7 +16,9 @@ export const granuleRequest = (collectionId: string,
                                temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL
     + `&concept_id=${collectionId}`
-    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`;
+    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
+    + `&bounding_box=${spatialSelection.lower_left_lon},${spatialSelection.lower_left_lat}`
+    + `,${spatialSelection.upper_right_lon},${spatialSelection.upper_right_lat}`;
   return fetch(URL)
       .then((response) => response.json());
 };
