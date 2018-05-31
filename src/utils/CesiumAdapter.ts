@@ -55,6 +55,7 @@ export class CesiumAdapter {
   public handleSelectionStart() {
     this.extent = new Extent();
     this.extentSelectionInProgress = true;
+    this.viewer.container.style.cursor = "crosshair";
   }
 
   public canvasPositionToLonLatDegrees(position: any): ILonLat {
@@ -77,6 +78,11 @@ export class CesiumAdapter {
 
   public lonLatIsNaN(lonLat: ILonLat) {
     return [lonLat.lat, lonLat.lon].some(Number.isNaN);
+  }
+
+  private handleSelectionEnd() {
+    this.extentSelectionInProgress = false;
+    this.viewer.container.style.cursor = "";
   }
 
   private clearSpatialSelection() {
@@ -125,7 +131,7 @@ export class CesiumAdapter {
     } else if (endingExtentSelection) {
       this.extent.stopDrawing(lonLat);
 
-      this.extentSelectionInProgress = false;
+      this.handleSelectionEnd();
       this.handleExtentSelected(this.extent.asSpatialSelection());
     }
   }
