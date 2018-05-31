@@ -5,10 +5,8 @@ import { SpatialSelectionToolbar } from "../src/components/SpatialSelectionToolb
 
 describe("Spatial toolbar component", () => {
   test("Renders toolbar", () => {
-    const mockSelection = jest.fn();
-    const mockReset = jest.fn();
-    const toolbar = shallow(<SpatialSelectionToolbar onSelectionStart={() => mockSelection}
-                                                     onResetClick={() => mockReset}/>);
+    const toolbar = shallow(<SpatialSelectionToolbar onSelectionStart={() => jest.fn()}
+                                                     onResetClick={() => jest.fn()}/>);
 
     expect(toolbar.find("#toolbar")).toBeDefined();
   });
