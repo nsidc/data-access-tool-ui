@@ -20,3 +20,5 @@ fi
 
 ensure_dir_exists $TO
 cp -R $FROM $TO/.
+
+echo "App deployed to $TO"
