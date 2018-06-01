@@ -1,6 +1,6 @@
-import { ISpatialSelection } from "./SpatialSelection";
-
 import * as moment from "moment";
+
+import { ISpatialSelection } from "./SpatialSelection";
 
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";

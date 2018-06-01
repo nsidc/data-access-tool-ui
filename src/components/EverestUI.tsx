@@ -6,8 +6,9 @@ import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
 import { InputCoords } from "./InputCoords";
-import { SubmitBtn } from "./SubmitBtn";
+import { SubmitButton } from "./SubmitButton";
 import { TemporalFilter } from "./TemporalFilter";
+import { ViewOrderButton } from "./ViewOrderButton";
 
 interface IEverestState {
   selectedCollection: any;
@@ -15,7 +16,9 @@ interface IEverestState {
   spatialSelection: ISpatialSelection;
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
-  granules: any;
+  granules?: object[];
+  orderSubmitResponse?: object;
+  orderViewResponse?: object;
 }
 
 const defaultSpatialSelection = {
@@ -32,9 +35,13 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
       this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
       this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
-      this.handleGranules = this.handleGranules.bind(this);
+      this.handleGranuleResponse = this.handleGranuleResponse.bind(this);
+      this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
+      this.handleViewOrderResponse = this.handleViewOrderResponse.bind(this);
       this.state = {
         granules: [],
+        orderSubmitResponse: undefined,
+        orderViewResponse: undefined,
         selectedCollection: {},
         selectedCollectionId: "",
         spatialSelection: defaultSpatialSelection,
@@ -64,12 +71,19 @@ export class EverestUI extends React.Component<{}, IEverestState> {
               spatialSelection={this.state.spatialSelection}
               onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)}
               resetSpatialSelection={() => this.setSpatialSelectionToCollectionDefault()} />
-            <SubmitBtn
-              collectionId={this.state.selectedCollectionId}
-              spatialSelection={this.state.spatialSelection}
-              temporalLowerBound={this.state.temporalFilterLowerBound}
-              temporalUpperBound={this.state.temporalFilterUpperBound}
-              onGranuleResponse={this.handleGranules} />
+            <div>
+              <SubmitButton
+                collectionId={this.state.selectedCollectionId}
+                spatialSelection={this.state.spatialSelection}
+                temporalLowerBound={this.state.temporalFilterLowerBound}
+                temporalUpperBound={this.state.temporalFilterUpperBound}
+                onGranuleResponse={this.handleGranuleResponse}
+                onSubmitOrderResponse={this.handleSubmitOrderResponse} />
+              <ViewOrderButton
+                onViewOrderResponse={this.handleViewOrderResponse}
+                orderViewResponse={this.state.orderViewResponse}
+                orderSubmitResponse={this.state.orderSubmitResponse} />
+            </div>
             <GranuleList
               collectionId={this.state.selectedCollectionId}
               granules={this.state.granules} />
@@ -137,8 +151,16 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.setState({temporalFilterUpperBound: date});
     }
 
-    private handleGranules(cmrResponse: any) {
+    private handleGranuleResponse(cmrResponse: any) {
       this.setState({granules: cmrResponse});
+    }
+
+    private handleSubmitOrderResponse(hermesResponse: any) {
+      this.setState({orderSubmitResponse: hermesResponse});
+    }
+
+    private handleViewOrderResponse(hermesResponse: any) {
+      this.setState({orderViewResponse: hermesResponse});
     }
 
     private setSpatialSelectionToCollectionDefault() {
