@@ -30,6 +30,7 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
 
   return fetch(HERMES_ORDER_URL, {
     body: JSON.stringify(body),
+    credentials: "include",
     headers,
     method: "POST",
   }).then((response) => response.json());
@@ -38,7 +39,7 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
 export const getOrder = (orderId: string) => {
   if (inDrupal) {
     // In Drupal, we use the proxy to get orders by user ID
-    return fetch(HERMES_ORDER_URL)
+    return fetch(HERMES_ORDER_URL, {credentials: "include"})
       .then((response) => response.json())
       .then((json) => json[orderId]);
   } else {
