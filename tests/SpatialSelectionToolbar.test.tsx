@@ -8,6 +8,6 @@ describe("Spatial toolbar component", () => {
     const toolbar = shallow(<SpatialSelectionToolbar onSelectionStart={() => jest.fn()}
                                                      onResetClick={() => jest.fn()}/>);
 
-    expect(toolbar.find("#toolbar")).toBeDefined();
+    expect(toolbar.find("#toolbar")).toEqual(expect.anything());
   });
 });
