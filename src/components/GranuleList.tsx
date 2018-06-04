@@ -3,21 +3,26 @@ import * as React from "react";
 
 interface IGranuleListProps {
   collectionId: string;
-  granules: any;
+  granules?: object[];
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public render() {
-    const granuleList = this.props.granules.map((g: any, i: number) => (
-      <tr key={i}>
-        <td>{g.producer_granule_id}</td>
-        <td>{parseFloat(g.granule_size).toFixed(1)}</td>
-        <td>{moment(g.time_start).format(GranuleList.timeFormat)}</td>
-        <td>{moment(g.time_end).format(GranuleList.timeFormat)}</td>
-      </tr>
-    ));
+    let granuleList: object[];
+    if (this.props.granules) {
+      granuleList = this.props.granules.map((g: any, i: number) => (
+        <tr key={i}>
+          <td>{g.producer_granule_id}</td>
+          <td>{parseFloat(g.granule_size).toFixed(1)}</td>
+          <td>{moment(g.time_start).format(GranuleList.timeFormat)}</td>
+          <td>{moment(g.time_end).format(GranuleList.timeFormat)}</td>
+        </tr>
+      ));
+    } else {
+      granuleList = [];
+    }
     return (
       <div>
         <table className="granuleList">
