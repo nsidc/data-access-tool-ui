@@ -12,9 +12,12 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 // Also: https://github.com/AnalyticalGraphicsInc/cesium-webpack-example
 
 module.exports = {
-    entry: './src/index.tsx',
+    entry: {
+      index: ['./src/index.tsx'],
+      profile: ['./src/profile.tsx'],
+    },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         // for Cesium
         sourcePrefix: ''
@@ -32,6 +35,10 @@ module.exports = {
     devtool: 'source-map',
 
     devServer: {
+        historyApiFallback: {
+          disableDotRule: true,
+          rewrites: [ { from: /^\/profile.html/, to: '/profile.html'} ],
+        },
         contentBase: './dist',
         host: '0.0.0.0',
         disableHostCheck: true,
@@ -77,10 +84,17 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'Development',
+            title: 'Order Interface',
             inject: false,
             template: require('html-webpack-template'),
             appMountId: 'everest-ui'
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Profile Page',
+            inject: false,
+            template: require('html-webpack-template'),
+            filename: 'profile.html',
+            appMountId: 'everest-ui-profile'
         }),
         // Copy Cesium Assets, Widgets, and Workers to a static directory
         new CopywebpackPlugin([ { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' } ]),
