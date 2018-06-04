@@ -33,9 +33,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
 
   public render() {
     return (
-      <span>
-        <button className="submit-button" onClick={this.handleClick}>Submit</button>
-      </span>
+      <button className="submit-button" onClick={this.handleClick}>Submit</button>
     );
   }
 
@@ -54,17 +52,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     }
   }
 
-  private handleOrderSubmissionResponse(orderSubmissionResponseJSON: object) {
-    this.setState({orderSubmissionResponse: orderSubmissionResponseJSON});
-    this.props.onSubmitOrderResponse(this.state.orderSubmissionResponse);
-  }
-
-  private handleCmrResponse(cmrResponseJSON: any) {
-    this.setState({cmrResponse: cmrResponseJSON.feed.entry});
-    this.props.onGranuleResponse(this.state.cmrResponse);
-  }
-
-  private handleClick() {
+  public handleClick() {
     if (this.props.collectionId
         && this.props.spatialSelection
         && this.props.temporalLowerBound
@@ -80,4 +68,15 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     }
     return;
   }
+
+  private handleOrderSubmissionResponse(orderSubmissionResponseJSON: object) {
+    this.setState({orderSubmissionResponse: orderSubmissionResponseJSON});
+    this.props.onSubmitOrderResponse(this.state.orderSubmissionResponse);
+  }
+
+  private handleCmrResponse(cmrResponseJSON: any) {
+    this.setState({cmrResponse: cmrResponseJSON.feed.entry});
+    this.props.onGranuleResponse(this.state.cmrResponse);
+  }
+
 }

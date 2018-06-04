@@ -28,6 +28,18 @@ With npm:
 
 TBD
 
+### Testing
+
+    npm test
+
+To see extra detail:
+
+    npm test -- --debug
+
+### Linting
+
+    npm run lint
+
 ## Build
 
 ### Production
