@@ -52,7 +52,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     }
   }
 
-  private handleClick() {
+  public handleClick() {
     if (this.props.collectionId
         && this.props.spatialSelection
         && this.props.temporalLowerBound
