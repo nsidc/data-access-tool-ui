@@ -19,6 +19,7 @@
   "author": "National Snow and Ice Data Center",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@types/enzyme": "^3.1.10",
     "@types/jest": "^22.2.3",
     "@types/react": "^16.3.13",
     "@types/react-datepicker": "^1.1.2",
