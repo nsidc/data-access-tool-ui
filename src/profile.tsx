@@ -1,14 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as ReactModal from "react-modal";
 
 import "./index.css";
 
 import { EverestProfile } from "./components/EverestProfile";
 
 const renderApp = () => {
-
-  ReactModal.setAppElement("#everest-ui-profile");
   ReactDOM.render(
       <EverestProfile />,
       document.getElementById("everest-ui-profile"),
