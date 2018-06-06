@@ -1,5 +1,8 @@
 import * as React from "react";
 
+import { OrderDetails } from "./OrderDetails";
+import { OrderList } from "./OrderList";
+
 export class EverestProfile extends React.Component<{}, {}> {
   public constructor(props: any) {
     super(props);
@@ -9,8 +12,9 @@ export class EverestProfile extends React.Component<{}, {}> {
 
   public render() {
     return (
-      <div>
-        {"Ding dong doodly doodly doo!"}
+      <div style={{display: "flex"}}>
+        <OrderList />
+        <OrderDetails />
       </div>
     );
   }
