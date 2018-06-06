@@ -18,7 +18,7 @@ export class EverestProfile extends React.Component<{}, IEverestProfileState> {
 
   public render() {
     return (
-      <div style={{display: "flex"}}>
+      <div id="profile-container">
         <OrderList
           onSelectionChange={this.handleOrderSelection}
           selectedOrder={this.state.selectedOrder} />
