@@ -85,12 +85,14 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Order Interface',
+            chunks: ['index'],
             inject: false,
             template: require('html-webpack-template'),
             appMountId: 'everest-ui'
         }),
         new HtmlWebpackPlugin({
             title: 'Profile Page',
+            chunks: ['profile'],
             inject: false,
             template: require('html-webpack-template'),
             filename: 'profile.html',
