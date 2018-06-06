@@ -1,16 +1,19 @@
-import * as moment from "moment";
 import * as React from "react";
 
 import { getUserOrders } from "../Hermes";
+import { OrderListItem } from "./OrderListItem";
 
-interface IOrderListState {
-  orderList?: object[];
+interface IOrderListProps {
+  onSelectionChange: any;
+  selectedOrder?: string;
 }
 
-export class OrderList extends React.Component<{}, IOrderListState> {
-  private static timeFormat = "YYYY-MM-DD HH:mm:ss";
+interface IOrderListState {
+  orderList: object[];
+}
 
-  public constructor(props: {}) {
+export class OrderList extends React.Component<IOrderListProps, IOrderListState> {
+  public constructor(props: IOrderListProps) {
     super(props);
     this.state = {
       orderList: [],
@@ -18,20 +21,25 @@ export class OrderList extends React.Component<{}, IOrderListState> {
   }
 
   public render() {
-    let orderList: object[];
-    if (this.state.orderList) {
-      orderList = this.state.orderList.map((order: any, index: number) => {
+    let orderList: any[] = this.state.orderList;
+    if (this.state.orderList.length > 0) {
+      orderList = orderList.sort((a, b) => b.date - a.date);
+      orderList = orderList.map((order: any, index: number) => {
+        let selected: boolean = false;
+        if (order.order_id === this.props.selectedOrder) {
+          selected = true;
+        }
         return (
-          <div key={index}>
-            {moment(order.date).format(OrderList.timeFormat)} - {order.status}
-          </div>
+          <OrderListItem
+            key={index}
+            selected={selected}
+            onOrderSelection={this.props.onSelectionChange}
+            order={order} />
         );
       });
-    } else {
-      orderList = [];
     }
     return (
-      <div>
+      <div id="order-list">
         {orderList}
       </div>
     );

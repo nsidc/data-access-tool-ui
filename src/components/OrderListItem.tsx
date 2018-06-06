@@ -1,0 +1,34 @@
+import * as moment from "moment";
+import * as React from "react";
+
+interface IOrderListItemProps {
+  order: any;
+  onOrderSelection: (orderId: string) => void;
+  selected: boolean;
+}
+
+export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
+  private static timeFormat = "l LT";
+
+  public constructor(props: IOrderListItemProps) {
+    super(props);
+    this.handleOrderSelection = this.handleOrderSelection.bind(this);
+  }
+
+  public render() {
+    const order: any = this.props.order;
+    let style: string = "order-list-item";
+    if (this.props.selected) {
+      style += " order-list-item-selected";
+    }
+    return (
+      <div onClick={this.handleOrderSelection} className={style}>
+        {moment.unix(order.date).format(OrderListItem.timeFormat)}
+      </div>
+    );
+  }
+
+  private handleOrderSelection() {
+    this.props.onOrderSelection(this.props.order.order_id);
+  }
+}

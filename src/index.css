@@ -154,3 +154,22 @@ tbody tr:hover {
 .react-datepicker-wrapper input {
   width: 70px;
 }
+
+#order-list {
+  background-color: #e9e9e9;
+  flex-shrink: 0;
+  width: 150px;
+}
+
+#order-list .order-list-item {
+  padding: 5px;
+  cursor: pointer;
+}
+
+#order-list .order-list-item-selected {
+  background-color: silver;
+}
+
+#order-details {
+  padding-left: 40px;
+}
