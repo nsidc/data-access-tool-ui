@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface InputCoordsProps {
+interface IInputCoordsProps {
   onCoordChange: any;
   selectedCoords: any;
 }
@@ -12,8 +12,8 @@ function spatialInputIsValid(spatialInput: any): boolean {
   return spatialValue >= min && spatialValue <= max;
 }
 
-export class InputCoords extends React.Component<InputCoordsProps, {}> {
-  public constructor(props: any) {
+export class InputCoords extends React.Component<IInputCoordsProps, {}> {
+  public constructor(props: IInputCoordsProps) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
   }

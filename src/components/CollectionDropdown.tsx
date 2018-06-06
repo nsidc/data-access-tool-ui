@@ -12,7 +12,7 @@ interface ICollectionDropdownState {
 }
 
 export class CollectionDropdown extends React.Component<ICollectionDropdownProps, ICollectionDropdownState> {
-    public constructor(props: any) {
+    public constructor(props: ICollectionDropdownProps) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.state = {

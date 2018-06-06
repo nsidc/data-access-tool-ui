@@ -10,7 +10,7 @@ interface ISpatialSelectionTypeProps {
 }
 
 export class SpatialSelectionType extends React.Component <ISpatialSelectionTypeProps, {}> {
-  public constructor(props: any) {
+  public constructor(props: ISpatialSelectionTypeProps) {
     super(props);
   }
 

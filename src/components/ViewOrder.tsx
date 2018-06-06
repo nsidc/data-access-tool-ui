@@ -13,7 +13,7 @@ interface IViewOrderProps {
 }
 
 export class ViewOrder extends React.Component<IViewOrderProps, {}> {
-  public constructor(props: any) {
+  public constructor(props: IViewOrderProps) {
     super(props);
     this.handleRefreshOrder = this.handleRefreshOrder.bind(this);
   }
