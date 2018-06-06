@@ -13,7 +13,7 @@ export class OrderList extends React.Component<{}, IOrderListState> {
   public constructor(props: {}) {
     super(props);
     this.state = {
-      orderList: [{}],
+      orderList: [],
     };
   }
 
