@@ -1,7 +1,9 @@
-import { Extent } from "../utils/Extent";
+import * as GeoJSON from "geojson";
 
 import { ILonLat } from "../LonLat";
 import { ISpatialSelection } from "../SpatialSelection";
+// import { Extent } from "../utils/Extent";
+import { PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -9,18 +11,16 @@ require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
 
 export class CesiumAdapter {
-  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
+  // private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
-  public extentSelectionInProgress: boolean;
-
+  // private extent: Extent;
   private viewer: any;
-  private extent: Extent;
-  private handleExtentSelected: (s: ISpatialSelection) => void;
 
-  constructor(extentSelected: (s: ISpatialSelection) => void) {
-    this.extentSelectionInProgress = false;
-    this.handleExtentSelected = extentSelected;
+  private updateSpatialSelection: any;
+
+  public constructor(updateSpatialSelection: any) {
+    this.updateSpatialSelection = updateSpatialSelection;
   }
 
   public createViewer(elementId: string, spatialSelection: ISpatialSelection) {
@@ -39,34 +39,17 @@ export class CesiumAdapter {
       selectionIndicator: false,
       timeline: false,
     });
-
-    const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-    handler.setInputAction(this.leftClickCallback.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    handler.setInputAction(this.mouseMoveCallback.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
-    this.updateSpatialSelection(spatialSelection);
   }
 
-  public updateSpatialSelection(s: ISpatialSelection) {
-    this.extent = new Extent(s);
-    this.showSpatialSelection();
-  }
-
-  public handleSelectionStart() {
-    this.extent = new Extent();
-    this.extentSelectionInProgress = true;
-    this.viewer.container.style.cursor = "crosshair";
-  }
-
-  public canvasPositionToLonLatDegrees(position: any): ILonLat {
-    const cartesianProjectedXY = this.viewer.scene.camera.pickEllipsoid(position, CesiumAdapter.ellipsoid);
-
+  // cartesianXYZ: 3D coordinates for position on earth's surface
+  // https://en.wikipedia.org/wiki/ECEF
+  public cartesianPositionToLonLatDegrees(cartesianXYZ: any): ILonLat {
     // this means the position is not on the globe
-    if (cartesianProjectedXY === undefined) {
+    if (cartesianXYZ === undefined) {
       return {lat: NaN, lon: NaN};
     }
 
-    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianProjectedXY);
+    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianXYZ);
 
     const lonLatDegrees = {
       lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude).toFixed(2)),
@@ -76,171 +59,55 @@ export class CesiumAdapter {
     return lonLatDegrees;
   }
 
-  public lonLatIsNaN(lonLat: ILonLat) {
-    return [lonLat.lat, lonLat.lon].some(Number.isNaN);
-  }
+  public startPolygonMode() {
 
-  private handleSelectionEnd() {
-    this.extentSelectionInProgress = false;
-    this.viewer.container.style.cursor = "";
-  }
+    // when drawing is finished (by double-clicking), this function is called
+    // with cartesian positions
+    const finishedDrawingCallback = (positions: any) => {
+      let lonLatsArray = positions.map((position: any) => {
+        const lonLat = this.cartesianPositionToLonLatDegrees(position);
+        return [lonLat.lon, lonLat.lat];
+      }, this);
 
-  private clearSpatialSelection() {
-    this.viewer.entities.removeById("extent");
-  }
+      // CMR requires polygons to be in "counterclockwise" order
+      lonLatsArray = this.ensureCounterClockwise(lonLatsArray);
 
-  private showSpatialSelection() {
-    if (!this.viewer.scene) {
-      return;
-    }
+      // the last point in a polygon needs to be the first again to close it
+      lonLatsArray.push(lonLatsArray[0]);
 
-    this.clearSpatialSelection();
-
-    if (this.extent.isGlobal()) {
-      return;
-    }
-
-    const entity = this.viewer.entities.getById("extent");
-    const degrees = this.extent.degreesArr();
-    const rectangle = {
-      coordinates: Cesium.Rectangle.fromDegrees(...degrees),
-      material: CesiumAdapter.extentColor,
+      const geo = GeoJSON.parse({polygon: lonLatsArray}, {Polygon: "polygon"});
+      console.log(geo);
+      this.updateSpatialSelection(geo);
     };
 
-    if (!entity) {
-      this.viewer.entities.add({
-        id: "extent",
-        name: "extent",
-        rectangle,
-      });
+    const mode = new PolygonMode(this.viewer.scene, CesiumAdapter.ellipsoid, finishedDrawingCallback);
+
+    return mode.start();
+  }
+
+ public clearSpatialSelection() {
+   this.viewer.scene.primitives.removeAll();
+ }
+
+  // https://stackoverflow.com/a/1165943
+  // http://en.wikipedia.org/wiki/Shoelace_formula
+  private ensureCounterClockwise(lonLatsArray: number[][]) {
+    const sum = lonLatsArray.reduce((acc: number, lonLat: number[], index: number, arr: number[][]) => {
+      const nextIndex = (index + 1) % arr.length;
+
+      const [lon, lat] = lonLat;
+      const [nextLon, nextLat] = arr[nextIndex];
+
+      const edge = (nextLat - lat) * (nextLon + lon);
+
+      return acc + edge;
+    }, 0);
+
+    const polygonIsClockwise = sum < 0;
+    if (polygonIsClockwise) {
+      return lonLatsArray.reverse();
     } else {
-      entity.rectangle = rectangle;
+      return lonLatsArray;
     }
   }
-
-  @skipIfSelectionIsNotActive
-  @canvasPositionArgToLonLat("position")
-  @skipIfLonLatIsInvalid()
-  private leftClickCallback(lonLat: ILonLat) {
-    const startingExtentSelection = !this.extent.startLonLat;
-    const endingExtentSelection = this.extent.startLonLat;
-
-    if (startingExtentSelection) {
-      this.extent.startDrawing(lonLat);
-
-    } else if (endingExtentSelection) {
-      this.extent.stopDrawing(lonLat);
-
-      this.handleSelectionEnd();
-      this.handleExtentSelected(this.extent.asSpatialSelection());
-    }
-  }
-
-  @skipIfSelectionIsNotActive
-  @skipIfSelectionIsNotStarted
-  @canvasPositionArgToLonLat("endPosition")
-  @skipIfLonLatIsInvalid()
-  private mouseMoveCallback(lonLat: ILonLat) {
-    if (this.extent.drawDirection === null) {
-      this.extent.updateDrawDirection(lonLat);
-    }
-
-    this.extent.updateFromDrawing(lonLat);
-    this.showSpatialSelection();
-  }
-}
-
-// decorator
-//
-// if the selection is not active, the decorated function is not called
-function skipIfSelectionIsNotActive(target: any, name: string, descriptor: any) {
-  const original = descriptor.value;
-
-  descriptor.value = function(...args: any[]) {
-    const selectionInactive = !this.extentSelectionInProgress;
-    if (selectionInactive) { return; }
-
-    return original.apply(this, args);
-  };
-
-  return descriptor;
-}
-
-// decorator
-//
-// if the selection is active but the first click on the globe has not been
-// made, the decorated function is not called
-function skipIfSelectionIsNotStarted(target: any, name: string, descriptor: any) {
-  const original = descriptor.value;
-
-  descriptor.value = function(...args: any[]) {
-    const selectionStarted = !!this.extent.startLonLat;
-    if (!selectionStarted) { return; }
-
-    return original.apply(this, args);
-  };
-
-  return descriptor;
-}
-
-// decorator factory
-// key: string - name of the key in the cesium event object that contains the
-//     relevant position; for example, the mouse click event object contains
-//     only the key "position", while the mouse move event object has
-//     "endPosition" and "startPosition"
-// index: number - position in the args array of the cesium position object
-//
-// The first argument passed to the decorated function should be a cesium event
-// object; this decorator takes one of the properties on that object (as chosen
-// by the decorator factory argument `key`) and converts it to a lonLat object,
-// matching the ILonLat interface, then calls the decorated function with that
-// lonLat instead of the cesium position. We don't call this directly, instead
-// registering it with Cesium as an event handler.
-//
-// Example:
-//
-//     @canvasPositionArgToLonLat("position")
-//     public leftClickCallback(lonLat) { ... }
-//
-//     const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-//     handler.setInputAction(this.leftClickCallback.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
-//
-// When the LEFT_CLICK event fires, Cesium will call leftClickCallback, passing
-// in an object with the "position" key, and this decorator will translate that
-// position to a lonLat before passing it on to leftClickCallback
-function canvasPositionArgToLonLat(key: string = "position", index: number = 0) {
-  return (target: any, name: string, descriptor: any) => {
-    const original = descriptor.value;
-
-    descriptor.value = function(...args: any[]) {
-      const position = args[index][key];
-      const lonLat = this.canvasPositionToLonLatDegrees(position);
-
-      const newArgs = args.slice();
-      newArgs[index] = lonLat;
-
-      return original.apply(this, newArgs);
-    };
-
-    return descriptor;
-  };
-}
-
-// decorator
-// index: number - position in the args array of the lonLat object
-//
-// if the lonLat argument is not valid--or if either the lat or lon is NaN,
-// meaning the point is not on the globe--the decorated function is not called
-function skipIfLonLatIsInvalid(index: number = 0) {
-  return (target: any, name: string, descriptor: any) => {
-    const original = descriptor.value;
-
-    descriptor.value = function(...args: any[]) {
-      if (this.lonLatIsNaN(args[index])) { return; }
-
-      return original.apply(this, args);
-    };
-
-    return descriptor;
-  };
 }

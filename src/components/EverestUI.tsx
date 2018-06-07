@@ -1,3 +1,4 @@
+// import * as GeoJSON from "geojson";
 import * as moment from "moment";
 import * as React from "react";
 
@@ -5,7 +6,6 @@ import { ISpatialSelection } from "../SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
-import { InputCoords } from "./InputCoords";
 import { SubmitButton } from "./SubmitButton";
 import { TemporalFilter } from "./TemporalFilter";
 import { ViewOrderButton } from "./ViewOrderButton";
@@ -63,13 +63,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                   onFromDateChange={this.handleTemporalLowerChange}
                   toDate={this.state.temporalFilterUpperBound}
                   onToDateChange={this.handleTemporalUpperChange} />
-              <InputCoords
-                selectedCoords={this.state.spatialSelection}
-                onCoordChange={this.handleSpatialSelectionChange} />
             </div>
             <Globe
               spatialSelection={this.state.spatialSelection}
-              onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)}
+              updateSpatialSelection={(s: any) => this.handleSpatialSelectionChange(s)}
               resetSpatialSelection={() => this.setSpatialSelectionToCollectionDefault()} />
             <div>
               <SubmitButton
@@ -139,7 +136,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleTemporalUpperChange(moment(collection.time_end));
     }
 
-    private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
+    private handleSpatialSelectionChange(spatialSelection: any) {
       this.setState({spatialSelection});
     }
 
