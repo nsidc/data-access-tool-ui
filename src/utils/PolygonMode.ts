@@ -4,12 +4,13 @@ const Cesium = require("cesium/Cesium");
 
 export class PolygonMode {
 
-  private finishedDrawingCallback: any;
   private ellipsoid: any;
+  private finishedDrawingCallback: any;
   private minPoints = 3;
   private mouseHandler: any;
+  private mousePoint: any = null;
+  private points: any[] = [];
   private polygon: any;
-  private positions: any[] = [];
   private scene: any;
 
   public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
@@ -32,12 +33,19 @@ export class PolygonMode {
   }
 
   public endMode() {
+    this.clearMousePoint();
     this.mouseHandler.destroy();
-    this.finishedDrawingCallback(this.positions);
+    this.finishedDrawingCallback(this.points);
   }
 
   private render() {
-    if (this.positions.length >= this.minPoints) {
+    let points = this.points;
+    if (this.mousePoint !== null) {
+      points = points.concat([this.mousePoint]);
+    }
+    points = points.map((p) => p.cartesianXYZ);
+
+    if (points.length >= this.minPoints) {
       if (this.polygon) {
         this.scene.primitives.remove(this.polygon);
         Cesium.destroyObject(this.polygon);
@@ -49,7 +57,7 @@ export class PolygonMode {
 
       const geometry = Cesium.PolygonGeometry.fromPositions({
         ellipsoid: this.ellipsoid,
-        positions: this.positions,
+        positions: points,
       });
 
       const geometryInstances = new Cesium.GeometryInstance({
@@ -65,78 +73,60 @@ export class PolygonMode {
     }
   }
 
-  // add points with each left click
-  @eventObjectToVerifiedCartesianArg("position")
-  private onLeftClick(cartesian: any) {
-    // remove "temporary" point from mouse movement if one exists; if
-    // `this.positions` is empty this is a no-op
-    this.positions.pop();
+  private screenPositionToPoint(position: any) {
+    if (position === null) { return null; }
 
-    // add permanent point
-    this.positions.push(cartesian);
+    const cartesian = this.scene.camera.pickEllipsoid(position, this.ellipsoid);
+    if (!cartesian) { return null; }
 
-    // add "temporary" point that will move with the mouse
-    this.positions.push(cartesian.clone());
+    const point = {
+      cartesianXYZ: cartesian,
+      screenPosition: position.clone(),
+    };
+
+    return point;
+  }
+
+  private addPoint(position: any) {
+    const point = this.screenPositionToPoint(position);
+    if (point === null) { return; }
+
+    this.points.push(point);
+  }
+
+  private updateMousePoint(position: any) {
+    const point = this.screenPositionToPoint(position);
+    if (point === null) { return; }
+
+    this.mousePoint = point;
+  }
+
+  private clearMousePoint() {
+    this.mousePoint = null;
+  }
+
+  private onLeftClick({position}: any) {
+    this.addPoint(position);
+    this.clearMousePoint();
+    this.render();
   }
 
   // stop drawing with left double click
-  @eventObjectToVerifiedCartesianArg("position")
-  private onLeftDoubleClick(cartesian: any) {
+  private onLeftDoubleClick({position}: any) {
     // two individual left click events fire before the double click does; this
-    // results in 2 duplicates of the final position at the end of
-    // `this.positions` that can be safely removed
-    this.positions = this.positions.slice(0, -2);
+    // results in a duplicate of the final position at the end of
+    // `this.points` that can be safely removed
+    this.points.pop();
 
-    // if we don't have enough points to complete the polygon, treat the event
-    // like a single click; re-add the "temporary" point to keep drawing
-    if (this.positions.length < this.minPoints) {
-      this.positions.push(cartesian);
-      return;
+    if (this.points.length >= this.minPoints) {
+      this.clearMousePoint();
+      this.render();
+      this.endMode();
     }
-
-    this.render();
-    this.endMode();
   }
 
-  @eventObjectToVerifiedCartesianArg("endPosition")
-  private onMouseMove(cartesian: any) {
-    if (this.positions.length === 0) { return; }
-
-    // remove and update "temporary" position
-    this.positions.pop();
-    this.positions.push(cartesian);
-
+  private onMouseMove({endPosition}: any) {
+    this.updateMousePoint(endPosition);
     this.render();
   }
-}
-
-// Decorator to simplify definitions for cesium event handlers in this module;
-// the given XY position is converted to cartesian coordinates and passed on to
-// the decorated function; if the position is null or the calculated cartesian
-// position is off the globe, the decorated function is skipped.
-//
-// Arguments:
-// positionKey - the key in the object passed by the fired cesium event object
-//               that contains the position relevant for the decorated function
-function eventObjectToVerifiedCartesianArg(positionKey: string = "position") {
-  return (target: any, name: string, descriptor: any) => {
-    const original = descriptor.value;
-
-    descriptor.value = function(...args: any[]) {
-      const index = 0;
-
-      const position = args[index][positionKey];
-      if (position === null) { return; }
-
-      const cartesian = this.scene.camera.pickEllipsoid(position, this.ellipsoid);
-      if (!cartesian) { return; }
-
-      const newArgs = args.slice();
-      newArgs[index] = cartesian;
-
-      return original.apply(this, newArgs);
-    };
-
-    return descriptor;
-  };
 }

@@ -62,15 +62,32 @@ export class CesiumAdapter {
   public startPolygonMode() {
 
     // when drawing is finished (by double-clicking), this function is called
-    // with cartesian positions
-    const finishedDrawingCallback = (positions: any) => {
-      let lonLatsArray = positions.map((position: any) => {
-        const lonLat = this.cartesianPositionToLonLatDegrees(position);
+    // with an array of points; each point has the cartesianXYZ--describing the
+    // location on the globe--and screenPosition--the XY point on the screen
+    // that was clicked when that point was added. Note that the screenPosition
+    // may no longer match the screenPosition corresponding to that spot on the
+    // globe, since the globe could have been rotated since the time that point
+    // was added by a click.
+    const finishedDrawingCallback = (points: any) => {
+      const cartesians = points.map((p: any) => p.cartesianXYZ);
+
+      const lonLatsArray = cartesians.map((cartesian: any) => {
+        const lonLat = this.cartesianPositionToLonLatDegrees(cartesian);
         return [lonLat.lon, lonLat.lat];
       }, this);
 
-      // CMR requires polygons to be in "counterclockwise" order
-      lonLatsArray = this.ensureCounterClockwise(lonLatsArray);
+      // use the screen positions to determine clockwise/counterclockwise
+      //
+      // with the cesium widget, (0, 0) is at the top left, with x increasing to
+      // the right and y increasing down; the shoelace formula works with a
+      // standard cartesian system where y increases up, so inverse the y value
+      // before applying the shoelace formula
+      const pointsDrawnOnScreen = points.map((p: any) => [p.screenPosition.x, -p.screenPosition.y]);
+
+      // CMR requires polygons to be in counterclockwise order
+      if (this.polygonIsClockwise(pointsDrawnOnScreen)) {
+        lonLatsArray.reverse();
+      }
 
       // the last point in a polygon needs to be the first again to close it
       lonLatsArray.push(lonLatsArray[0]);
@@ -91,23 +108,18 @@ export class CesiumAdapter {
 
   // https://stackoverflow.com/a/1165943
   // http://en.wikipedia.org/wiki/Shoelace_formula
-  private ensureCounterClockwise(lonLatsArray: number[][]) {
-    const sum = lonLatsArray.reduce((acc: number, lonLat: number[], index: number, arr: number[][]) => {
+  private polygonIsClockwise(coords: number[][]) {
+    const sum = coords.reduce((acc: number, coord: number[], index: number, arr: number[][]) => {
+      const [x, y] = coord;
+
       const nextIndex = (index + 1) % arr.length;
+      const [nextX, nextY] = arr[nextIndex];
 
-      const [lon, lat] = lonLat;
-      const [nextLon, nextLat] = arr[nextIndex];
-
-      const edge = (nextLat - lat) * (nextLon + lon);
+      const edge = (nextX - x) * (nextY + y);
 
       return acc + edge;
     }, 0);
 
-    const polygonIsClockwise = sum < 0;
-    if (polygonIsClockwise) {
-      return lonLatsArray.reverse();
-    } else {
-      return lonLatsArray;
-    }
+    return sum > 0;
   }
 }
