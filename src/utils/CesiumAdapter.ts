@@ -10,6 +10,7 @@ require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
 
 export class CesiumAdapter {
+  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
   private viewer: any;
@@ -36,6 +37,8 @@ export class CesiumAdapter {
       selectionIndicator: false,
       timeline: false,
     });
+
+    this.renderInitialBoundingBox(spatialSelection);
   }
 
   // cartesianXYZ: 3D coordinates for position on earth's surface
@@ -98,9 +101,34 @@ export class CesiumAdapter {
     return mode.start();
   }
 
- public clearSpatialSelection() {
-   this.viewer.scene.primitives.removeAll();
- }
+  public clearSpatialSelection() {
+    this.viewer.scene.primitives.removeAll();
+    this.viewer.entities.removeById("rectangle");
+  }
+
+  public renderInitialBoundingBox(spatialSelection: any) {
+    this.clearSpatialSelection();
+
+    const bbox = spatialSelection.bbox;
+    if (!bbox) { return; }
+
+    const globalBbox = [-180, -90, 180, 90];
+
+    if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
+      return;
+    }
+
+    const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+
+    this.viewer.entities.add({
+      id: "rectangle",
+      name: "rectangle",
+      rectangle: {
+        coordinates: rectangleRadians,
+        material: CesiumAdapter.extentColor,
+      },
+    });
+  }
 
   // https://stackoverflow.com/a/1165943
   // http://en.wikipedia.org/wiki/Shoelace_formula

@@ -35,17 +35,23 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     return this.spatialSelection !== nextProps.spatialSelection;
   }
 
+  public componentDidUpdate() {
+    this.cesiumAdapter.renderInitialBoundingBox(this.props.spatialSelection);
+  }
+
   public render() {
     return (
       <div id="spatial-selection">
         <div id="globe">
           <SpatialSelectionToolbar
-            onClickPolygon={() => this.cesiumAdapter.startPolygonMode()}
+            onClickPolygon={() => {
+              this.cesiumAdapter.clearSpatialSelection();
+              this.cesiumAdapter.startPolygonMode();
+            }}
             onClickReset={() => {
-                this.cesiumAdapter.clearSpatialSelection();
-                this.props.resetSpatialSelection();
-              }
-            } />
+              this.cesiumAdapter.clearSpatialSelection();
+              this.props.resetSpatialSelection();
+            }} />
         </div>
       </div>
     );
