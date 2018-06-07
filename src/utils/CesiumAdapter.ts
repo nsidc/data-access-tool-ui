@@ -2,7 +2,6 @@ import * as GeoJSON from "geojson";
 
 import { ILonLat } from "../LonLat";
 import { ISpatialSelection } from "../SpatialSelection";
-// import { Extent } from "../utils/Extent";
 import { PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
@@ -11,10 +10,8 @@ require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
 
 export class CesiumAdapter {
-  // private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
-  // private extent: Extent;
   private viewer: any;
 
   private updateSpatialSelection: any;
@@ -98,7 +95,6 @@ export class CesiumAdapter {
     };
 
     const mode = new PolygonMode(this.viewer.scene, CesiumAdapter.ellipsoid, finishedDrawingCallback);
-
     return mode.start();
   }
 

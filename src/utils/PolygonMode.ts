@@ -111,11 +111,10 @@ export class PolygonMode {
     this.render();
   }
 
-  // stop drawing with left double click
   private onLeftDoubleClick({position}: any) {
     // two individual left click events fire before the double click does; this
     // results in a duplicate of the final position at the end of
-    // `this.points` that can be safely removed
+    // `this.points` that can (and should) be safely removed
     this.points.pop();
 
     if (this.points.length >= this.minPoints) {
