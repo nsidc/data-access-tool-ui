@@ -1,21 +1,6 @@
-declare var Drupal: any;
-let HERMES_ORDER_URL: string;
-let HERMES_USER_URL: string;
-let inDrupal: boolean;
-let user: {[index: string]: string};
-if (typeof(Drupal) !== "undefined") {
-  inDrupal = true;
-  HERMES_ORDER_URL = "/order-proxy";
-  HERMES_USER_URL = HERMES_ORDER_URL;
-} else {
-  inDrupal = false;
-  // Only populate and submit the user if we're not in the Drupal context. The
-  // order proxy endpoint will inject the user in Drupal. This is a placeholder
-  // username to hopefully avoid collisions with other users.
-  user = {uid: "__everestui-standalone__"};
-  HERMES_ORDER_URL = "https://dev.hermes.mfisher.dev.int.nsidc.org/api/orders/";
-  HERMES_USER_URL = `https://dev.hermes.mfisher.dev.int.nsidc.org/api/users/${user.uid}/orders/`;
-}
+import { inDrupal } from "./environment";
+import { HERMES_ORDER_URL, HERMES_USER_URL } from "./environment";
+import { user } from "./environment";
 
 export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) => {
   const headers: any = {
