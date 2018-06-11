@@ -22,9 +22,9 @@ if (typeof(Drupal) !== "undefined") {
   HERMES_USER_URL = HERMES_ORDER_URL;
   if (environment === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
-    ORDER_NOTIFICATION_URL = `dev.hermes.${devPostfix}`;
+    ORDER_NOTIFICATION_URL = `wss://dev.hermes.${devPostfix}/notification/`;
   } else {
-    ORDER_NOTIFICATION_URL = `${window.location.origin}/apps/order/notification`;
+    ORDER_NOTIFICATION_URL = `wss://${window.location.hostname}/apps/order/notification/`;
   }
 } else {
   inDrupal = false;
@@ -32,10 +32,10 @@ if (typeof(Drupal) !== "undefined") {
   // order proxy endpoint will inject the user in Drupal. This is a placeholder
   // username to hopefully avoid collisions with other users.
   user = {uid: "__everestui-standalone__"};
-  const HERMES_BASE_URL: string = `https://${window.location.hostname}`;
-  HERMES_ORDER_URL = `${HERMES_BASE_URL}/api/orders/`;
-  HERMES_USER_URL = `${HERMES_BASE_URL}/api/users/${user.uid}/orders/`;
-  ORDER_NOTIFICATION_URL = `${HERMES_BASE_URL}/notification/`;
+  const HERMES_BASE_URL: string = `${window.location.hostname}`;
+  HERMES_ORDER_URL = `https://${HERMES_BASE_URL}/api/orders/`;
+  HERMES_USER_URL = `https://${HERMES_BASE_URL}/api/users/${user.uid}/orders/`;
+  ORDER_NOTIFICATION_URL = `wss://${HERMES_BASE_URL}/notification/`;
 }
 
 export { inDrupal };
