@@ -2,7 +2,8 @@ declare var Drupal: any;
 
 let HERMES_ORDER_URL: string;
 let HERMES_USER_URL: string;
-let ORDER_NOTIFICATION_URL: string;
+let ORDER_NOTIFICATION_HOST: string;
+let ORDER_NOTIFICATION_PATH: string;
 let inDrupal: boolean;
 let user: {[index: string]: string};
 
@@ -20,11 +21,14 @@ if (typeof(Drupal) !== "undefined") {
   inDrupal = true;
   HERMES_ORDER_URL = "/order-proxy";
   HERMES_USER_URL = HERMES_ORDER_URL;
+  user = {uid: "__foo__"};
   if (environment === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
-    ORDER_NOTIFICATION_URL = `wss://dev.hermes.${devPostfix}/notification/`;
+    ORDER_NOTIFICATION_HOST = `wss://dev.hermes.${devPostfix}`;
+    ORDER_NOTIFICATION_PATH = "/notification/";
   } else {
-    ORDER_NOTIFICATION_URL = `wss://${window.location.hostname}/apps/order/notification/`;
+    ORDER_NOTIFICATION_HOST = `wss://${window.location.hostname}`;
+    ORDER_NOTIFICATION_PATH = "/apps/order/notification/";
   }
 } else {
   inDrupal = false;
@@ -35,11 +39,13 @@ if (typeof(Drupal) !== "undefined") {
   const HERMES_BASE_URL: string = `${window.location.hostname}`;
   HERMES_ORDER_URL = `https://${HERMES_BASE_URL}/api/orders/`;
   HERMES_USER_URL = `https://${HERMES_BASE_URL}/api/users/${user.uid}/orders/`;
-  ORDER_NOTIFICATION_URL = `wss://${HERMES_BASE_URL}/notification/`;
+  ORDER_NOTIFICATION_HOST = `wss://${HERMES_BASE_URL}`;
+  ORDER_NOTIFICATION_PATH = "/notification/";
 }
 
 export { inDrupal };
-export { ORDER_NOTIFICATION_URL };
+export { user };
 export { HERMES_ORDER_URL };
 export { HERMES_USER_URL };
-export { user };
+export { ORDER_NOTIFICATION_HOST };
+export { ORDER_NOTIFICATION_PATH };

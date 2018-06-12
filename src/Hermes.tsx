@@ -1,5 +1,8 @@
+import * as io from "socket.io-client";
+
 import { inDrupal } from "./environment";
 import { HERMES_ORDER_URL, HERMES_USER_URL } from "./environment";
+import { ORDER_NOTIFICATION_HOST, ORDER_NOTIFICATION_PATH } from "./environment";
 import { user } from "./environment";
 
 export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) => {
@@ -39,4 +42,17 @@ export const getOrder = (orderId: string) => {
     return fetch(HERMES_ORDER_URL + orderId)
       .then((response) => response.json());
   }
+};
+
+export const openNotificationConnection = (callback: any) => {
+  const ws: any = io.connect(ORDER_NOTIFICATION_HOST, {
+    path: ORDER_NOTIFICATION_PATH,
+    transports: ["websocket", "polling"],
+  });
+  ws.emit("join", { userid: user.uid });
+  ws.on("reconnect", (event: any) => {
+    console.log("Order notification: reconnected and rejoining");
+    ws.emit("join", { userid: user.uid });
+  });
+  ws.on("notification", callback);
 };

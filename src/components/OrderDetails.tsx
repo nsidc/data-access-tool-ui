@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { getOrder } from "../Hermes";
+import { getOrder, openNotificationConnection } from "../Hermes";
 
 interface IOrderDetailsProps {
   orderId?: string;
@@ -16,6 +16,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public constructor(props: any) {
     super(props);
+    this.handleNotification = this.handleNotification.bind(this);
+    this.refreshOrder = this.refreshOrder.bind(this);
     this.state = {
       order: undefined,
     };
@@ -45,11 +47,28 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     }
   }
 
+  public componentDidMount() {
+    openNotificationConnection(this.handleNotification);
+  }
+
   public componentDidUpdate() {
     const orderSynced: boolean = this.state.order && (this.props.orderId === this.state.order.order_id);
     if (this.props.orderId && !orderSynced) {
+      this.refreshOrder();
+    }
+  }
+
+  private refreshOrder() {
+    if (this.props.orderId) {
       getOrder(this.props.orderId)
         .then((order: object) => this.setState({order}));
+    }
+  }
+
+  private handleNotification(event: any) {
+    const notification: any = JSON.parse(event);
+    if (notification.order_id === this.props.orderId) {
+      this.refreshOrder();
     }
   }
 }
