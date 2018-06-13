@@ -16,14 +16,13 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
   }
 
   public render() {
-    const order: any = this.props.order;
     let style: string = "order-list-item";
     if (this.props.selected) {
       style += " order-list-item-selected";
     }
     return (
       <div onClick={this.handleOrderSelection} className={style}>
-        {moment.unix(order.date).format(OrderListItem.timeFormat)}
+        {moment.unix(this.props.order.date).format(OrderListItem.timeFormat)}
       </div>
     );
   }

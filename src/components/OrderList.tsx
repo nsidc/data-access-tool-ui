@@ -23,7 +23,6 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
   public render() {
     let orderList: any[] = this.state.orderList;
     if (this.state.orderList.length > 0) {
-      orderList = orderList.sort((a, b) => b.date - a.date);
       orderList = orderList.map((order: any, index: number) => {
         let selected: boolean = false;
         if (order.order_id === this.props.selectedOrder) {
@@ -47,7 +46,7 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
 
   public componentDidMount() {
     getUserOrders()
-      .then((orders) => Object.values(orders))
+      .then((orders) => Object.values(orders).sort((a, b) => b.date - a.date))
       .then((orderList) => this.setState({orderList}));
   }
 }
