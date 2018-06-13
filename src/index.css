@@ -95,14 +95,6 @@ td, th {
   text-align: left;
 }
 
-#input-coords {
-  float: right;
-}
-
-#input-coords input {
-  width: 65px;
-}
-
 thead {
   background: steelblue;
   color: white;

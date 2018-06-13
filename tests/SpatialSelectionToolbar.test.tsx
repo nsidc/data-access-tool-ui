@@ -5,8 +5,8 @@ import { SpatialSelectionToolbar } from "../src/components/SpatialSelectionToolb
 
 describe("Spatial toolbar component", () => {
   test("Renders toolbar", () => {
-    const toolbar = shallow(<SpatialSelectionToolbar onSelectionStart={() => jest.fn()}
-                                                     onResetClick={() => jest.fn()}/>);
+    const toolbar = shallow(<SpatialSelectionToolbar onClickPolygon={() => jest.fn()}
+                                                     onClickReset={() => jest.fn()}/>);
 
     expect(toolbar.find("#toolbar")).toEqual(expect.anything());
   });
