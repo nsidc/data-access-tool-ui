@@ -14,7 +14,7 @@ interface IViewOrderButtonState {
 }
 
 export class ViewOrderButton extends React.Component<IViewOrderButtonProps, IViewOrderButtonState> {
-  public constructor(props: any) {
+  public constructor(props: IViewOrderButtonProps) {
     super(props);
     this.handleOpenOrderDetailModal = this.handleOpenOrderDetailModal.bind(this);
     this.handleCloseOrderDetailModal = this.handleCloseOrderDetailModal.bind(this);

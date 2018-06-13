@@ -2,7 +2,7 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "jsx": "React",
-        "lib": ["es5", "dom.iterable", "es6"],
+        "lib": ["es5", "dom.iterable", "es6", "es2017"],
         "module": "commonjs",
         "noImplicitReturns": true,
         "noUnusedLocals": true,

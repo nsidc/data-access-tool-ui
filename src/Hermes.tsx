@@ -1,10 +1,12 @@
 declare var Drupal: any;
 let HERMES_ORDER_URL: string;
+let HERMES_USER_URL: string;
 let inDrupal: boolean;
 let user: {[index: string]: string};
 if (typeof(Drupal) !== "undefined") {
   inDrupal = true;
   HERMES_ORDER_URL = "/order-proxy";
+  HERMES_USER_URL = HERMES_ORDER_URL;
 } else {
   inDrupal = false;
   // Only populate and submit the user if we're not in the Drupal context. The
@@ -12,6 +14,7 @@ if (typeof(Drupal) !== "undefined") {
   // username to hopefully avoid collisions with other users.
   user = {uid: "__everestui-standalone__"};
   HERMES_ORDER_URL = "https://dev.hermes.mfisher.dev.int.nsidc.org/api/orders/";
+  HERMES_USER_URL = `https://dev.hermes.mfisher.dev.int.nsidc.org/api/users/${user.uid}/orders/`;
 }
 
 export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) => {
@@ -34,6 +37,11 @@ export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) =>
     headers,
     method: "POST",
   }).then((response) => response.json());
+};
+
+export const getUserOrders = () => {
+  return fetch(HERMES_USER_URL, {credentials: "include"})
+    .then((response) => response.json());
 };
 
 export const getOrder = (orderId: string) => {

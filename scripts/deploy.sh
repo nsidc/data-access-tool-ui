@@ -19,6 +19,7 @@ else
 fi
 
 ensure_dir_exists $TO
+rm -rf $TO/*
 cp -R $FROM $TO/.
 
 echo "App deployed to $TO"
