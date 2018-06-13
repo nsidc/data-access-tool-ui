@@ -2,6 +2,7 @@ declare var Drupal: any;
 
 let HERMES_ORDER_URL: string;
 let HERMES_USER_URL: string;
+let PROFILE_URL: string;
 let ORDER_NOTIFICATION_HOST: string;
 let ORDER_NOTIFICATION_PATH: string;
 let inDrupal: boolean;
@@ -19,6 +20,7 @@ export const environment = getEnvironment();
 
 if (typeof(Drupal) !== "undefined") {
   inDrupal = true;
+  PROFILE_URL = "/order-history";
   HERMES_ORDER_URL = "/order-proxy";
   HERMES_USER_URL = HERMES_ORDER_URL;
   user = {uid: Drupal.settings.data_downloads.user_name};
@@ -32,6 +34,7 @@ if (typeof(Drupal) !== "undefined") {
   }
 } else {
   inDrupal = false;
+  PROFILE_URL = "/profile.html";
   // Only populate and submit the user if we're not in the Drupal context. The
   // order proxy endpoint will inject the user in Drupal. This is a placeholder
   // username to hopefully avoid collisions with other users.
@@ -49,3 +52,4 @@ export { HERMES_ORDER_URL };
 export { HERMES_USER_URL };
 export { ORDER_NOTIFICATION_HOST };
 export { ORDER_NOTIFICATION_PATH };
+export { PROFILE_URL };

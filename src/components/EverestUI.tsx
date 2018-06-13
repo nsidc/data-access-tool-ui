@@ -5,10 +5,9 @@ import { ISpatialSelection } from "../SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
-import { InputCoords } from "./InputCoords";
 import { SubmitButton } from "./SubmitButton";
 import { TemporalFilter } from "./TemporalFilter";
-import { ViewOrderButton } from "./ViewOrderButton";
+import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IEverestState {
   selectedCollection: any;
@@ -18,7 +17,6 @@ interface IEverestState {
   temporalFilterUpperBound: moment.Moment;
   granules?: object[];
   orderSubmitResponse?: object;
-  orderViewResponse?: object;
 }
 
 const defaultSpatialSelection = {
@@ -37,11 +35,9 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
       this.handleGranuleResponse = this.handleGranuleResponse.bind(this);
       this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
-      this.handleViewOrderResponse = this.handleViewOrderResponse.bind(this);
       this.state = {
         granules: [],
         orderSubmitResponse: undefined,
-        orderViewResponse: undefined,
         selectedCollection: {},
         selectedCollectionId: "",
         spatialSelection: defaultSpatialSelection,
@@ -63,13 +59,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                   onFromDateChange={this.handleTemporalLowerChange}
                   toDate={this.state.temporalFilterUpperBound}
                   onToDateChange={this.handleTemporalUpperChange} />
-              <InputCoords
-                selectedCoords={this.state.spatialSelection}
-                onCoordChange={this.handleSpatialSelectionChange} />
             </div>
             <Globe
               spatialSelection={this.state.spatialSelection}
-              onSpatialSelectionChange={(s: ISpatialSelection) => this.handleSpatialSelectionChange(s)}
+              updateSpatialSelection={(s: any) => this.handleSpatialSelectionChange(s)}
               resetSpatialSelection={() => this.setSpatialSelectionToCollectionDefault()} />
             <div>
               <SubmitButton
@@ -79,9 +72,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                 temporalUpperBound={this.state.temporalFilterUpperBound}
                 onGranuleResponse={this.handleGranuleResponse}
                 onSubmitOrderResponse={this.handleSubmitOrderResponse} />
-              <ViewOrderButton
-                onViewOrderResponse={this.handleViewOrderResponse}
-                orderViewResponse={this.state.orderViewResponse}
+              <ViewOrderPrompt
                 orderSubmitResponse={this.state.orderSubmitResponse} />
             </div>
             <GranuleList
@@ -94,8 +85,8 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     }
 
     // take the list of bounding boxes from a CMR response
-    //  (e.g., ["-90 -180 90 180"]) and return a SpatialSelection encompassing
-    // them all
+    // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
+    // encompassing them all
     private cmrBoxArrToSpatialSelection(boxes: string[]) {
       if (!boxes) {
         return defaultSpatialSelection;
@@ -117,16 +108,24 @@ export class EverestUI extends React.Component<{}, IEverestState> {
         easts.push(coords[3]);
       });
 
-      const finalSouth: number = Math.min.apply(null, souths);
       const finalWest: number = Math.min.apply(null, wests);
-      const finalNorth: number = Math.max.apply(null, norths);
+      const finalSouth: number = Math.min.apply(null, souths);
       const finalEast: number = Math.max.apply(null, easts);
+      const finalNorth: number = Math.max.apply(null, norths);
 
       return {
-        lower_left_lat: finalSouth,
-        lower_left_lon: finalWest,
-        upper_right_lat: finalNorth,
-        upper_right_lon: finalEast,
+        bbox: [finalWest, finalSouth, finalEast, finalNorth],
+        geometry: {
+          coordinates: [[
+            [finalWest, finalSouth],
+            [finalEast, finalSouth],
+            [finalEast, finalNorth],
+            [finalWest, finalNorth],
+            [finalSouth, finalWest],
+          ]],
+          type: "Polygon",
+        },
+        type: "Feature",
       };
     }
 
@@ -139,7 +138,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleTemporalUpperChange(moment(collection.time_end));
     }
 
-    private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
+    private handleSpatialSelectionChange(spatialSelection: any) {
       this.setState({spatialSelection});
     }
 
@@ -157,10 +156,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
 
     private handleSubmitOrderResponse(hermesResponse: any) {
       this.setState({orderSubmitResponse: hermesResponse});
-    }
-
-    private handleViewOrderResponse(hermesResponse: any) {
-      this.setState({orderViewResponse: hermesResponse});
     }
 
     private setSpatialSelectionToCollectionDefault() {
