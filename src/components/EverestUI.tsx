@@ -7,7 +7,7 @@ import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
 import { SubmitButton } from "./SubmitButton";
 import { TemporalFilter } from "./TemporalFilter";
-import { ViewOrderButton } from "./ViewOrderButton";
+import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IEverestState {
   selectedCollection: any;
@@ -17,7 +17,6 @@ interface IEverestState {
   temporalFilterUpperBound: moment.Moment;
   granules?: object[];
   orderSubmitResponse?: object;
-  orderViewResponse?: object;
 }
 
 const defaultSpatialSelection = {
@@ -36,11 +35,9 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
       this.handleGranuleResponse = this.handleGranuleResponse.bind(this);
       this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
-      this.handleViewOrderResponse = this.handleViewOrderResponse.bind(this);
       this.state = {
         granules: [],
         orderSubmitResponse: undefined,
-        orderViewResponse: undefined,
         selectedCollection: {},
         selectedCollectionId: "",
         spatialSelection: defaultSpatialSelection,
@@ -75,9 +72,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                 temporalUpperBound={this.state.temporalFilterUpperBound}
                 onGranuleResponse={this.handleGranuleResponse}
                 onSubmitOrderResponse={this.handleSubmitOrderResponse} />
-              <ViewOrderButton
-                onViewOrderResponse={this.handleViewOrderResponse}
-                orderViewResponse={this.state.orderViewResponse}
+              <ViewOrderPrompt
                 orderSubmitResponse={this.state.orderSubmitResponse} />
             </div>
             <GranuleList
@@ -161,10 +156,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
 
     private handleSubmitOrderResponse(hermesResponse: any) {
       this.setState({orderSubmitResponse: hermesResponse});
-    }
-
-    private handleViewOrderResponse(hermesResponse: any) {
-      this.setState({orderViewResponse: hermesResponse});
     }
 
     private setSpatialSelectionToCollectionDefault() {
