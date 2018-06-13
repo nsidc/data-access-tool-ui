@@ -21,7 +21,7 @@ if (typeof(Drupal) !== "undefined") {
   inDrupal = true;
   HERMES_ORDER_URL = "/order-proxy";
   HERMES_USER_URL = HERMES_ORDER_URL;
-  user = {uid: "__foo__"};
+  user = {uid: Drupal.settings.data_downloads.user_name};
   if (environment === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     ORDER_NOTIFICATION_HOST = `wss://dev.hermes.${devPostfix}`;
