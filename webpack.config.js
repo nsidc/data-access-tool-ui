@@ -40,7 +40,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.tsx'],
+        extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx'],
 	alias: {
 	    // Cesium module name
 	    cesium: path.resolve(__dirname, cesiumSource)

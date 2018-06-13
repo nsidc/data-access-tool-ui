@@ -7,24 +7,36 @@ import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
   spatialSelection: ISpatialSelection;
-  onSpatialSelectionChange: (s: ISpatialSelection) => void;
   resetSpatialSelection: () => void;
+
+  // function defined in EverestUI, passed down to update state up there
+  updateSpatialSelection: (s: any) => void;
 }
 
-export class Globe extends React.Component<IGlobeProps, {}> {
+interface IGlobeState {
+  spatialSelection: any;
+}
+
+export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   private cesiumAdapter: CesiumAdapter;
+  private spatialSelection: any;
 
   public constructor(props: IGlobeProps) {
     super(props);
-    this.cesiumAdapter = new CesiumAdapter((s: ISpatialSelection) => this.props.onSpatialSelectionChange(s));
+    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection.bind(this));
+    this.spatialSelection = props.spatialSelection;
   }
 
   public componentDidMount() {
     this.cesiumAdapter.createViewer("globe", this.props.spatialSelection);
   }
 
+  public shouldComponentUpdate(nextProps: any, nextState: any) {
+    return this.spatialSelection !== nextProps.spatialSelection;
+  }
+
   public componentDidUpdate() {
-    this.cesiumAdapter.updateSpatialSelection(this.props.spatialSelection);
+    this.cesiumAdapter.renderInitialBoundingBox(this.props.spatialSelection);
   }
 
   public render() {
@@ -32,10 +44,21 @@ export class Globe extends React.Component<IGlobeProps, {}> {
       <div id="spatial-selection">
         <div id="globe">
           <SpatialSelectionToolbar
-            onSelectionStart={() => this.cesiumAdapter.handleSelectionStart()}
-            onResetClick={() => this.props.resetSpatialSelection()} />
+            onClickPolygon={() => {
+              this.cesiumAdapter.clearSpatialSelection();
+              this.cesiumAdapter.startPolygonMode();
+            }}
+            onClickReset={() => {
+              this.cesiumAdapter.clearSpatialSelection();
+              this.props.resetSpatialSelection();
+            }} />
         </div>
       </div>
     );
+  }
+
+  private updateSpatialSelection(spatialSelection: any) {
+    this.spatialSelection = spatialSelection;
+    this.props.updateSpatialSelection(spatialSelection);
   }
 }
