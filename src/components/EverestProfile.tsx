@@ -10,7 +10,7 @@ interface IEverestProfileState {
 export class EverestProfile extends React.Component<{}, IEverestProfileState> {
   public constructor(props: any) {
     super(props);
-    this.handleOrderSelection = this.handleOrderSelection.bind(this);
+
     this.state = {
       selectedOrder: undefined,
     };
@@ -28,7 +28,7 @@ export class EverestProfile extends React.Component<{}, IEverestProfileState> {
     );
   }
 
-  private handleOrderSelection(orderId: string) {
+  private handleOrderSelection = (orderId: string) => {
     this.setState({
       selectedOrder: orderId,
     });

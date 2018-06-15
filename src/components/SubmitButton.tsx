@@ -22,9 +22,8 @@ interface ISubmitButtonState {
 export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
   public constructor(props: ISubmitButtonProps) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleCmrResponse = this.handleCmrResponse.bind(this);
 
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       cmrResponse: undefined,
       orderSubmissionResponse: undefined,

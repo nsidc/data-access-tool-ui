@@ -29,12 +29,7 @@ const defaultSpatialSelection = {
 export class EverestUI extends React.Component<{}, IEverestState> {
     public constructor(props: any) {
       super(props);
-      this.handleCollectionChange = this.handleCollectionChange.bind(this);
-      this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
-      this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
-      this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
-      this.handleGranuleResponse = this.handleGranuleResponse.bind(this);
-      this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
+
       this.state = {
         granules: [],
         orderSubmitResponse: undefined,
@@ -129,7 +124,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       };
     }
 
-    private handleCollectionChange(collection: any) {
+    private handleCollectionChange = (collection: any) => {
       this.setState({selectedCollection: collection},
                     this.setSpatialSelectionToCollectionDefault);
       this.setState({selectedCollectionId: collection.id});
@@ -138,23 +133,23 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleTemporalUpperChange(moment(collection.time_end));
     }
 
-    private handleSpatialSelectionChange(spatialSelection: any) {
+    private handleSpatialSelectionChange = (spatialSelection: any) => {
       this.setState({spatialSelection});
     }
 
-    private handleTemporalLowerChange(date: moment.Moment) {
+    private handleTemporalLowerChange = (date: moment.Moment) => {
       this.setState({temporalFilterLowerBound: date});
     }
 
-    private handleTemporalUpperChange(date: moment.Moment) {
+    private handleTemporalUpperChange = (date: moment.Moment) => {
       this.setState({temporalFilterUpperBound: date});
     }
 
-    private handleGranuleResponse(cmrResponse: any) {
+    private handleGranuleResponse = (cmrResponse: any) => {
       this.setState({granules: cmrResponse});
     }
 
-    private handleSubmitOrderResponse(hermesResponse: any) {
+    private handleSubmitOrderResponse = (hermesResponse: any) => {
       this.setState({orderSubmitResponse: hermesResponse});
     }
 

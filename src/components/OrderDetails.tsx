@@ -16,8 +16,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public constructor(props: any) {
     super(props);
-    this.handleNotification = this.handleNotification.bind(this);
-    this.refreshOrder = this.refreshOrder.bind(this);
+
     this.state = {
       order: undefined,
     };
@@ -65,7 +64,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     }
   }
 
-  private handleNotification(event: any) {
+  private handleNotification = (event: any) => {
     const notification: any = JSON.parse(event);
     if (notification.order_id === this.props.orderId) {
       this.refreshOrder();

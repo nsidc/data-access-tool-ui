@@ -23,7 +23,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public constructor(props: IGlobeProps) {
     super(props);
-    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection.bind(this));
+    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection);
     this.spatialSelection = props.spatialSelection;
   }
 
@@ -57,7 +57,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     );
   }
 
-  private updateSpatialSelection(spatialSelection: any) {
+  private updateSpatialSelection = (spatialSelection: any) => {
     this.spatialSelection = spatialSelection;
     this.props.updateSpatialSelection(spatialSelection);
   }
