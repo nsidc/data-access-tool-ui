@@ -1,6 +1,5 @@
 import * as GeoJSON from "geojson";
 
-import { ILonLat } from "../types/LonLat";
 import { ISpatialSelection } from "../types/SpatialSelection";
 import { PolygonMode } from "./PolygonMode";
 
@@ -146,4 +145,9 @@ export class CesiumAdapter {
 
     return sum > 0;
   }
+}
+
+interface ILonLat {
+  readonly lat: number;
+  readonly lon: number;
 }
