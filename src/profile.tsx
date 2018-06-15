@@ -3,12 +3,12 @@ import * as ReactDOM from "react-dom";
 
 import "./index.css";
 
-import { EverestUI } from "./components/EverestUI";
+import { EverestProfile } from "./components/EverestProfile";
 
 const renderApp = () => {
   ReactDOM.render(
-      <EverestUI />,
-      document.getElementById("everest-ui"),
+      <EverestProfile />,
+      document.getElementById("everest-ui-profile"),
   );
 };
 
@@ -16,7 +16,8 @@ declare var Drupal: any;
 
 if (typeof(Drupal) !== "undefined") {
   // By extending Drupal.behaviors with a new behavior and callback, we can
-  // ensure that the "everest-ui" element exists before we render the app.
+  // ensure that the "everest-ui-profile" element exists before we render the
+  // app.
   Drupal.behaviors.AppBehavior = {
     attach: (context: any, settings: any) => renderApp(),
   };

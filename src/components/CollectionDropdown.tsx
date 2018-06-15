@@ -1,47 +1,43 @@
-import { collectionsRequest } from "../CMR";
-
 import * as React from "react";
 
+import { collectionsRequest } from "../CMR";
 
-interface CollectionsState {
-    collections: any;
-}
-
-interface CollectionsProps {
+interface ICollectionDropdownProps {
     selectedCollection: any;
     onCollectionChange: any;
 }
 
-class Component extends React.Component<CollectionsProps, CollectionsState> {
-    static displayName = "CollectionDropdown";
+interface ICollectionDropdownState {
+    collections: any;
+}
 
-    constructor(props: any) {
+export class CollectionDropdown extends React.Component<ICollectionDropdownProps, ICollectionDropdownState> {
+    public constructor(props: ICollectionDropdownProps) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            collections: null
+            collections: [{}],
         };
     }
 
-    handleChange(e: any) {
-      this.props.onCollectionChange(e.target.value);
+    public handleChange(e: any) {
+      const collection: any = JSON.parse(e.target.value);
+      this.props.onCollectionChange(collection);
     }
 
-    componentDidMount() {
-      collectionsRequest().then(response => this.setState({
-        collections: response.feed.entry
+    public componentDidMount() {
+      collectionsRequest().then((response) => this.setState({
+        collections: response.feed.entry,
       }));
     }
 
-    render() {
+    public render() {
         let collectionOptions = null;
 
         if (this.state.collections) {
-            collectionOptions = this.state.collections.map((c: any) => {
-              return (
-                <option key={c.id} value={c.id}>{c.dataset_id}</option>
-            );
-          });
+            collectionOptions = this.state.collections.map((c: any, i: number) => (
+                <option key={i} value={JSON.stringify(c)}>{c.dataset_id}</option>
+            ));
         }
 
         return (
@@ -52,5 +48,3 @@ class Component extends React.Component<CollectionsProps, CollectionsState> {
         );
     }
 }
-
-export default Component;

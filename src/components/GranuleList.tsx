@@ -1,47 +1,39 @@
 import * as moment from "moment";
 import * as React from "react";
 
-interface GranuleListProps {
+interface IGranuleListProps {
   collectionId: string;
-  temporalFilterLowerBound: moment.Moment | null;
-  temporalFilterUpperBound: moment.Moment | null;
-  granuleList: any;
+  granules?: object[];
 }
 
-class Component extends React.Component<GranuleListProps, {}> {
-  displayName = "GranuleList";
+export class GranuleList extends React.Component<IGranuleListProps, {}> {
+  private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
-  dateString(date: moment.Moment | null) {
-    if (date) {
-      return date.toString();
+  public render() {
+    let granuleList: object[];
+    if (this.props.granules) {
+      granuleList = this.props.granules.map((g: any, i: number) => (
+        <tr key={i}>
+          <td>{g.producer_granule_id}</td>
+          <td>{parseFloat(g.granule_size).toFixed(1)}</td>
+          <td>{moment(g.time_start).format(GranuleList.timeFormat)}</td>
+          <td>{moment(g.time_end).format(GranuleList.timeFormat)}</td>
+        </tr>
+      ));
     } else {
-      return "Please input a date";
+      granuleList = [];
     }
-  }
-
-  render() {
-    const granuleList = this.props.granuleList.map((g: any) => (
-      <tr>
-        <td>{g.producer_granule_id}</td>
-        <td>{g.granule_size}</td>
-        <td>{g.time_start}</td>
-        <td>{g.time_end}</td>
-      </tr>
-    ));
-
     return (
       <div>
-        <h3>{"Selected collection: " + this.props.collectionId}</h3>
-        <div>
-          {"Temporal bounds: "
-          + this.dateString(this.props.temporalFilterLowerBound) + ", "
-          + this.dateString(this.props.temporalFilterUpperBound)}
-        </div>
-        <table>
+        <table className="granuleList">
+          <col className="granule-id-col"/>
+          <col className="size-col"/>
+          <col className="start-time-col"/>
+          <col className="end-time-col"/>
           <thead>
             <tr>
               <th>Granule ID</th>
-              <th>Size (Hectares)</th>
+              <th>Size (MB)</th>
               <th>Start Time</th>
               <th>End Time</th>
             </tr>
@@ -54,5 +46,3 @@ class Component extends React.Component<GranuleListProps, {}> {
     );
   }
 }
-
-export default Component;

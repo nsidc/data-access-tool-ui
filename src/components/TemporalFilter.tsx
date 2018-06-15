@@ -4,30 +4,44 @@ import * as React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-interface TemporalFilterProps {
-  onDateChange: any;
-  selectedDate: any;
+interface ITemporalFilterProps {
+  fromDate: any;
+  onFromDateChange: any;
+  toDate: any;
+  onToDateChange: any;
 }
 
-class Component extends React.Component<TemporalFilterProps, {}> {
-  displayName = "TemporalFilter";
-
-  constructor(props: any) {
+export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
+  public constructor(props: ITemporalFilterProps) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(date: moment.Moment | null) {
-    this.props.onDateChange(date);
-  }
-
-  render() {
+  public render() {
     return (
-      <div className="temporalfilter-container">
-        <DatePicker selected={this.props.selectedDate} onChange={this.handleChange} />
-      </div>
+      <table className="temporal-filter">
+        <thead>
+          <tr>
+            <th>From:</th>
+            <th>To:</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <DatePicker
+                id="from"
+                selected={this.props.fromDate}
+                onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
+            </td>
+            <td>
+              <DatePicker
+                id="to"
+                selected={this.props.toDate}
+                onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     );
   }
 }
-
-export default Component;
