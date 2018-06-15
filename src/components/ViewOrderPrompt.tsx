@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { PROFILE_URL, user } from "../environment";
+import { PROFILE_URL, user } from "../utils/environment";
 
 interface IViewOrderPromptProps {
   orderSubmitResponse?: any;

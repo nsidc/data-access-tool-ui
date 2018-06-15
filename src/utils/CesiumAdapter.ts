@@ -1,7 +1,7 @@
 import * as GeoJSON from "geojson";
 
-import { ILonLat } from "../LonLat";
-import { ISpatialSelection } from "../SpatialSelection";
+import { ILonLat } from "../types/LonLat";
+import { ISpatialSelection } from "../types/SpatialSelection";
 import { PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */

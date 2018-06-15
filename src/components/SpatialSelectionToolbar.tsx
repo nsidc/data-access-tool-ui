@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import * as resetImg from "./img/glyphicons_067_cleaning.png";
-import * as polygonImg from "./img/glyphicons_096_vector_path_polygon.png";
+import * as resetImg from "../img/glyphicons_067_cleaning.png";
+import * as polygonImg from "../img/glyphicons_096_vector_path_polygon.png";
 
-import "./SpatialSelection.css";
+import "../css/SpatialSelection.css";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface ISpatialSelectionToolbarProps {

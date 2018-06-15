@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import "./index.css";
+import "./css/index.css";
 
 import { EverestUI } from "./components/EverestUI";
 

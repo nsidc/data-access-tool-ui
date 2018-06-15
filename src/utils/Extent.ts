@@ -1,5 +1,5 @@
-import { ILonLat } from "../LonLat";
-import { ISpatialSelection } from "../SpatialSelection";
+import { ILonLat } from "../types/LonLat";
+import { ISpatialSelection } from "../types/SpatialSelection";
 
 export class Extent {
   public startLonLat: any;

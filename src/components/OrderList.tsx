@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { getUserOrders } from "../Hermes";
+import { getUserOrders } from "../utils/Hermes";
 import { OrderListItem } from "./OrderListItem";
 
 interface IOrderListProps {
