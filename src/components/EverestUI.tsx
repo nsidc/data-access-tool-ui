@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { ISpatialSelection } from "../SpatialSelection";
+import { ISpatialSelection } from "../types/SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
