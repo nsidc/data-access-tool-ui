@@ -116,7 +116,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
             [finalEast, finalSouth],
             [finalEast, finalNorth],
             [finalWest, finalNorth],
-            [finalSouth, finalWest],
+            [finalWest, finalSouth],
           ]],
           type: "Polygon",
         },
