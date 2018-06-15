@@ -1,9 +1,9 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { granuleRequest } from "../CMR";
-import { submitOrder } from "../Hermes";
-import { ISpatialSelection } from "../SpatialSelection";
+import { ISpatialSelection } from "../types/SpatialSelection";
+import { granuleRequest } from "../utils/CMR";
+import { submitOrder } from "../utils/Hermes";
 
 interface ISubmitButtonProps {
   collectionId: string;

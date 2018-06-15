@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { getOrder, openNotificationConnection } from "../Hermes";
+import { getOrder, openNotificationConnection } from "../utils/Hermes";
 
 interface IOrderDetailsProps {
   orderId?: string;

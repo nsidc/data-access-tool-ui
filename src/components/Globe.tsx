@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ISpatialSelection } from "../SpatialSelection";
+import { ISpatialSelection } from "../types/SpatialSelection";
 
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
