@@ -2,6 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { ISpatialSelection } from "../types/SpatialSelection";
+import { boundingBoxesToGeoJSON, defaultSpatialSelection } from "../utils/CMR";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { GranuleList } from "./GranuleList";
@@ -18,13 +19,6 @@ interface IEverestState {
   granules?: object[];
   orderSubmitResponse?: object;
 }
-
-const defaultSpatialSelection = {
-    lower_left_lat: -90,
-    lower_left_lon: -180,
-    upper_right_lat: 90,
-    upper_right_lon: 180,
-};
 
 export class EverestUI extends React.Component<{}, IEverestState> {
     public constructor(props: any) {
@@ -79,51 +73,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       );
     }
 
-    // take the list of bounding boxes from a CMR response
-    // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
-    // encompassing them all
-    private cmrBoxArrToSpatialSelection(boxes: string[]) {
-      if (!boxes) {
-        return defaultSpatialSelection;
-      }
-
-      const souths: number[] = [];
-      const wests: number[] = [];
-      const norths: number[] = [];
-      const easts: number[] = [];
-
-      boxes.forEach((box: string) => {
-        const coords: number[] = box.split(" ")
-                                    .map(parseFloat)
-                                    .map((f) => f.toFixed(2))
-                                    .map(parseFloat);
-        souths.push(coords[0]);
-        wests.push(coords[1]);
-        norths.push(coords[2]);
-        easts.push(coords[3]);
-      });
-
-      const finalWest: number = Math.min.apply(null, wests);
-      const finalSouth: number = Math.min.apply(null, souths);
-      const finalEast: number = Math.max.apply(null, easts);
-      const finalNorth: number = Math.max.apply(null, norths);
-
-      return {
-        bbox: [finalWest, finalSouth, finalEast, finalNorth],
-        geometry: {
-          coordinates: [[
-            [finalWest, finalSouth],
-            [finalEast, finalSouth],
-            [finalEast, finalNorth],
-            [finalWest, finalNorth],
-            [finalWest, finalSouth],
-          ]],
-          type: "Polygon",
-        },
-        type: "Feature",
-      };
-    }
-
     private handleCollectionChange = (collection: any) => {
       this.setState({selectedCollection: collection},
                     this.setSpatialSelectionToCollectionDefault);
@@ -155,7 +104,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
 
     private setSpatialSelectionToCollectionDefault() {
       const boundingBoxes = this.state.selectedCollection.boxes;
-      const spatialSelection = this.cmrBoxArrToSpatialSelection(boundingBoxes);
+      const spatialSelection = boundingBoxesToGeoJSON(boundingBoxes);
       this.handleSpatialSelectionChange(spatialSelection);
     }
 }
