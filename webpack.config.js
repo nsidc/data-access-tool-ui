@@ -13,8 +13,8 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 
 module.exports = {
     entry: {
-      index: ['./src/index.tsx'],
-      profile: ['./src/profile.tsx'],
+      index: ['./src/index.ts'],
+      profile: ['./src/profile.ts'],
     },
     output: {
         filename: '[name].bundle.js',
