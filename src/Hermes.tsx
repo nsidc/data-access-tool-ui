@@ -1,26 +1,9 @@
-declare var Drupal: any;
-let HERMES_ORDER_URL: string;
-let HERMES_USER_URL: string;
-let PROFILE_URL: string;
-let inDrupal: boolean;
-let user: {[index: string]: string};
-if (typeof(Drupal) !== "undefined") {
-  inDrupal = true;
-  PROFILE_URL = "/order-history";
-  HERMES_ORDER_URL = "/order-proxy";
-  HERMES_USER_URL = HERMES_ORDER_URL;
-} else {
-  inDrupal = false;
-  // Only populate and submit the user if we're not in the Drupal context. The
-  // order proxy endpoint will inject the user in Drupal. This is a placeholder
-  // username to hopefully avoid collisions with other users.
-  user = {uid: "__everestui-standalone__"};
-  PROFILE_URL = "/profile.html";
-  HERMES_ORDER_URL = "https://dev.hermes.mfisher.dev.int.nsidc.org/api/orders/";
-  HERMES_USER_URL = `https://dev.hermes.mfisher.dev.int.nsidc.org/api/users/${user.uid}/orders/`;
-}
+import * as io from "socket.io-client";
 
-export { PROFILE_URL };
+import { inDrupal } from "./environment";
+import { HERMES_ORDER_URL, HERMES_USER_URL } from "./environment";
+import { ORDER_NOTIFICATION_HOST, ORDER_NOTIFICATION_PATH } from "./environment";
+import { user } from "./environment";
 
 export const submitOrder = (granuleURs: string[], collectionInfo: string[][]) => {
   const headers: any = {
@@ -59,4 +42,17 @@ export const getOrder = (orderId: string) => {
     return fetch(HERMES_ORDER_URL + orderId)
       .then((response) => response.json());
   }
+};
+
+export const openNotificationConnection = (callback: any) => {
+  const ws: any = io.connect(ORDER_NOTIFICATION_HOST, {
+    path: ORDER_NOTIFICATION_PATH,
+    transports: ["websocket", "polling"],
+  });
+  ws.emit("join", { userid: user.uid });
+  ws.on("reconnect", (event: any) => {
+    console.log("Order notification: reconnected and rejoining");
+    ws.emit("join", { userid: user.uid });
+  });
+  ws.on("notification", callback);
 };

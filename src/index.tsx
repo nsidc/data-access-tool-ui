@@ -1,25 +1,21 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-
-import "./index.css";
-
-import { EverestUI } from "./components/EverestUI";
-
-const renderApp = () => {
-  ReactDOM.render(
-      <EverestUI />,
-      document.getElementById("everest-ui"),
-  );
-};
-
 declare var Drupal: any;
 
+let renderUI: any;
 if (typeof(Drupal) !== "undefined") {
   // By extending Drupal.behaviors with a new behavior and callback, we can
-  // ensure that the "everest-ui" element exists before we render the app.
-  Drupal.behaviors.AppBehavior = {
-    attach: (context: any, settings: any) => renderApp(),
+  // ensure that the "everest-ui" element and required Drupal state exist
+  // before we render the app or include dependencies.
+  Drupal.behaviors.EverestUI = {
+    attach: (context: any, settings: any) => {
+      /* tslint:disable:no-var-requires */
+      renderUI = require("./renderOrderForm");
+      /* tslint:enable:no-var-requires */
+      return renderUI.renderApp();
+    },
   };
 } else {
-  renderApp();
+  /* tslint:disable:no-var-requires */
+  renderUI = require("./renderOrderForm");
+  /* tslint:enable:no-var-requires */
+  renderUI.renderApp();
 }
