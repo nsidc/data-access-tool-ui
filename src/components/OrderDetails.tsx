@@ -13,7 +13,7 @@ interface IOrderDetailsState {
 }
 
 export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDetailsState> {
-  private static timeFormat = "YYYY-MM-DD HH:mm:ss";
+  private static timeFormat = "l LT";
 
   public constructor(props: any) {
     super(props);
@@ -28,10 +28,13 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     if (this.state.order) {
       const order: any = this.state.order;
       const links = this.getOrderLinks(order);
+      const orderPlacedDate = moment.unix(order.date);
+      const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
         <div id="order-details">
           <div>Order ID: {order.order_id}</div>
-          <div>Placed: {moment.unix(order.date).format(OrderDetails.timeFormat)}</div>
+          <div>Placed: {orderPlacedDate.format(OrderDetails.timeFormat)}</div>
+          <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
           <div>Status: {order.status}</div>
           <div>Destination: {order.destination}</div>
           <div>Links:
