@@ -1,4 +1,4 @@
-export enum EOrderTypes {
+export enum OrderTypes {
   listOfLinks,
   zipFile,
 }

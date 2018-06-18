@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { EOrderTypes } from "../types/orderTypes";
+import { OrderTypes } from "../types/orderTypes";
 import { ISpatialSelection } from "../types/SpatialSelection";
 import { granuleRequest } from "../utils/CMR";
 import { submitOrder } from "../utils/Hermes";
@@ -13,7 +13,7 @@ interface ISubmitButtonProps {
   temporalUpperBound: moment.Moment;
   onGranuleResponse: any;
   onSubmitOrderResponse: any;
-  orderType: EOrderTypes;
+  orderType: OrderTypes;
 }
 
 interface ISubmitButtonState {
@@ -35,9 +35,9 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
 
   public render() {
     let buttonText: string;
-    if (this.props.orderType === EOrderTypes.listOfLinks) {
+    if (this.props.orderType === OrderTypes.listOfLinks) {
       buttonText = "Order List of Links";
-    } else if (this.props.orderType === EOrderTypes.zipFile) {
+    } else if (this.props.orderType === OrderTypes.zipFile) {
       buttonText = "Order Zip File";
     } else {
       throw new Error("Order type not recognized");

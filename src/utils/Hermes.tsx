@@ -1,18 +1,18 @@
 import * as io from "socket.io-client";
 
-import { EOrderTypes } from "../types/orderTypes";
+import { OrderTypes } from "../types/orderTypes";
 import { inDrupal } from "./environment";
 import { HERMES_ORDER_URL, HERMES_USER_URL } from "./environment";
 import { ORDER_NOTIFICATION_HOST, ORDER_NOTIFICATION_PATH } from "./environment";
 import { user } from "./environment";
 
-const getOrderParamsByType = (orderType: EOrderTypes): any => {
-  if (orderType === EOrderTypes.listOfLinks) {
+const getOrderParamsByType = (orderType: OrderTypes): any => {
+  if (orderType === OrderTypes.listOfLinks) {
     return {
       destination: "archive",
       format: "files",
     };
-  } else if (orderType === EOrderTypes.zipFile) {
+  } else if (orderType === OrderTypes.zipFile) {
     return {
       destination: "archive",
       format: "",
@@ -20,7 +20,7 @@ const getOrderParamsByType = (orderType: EOrderTypes): any => {
   }
 };
 
-export const submitOrder = (granuleURs: string[], collectionInfo: string[][], orderType: EOrderTypes) => {
+export const submitOrder = (granuleURs: string[], collectionInfo: string[][], orderType: OrderTypes) => {
   const headers: any = {
     "Content-Type": "application/json",
   };
