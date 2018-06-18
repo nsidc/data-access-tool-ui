@@ -1,6 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import { HERMES_BASE_URL } from "../utils/environment";
 import { getOrder, openNotificationConnection } from "../utils/Hermes";
 
 interface IOrderDetailsProps {
@@ -12,7 +13,7 @@ interface IOrderDetailsState {
 }
 
 export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDetailsState> {
-  private static timeFormat = "YYYY-MM-DD HH:mm:ss";
+  private static timeFormat = "l LT";
 
   public constructor(props: any) {
     super(props);
@@ -26,13 +27,14 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   public render() {
     if (this.state.order) {
       const order: any = this.state.order;
-      const links = order.links.map((link: any, index: number) => {
-        return ( <li key={index}><a href={link.uri}>{link.uri}</a></li> );
-      });
+      const links = this.getOrderLinks(order);
+      const orderPlacedDate = moment.unix(order.date);
+      const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
         <div id="order-details">
           <div>Order ID: {order.order_id}</div>
-          <div>Placed: {moment.unix(order.date).format(OrderDetails.timeFormat)}</div>
+          <div>Placed: {orderPlacedDate.format(OrderDetails.timeFormat)}</div>
+          <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
           <div>Status: {order.status}</div>
           <div>Destination: {order.destination}</div>
           <div>Links:
@@ -55,6 +57,25 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     const orderSynced: boolean = this.state.order && (this.props.orderId === this.state.order.order_id);
     if (this.props.orderId && !orderSynced) {
       this.refreshOrder();
+    }
+  }
+
+  private getOrderLinks(order: any) {
+    if (["inprogress", "expired"].includes(order.status)) {
+      return [];
+    }
+
+    const zipLink: any = order.links.find((link: any) => link.uri.includes(order.order_id));
+    if (zipLink) {
+      if (!zipLink.uri.includes("https://")) {
+        zipLink.uri = "https://" + HERMES_BASE_URL + zipLink.uri;
+      }
+      return ( <li><a href={zipLink.uri}>{zipLink.uri}</a></li> );
+    } else {
+      const links = order.links.map((link: any, index: number) => {
+        return ( <li key={index}><a href={link.uri}>{link.uri}</a></li> );
+      });
+      return links;
     }
   }
 

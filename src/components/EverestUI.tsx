@@ -1,6 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import { OrderTypes } from "../types/orderTypes";
 import { ISpatialSelection } from "../types/SpatialSelection";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
@@ -71,7 +72,16 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                 temporalLowerBound={this.state.temporalFilterLowerBound}
                 temporalUpperBound={this.state.temporalFilterUpperBound}
                 onGranuleResponse={this.handleGranuleResponse}
-                onSubmitOrderResponse={this.handleSubmitOrderResponse} />
+                onSubmitOrderResponse={this.handleSubmitOrderResponse}
+                orderType={OrderTypes.listOfLinks} />
+              <SubmitButton
+                collectionId={this.state.selectedCollectionId}
+                spatialSelection={this.state.spatialSelection}
+                temporalLowerBound={this.state.temporalFilterLowerBound}
+                temporalUpperBound={this.state.temporalFilterUpperBound}
+                onGranuleResponse={this.handleGranuleResponse}
+                onSubmitOrderResponse={this.handleSubmitOrderResponse}
+                orderType={OrderTypes.zipFile} />
               <ViewOrderPrompt
                 orderSubmitResponse={this.state.orderSubmitResponse} />
             </div>
