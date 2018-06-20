@@ -2,18 +2,15 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
-import { OrderTypes } from "../types/orderTypes";
 import { cmrGranuleRequest, globalSpatialSelection } from "../utils/CMR";
 import { GranuleList } from "./GranuleList";
+import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
-import { SubmitButton } from "./SubmitButton";
-import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IEverestState {
   cmrResponse?: object[];
   orderParameters: IOrderParameters;
   orderSubmissionParameters?: IOrderSubmissionParameters;
-  orderSubmitResponse?: object;
 }
 
 export class EverestUI extends React.Component<{}, IEverestState> {
@@ -21,7 +18,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       super(props);
       this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
-      this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
       this.state = {
         cmrResponse: undefined,
         orderParameters: {
@@ -32,7 +28,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
           temporalFilterUpperBound: moment(),
         },
         orderSubmissionParameters: undefined,
-        orderSubmitResponse: undefined,
       };
     }
 
@@ -48,20 +43,8 @@ export class EverestUI extends React.Component<{}, IEverestState> {
             <GranuleList
               collectionId={this.state.orderParameters.collectionId}
               cmrResponse={this.state.cmrResponse} />
-            <div id="order-buttons">
-              <SubmitButton
-                collectionId={this.state.orderParameters.collectionId}
-                orderSubmissionParameters={this.state.orderSubmissionParameters}
-                onSubmitOrderResponse={this.handleSubmitOrderResponse}
-                orderType={OrderTypes.listOfLinks} />
-              <SubmitButton
-                collectionId={this.state.orderParameters.collectionId}
-                orderSubmissionParameters={this.state.orderSubmissionParameters}
-                onSubmitOrderResponse={this.handleSubmitOrderResponse}
-                orderType={OrderTypes.zipFile} />
-              <ViewOrderPrompt
-                orderSubmitResponse={this.state.orderSubmitResponse} />
-            </div>
+            <OrderButtons
+              orderSubmissionParameters={this.state.orderSubmissionParameters}/>
           </div>
         </div>
       );
@@ -103,9 +86,5 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       const collectionLinks = cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
       const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
       this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
-    }
-
-    private handleSubmitOrderResponse(hermesResponse: any) {
-      this.setState({orderSubmitResponse: hermesResponse});
     }
 }
