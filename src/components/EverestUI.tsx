@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { IOrderParameters } from "../types/OrderParameters";
 import { OrderTypes } from "../types/orderTypes";
-import { globalSpatialSelection } from "../utils/CMR";
+import { cmrGranuleRequest, globalSpatialSelection } from "../utils/CMR";
 import { GranuleList } from "./GranuleList";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 import { SubmitButton } from "./SubmitButton";
@@ -24,8 +24,8 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.state = {
         granules: [],
         orderParameters: {
-          selectedCollection: {},
-          selectedCollectionId: "",
+          collection: {},
+          collectionId: "",
           spatialSelection: globalSpatialSelection,
           temporalFilterLowerBound: moment("20100101"),
           temporalFilterUpperBound: moment(),
@@ -42,11 +42,11 @@ export class EverestUI extends React.Component<{}, IEverestState> {
               onChange={this.handleOrderParameterChange}
               orderParameters={this.state.orderParameters} />
             <GranuleList
-              collectionId={this.state.orderParameters.selectedCollectionId}
+              collectionId={this.state.orderParameters.collectionId}
               granules={this.state.granules} />
             <div>
               <SubmitButton
-                collectionId={this.state.orderParameters.selectedCollectionId}
+                collectionId={this.state.orderParameters.collectionId}
                 spatialSelection={this.state.orderParameters.spatialSelection}
                 temporalLowerBound={this.state.orderParameters.temporalFilterLowerBound}
                 temporalUpperBound={this.state.orderParameters.temporalFilterUpperBound}
@@ -54,7 +54,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
                 onSubmitOrderResponse={this.handleSubmitOrderResponse}
                 orderType={OrderTypes.listOfLinks} />
               <SubmitButton
-                collectionId={this.state.orderParameters.selectedCollectionId}
+                collectionId={this.state.orderParameters.collectionId}
                 spatialSelection={this.state.orderParameters.spatialSelection}
                 temporalLowerBound={this.state.orderParameters.temporalFilterLowerBound}
                 temporalUpperBound={this.state.orderParameters.temporalFilterUpperBound}
@@ -68,6 +68,24 @@ export class EverestUI extends React.Component<{}, IEverestState> {
           </div>
         </div>
       );
+    }
+
+    public componentDidUpdate(_: {}, prevState: IEverestState) {
+      if (this.state.orderParameters !== prevState.orderParameters) {
+        if (this.state.orderParameters.collectionId
+            && this.state.orderParameters.spatialSelection
+            && this.state.orderParameters.temporalFilterLowerBound
+            && this.state.orderParameters.temporalFilterUpperBound) {
+          cmrGranuleRequest(
+            this.state.orderParameters.collectionId,
+            this.state.orderParameters.spatialSelection,
+            this.state.orderParameters.temporalFilterLowerBound,
+            this.state.orderParameters.temporalFilterUpperBound,
+          ).then((json: any) => this.handleGranuleResponse(json.feed.entry));
+        } else {
+          console.log("Insufficient props provided.");
+        }
+      }
     }
 
     private handleOrderParameterChange(newOrderParameters: IOrderParameters, callback: any) {

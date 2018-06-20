@@ -3,7 +3,6 @@ import * as React from "react";
 
 import { OrderTypes } from "../types/orderTypes";
 import { ISpatialSelection } from "../types/SpatialSelection";
-import { granuleRequest } from "../utils/CMR";
 import { submitOrder } from "../utils/Hermes";
 
 interface ISubmitButtonProps {
@@ -64,19 +63,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
   }
 
   public handleClick() {
-    if (this.props.collectionId
-        && this.props.spatialSelection
-        && this.props.temporalLowerBound
-        && this.props.temporalUpperBound) {
-      granuleRequest(
-        this.props.collectionId,
-        this.props.spatialSelection,
-        this.props.temporalLowerBound,
-        this.props.temporalUpperBound,
-      ).then((json) => this.handleCmrResponse(json));
-    } else {
-      console.log("Insufficient props provided.");
-    }
+    //Need to submit order here...
     return;
   }
 

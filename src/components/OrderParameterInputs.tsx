@@ -27,7 +27,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     return (
       <div id="order-params">
         <CollectionDropdown
-          selectedCollection={this.props.orderParameters.selectedCollection}
+          selectedCollection={this.props.orderParameters.collection}
           onCollectionChange={this.handleCollectionChange} />
         <div id="selectors">
           <TemporalFilter
@@ -45,15 +45,15 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   }
 
   private setSpatialSelectionToCollectionDefault() {
-    const boundingBoxes = this.props.orderParameters.selectedCollection.boxes;
+    const boundingBoxes = this.props.orderParameters.collection.boxes;
     const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
     this.props.onChange({spatialSelection});
   }
 
   private handleCollectionChange(collection: any) {
     this.props.onChange({
-      selectedCollection: collection,
-      selectedCollectionId: collection.id,
+      collection,
+      collectionId: collection.id,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: moment(collection.time_end),
     }, this.setSpatialSelectionToCollectionDefault);
