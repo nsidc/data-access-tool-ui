@@ -60,7 +60,6 @@ export class EverestUI extends React.Component<{}, IEverestState> {
               <ViewOrderPrompt
                 orderSubmitResponse={this.state.orderSubmitResponse} />
             </div>
-            <div id="credit"/>
           </div>
         </div>
       );

@@ -50,6 +50,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               this.cesiumAdapter.clearSpatialSelection();
               this.props.resetSpatialSelection();
             }} />
+          <div id="credit" />
         </div>
       </div>
     );

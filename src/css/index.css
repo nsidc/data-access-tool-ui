@@ -48,26 +48,9 @@ body {
   font-weight: bold;
 }
 
-.view-order-button {
-  grid-row: 2;
-  grid-column: 2;
-  height: 2.2em;
-  margin: auto;
-  padding: 0.5em 1em 0.5em 1em;
-  background: limegreen;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-#results {
-  gid-row: 3;
-  grid-column: 2;
-}
-
 #toolbar {
   position: absolute;
-  right: 50.1%;
+  right: 0;
   width: 36px;
   margin: 0px;
   background: white;
@@ -115,6 +98,18 @@ tbody tr:hover {
 }
 
 /* Get rid of annoying white gap at bottom of canvas */
+#globe {
+  position: relative;
+}
+
+#globe #credit {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+
 #globe .cesium-widget {
   height: 600px;
 }
