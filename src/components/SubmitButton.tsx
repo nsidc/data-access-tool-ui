@@ -5,7 +5,6 @@ import { OrderTypes } from "../types/orderTypes";
 import { submitOrder } from "../utils/Hermes";
 
 interface ISubmitButtonProps {
-  collectionId: string;
   onSubmitOrderResponse: any;
   orderSubmissionParameters?: IOrderSubmissionParameters;
   orderType: OrderTypes;
