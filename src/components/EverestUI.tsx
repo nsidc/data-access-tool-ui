@@ -1,176 +1,90 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { OrderTypes } from "../types/orderTypes";
-import { ISpatialSelection } from "../types/SpatialSelection";
-import { CollectionDropdown } from "./CollectionDropdown";
-import { Globe } from "./Globe";
+import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
+import { cmrGranuleRequest, globalSpatialSelection } from "../utils/CMR";
 import { GranuleList } from "./GranuleList";
-import { SubmitButton } from "./SubmitButton";
-import { TemporalFilter } from "./TemporalFilter";
-import { ViewOrderPrompt } from "./ViewOrderPrompt";
+import { OrderButtons } from "./OrderButtons";
+import { OrderParameterInputs } from "./OrderParameterInputs";
 
 interface IEverestState {
-  selectedCollection: any;
-  selectedCollectionId: string;
-  spatialSelection: ISpatialSelection;
-  temporalFilterLowerBound: moment.Moment;
-  temporalFilterUpperBound: moment.Moment;
-  granules?: object[];
-  orderSubmitResponse?: object;
+  cmrResponse?: object[];
+  orderParameters: IOrderParameters;
+  orderSubmissionParameters?: IOrderSubmissionParameters;
 }
-
-const defaultSpatialSelection = {
-    lower_left_lat: -90,
-    lower_left_lon: -180,
-    upper_right_lat: 90,
-    upper_right_lon: 180,
-};
 
 export class EverestUI extends React.Component<{}, IEverestState> {
     public constructor(props: any) {
       super(props);
-      this.handleCollectionChange = this.handleCollectionChange.bind(this);
-      this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
-      this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
-      this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
-      this.handleGranuleResponse = this.handleGranuleResponse.bind(this);
-      this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
+      this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
+      this.handleCmrResponse = this.handleCmrResponse.bind(this);
       this.state = {
-        granules: [],
-        orderSubmitResponse: undefined,
-        selectedCollection: {},
-        selectedCollectionId: "",
-        spatialSelection: defaultSpatialSelection,
-        temporalFilterLowerBound: moment("20100101"),
-        temporalFilterUpperBound: moment(),
+        cmrResponse: undefined,
+        orderParameters: {
+          collection: {},
+          collectionId: "",
+          spatialSelection: globalSpatialSelection,
+          temporalFilterLowerBound: moment("20100101"),
+          temporalFilterUpperBound: moment(),
+        },
+        orderSubmissionParameters: undefined,
       };
     }
 
     public render() {
       return (
-        <div>
-          <div id="everest-container">
-            <CollectionDropdown
-              selectedCollection={this.state.selectedCollection}
-              onCollectionChange={this.handleCollectionChange} />
-            <div id="selectors">
-              <TemporalFilter
-                  fromDate={this.state.temporalFilterLowerBound}
-                  onFromDateChange={this.handleTemporalLowerChange}
-                  toDate={this.state.temporalFilterUpperBound}
-                  onToDateChange={this.handleTemporalUpperChange} />
-            </div>
-            <Globe
-              spatialSelection={this.state.spatialSelection}
-              updateSpatialSelection={(s: any) => this.handleSpatialSelectionChange(s)}
-              resetSpatialSelection={() => this.setSpatialSelectionToCollectionDefault()} />
-            <div>
-              <SubmitButton
-                collectionId={this.state.selectedCollectionId}
-                spatialSelection={this.state.spatialSelection}
-                temporalLowerBound={this.state.temporalFilterLowerBound}
-                temporalUpperBound={this.state.temporalFilterUpperBound}
-                onGranuleResponse={this.handleGranuleResponse}
-                onSubmitOrderResponse={this.handleSubmitOrderResponse}
-                orderType={OrderTypes.listOfLinks} />
-              <SubmitButton
-                collectionId={this.state.selectedCollectionId}
-                spatialSelection={this.state.spatialSelection}
-                temporalLowerBound={this.state.temporalFilterLowerBound}
-                temporalUpperBound={this.state.temporalFilterUpperBound}
-                onGranuleResponse={this.handleGranuleResponse}
-                onSubmitOrderResponse={this.handleSubmitOrderResponse}
-                orderType={OrderTypes.zipFile} />
-              <ViewOrderPrompt
-                orderSubmitResponse={this.state.orderSubmitResponse} />
-            </div>
+        <div id="everest-container">
+          <div id="left-side">
+            <OrderParameterInputs
+              onChange={this.handleOrderParameterChange}
+              orderParameters={this.state.orderParameters} />
+          </div>
+          <div id="right-side">
             <GranuleList
-              collectionId={this.state.selectedCollectionId}
-              granules={this.state.granules} />
-            <div id="credit"/>
+              collectionId={this.state.orderParameters.collectionId}
+              cmrResponse={this.state.cmrResponse} />
+            <OrderButtons
+              orderSubmissionParameters={this.state.orderSubmissionParameters}/>
           </div>
         </div>
       );
     }
 
-    // take the list of bounding boxes from a CMR response
-    // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
-    // encompassing them all
-    private cmrBoxArrToSpatialSelection(boxes: string[]) {
-      if (!boxes) {
-        return defaultSpatialSelection;
+    public updateGranulesFromCmr() {
+      if (this.state.orderParameters.collectionId
+          && this.state.orderParameters.spatialSelection
+          && this.state.orderParameters.temporalFilterLowerBound
+          && this.state.orderParameters.temporalFilterUpperBound) {
+        cmrGranuleRequest(
+          this.state.orderParameters.collectionId,
+          this.state.orderParameters.spatialSelection,
+          this.state.orderParameters.temporalFilterLowerBound,
+          this.state.orderParameters.temporalFilterUpperBound,
+        ).then((json: any) => this.handleCmrResponse(json));
+      } else {
+        console.log("Insufficient props provided.");
       }
+    }
 
-      const souths: number[] = [];
-      const wests: number[] = [];
-      const norths: number[] = [];
-      const easts: number[] = [];
-
-      boxes.forEach((box: string) => {
-        const coords: number[] = box.split(" ")
-                                    .map(parseFloat)
-                                    .map((f) => f.toFixed(2))
-                                    .map(parseFloat);
-        souths.push(coords[0]);
-        wests.push(coords[1]);
-        norths.push(coords[2]);
-        easts.push(coords[3]);
-      });
-
-      const finalWest: number = Math.min.apply(null, wests);
-      const finalSouth: number = Math.min.apply(null, souths);
-      const finalEast: number = Math.max.apply(null, easts);
-      const finalNorth: number = Math.max.apply(null, norths);
-
-      return {
-        bbox: [finalWest, finalSouth, finalEast, finalNorth],
-        geometry: {
-          coordinates: [[
-            [finalWest, finalSouth],
-            [finalEast, finalSouth],
-            [finalEast, finalNorth],
-            [finalWest, finalNorth],
-            [finalSouth, finalWest],
-          ]],
-          type: "Polygon",
-        },
-        type: "Feature",
+    private handleOrderParameterChange(newOrderParameters: IOrderParameters, callback: any) {
+      const orderParameters = Object.assign({}, this.state.orderParameters, newOrderParameters);
+      const modifiedCallback = (): void => {
+        this.updateGranulesFromCmr();
+        if (callback) {
+          callback();
+        }
       };
+      this.setState({orderParameters}, modifiedCallback);
     }
 
-    private handleCollectionChange(collection: any) {
-      this.setState({selectedCollection: collection},
-                    this.setSpatialSelectionToCollectionDefault);
-      this.setState({selectedCollectionId: collection.id});
+    private handleCmrResponse(response: any) {
+      const cmrResponse = response.feed.entry;
+      this.setState({cmrResponse});
 
-      this.handleTemporalLowerChange(moment(collection.time_start));
-      this.handleTemporalUpperChange(moment(collection.time_end));
-    }
-
-    private handleSpatialSelectionChange(spatialSelection: any) {
-      this.setState({spatialSelection});
-    }
-
-    private handleTemporalLowerChange(date: moment.Moment) {
-      this.setState({temporalFilterLowerBound: date});
-    }
-
-    private handleTemporalUpperChange(date: moment.Moment) {
-      this.setState({temporalFilterUpperBound: date});
-    }
-
-    private handleGranuleResponse(cmrResponse: any) {
-      this.setState({granules: cmrResponse});
-    }
-
-    private handleSubmitOrderResponse(hermesResponse: any) {
-      this.setState({orderSubmitResponse: hermesResponse});
-    }
-
-    private setSpatialSelectionToCollectionDefault() {
-      const boundingBoxes = this.state.selectedCollection.boxes;
-      const spatialSelection = this.cmrBoxArrToSpatialSelection(boundingBoxes);
-      this.handleSpatialSelectionChange(spatialSelection);
+      const granuleURs = cmrResponse.map((g: any) => g.title);
+      const collectionIDs = cmrResponse.map((g: any) => g.dataset_id);
+      const collectionLinks = cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
+      const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
+      this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
     }
 }

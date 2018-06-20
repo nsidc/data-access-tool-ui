@@ -3,16 +3,16 @@ import * as React from "react";
 
 interface IGranuleListProps {
   collectionId: string;
-  granules?: object[];
+  cmrResponse?: object[];
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public render() {
-    let granuleList: object[];
-    if (this.props.granules) {
-      granuleList = this.props.granules.map((g: any, i: number) => (
+    let granuleList: object[] = [];
+    if (this.props.cmrResponse) {
+      granuleList = this.props.cmrResponse.map((g: any, i: number) => (
         <tr key={i}>
           <td>{g.producer_granule_id}</td>
           <td>{parseFloat(g.granule_size).toFixed(1)}</td>
@@ -20,22 +20,16 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           <td>{moment(g.time_end).format(GranuleList.timeFormat)}</td>
         </tr>
       ));
-    } else {
-      granuleList = [];
     }
     return (
-      <div>
+      <div id="granule-list">
         <table className="granuleList">
-          <col className="granule-id-col"/>
-          <col className="size-col"/>
-          <col className="start-time-col"/>
-          <col className="end-time-col"/>
           <thead>
             <tr>
-              <th>Granule ID</th>
-              <th>Size (MB)</th>
-              <th>Start Time</th>
-              <th>End Time</th>
+              <th className="granule-id-col">Granule ID</th>
+              <th className="size-col">Size (MB)</th>
+              <th className="start-time-col">Start Time</th>
+              <th className="end-time-col">End Time</th>
             </tr>
           </thead>
           <tbody>

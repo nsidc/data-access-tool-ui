@@ -6,7 +6,7 @@ import { Globe } from "../src/components/Globe";
 
 const setup = () => {
   const props = {
-    updateSpatialSelection: jest.fn(),
+    onSpatialSelectionChange: jest.fn(),
     resetSpatialSelection: jest.fn(),
     spatialSelection: {
       lower_left_lat: 0.0,

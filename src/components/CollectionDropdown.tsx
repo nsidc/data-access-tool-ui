@@ -41,10 +41,12 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
         }
 
         return (
+          <div id="collection-dropdown">
             <select className="dropdown" name="collections" onChange={this.handleChange}>
               <option value="">{"Select a collection."}</option>
               {collectionOptions}
             </select>
+          </div>
         );
     }
 }
