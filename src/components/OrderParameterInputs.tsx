@@ -18,9 +18,6 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     super(props);
     this.setSpatialSelectionToCollectionDefault = this.setSpatialSelectionToCollectionDefault.bind(this);
     this.handleCollectionChange = this.handleCollectionChange.bind(this);
-    this.handleTemporalLowerChange = this.handleTemporalLowerChange.bind(this);
-    this.handleTemporalUpperChange = this.handleTemporalUpperChange.bind(this);
-    this.handleSpatialSelectionChange = this.handleSpatialSelectionChange.bind(this);
   }
 
   public render() {
@@ -32,22 +29,19 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
         <div id="selectors">
           <TemporalFilter
             fromDate={this.props.orderParameters.temporalFilterLowerBound}
-            onFromDateChange={this.handleTemporalLowerChange}
+            onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>
+              this.props.onChange({temporalFilterLowerBound})}
             toDate={this.props.orderParameters.temporalFilterUpperBound}
-            onToDateChange={this.handleTemporalUpperChange} />
+            onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
+              this.props.onChange({temporalFilterUpperBound})} />
         </div>
         <Globe
-          onSpatialSelectionChange={this.handleSpatialSelectionChange}
+          onSpatialSelectionChange={(spatialSelection: ISpatialSelection) =>
+            this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection}
           resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
       </div>
     );
-  }
-
-  private setSpatialSelectionToCollectionDefault() {
-    const boundingBoxes = this.props.orderParameters.collection.boxes;
-    const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
-    this.props.onChange({spatialSelection});
   }
 
   private handleCollectionChange(collection: any) {
@@ -58,13 +52,10 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
       temporalFilterUpperBound: moment(collection.time_end),
     }, this.setSpatialSelectionToCollectionDefault);
   }
-  private handleTemporalLowerChange(temporalFilterLowerBound: moment.Moment) {
-    this.props.onChange({temporalFilterLowerBound});
-  }
-  private handleTemporalUpperChange(temporalFilterUpperBound: moment.Moment) {
-    this.props.onChange({temporalFilterUpperBound});
-  }
-  private handleSpatialSelectionChange(spatialSelection: ISpatialSelection) {
+
+  private setSpatialSelectionToCollectionDefault() {
+    const boundingBoxes = this.props.orderParameters.collection.boxes;
+    const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
     this.props.onChange({spatialSelection});
   }
 }
