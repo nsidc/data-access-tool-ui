@@ -4,17 +4,17 @@ import { handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI, IHermesAPI } from 
 declare var Drupal: any;
 
 interface IURLs {
-    hermesBaseUrl: string;
-    orderNotificationHost: string;
-    orderNotificationPath: string;
-    hermesOrderUrl: string;
-    profileURL: string;
+  hermesBaseUrl: string;
+  orderNotificationHost: string;
+  orderNotificationPath: string;
+  hermesOrderUrl: string;
+  profileURL: string;
 }
 
 export interface IEnvironment {
-    hermesAPI: IHermesAPI;
-    urls: IURLs;
-    user: IUser;
+  hermesAPI: IHermesAPI;
+  urls: IURLs;
+  user: IUser;
 }
 
 const getEnvironment = () => {
@@ -26,51 +26,47 @@ const getEnvironment = () => {
 };
 
 function getEnvironmentDependentURLs() {
-    if (getEnvironment() === "dev") {
-        const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
-        return {
-            hermesBaseUrl: `${window.location.hostname}`.replace("nsidc.org.drupal", "hermes"),
-            orderNotificationHost: `wss://dev.hermes.${devPostfix}`,
-            orderNotificationPath: "/notification/",
-        };
-    } else {
-        return {
-            hermesBaseUrl: `${window.location.hostname}/apps/orders`,
-            orderNotificationHost: `wss://${window.location.hostname}`,
-            orderNotificationPath: "/apps/order/notification/",
-        };
-    }
+  if (getEnvironment() === "dev") {
+    const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
+    return {
+      hermesBaseUrl: `${window.location.hostname}`.replace("nsidc.org.drupal", "hermes"),
+      orderNotificationHost: `wss://dev.hermes.${devPostfix}`,
+      orderNotificationPath: "/notification/",
+    };
+  } else {
+    return {
+      hermesBaseUrl: `${window.location.hostname}/apps/orders`,
+      orderNotificationHost: `wss://${window.location.hostname}`,
+      orderNotificationPath: "/apps/order/notification/",
+    };
+  }
 }
 
 export default function setupEnvironment(inDrupal: boolean): IEnvironment {
-    let hermesBaseUrl: string;
-
-    if (inDrupal) {
-        const urls = {
-            ...getEnvironmentDependentURLs(),
-            hermesOrderUrl: "/order-proxy",
-            profileURL: "/order-history",
-        };
-
-        return {
-            hermesAPI: handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls, true),
-            urls,
-            user: Drupal.settings.data_downloads.user,  // TODO: Use the Eardata Login module function?
-        };
-    } else {
-        hermesBaseUrl = `${window.location.hostname}`;
-        const user = {uid: "__everestui-standalone__"};
-
-        const urls = {
-            ...getEnvironmentDependentURLs(),
-            hermesOrderUrl: `https://${hermesBaseUrl}/api/orders/`,
-            profileURL: "/profile.html",
-        };
-
-        return {
-            hermesAPI: handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls, false),
-            urls,
-            user,
-        };
-    }
+  let hermesBaseUrl: string;
+  if (inDrupal) {
+    const urls = {
+      ...getEnvironmentDependentURLs(),
+      hermesOrderUrl: "/order-proxy",
+      profileURL: "/order-history",
+    };
+    return {
+      hermesAPI: handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls, true),
+      urls,
+      user: Drupal.settings.data_downloads.user,  // TODO: Use the Eardata Login module function?
+    };
+  } else {
+    hermesBaseUrl = `${window.location.hostname}`;
+    const user = {uid: "__everestui-standalone__"};
+    const urls = {
+      ...getEnvironmentDependentURLs(),
+      hermesOrderUrl: `https://${hermesBaseUrl}/api/orders/`,
+      profileURL: "/profile.html",
+    };
+    return {
+      hermesAPI: handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls, false),
+      urls,
+      user,
+    };
+  }
 }

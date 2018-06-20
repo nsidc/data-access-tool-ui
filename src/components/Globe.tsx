@@ -8,9 +8,7 @@ import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 interface IGlobeProps {
   spatialSelection: ISpatialSelection;
   resetSpatialSelection: () => void;
-
-  // function defined in EverestUI, passed down to update state up there
-  updateSpatialSelection: (s: any) => void;
+  onSpatialSelectionChange: (s: any) => void;
 }
 
 interface IGlobeState {
@@ -52,6 +50,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               this.cesiumAdapter.clearSpatialSelection();
               this.props.resetSpatialSelection();
             }} />
+          <div id="credit" />
         </div>
       </div>
     );
@@ -59,6 +58,6 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   private updateSpatialSelection(spatialSelection: any) {
     this.spatialSelection = spatialSelection;
-    this.props.updateSpatialSelection(spatialSelection);
+    this.props.onSpatialSelectionChange(spatialSelection);
   }
 }
