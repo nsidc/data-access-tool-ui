@@ -45,6 +45,10 @@ body {
   font-weight: bold;
 }
 
+.submit-button:disabled {
+  background: silver;
+}
+
 #toolbar {
   position: absolute;
   right: 0;
