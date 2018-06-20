@@ -40,3 +40,55 @@ export const granuleRequest = (collectionId: string,
   return fetch(URL)
       .then((response) => response.json());
 };
+
+export const globalSpatialSelection = {
+    lower_left_lat: -90,
+    lower_left_lon: -180,
+    upper_right_lat: 90,
+    upper_right_lon: 180,
+};
+
+// take the list of bounding boxes from a CMR response
+// (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
+// encompassing them all
+export const cmrBoxArrToSpatialSelection = (boxes: string[]) => {
+  if (!boxes) {
+    return globalSpatialSelection;
+  }
+
+  const souths: number[] = [];
+  const wests: number[] = [];
+  const norths: number[] = [];
+  const easts: number[] = [];
+
+  boxes.forEach((box: string) => {
+    const coords: number[] = box.split(" ")
+                                .map(parseFloat)
+                                .map((f) => f.toFixed(2))
+                                .map(parseFloat);
+    souths.push(coords[0]);
+    wests.push(coords[1]);
+    norths.push(coords[2]);
+    easts.push(coords[3]);
+  });
+
+  const finalWest: number = Math.min.apply(null, wests);
+  const finalSouth: number = Math.min.apply(null, souths);
+  const finalEast: number = Math.max.apply(null, easts);
+  const finalNorth: number = Math.max.apply(null, norths);
+
+  return {
+    bbox: [finalWest, finalSouth, finalEast, finalNorth],
+    geometry: {
+      coordinates: [[
+        [finalWest, finalSouth],
+        [finalEast, finalSouth],
+        [finalEast, finalNorth],
+        [finalWest, finalNorth],
+        [finalSouth, finalWest],
+      ]],
+      type: "Polygon",
+    },
+    type: "Feature",
+  };
+};
