@@ -33,7 +33,7 @@ if (typeof(Drupal) !== "undefined") {
   } else {
     HERMES_BASE_URL = `${window.location.hostname}/apps/orders`;
     ORDER_NOTIFICATION_HOST = `wss://${window.location.hostname}`;
-    ORDER_NOTIFICATION_PATH = "/apps/order/notification/";
+    ORDER_NOTIFICATION_PATH = "/apps/orders/notification/";
   }
 } else {
   inDrupal = false;
