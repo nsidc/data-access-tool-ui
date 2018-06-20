@@ -10,10 +10,18 @@ const setup = () => {
     onGranuleResponse: jest.fn(),
     onSubmitOrderResponse: jest.fn(),
     spatialSelection: {
-      lower_left_lat: 0.0,
-      lower_left_lon: 0.0,
-      upper_right_lat: 0.0,
-      upper_right_lon: 0.0,
+      bbox: [0, 0, 0, 0],
+      geometry: {
+        coordinates: [[
+          [0, 0],
+          [0, 0],
+          [0, 0],
+          [0, 0],
+          [0, 0],
+        ]],
+        type: "Polygon",
+      },
+      type: "Feature",
     },
     temporalLowerBound: moment(),
     temporalUpperBound: moment(),

@@ -1,13 +1,13 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { ISpatialSelection } from "../types/SpatialSelection";
+import { IGeoJsonPolygon } from "../types/GeoJson";
 import { granuleRequest } from "../utils/CMR";
 import { submitOrder } from "../utils/Hermes";
 
 interface ISubmitButtonProps {
   collectionId: string;
-  spatialSelection: ISpatialSelection;
+  spatialSelection: IGeoJsonPolygon;
   temporalLowerBound: moment.Moment;
   temporalUpperBound: moment.Moment;
   onGranuleResponse: any;

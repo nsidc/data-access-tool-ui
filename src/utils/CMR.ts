@@ -1,12 +1,12 @@
 import * as moment from "moment";
 
-import { ISpatialSelection } from "../types/SpatialSelection";
+import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
 
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
-const spatialParameter = (geoJSON: any): string => {
+const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   let param: string;
   let value: string;
 
@@ -30,7 +30,7 @@ export const collectionsRequest = () =>
       .then((response) => response.json());
 
 export const granuleRequest = (collectionId: string,
-                               spatialSelection: ISpatialSelection,
+                               spatialSelection: IGeoJsonPolygon,
                                temporalLowerBound: moment.Moment,
                                temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL
@@ -41,17 +41,25 @@ export const granuleRequest = (collectionId: string,
       .then((response) => response.json());
 };
 
-export const defaultSpatialSelection = {
-  lower_left_lat: -90,
-  lower_left_lon: -180,
-  upper_right_lat: 90,
-  upper_right_lon: 180,
+export const defaultSpatialSelection: IGeoJsonBbox = {
+  bbox: [-180, -90, 180, 90],
+  geometry: {
+    coordinates: [[
+      [-180, -90],
+      [180, -90],
+      [180, 90],
+      [-180, 90],
+      [-180, -90],
+    ]],
+    type: "Polygon",
+  },
+  type: "Feature",
 };
 
 // take the list of bounding boxes from a CMR response
 // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
 // encompassing them all
-export function boundingBoxesToGeoJSON(boxes: string[]) {
+export function boundingBoxesToGeoJSON(boxes: string[]): IGeoJsonBbox {
   if (!boxes) {
     return defaultSpatialSelection;
   }

@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { ISpatialSelection } from "../types/SpatialSelection";
+import { IGeoJsonPolygon } from "../types/GeoJson";
 import { boundingBoxesToGeoJSON, defaultSpatialSelection } from "../utils/CMR";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
@@ -13,7 +13,7 @@ import { ViewOrderPrompt } from "./ViewOrderPrompt";
 interface IEverestState {
   selectedCollection: any;
   selectedCollectionId: string;
-  spatialSelection: ISpatialSelection;
+  spatialSelection: IGeoJsonPolygon;
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
   granules?: object[];
@@ -51,7 +51,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
             </div>
             <Globe
               spatialSelection={this.state.spatialSelection}
-              updateSpatialSelection={(s: any) => this.handleSpatialSelectionChange(s)}
+              updateSpatialSelection={(s: IGeoJsonPolygon) => this.handleSpatialSelectionChange(s)}
               resetSpatialSelection={() => this.setSpatialSelectionToCollectionDefault()} />
             <div>
               <SubmitButton
@@ -82,7 +82,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       this.handleTemporalUpperChange(moment(collection.time_end));
     }
 
-    private handleSpatialSelectionChange = (spatialSelection: any) => {
+    private handleSpatialSelectionChange = (spatialSelection: IGeoJsonPolygon) => {
       this.setState({spatialSelection});
     }
 
