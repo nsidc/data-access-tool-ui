@@ -4,9 +4,11 @@ import * as React from "react";
 
 import { SubmitButton } from "../src/components/SubmitButton";
 import { OrderTypes } from "../src/types/orderTypes";
+import setupEnvironment from "../src/utils/environment";
 
 const setup = () => {
   const props = {
+    environment: setupEnvironment(false),
     collectionId: "abcd123",
     onGranuleResponse: jest.fn(),
     onSubmitOrderResponse: jest.fn(),

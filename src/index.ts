@@ -1,3 +1,5 @@
+import setupEnvironment from "./utils/environment";
+
 declare var Drupal: any;
 
 let renderUI: any;
@@ -10,12 +12,12 @@ if (typeof(Drupal) !== "undefined") {
       /* tslint:disable:no-var-requires */
       renderUI = require("./renderOrderForm");
       /* tslint:enable:no-var-requires */
-      return renderUI.renderApp();
+      return renderUI.renderApp(setupEnvironment(true));
     },
   };
 } else {
   /* tslint:disable:no-var-requires */
   renderUI = require("./renderOrderForm");
   /* tslint:enable:no-var-requires */
-  renderUI.renderApp();
+  renderUI.renderApp(setupEnvironment(false));
 }

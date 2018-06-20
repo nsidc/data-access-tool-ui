@@ -4,9 +4,10 @@ import * as React from "react";
 import { OrderTypes } from "../types/orderTypes";
 import { ISpatialSelection } from "../types/SpatialSelection";
 import { granuleRequest } from "../utils/CMR";
-import { submitOrder } from "../utils/Hermes";
+import { IEnvironment } from "../utils/environment";
 
 interface ISubmitButtonProps {
+  environment: IEnvironment;
   collectionId: string;
   spatialSelection: ISpatialSelection;
   temporalLowerBound: moment.Moment;
@@ -53,13 +54,14 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
       const collectionIDs: string[] = this.state.cmrResponse.map((g: any) => g.dataset_id);
       const collectionLinks = this.state.cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
       const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
-      submitOrder(
+      this.props.environment.hermesAPI.submitOrder(
+        this.props.environment.user,
         granuleURs,
         collectionInfo,
         this.props.orderType,
       )
-      .then((json) => this.handleOrderSubmissionResponse(json))
-      .catch((err) => console.log("Order submission failed: " + err));
+      .then((json: any) => this.handleOrderSubmissionResponse(json))
+      .catch((err: any) => console.log("Order submission failed: " + err));
     }
   }
 

@@ -5,9 +5,9 @@ import "./css/index.css";
 
 import { EverestUI } from "./components/EverestUI";
 
-export const renderApp = () => {
+export const renderApp = (environment: any) => {
   ReactDOM.render(
-      <EverestUI />,
+      <EverestUI environment={environment} />,
       document.getElementById("everest-ui"),
   );
 };

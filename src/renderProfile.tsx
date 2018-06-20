@@ -5,9 +5,9 @@ import "./css/index.css";
 
 import { EverestProfile } from "./components/EverestProfile";
 
-export const renderApp = () => {
+export const renderApp = (environment: any) => {
   ReactDOM.render(
-      <EverestProfile />,
+      <EverestProfile environment={environment} />,
       document.getElementById("everest-ui-profile"),
   );
 };
