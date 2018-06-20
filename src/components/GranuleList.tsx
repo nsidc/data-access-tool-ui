@@ -22,7 +22,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       ));
     }
     return (
-      <div>
+      <div id="granule-list">
         <table className="granuleList">
           <col className="granule-id-col"/>
           <col className="size-col"/>

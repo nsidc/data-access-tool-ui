@@ -26,7 +26,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
         <CollectionDropdown
           selectedCollection={this.props.orderParameters.collection}
           onCollectionChange={this.handleCollectionChange} />
-        <div id="selectors">
+        <div id="temporal-selection">
           <TemporalFilter
             fromDate={this.props.orderParameters.temporalFilterLowerBound}
             onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>

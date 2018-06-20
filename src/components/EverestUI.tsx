@@ -38,15 +38,17 @@ export class EverestUI extends React.Component<{}, IEverestState> {
 
     public render() {
       return (
-        <div>
-          <div id="everest-container">
+        <div id="everest-container">
+          <div id="left-side">
             <OrderParameterInputs
               onChange={this.handleOrderParameterChange}
               orderParameters={this.state.orderParameters} />
+          </div>
+          <div id="right-side">
             <GranuleList
               collectionId={this.state.orderParameters.collectionId}
               cmrResponse={this.state.cmrResponse} />
-            <div>
+            <div id="order-buttons">
               <SubmitButton
                 collectionId={this.state.orderParameters.collectionId}
                 orderSubmissionParameters={this.state.orderSubmissionParameters}
