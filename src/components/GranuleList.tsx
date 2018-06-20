@@ -3,16 +3,16 @@ import * as React from "react";
 
 interface IGranuleListProps {
   collectionId: string;
-  granules?: object[];
+  cmrResponse?: object[];
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public render() {
-    let granuleList: object[];
-    if (this.props.granules) {
-      granuleList = this.props.granules.map((g: any, i: number) => (
+    let granuleList: object[] = [];
+    if (this.props.cmrResponse) {
+      granuleList = this.props.cmrResponse.map((g: any, i: number) => (
         <tr key={i}>
           <td>{g.producer_granule_id}</td>
           <td>{parseFloat(g.granule_size).toFixed(1)}</td>
@@ -20,8 +20,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           <td>{moment(g.time_end).format(GranuleList.timeFormat)}</td>
         </tr>
       ));
-    } else {
-      granuleList = [];
     }
     return (
       <div>

@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { IOrderParameters } from "../types/OrderParameters";
+import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { cmrGranuleRequest, globalSpatialSelection } from "../utils/CMR";
 import { GranuleList } from "./GranuleList";
@@ -10,8 +10,9 @@ import { SubmitButton } from "./SubmitButton";
 import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IEverestState {
-  granules?: object[];
+  cmrResponse?: object[];
   orderParameters: IOrderParameters;
+  orderSubmissionParameters?: IOrderSubmissionParameters;
   orderSubmitResponse?: object;
 }
 
@@ -19,10 +20,10 @@ export class EverestUI extends React.Component<{}, IEverestState> {
     public constructor(props: any) {
       super(props);
       this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
-      this.handleGranuleResponse = this.handleGranuleResponse.bind(this);
+      this.handleCmrResponse = this.handleCmrResponse.bind(this);
       this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
       this.state = {
-        granules: [],
+        cmrResponse: undefined,
         orderParameters: {
           collection: {},
           collectionId: "",
@@ -30,6 +31,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
           temporalFilterLowerBound: moment("20100101"),
           temporalFilterUpperBound: moment(),
         },
+        orderSubmissionParameters: undefined,
         orderSubmitResponse: undefined,
       };
     }
@@ -43,22 +45,16 @@ export class EverestUI extends React.Component<{}, IEverestState> {
               orderParameters={this.state.orderParameters} />
             <GranuleList
               collectionId={this.state.orderParameters.collectionId}
-              granules={this.state.granules} />
+              cmrResponse={this.state.cmrResponse} />
             <div>
               <SubmitButton
                 collectionId={this.state.orderParameters.collectionId}
-                spatialSelection={this.state.orderParameters.spatialSelection}
-                temporalLowerBound={this.state.orderParameters.temporalFilterLowerBound}
-                temporalUpperBound={this.state.orderParameters.temporalFilterUpperBound}
-                onGranuleResponse={this.handleGranuleResponse}
+                orderSubmissionParameters={this.state.orderSubmissionParameters}
                 onSubmitOrderResponse={this.handleSubmitOrderResponse}
                 orderType={OrderTypes.listOfLinks} />
               <SubmitButton
                 collectionId={this.state.orderParameters.collectionId}
-                spatialSelection={this.state.orderParameters.spatialSelection}
-                temporalLowerBound={this.state.orderParameters.temporalFilterLowerBound}
-                temporalUpperBound={this.state.orderParameters.temporalFilterUpperBound}
-                onGranuleResponse={this.handleGranuleResponse}
+                orderSubmissionParameters={this.state.orderSubmissionParameters}
                 onSubmitOrderResponse={this.handleSubmitOrderResponse}
                 orderType={OrderTypes.zipFile} />
               <ViewOrderPrompt
@@ -70,31 +66,42 @@ export class EverestUI extends React.Component<{}, IEverestState> {
       );
     }
 
-    public componentDidUpdate(_: {}, prevState: IEverestState) {
-      if (this.state.orderParameters !== prevState.orderParameters) {
-        if (this.state.orderParameters.collectionId
-            && this.state.orderParameters.spatialSelection
-            && this.state.orderParameters.temporalFilterLowerBound
-            && this.state.orderParameters.temporalFilterUpperBound) {
-          cmrGranuleRequest(
-            this.state.orderParameters.collectionId,
-            this.state.orderParameters.spatialSelection,
-            this.state.orderParameters.temporalFilterLowerBound,
-            this.state.orderParameters.temporalFilterUpperBound,
-          ).then((json: any) => this.handleGranuleResponse(json.feed.entry));
-        } else {
-          console.log("Insufficient props provided.");
-        }
+    public updateGranulesFromCmr() {
+      if (this.state.orderParameters.collectionId
+          && this.state.orderParameters.spatialSelection
+          && this.state.orderParameters.temporalFilterLowerBound
+          && this.state.orderParameters.temporalFilterUpperBound) {
+        cmrGranuleRequest(
+          this.state.orderParameters.collectionId,
+          this.state.orderParameters.spatialSelection,
+          this.state.orderParameters.temporalFilterLowerBound,
+          this.state.orderParameters.temporalFilterUpperBound,
+        ).then((json: any) => this.handleCmrResponse(json));
+      } else {
+        console.log("Insufficient props provided.");
       }
     }
 
     private handleOrderParameterChange(newOrderParameters: IOrderParameters, callback: any) {
       const orderParameters = Object.assign({}, this.state.orderParameters, newOrderParameters);
-      this.setState({orderParameters}, callback);
+      const modifiedCallback = (): void => {
+        this.updateGranulesFromCmr();
+        if (callback) {
+          callback();
+        }
+      };
+      this.setState({orderParameters}, modifiedCallback);
     }
 
-    private handleGranuleResponse(cmrResponse: any) {
-      this.setState({granules: cmrResponse});
+    private handleCmrResponse(response: any) {
+      const cmrResponse = response.feed.entry;
+      this.setState({cmrResponse});
+
+      const granuleURs = cmrResponse.map((g: any) => g.title);
+      const collectionIDs = cmrResponse.map((g: any) => g.dataset_id);
+      const collectionLinks = cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
+      const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
+      this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
     }
 
     private handleSubmitOrderResponse(hermesResponse: any) {
