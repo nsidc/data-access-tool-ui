@@ -24,16 +24,12 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     return (
       <div id="granule-list">
         <table className="granuleList">
-          <col className="granule-id-col"/>
-          <col className="size-col"/>
-          <col className="start-time-col"/>
-          <col className="end-time-col"/>
           <thead>
             <tr>
-              <th>Granule ID</th>
-              <th>Size (MB)</th>
-              <th>Start Time</th>
-              <th>End Time</th>
+              <th className="granule-id-col">Granule ID</th>
+              <th className="size-col">Size (MB)</th>
+              <th className="start-time-col">Start Time</th>
+              <th className="end-time-col">End Time</th>
             </tr>
           </thead>
           <tbody>
