@@ -5,6 +5,8 @@ import { ISpatialSelection } from "../types/SpatialSelection";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
+import "../css/index.css";
+
 interface IGlobeProps {
   spatialSelection: ISpatialSelection;
   resetSpatialSelection: () => void;
@@ -19,6 +21,7 @@ interface IGlobeState {
 
 export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   private cesiumAdapter: CesiumAdapter;
+  private elementId = "globe";
   private spatialSelection: any;
 
   public constructor(props: IGlobeProps) {
@@ -28,7 +31,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public componentDidMount() {
-    this.cesiumAdapter.createViewer("globe", this.props.spatialSelection);
+    this.cesiumAdapter.createViewer(this.elementId, this.props.spatialSelection);
   }
 
   public shouldComponentUpdate(nextProps: any, nextState: any) {
@@ -42,11 +45,12 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   public render() {
     return (
       <div id="spatial-selection">
-        <div id="globe">
+        <div id={this.elementId}>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
               this.cesiumAdapter.startPolygonMode();
+              this.setCursorCrosshair();
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
@@ -57,8 +61,25 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     );
   }
 
+  private setCursorCrosshair() {
+    const el = document.getElementById(this.elementId);
+
+    if (el && el.classList && el.classList.add) {
+      el.classList.add("cursor-crosshair");
+    }
+  }
+
+  private unsetCursorCrosshair() {
+    const el = document.getElementById(this.elementId);
+
+    if (el && el.classList && el.classList.remove) {
+      el.classList.remove("cursor-crosshair");
+    }
+  }
+
   private updateSpatialSelection = (spatialSelection: any) => {
     this.spatialSelection = spatialSelection;
     this.props.updateSpatialSelection(spatialSelection);
+    this.unsetCursorCrosshair();
   }
 }

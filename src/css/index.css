@@ -169,3 +169,7 @@ tbody tr:hover {
 #order-details {
   padding-left: 40px;
 }
+
+.cursor-crosshair {
+  cursor: crosshair;
+}
