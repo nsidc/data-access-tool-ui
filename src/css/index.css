@@ -166,6 +166,10 @@ tbody tr:hover {
   padding-left: 40px;
 }
 
+.cursor-crosshair {
+  cursor: crosshair;
+}
+
 /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
 div.tooltip {outline:none;}
 div.tooltip:hover {text-decoration:none;}
