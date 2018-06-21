@@ -3,9 +3,14 @@ import * as React from "react";
 
 import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
 import { cmrGranuleRequest, globalSpatialSelection } from "../utils/CMR";
+import { IEnvironment } from "../utils/environment";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
+
+interface IEverestProps {
+  environment: IEnvironment;
+}
 
 interface IEverestState {
   cmrResponse?: object[];
@@ -13,7 +18,7 @@ interface IEverestState {
   orderSubmissionParameters?: IOrderSubmissionParameters;
 }
 
-export class EverestUI extends React.Component<{}, IEverestState> {
+export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public constructor(props: any) {
       super(props);
       this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
@@ -44,6 +49,7 @@ export class EverestUI extends React.Component<{}, IEverestState> {
               collectionId={this.state.orderParameters.collectionId}
               cmrResponse={this.state.cmrResponse} />
             <OrderButtons
+              environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}/>
           </div>
         </div>

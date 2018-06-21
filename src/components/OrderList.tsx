@@ -1,9 +1,10 @@
 import * as React from "react";
 
-import { getUserOrders } from "../utils/Hermes";
+import { IEnvironment } from "../utils/environment";
 import { OrderListItem } from "./OrderListItem";
 
 interface IOrderListProps {
+  environment: IEnvironment;
   onSelectionChange: any;
   selectedOrder?: string;
 }
@@ -45,8 +46,8 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
   }
 
   public componentDidMount() {
-    getUserOrders()
-      .then((orders) => Object.values(orders).sort((a, b) => b.date - a.date))
-      .then((orderList) => this.setState({orderList}));
+    this.props.environment.hermesAPI.getUserOrders(this.props.environment.user)
+      .then((orders: any) => Object.values(orders).sort((a, b) => b.date - a.date))
+      .then((orderList: any) => this.setState({orderList}));
   }
 }

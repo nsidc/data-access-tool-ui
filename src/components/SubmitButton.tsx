@@ -2,9 +2,10 @@ import * as React from "react";
 
 import { IOrderSubmissionParameters } from "../types/OrderParameters";
 import { OrderTypes } from "../types/orderTypes";
-import { submitOrder } from "../utils/Hermes";
+import { IEnvironment } from "../utils/environment";
 
 interface ISubmitButtonProps {
+  environment: IEnvironment;
   onSubmitOrderResponse: any;
   orderSubmissionParameters?: IOrderSubmissionParameters;
   orderType: OrderTypes;
@@ -44,13 +45,14 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
 
   public handleClick() {
     if (this.props.orderSubmissionParameters) {
-      submitOrder(
+      this.props.environment.hermesAPI.submitOrder(
+        this.props.environment.user,
         this.props.orderSubmissionParameters.granuleURs,
         this.props.orderSubmissionParameters.collectionInfo,
         this.props.orderType,
       )
-      .then((json) => this.handleOrderSubmissionResponse(json))
-      .catch((err) => console.log("Order submission failed: " + err));
+      .then((json: any) => this.handleOrderSubmissionResponse(json))
+      .catch((err: any) => console.log("Order submission failed: " + err));
     }
   }
 
