@@ -1,10 +1,10 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { HERMES_BASE_URL } from "../utils/environment";
-import { getOrder, openNotificationConnection } from "../utils/Hermes";
+import { IEnvironment } from "../utils/environment";
 
 interface IOrderDetailsProps {
+  environment: IEnvironment;
   orderId?: string;
 }
 
@@ -50,7 +50,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   public componentDidMount() {
-    openNotificationConnection(this.handleNotification);
+    this.props.environment.hermesAPI.openNotificationConnection(this.props.environment.user,
+                                                                this.handleNotification);
   }
 
   public componentDidUpdate() {
@@ -68,7 +69,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     const zipLink: any = order.links.find((link: any) => link.uri.includes(order.order_id));
     if (zipLink) {
       if (!zipLink.uri.includes("https://")) {
-        zipLink.uri = "https://" + HERMES_BASE_URL + zipLink.uri;
+        zipLink.uri = "https://" + this.props.environment.urls.hermesBaseUrl + zipLink.uri;
       }
       return ( <li><a href={zipLink.uri}>{zipLink.uri}</a></li> );
     } else {
@@ -81,7 +82,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   private refreshOrder() {
     if (this.props.orderId) {
-      getOrder(this.props.orderId)
+      this.props.environment.hermesAPI.getOrder(this.props.orderId)
         .then((order: object) => this.setState({order}));
     }
   }

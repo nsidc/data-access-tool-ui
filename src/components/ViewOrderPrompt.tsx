@@ -1,8 +1,9 @@
 import * as React from "react";
 
-import { PROFILE_URL, user } from "../utils/environment";
+import { IEnvironment } from "../utils/environment";
 
 interface IViewOrderPromptProps {
+  environment: IEnvironment;
   orderSubmitResponse?: any;
 }
 
@@ -17,11 +18,11 @@ export class ViewOrderPrompt extends React.Component<IViewOrderPromptProps, {}> 
       return (
         <span>
           {"Order " + orderState.order_id + " submitted. "}
-          <a href={PROFILE_URL}>View your order</a>
+          <a href={this.props.environment.urls.profileUrl}>View your order</a>
         </span>
       );
     } else {
-      return (<span>{"Submit an order, " + user.uid + "!"}</span>);
+      return (<span>{"Submit an order, " + this.props.environment.user.uid + "!"}</span>);
     }
   }
 }

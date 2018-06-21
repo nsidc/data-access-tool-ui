@@ -1,3 +1,5 @@
+import setupEnvironment from "./utils/environment";
+
 declare var Drupal: any;
 
 let renderProfile: any;
@@ -10,12 +12,12 @@ if (typeof(Drupal) !== "undefined") {
       /* tslint:disable:no-var-requires */
       renderProfile = require("./renderProfile");
       /* tslint:enable:no-var-requires */
-      return renderProfile.renderApp();
+      return renderProfile.renderApp(setupEnvironment(true));
     },
   };
 } else {
   /* tslint:disable:no-var-requires */
   renderProfile = require("./renderProfile");
   /* tslint:enable:no-var-requires */
-  renderProfile.renderApp();
+  renderProfile.renderApp(setupEnvironment(false));
 }

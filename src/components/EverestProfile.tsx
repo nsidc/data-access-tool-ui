@@ -1,13 +1,18 @@
 import * as React from "react";
 
+import { IEnvironment } from "../utils/environment";
 import { OrderDetails } from "./OrderDetails";
 import { OrderList } from "./OrderList";
+
+interface IEverestProps {
+  environment: IEnvironment;
+}
 
 interface IEverestProfileState {
   selectedOrder?: string;
 }
 
-export class EverestProfile extends React.Component<{}, IEverestProfileState> {
+export class EverestProfile extends React.Component<IEverestProps, IEverestProfileState> {
   public constructor(props: any) {
     super(props);
     this.handleOrderSelection = this.handleOrderSelection.bind(this);
@@ -20,9 +25,11 @@ export class EverestProfile extends React.Component<{}, IEverestProfileState> {
     return (
       <div id="profile-container">
         <OrderList
+          environment={this.props.environment}
           onSelectionChange={this.handleOrderSelection}
           selectedOrder={this.state.selectedOrder} />
         <OrderDetails
+          environment={this.props.environment}
           orderId={this.state.selectedOrder} />
       </div>
     );
