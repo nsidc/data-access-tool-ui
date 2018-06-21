@@ -23,28 +23,28 @@ export class PolygonMode {
     this.finishedDrawingCallback = finishedDrawingCallback;
   }
 
-  public start() {
+  public start = () => {
     this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
 
-    this.mouseHandler.setInputAction(this.onLeftClick.bind(this),
+    this.mouseHandler.setInputAction(this.onLeftClick,
                                      Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    this.mouseHandler.setInputAction(this.onLeftDoubleClick.bind(this),
+    this.mouseHandler.setInputAction(this.onLeftDoubleClick,
                                      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    this.mouseHandler.setInputAction(this.onMouseMove.bind(this),
+    this.mouseHandler.setInputAction(this.onMouseMove,
                                      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
     this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
-  public endMode() {
+  public endMode = () => {
     this.clearMousePoint();
     this.mouseHandler.destroy();
     this.finishedDrawingCallback(this.points);
   }
 
-  private render() {
+  private render = () => {
     // gather all the points; rendering doesn't care about the distinction
     // between clicked points and the point following the cursor
     let points = this.points;
@@ -84,7 +84,7 @@ export class PolygonMode {
     // the current mouse point
   }
 
-  private screenPositionToPoint(position: any) {
+  private screenPositionToPoint = (position: any) => {
     if (position === null) { return null; }
 
     const cartesian = this.scene.camera.pickEllipsoid(position, this.ellipsoid);
@@ -98,7 +98,7 @@ export class PolygonMode {
     return point;
   }
 
-  private addPoint(position: any) {
+  private addPoint = (position: any) => {
     const point = this.screenPositionToPoint(position);
     if (point === null) { return; }
 
@@ -106,12 +106,12 @@ export class PolygonMode {
     this.addBillboard(point);
   }
 
-  private popPoint() {
+  private popPoint = () => {
     this.points.pop();
     this.removeLastBillboard();
   }
 
-  private addBillboard(point: any) {
+  private addBillboard = (point: any) => {
     const billboard = this.billboardCollection.add({
       image: dragImg,
       position: point.cartesianXYZ,
@@ -119,12 +119,12 @@ export class PolygonMode {
     this.billboards.push(billboard);
   }
 
-  private removeLastBillboard() {
+  private removeLastBillboard = () => {
     const billboard = this.billboards.pop();
     this.billboardCollection.remove(billboard);
   }
 
-  private updateMousePoint(position: any) {
+  private updateMousePoint = (position: any) => {
     const point = this.screenPositionToPoint(position);
     if (point === null) { return; }
 
@@ -133,7 +133,7 @@ export class PolygonMode {
     this.addBillboard(point);
   }
 
-  private clearMousePoint() {
+  private clearMousePoint = () => {
     this.mousePoint = null;
 
     if (this.billboards.length === (this.points.length + 1)) {
@@ -141,13 +141,13 @@ export class PolygonMode {
     }
   }
 
-  private onLeftClick({position}: any) {
+  private onLeftClick = ({position}: any) => {
     this.addPoint(position);
     this.clearMousePoint();
     this.render();
   }
 
-  private onLeftDoubleClick({position}: any) {
+  private onLeftDoubleClick = ({position}: any) => {
     // two individual left click events fire before the double click does; this
     // results in a duplicate of the final position at the end of
     // `this.points` that can (and should) be safely removed
@@ -160,7 +160,7 @@ export class PolygonMode {
     }
   }
 
-  private onMouseMove({endPosition}: any) {
+  private onMouseMove = ({endPosition}: any) => {
     this.updateMousePoint(endPosition);
     this.render();
   }
