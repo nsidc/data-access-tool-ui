@@ -1,7 +1,6 @@
 import * as GeoJSON from "geojson";
 
-import { ILonLat } from "../types/LonLat";
-import { ISpatialSelection } from "../types/SpatialSelection";
+import { IGeoJsonPolygon } from "../types/GeoJson";
 import { PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
@@ -15,13 +14,13 @@ export class CesiumAdapter {
 
   private viewer: any;
 
-  private updateSpatialSelection: any;
+  private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
 
-  public constructor(updateSpatialSelection: any) {
+  public constructor(updateSpatialSelection: (s: IGeoJsonPolygon) => void) {
     this.updateSpatialSelection = updateSpatialSelection;
   }
 
-  public createViewer(elementId: string, spatialSelection: ISpatialSelection) {
+  public createViewer(elementId: string, spatialSelection: IGeoJsonPolygon) {
     this.viewer = new Cesium.Viewer(elementId, {
       animation: false,
       baseLayerPicker: false,
@@ -106,7 +105,7 @@ export class CesiumAdapter {
     this.viewer.entities.removeById("rectangle");
   }
 
-  public renderInitialBoundingBox(spatialSelection: any) {
+  public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
     this.clearSpatialSelection();
 
     const bbox = spatialSelection.bbox;
@@ -146,4 +145,9 @@ export class CesiumAdapter {
 
     return sum > 0;
   }
+}
+
+interface ILonLat {
+  readonly lat: number;
+  readonly lon: number;
 }

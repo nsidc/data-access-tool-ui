@@ -1,8 +1,8 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import { IGeoJsonPolygon } from "../types/GeoJson";
 import { IOrderParameters } from "../types/OrderParameters";
-import { ISpatialSelection } from "../types/SpatialSelection";
 import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
@@ -36,7 +36,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
               this.props.onChange({temporalFilterUpperBound})} />
         </div>
         <Globe
-          onSpatialSelectionChange={(spatialSelection: ISpatialSelection) =>
+          onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon) =>
             this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection}
           resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
