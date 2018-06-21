@@ -79,9 +79,6 @@ export class PolygonMode {
       });
       this.scene.primitives.add(this.polygon);
     }
-
-    // if exactly one point has been set, render a line between that point and
-    // the current mouse point
   }
 
   private screenPositionToPoint = (position: any) => {
