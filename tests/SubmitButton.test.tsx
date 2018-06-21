@@ -3,12 +3,14 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { SubmitButton } from "../src/components/SubmitButton";
+import { OrderTypes } from "../src/types/orderTypes";
 
 const setup = () => {
   const props = {
     collectionId: "abcd123",
     onGranuleResponse: jest.fn(),
     onSubmitOrderResponse: jest.fn(),
+    orderType: OrderTypes.listOfLinks,
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {
@@ -35,7 +37,7 @@ const setup = () => {
 describe("Submit button component", () => {
   test("Renders submit button", () => {
     const button = setup().button;
-    expect(button.find("button").text()).toEqual("Submit");
+    expect(button.find("button").text()).toEqual("Order List of Links");
   });
 });
 

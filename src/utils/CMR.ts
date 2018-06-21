@@ -29,10 +29,10 @@ export const collectionsRequest = () =>
   fetch(CMR_COLLECTION_URL)
       .then((response) => response.json());
 
-export const granuleRequest = (collectionId: string,
-                               spatialSelection: IGeoJsonPolygon,
-                               temporalLowerBound: moment.Moment,
-                               temporalUpperBound: moment.Moment) => {
+export const cmrGranuleRequest = (collectionId: string,
+                                  spatialSelection: IGeoJsonPolygon,
+                                  temporalLowerBound: moment.Moment,
+                                  temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL
     + `&concept_id=${collectionId}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
@@ -41,7 +41,7 @@ export const granuleRequest = (collectionId: string,
       .then((response) => response.json());
 };
 
-export const defaultSpatialSelection: IGeoJsonBbox = {
+export const globalSpatialSelection: IGeoJsonBbox = {
   bbox: [-180, -90, 180, 90],
   geometry: {
     coordinates: [[
@@ -59,9 +59,9 @@ export const defaultSpatialSelection: IGeoJsonBbox = {
 // take the list of bounding boxes from a CMR response
 // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
 // encompassing them all
-export function boundingBoxesToGeoJSON(boxes: string[]): IGeoJsonBbox {
+export const cmrBoxArrToSpatialSelection = (boxes: string[]): IGeoJsonBbox => {
   if (!boxes) {
-    return defaultSpatialSelection;
+    return globalSpatialSelection;
   }
 
   const souths: number[] = [];
@@ -99,4 +99,4 @@ export function boundingBoxesToGeoJSON(boxes: string[]): IGeoJsonBbox {
     },
     type: "Feature",
   };
-}
+};

@@ -1,17 +1,14 @@
 import * as React from "react";
 
-import { CesiumAdapter } from "../utils/CesiumAdapter";
-import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
-
 import "../css/index.css";
 import { IGeoJsonPolygon } from "../types/GeoJson";
+import { CesiumAdapter } from "../utils/CesiumAdapter";
+import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
   spatialSelection: IGeoJsonPolygon;
   resetSpatialSelection: () => void;
-
-  // function defined in EverestUI, passed down to update state up there
-  updateSpatialSelection: (s: IGeoJsonPolygon) => void;
+  onSpatialSelectionChange: (s: IGeoJsonPolygon) => void;
 }
 
 interface IGlobeState {
@@ -55,6 +52,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               this.cesiumAdapter.clearSpatialSelection();
               this.props.resetSpatialSelection();
             }} />
+          <div id="credit" />
         </div>
       </div>
     );
@@ -78,7 +76,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   private updateSpatialSelection = (spatialSelection: IGeoJsonPolygon) => {
     this.spatialSelection = spatialSelection;
-    this.props.updateSpatialSelection(spatialSelection);
+    this.props.onSpatialSelectionChange(spatialSelection);
     this.unsetCursorCrosshair();
   }
 }
