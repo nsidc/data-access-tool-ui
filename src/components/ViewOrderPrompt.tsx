@@ -18,7 +18,7 @@ export class ViewOrderPrompt extends React.Component<IViewOrderPromptProps, {}> 
       return (
         <span>
           {"Order " + orderState.order_id + " submitted. "}
-          <a href={this.props.environment.urls.profileURL}>View your order</a>
+          <a href={this.props.environment.urls.profileUrl}>View your order</a>
         </span>
       );
     } else {

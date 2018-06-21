@@ -3,17 +3,17 @@ import { constructAPI, IHermesAPI } from "./Hermes";
 
 declare var Drupal: any;
 
-interface IURLs {
+interface IUrls {
   hermesBaseUrl: string;
   orderNotificationHost: string;
   orderNotificationPath: string;
   hermesOrderUrl: string;
-  profileURL: string;
+  profileUrl: string;
 }
 
 export interface IEnvironment {
   hermesAPI: IHermesAPI;
-  urls: IURLs;
+  urls: IUrls;
   user: IUser;
 }
 
@@ -48,7 +48,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: "/order-proxy",
-      profileURL: "/order-history",
+      profileUrl: "/order-history",
     };
     return {
       hermesAPI: constructAPI(urls, true),
@@ -61,7 +61,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: `https://${hermesBaseUrl}/api/orders/`,
-      profileURL: "/profile.html",
+      profileUrl: "/profile.html",
     };
     return {
       hermesAPI: constructAPI(urls, false),
