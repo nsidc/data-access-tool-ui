@@ -24,7 +24,7 @@ const getOrderParamsByType = (orderType: OrderTypes): any => {
   }
 };
 
-export function handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls: any, inDrupal: boolean): IHermesAPI {
+export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     const getOrderInDrupal = (orderId: string) => {
         return fetch(urls.hermesOrderUrl, {credentials: "include"})
             .then((response) => response.json())

@@ -1,5 +1,5 @@
 import { IUser } from "../types/User";
-import { handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI, IHermesAPI } from "./Hermes";
+import { constructAPI, IHermesAPI } from "./Hermes";
 
 declare var Drupal: any;
 
@@ -51,7 +51,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       profileURL: "/order-history",
     };
     return {
-      hermesAPI: handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls, true),
+      hermesAPI: constructAPI(urls, true),
       urls,
       user: Drupal.settings.data_downloads.user,  // TODO: Use the Eardata Login module function?
     };
@@ -64,7 +64,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       profileURL: "/profile.html",
     };
     return {
-      hermesAPI: handcraftArtisinalBespokeOrganicGlutenFreeNonGMOAPI(urls, false),
+      hermesAPI: constructAPI(urls, false),
       urls,
       user,
     };
