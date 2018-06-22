@@ -3,50 +3,50 @@ import * as React from "react";
 import { collectionsRequest } from "../utils/CMR";
 
 interface ICollectionDropdownProps {
-    selectedCollection: any;
-    onCollectionChange: any;
+  selectedCollection: any;
+  onCollectionChange: any;
 }
 
 interface ICollectionDropdownState {
-    collections: any;
+  collections: any;
 }
 
 export class CollectionDropdown extends React.Component<ICollectionDropdownProps, ICollectionDropdownState> {
-    public constructor(props: ICollectionDropdownProps) {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
-        this.state = {
-            collections: [{}],
-        };
+  public constructor(props: ICollectionDropdownProps) {
+    super(props);
+
+    this.state = {
+      collections: [{}],
+    };
+  }
+
+  public componentDidMount() {
+    collectionsRequest().then((response) => this.setState({
+      collections: response.feed.entry,
+    }));
+  }
+
+  public render() {
+    let collectionOptions = null;
+
+    if (this.state.collections) {
+      collectionOptions = this.state.collections.map((c: any, i: number) => (
+        <option key={i} value={JSON.stringify(c)}>{c.dataset_id}</option>
+      ));
     }
 
-    public handleChange(e: any) {
-      const collection: any = JSON.parse(e.target.value);
-      this.props.onCollectionChange(collection);
-    }
+    return (
+      <div id="collection-dropdown">
+        <select className="dropdown" name="collections" onChange={this.handleChange}>
+          <option value="">{"Select a collection."}</option>
+          {collectionOptions}
+        </select>
+      </div>
+    );
+  }
 
-    public componentDidMount() {
-      collectionsRequest().then((response) => this.setState({
-        collections: response.feed.entry,
-      }));
-    }
-
-    public render() {
-        let collectionOptions = null;
-
-        if (this.state.collections) {
-            collectionOptions = this.state.collections.map((c: any, i: number) => (
-                <option key={i} value={JSON.stringify(c)}>{c.dataset_id}</option>
-            ));
-        }
-
-        return (
-          <div id="collection-dropdown">
-            <select className="dropdown" name="collections" onChange={this.handleChange}>
-              <option value="">{"Select a collection."}</option>
-              {collectionOptions}
-            </select>
-          </div>
-        );
-    }
+  private handleChange = (e: any) => {
+    const collection: any = JSON.parse(e.target.value);
+    this.props.onCollectionChange(collection);
+  }
 }

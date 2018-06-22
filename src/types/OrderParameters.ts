@@ -1,11 +1,11 @@
 import * as moment from "moment";
 
-import { ISpatialSelection } from "./SpatialSelection";
+import { IGeoJsonPolygon } from "./GeoJson";
 
 export interface IOrderParameters {
   collection: any;
   collectionId: string;
-  spatialSelection: ISpatialSelection;
+  spatialSelection: IGeoJsonPolygon;
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
 }

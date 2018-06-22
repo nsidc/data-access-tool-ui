@@ -12,7 +12,6 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
 
   public constructor(props: IOrderListItemProps) {
     super(props);
-    this.handleOrderSelection = this.handleOrderSelection.bind(this);
   }
 
   public render() {
@@ -27,7 +26,7 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
     );
   }
 
-  private handleOrderSelection() {
+  private handleOrderSelection = () => {
     this.props.onOrderSelection(this.props.order.order_id);
   }
 }

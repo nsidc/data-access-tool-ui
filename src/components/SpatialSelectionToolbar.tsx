@@ -26,7 +26,7 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
             <SpatialSelectionType name="reset"
                                   onClick={() => this.props.onClickReset()}
                                   img={resetImg}
-                                  alt="Reset bounding box"/>
+                                  alt="Click to reset polygon"/>
         </div>
       );
     }

@@ -140,7 +140,7 @@ tbody tr:hover {
 }
 
 .react-datepicker-wrapper input {
-  width: 70px;
+  width: 100px;
 }
 
 #profile-container {
@@ -164,4 +164,39 @@ tbody tr:hover {
 
 #order-details {
   padding-left: 40px;
+}
+
+.cursor-crosshair {
+  cursor: crosshair;
+}
+
+/* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
+div.tooltip {outline:none;}
+div.tooltip:hover {text-decoration:none;}
+div.tooltip span {
+  z-index:10;
+  display:none;
+  padding:14px 20px;
+  margin-top:-12px;
+  margin-left:20px;
+  width:170px;
+  line-height:16px;
+}
+div.tooltip:hover span{
+  display:inline;
+  position:absolute;
+  color:#111;
+  border:1px solid #DCA;
+  background:#fffAF0;}
+.callout {
+  z-index:20;
+  position:absolute;
+  border:0;
+  top: 12px;
+  left:-12px;
+}
+div.tooltip span
+{
+  border-radius:4px;
+  box-shadow: 5px 5px 8px #CCC;
 }

@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import "../css/SpatialSelection.css";
+import * as callout from "../img/callout.png";
 
 interface ISpatialSelectionTypeProps {
   alt: string;
@@ -16,8 +17,12 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
 
   public render() {
     return (
-      <div className="button" onClick={(e: any) => this.props.onClick(e.target.value)}>
-        <img className={this.props.name} src={this.props.img} alt={this.props.alt}/>
+      <div className="tooltip button" onClick={(e: any) => this.props.onClick(e.target.value)}>
+        <img className="img-no-border-left {this.props.name}" src={this.props.img} alt={this.props.alt}/>
+        <span>
+          <img className="img-no-border-left callout" src={callout} />
+          {this.props.alt}
+        </span>
       </div>
     );
   }

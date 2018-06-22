@@ -1,32 +1,33 @@
 import * as React from "react";
 
-import { ISpatialSelection } from "../types/SpatialSelection";
-
+import "../css/index.css";
+import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
-  spatialSelection: ISpatialSelection;
+  spatialSelection: IGeoJsonPolygon;
   resetSpatialSelection: () => void;
-  onSpatialSelectionChange: (s: any) => void;
+  onSpatialSelectionChange: (s: IGeoJsonPolygon) => void;
 }
 
 interface IGlobeState {
-  spatialSelection: any;
+  spatialSelection: IGeoJsonPolygon;
 }
 
 export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   private cesiumAdapter: CesiumAdapter;
-  private spatialSelection: any;
+  private elementId = "globe";
+  private spatialSelection: IGeoJsonPolygon;
 
   public constructor(props: IGlobeProps) {
     super(props);
-    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection.bind(this));
+    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection);
     this.spatialSelection = props.spatialSelection;
   }
 
   public componentDidMount() {
-    this.cesiumAdapter.createViewer("globe", this.props.spatialSelection);
+    this.cesiumAdapter.createViewer(this.elementId, this.props.spatialSelection);
   }
 
   public shouldComponentUpdate(nextProps: any, nextState: any) {
@@ -40,11 +41,12 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   public render() {
     return (
       <div id="spatial-selection">
-        <div id="globe">
+        <div id={this.elementId}>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
               this.cesiumAdapter.startPolygonMode();
+              this.setCursorCrosshair();
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
@@ -56,8 +58,25 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     );
   }
 
-  private updateSpatialSelection(spatialSelection: any) {
+  private setCursorCrosshair() {
+    const el = document.getElementById(this.elementId);
+
+    if (el && el.classList && el.classList.add) {
+      el.classList.add("cursor-crosshair");
+    }
+  }
+
+  private unsetCursorCrosshair() {
+    const el = document.getElementById(this.elementId);
+
+    if (el && el.classList && el.classList.remove) {
+      el.classList.remove("cursor-crosshair");
+    }
+  }
+
+  private updateSpatialSelection = (spatialSelection: IGeoJsonPolygon) => {
     this.spatialSelection = spatialSelection;
     this.props.onSpatialSelectionChange(spatialSelection);
+    this.unsetCursorCrosshair();
   }
 }
