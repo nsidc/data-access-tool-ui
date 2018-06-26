@@ -11,19 +11,13 @@ interface IGlobeProps {
   onSpatialSelectionChange: (s: IGeoJsonPolygon) => void;
 }
 
-interface IGlobeState {
-  spatialSelection: IGeoJsonPolygon;
-}
-
-export class Globe extends React.Component<IGlobeProps, IGlobeState> {
+export class Globe extends React.Component<IGlobeProps, {}> {
   private cesiumAdapter: CesiumAdapter;
   private elementId = "globe";
-  private spatialSelection: IGeoJsonPolygon;
 
   public constructor(props: IGlobeProps) {
     super(props);
     this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection);
-    this.spatialSelection = props.spatialSelection;
   }
 
   public componentDidMount() {
@@ -31,7 +25,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public shouldComponentUpdate(nextProps: any, nextState: any) {
-    return this.spatialSelection !== nextProps.spatialSelection;
+    return this.props.spatialSelection !== nextProps.spatialSelection;
   }
 
   public componentDidUpdate() {
@@ -75,7 +69,6 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   private updateSpatialSelection = (spatialSelection: IGeoJsonPolygon) => {
-    this.spatialSelection = spatialSelection;
     this.props.onSpatialSelectionChange(spatialSelection);
     this.unsetCursorCrosshair();
   }
