@@ -31,7 +31,9 @@ export class CesiumAdapter {
       infoBox: false,
       navigationHelpButton: false,
       navigationInstructionsInitiallyVisible: false,
-      scene3DOnly: true,
+      // scene3DOnly set to false as workaround. Increases memory consumption.
+      // GH Issue: https://github.com/AnalyticalGraphicsInc/cesium/issues/6365
+      scene3DOnly: false, // CHANGEME: true
       sceneModePicker: false,
       selectionIndicator: false,
       timeline: false,
