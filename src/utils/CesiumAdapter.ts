@@ -94,7 +94,6 @@ export class CesiumAdapter {
       lonLatsArray.push(lonLatsArray[0]);
 
       const geo = GeoJSON.parse({polygon: lonLatsArray}, {Polygon: "polygon"});
-      console.log(geo);
       this.updateSpatialSelection(geo);
     };
 
@@ -108,8 +107,6 @@ export class CesiumAdapter {
   }
 
   public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
-    this.clearSpatialSelection();
-
     const bbox = spatialSelection.bbox;
     if (!bbox) { return; }
 
@@ -121,6 +118,7 @@ export class CesiumAdapter {
 
     const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
 
+    this.clearSpatialSelection();
     this.viewer.entities.add({
       id: "rectangle",
       name: "rectangle",
