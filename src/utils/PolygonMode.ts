@@ -24,6 +24,7 @@ export class PolygonMode {
   }
 
   public start = () => {
+    this.reset();
     this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
 
     this.mouseHandler.setInputAction(this.onLeftClick,
@@ -40,8 +41,16 @@ export class PolygonMode {
 
   public endMode = () => {
     this.clearMousePoint();
-    this.mouseHandler.destroy();
+    if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
+      this.mouseHandler.destroy();
+    }
     this.finishedDrawingCallback(this.points);
+  }
+
+  public reset = () => {
+    this.points = [];
+    this.clearAllBillboards();
+    this.endMode();
   }
 
   private render = () => {
@@ -119,6 +128,11 @@ export class PolygonMode {
   private removeLastBillboard = () => {
     const billboard = this.billboards.pop();
     this.billboardCollection.remove(billboard);
+  }
+
+  private clearAllBillboards = () => {
+    this.billboards.forEach((b) => this.billboardCollection.remove(b));
+    this.billboards = [];
   }
 
   private updateMousePoint = (position: any) => {

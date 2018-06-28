@@ -12,8 +12,9 @@ export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
-  private viewer: any;
+  public polygonMode: PolygonMode;
 
+  private viewer: any;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
 
   public constructor(updateSpatialSelection: (s: IGeoJsonPolygon) => void) {
@@ -39,6 +40,7 @@ export class CesiumAdapter {
       timeline: false,
     });
 
+    this.polygonMode = this.createPolygonMode();
     this.renderInitialBoundingBox(spatialSelection);
   }
 
@@ -60,7 +62,37 @@ export class CesiumAdapter {
     return lonLatDegrees;
   }
 
-  public startPolygonMode() {
+  public clearSpatialSelection() {
+    this.polygonMode.reset();
+
+    this.viewer.scene.primitives.removeAll();
+    this.viewer.entities.removeById("rectangle");
+  }
+
+  public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
+    const bbox = spatialSelection.bbox;
+    if (!bbox) { return; }
+
+    const globalBbox = [-180, -90, 180, 90];
+
+    if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
+      return;
+    }
+
+    const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+
+    this.clearSpatialSelection();
+    this.viewer.entities.add({
+      id: "rectangle",
+      name: "rectangle",
+      rectangle: {
+        coordinates: rectangleRadians,
+        material: CesiumAdapter.extentColor,
+      },
+    });
+  }
+
+  private createPolygonMode() {
 
     // when drawing is finished (by double-clicking), this function is called
     // with an array of points; each point has the cartesianXYZ--describing the
@@ -93,42 +125,12 @@ export class CesiumAdapter {
       // the last point in a polygon needs to be the first again to close it
       lonLatsArray.push(lonLatsArray[0]);
 
-      const geo = GeoJSON.parse({polygon: lonLatsArray}, {Polygon: "polygon"});
-      console.log(geo);
+      const geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
       this.updateSpatialSelection(geo);
     };
 
     const mode = new PolygonMode(this.viewer.scene, CesiumAdapter.ellipsoid, finishedDrawingCallback);
-    return mode.start();
-  }
-
-  public clearSpatialSelection() {
-    this.viewer.scene.primitives.removeAll();
-    this.viewer.entities.removeById("rectangle");
-  }
-
-  public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
-    this.clearSpatialSelection();
-
-    const bbox = spatialSelection.bbox;
-    if (!bbox) { return; }
-
-    const globalBbox = [-180, -90, 180, 90];
-
-    if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
-      return;
-    }
-
-    const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
-
-    this.viewer.entities.add({
-      id: "rectangle",
-      name: "rectangle",
-      rectangle: {
-        coordinates: rectangleRadians,
-        material: CesiumAdapter.extentColor,
-      },
-    });
+    return mode;
   }
 
   // https://stackoverflow.com/a/1165943
