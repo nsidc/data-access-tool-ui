@@ -39,10 +39,11 @@ export class Globe extends React.Component<IGlobeProps, {}> {
           <SpatialSelectionToolbar
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
-              this.cesiumAdapter.startPolygonMode();
+              this.cesiumAdapter.polygonMode.start();
               this.setCursorCrosshair();
             }}
             onClickReset={() => {
+              this.cesiumAdapter.polygonMode.endMode();
               this.cesiumAdapter.clearSpatialSelection();
               this.props.resetSpatialSelection();
             }} />
