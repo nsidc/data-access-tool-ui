@@ -55,8 +55,8 @@ export class CesiumAdapter {
     const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianXYZ);
 
     const lonLatDegrees = {
-      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude).toFixed(2)),
-      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude).toFixed(2)),
+      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
+      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
     };
 
     return lonLatDegrees;
