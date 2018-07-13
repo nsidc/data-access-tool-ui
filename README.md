@@ -26,7 +26,16 @@ With npm:
 
 ### Option 2: Continuously build & deploy in Drupal
 
-TBD
+On a drupal dev VM with `/share/apps/everest-ui` mounted and a symlink at
+`/var/www/drupal/apps/everest-ui` pointing to the mounted share dir, this
+command will build and deploy the webapp to the share dir when source files
+change, clearing the Drupal css-js cache on each build:
+
+        $ npm dev-drupal
+
+TODO: get source maps working within Drupal so that debugging the TypeScript as
+written works--currently, the transpiled JS can be debugged, but it all lives in
+one file and thanks to the transpilation, you don't debug the original source.
 
 ### Testing
 
