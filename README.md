@@ -1,4 +1,4 @@
-# Everest UI 
+# Everest UI
 
 A user interface for placing Hermes data orders on a dataproduct landing page.
 
