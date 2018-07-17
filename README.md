@@ -75,6 +75,17 @@ deploying to Drupal):
 
 Verify the build by opening the output `dist/index.html` in a browser.
 
+## Versioning
+
+When `master`\* is in a releasable state, [`npm
+version`](https://docs.npmjs.com/cli/version) can be used to bump the version. A
+tag and commit will automatically be created, which should then be pushed to
+`origin/master`\*, then the released version should be ready for deployment to
+QA.
+
+\* or another branch, if a special circumstance requires releasing from a
+non-`master` branch
+
 ## Deployment
 
 If you want to deploy to the current environment from a VM:
