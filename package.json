@@ -10,6 +10,7 @@
     "build-dev": "webpack",
     "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack",
     "deploy-drupal": "./scripts/deploy.sh",
+    "dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack --watch",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
     "lint": "scripts/lint.sh",
@@ -55,6 +56,7 @@
     "@types/isomorphic-fetch": "0.0.34",
     "es6-promise": "^4.2.4",
     "geojson": "^0.5.0",
-    "isomorphic-fetch": "^2.2.1"
+    "isomorphic-fetch": "^2.2.1",
+    "webpack-shell-plugin": "^0.5.0"
   }
 }

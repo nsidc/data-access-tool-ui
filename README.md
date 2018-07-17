@@ -26,7 +26,17 @@ With npm:
 
 ### Option 2: Continuously build & deploy in Drupal
 
-TBD
+On a [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) dev
+VM with `/share/apps/everest-ui` mounted and a symlink at
+`/var/www/drupal/apps/everest-ui` pointing to the mounted share dir (like step 1
+under "Custom module development" in the drupal README), this command will build
+and deploy the webapp to the share dir when source files change, clearing the
+Drupal css-js cache on each build:
+
+        $ npm dev-drupal
+
+To debug the app, use the files under `webpack://` in the Sources tab of the
+Developer Tools.
 
 ### Testing
 
