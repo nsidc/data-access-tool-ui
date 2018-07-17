@@ -8,6 +8,8 @@ import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 
+declare var EVEREST_UI_VERSION: string;  // defined at compile time by webpack.DefinePlugin
+
 interface IEverestProps {
   environment: IEnvironment;
 }
@@ -52,6 +54,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}/>
           </div>
+          <div id="version">Data Downloads UI v{EVEREST_UI_VERSION}</div>
         </div>
       );
     }
