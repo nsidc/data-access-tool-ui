@@ -33,9 +33,7 @@ change, clearing the Drupal css-js cache on each build:
 
         $ npm dev-drupal
 
-TODO: get source maps working within Drupal so that debugging the TypeScript as
-written works--currently, the transpiled JS can be debugged, but it all lives in
-one file and thanks to the transpilation, you don't debug the original source.
+To debug the app, use the files under `webpack://` in the Sources tab.
 
 ### Testing
 
