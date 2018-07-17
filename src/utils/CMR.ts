@@ -1,10 +1,14 @@
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
+import { getEnvironment } from "./environment";
 
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
+
+const cmrHeaders = new Headers();
+cmrHeaders.append("Client-Id", `nsidc-everest-${getEnvironment()}`);
 
 const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   let param: string;
@@ -26,7 +30,9 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
 };
 
 export const collectionsRequest = () =>
-  fetch(CMR_COLLECTION_URL)
+  fetch(CMR_COLLECTION_URL, {
+    headers: cmrHeaders,
+  })
       .then((response) => response.json());
 
 export const cmrGranuleRequest = (collectionId: string,
@@ -37,7 +43,9 @@ export const cmrGranuleRequest = (collectionId: string,
     + `&concept_id=${collectionId}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
     + spatialParameter(spatialSelection);
-  return fetch(URL)
+  return fetch(URL, {
+    headers: cmrHeaders,
+  })
       .then((response) => response.json());
 };
 

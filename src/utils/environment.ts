@@ -17,13 +17,13 @@ export interface IEnvironment {
   user: IUser;
 }
 
-const getEnvironment = () => {
+export function getEnvironment(): string {
   const env: string = window.location.hostname.split(".")[0];
   if (["dev", "integration", "qa", "staging"].includes(env)) {
     return env;
   }
   return "production";
-};
+}
 
 function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
