@@ -104,6 +104,7 @@ module.exports = {
         new CopywebpackPlugin([ { from: path.join(cesiumSource, 'Assets'), to: 'Assets' } ]),
         new CopywebpackPlugin([ { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' } ]),
         new webpack.DefinePlugin({
+            EVEREST_UI_VERSION: JSON.stringify(require("./package.json").version),
             // Define relative base path in cesium for loading assets
             CESIUM_BASE_URL: JSON.stringify(process.env.CESIUM_BASE_URL || '')
         })

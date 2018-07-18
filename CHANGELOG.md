@@ -2,3 +2,4 @@
 
 * Add "Client-Id" header to CMR requests, with value
   `nsidc-everest-$environment`
+* Display the UI version below the globe widget
