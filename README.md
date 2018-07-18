@@ -86,6 +86,10 @@ QA.
 \* or another branch, if a special circumstance requires releasing from a
 non-`master` branch
 
+Because we display the version to the user, after release, the version should be
+incremented and `-dev` appended to the version string, so that subsequent builds
+indicate that it is a new version.
+
 ## Deployment
 
 First, build the app:
