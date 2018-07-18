@@ -24,7 +24,7 @@ cp -R $FROM $TO/.
 
 echo "App deployed to $TO"
 
-if [ -z "$1" ]; then
+if [ -n "$1" ]; then
     git tag --force $1
     git push --force origin refs/tags/$1
 fi
