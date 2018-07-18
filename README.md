@@ -92,6 +92,8 @@ If you want to deploy to the current environment from a VM:
 
         $ npm run deploy-drupal
 
-If you're on a dev or CI VM with `/share/apps/hermes-all` mounted, you can deploy to any environment by passing an argument. For example:
+If you're on a dev or CI VM with `/share/apps/hermes-all` mounted, you can
+deploy to any environment by passing an argument. This command will additionally
+update the git tag for the environment. For example:
 
         $ npm run deploy-drupal -- integration
