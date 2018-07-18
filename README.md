@@ -86,6 +86,10 @@ QA.
 \* or another branch, if a special circumstance requires releasing from a
 non-`master` branch
 
+Because we display the version to the user, after release, the version should be
+incremented and `-dev` appended to the version string, so that subsequent builds
+indicate that it is a new version.
+
 ## Deployment
 
 First, build the app:
@@ -96,7 +100,7 @@ If you want to deploy to the current environment from a VM:
 
         $ npm run deploy-drupal
 
-If you're on a dev or CI VM with `/share/apps/hermes-all` mounted, you can
+If you're on a dev or CI VM with `/share/apps/everest-ui-all` mounted, you can
 deploy to any environment by passing an argument. This command will additionally
 update the git tag for the environment. For example:
 
