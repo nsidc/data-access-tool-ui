@@ -46,14 +46,13 @@ function getEnvironmentDependentURLs() {
 
 export default function setupEnvironment(inDrupal: boolean): IEnvironment {
   if (inDrupal) {
-    const drupalDataset = Drupal.settings.data_downloads.dataset;
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: "/order-proxy",
       profileUrl: "/order-history",
     };
     return {
-      drupalDataset,
+      drupalDataset: Drupal.settings.data_downloads.dataset,
       hermesAPI: constructAPI(urls, true),
       inDrupal,
       urls,
@@ -61,19 +60,17 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     };
   } else {
     const hermesBaseUrl = `${window.location.hostname}`;
-    const drupalDataset = undefined;
-    const user = {uid: "__everestui-standalone__"};
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: `https://${hermesBaseUrl}/api/orders/`,
       profileUrl: "/profile.html",
     };
     return {
-      drupalDataset,
+      drupalDataset: undefined,
       hermesAPI: constructAPI(urls, false),
       inDrupal,
       urls,
-      user,
+      user: {uid: "__everestui-standalone__"},
     };
   }
 }
