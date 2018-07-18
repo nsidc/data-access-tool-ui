@@ -1,6 +1,6 @@
 #!/bin/bash
-# This script is expected to be run from a VM with at least /share/apps/hermes
-# or /share/apps/hermes-all mounted, depending on how you call it.
+# This script is expected to be run from a VM with at least /share/apps/everest-ui
+# or /share/apps/everest-ui-all mounted, depending on how you call it.
 set -e
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -13,9 +13,9 @@ function ensure_dir_exists() {
 }
 
 if [ -z "$1" ]; then
-    TO=/share/apps/hermes/ui
+    TO=/share/apps/everest-ui
 else
-    TO=/share/apps/hermes-all/$1/ui
+    TO=/share/apps/everest-ui-all/$1
 fi
 
 ensure_dir_exists $TO

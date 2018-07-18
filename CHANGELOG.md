@@ -1,3 +1,7 @@
+# v0.1.0-1 (Unreleased)
+
+* Use `everest-ui` share instead of `hermes` share
+
 # v0.1.0-0 (2018-07-18)
 
 * Add changelog (see [Pull Requests
