@@ -11,8 +11,14 @@ interface IUrls {
   profileUrl: string;
 }
 
+interface IDrupalDataset {
+  title: string;
+  id: string;
+  version: string;
+}
+
 export interface IEnvironment {
-  drupalDataset?: string;
+  drupalDataset?: IDrupalDataset;
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
