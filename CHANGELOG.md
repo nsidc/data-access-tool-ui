@@ -1,4 +1,4 @@
-# v0.1.0 (Unreleased)
+# v0.1.0-0 (2018-07-18)
 
 * Add changelog (see [Pull Requests
   #1-#40](https://bitbucket.org/nsidc/everest-ui/pull-requests/?state=MERGED)
