@@ -12,7 +12,7 @@ interface IUrls {
 }
 
 export interface IEnvironment {
-  drupalDataset: string;
+  drupalDataset?: string;
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
@@ -61,7 +61,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     };
   } else {
     const hermesBaseUrl = `${window.location.hostname}`;
-    const drupalDataset = "None";
+    const drupalDataset = undefined;
     const user = {uid: "__everestui-standalone__"};
     const urls = {
       ...getEnvironmentDependentURLs(),
