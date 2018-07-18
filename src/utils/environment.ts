@@ -45,7 +45,6 @@ function getEnvironmentDependentURLs() {
 }
 
 export default function setupEnvironment(inDrupal: boolean): IEnvironment {
-  let hermesBaseUrl: string;
   if (inDrupal) {
     const drupalDataset = Drupal.settings.data_downloads.dataset;
     const urls = {
@@ -61,7 +60,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       user: Drupal.settings.data_downloads.user,  // TODO: Use the Eardata Login module function?
     };
   } else {
-    hermesBaseUrl = `${window.location.hostname}`;
+    const hermesBaseUrl = `${window.location.hostname}`;
     const drupalDataset = "None";
     const user = {uid: "__everestui-standalone__"};
     const urls = {
