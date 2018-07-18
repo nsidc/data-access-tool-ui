@@ -88,6 +88,10 @@ non-`master` branch
 
 ## Deployment
 
+First, build the app:
+
+        $ npm run build-drupal
+
 If you want to deploy to the current environment from a VM:
 
         $ npm run deploy-drupal
