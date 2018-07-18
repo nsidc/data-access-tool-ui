@@ -12,7 +12,9 @@ interface IUrls {
 }
 
 export interface IEnvironment {
+  drupalDataset: string;
   hermesAPI: IHermesAPI;
+  inDrupal: boolean;
   urls: IUrls;
   user: IUser;
 }
@@ -45,18 +47,22 @@ function getEnvironmentDependentURLs() {
 export default function setupEnvironment(inDrupal: boolean): IEnvironment {
   let hermesBaseUrl: string;
   if (inDrupal) {
+    const drupalDataset = Drupal.settings.data_downloads.dataset;
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: "/order-proxy",
       profileUrl: "/order-history",
     };
     return {
+      drupalDataset,
       hermesAPI: constructAPI(urls, true),
+      inDrupal,
       urls,
       user: Drupal.settings.data_downloads.user,  // TODO: Use the Eardata Login module function?
     };
   } else {
     hermesBaseUrl = `${window.location.hostname}`;
+    const drupalDataset = "None";
     const user = {uid: "__everestui-standalone__"};
     const urls = {
       ...getEnvironmentDependentURLs(),
@@ -64,7 +70,9 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       profileUrl: "/profile.html",
     };
     return {
+      drupalDataset,
       hermesAPI: constructAPI(urls, false),
+      inDrupal,
       urls,
       user,
     };

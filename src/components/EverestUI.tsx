@@ -43,6 +43,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="everest-container">
           <div id="left-side">
             <OrderParameterInputs
+              environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
               orderParameters={this.state.orderParameters} />
           </div>
