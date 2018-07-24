@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import "../css/SpatialSelection.css";
+import "../css/index.css";
 import * as callout from "../img/callout.png";
 
 interface ISpatialSelectionTypeProps {

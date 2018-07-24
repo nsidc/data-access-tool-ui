@@ -1,3 +1,5 @@
+@import 'https://cdn.earthdata.nasa.gov/eui/1.1.4/stylesheets/application.css';
+
 body {
   font-family: 'Arial';
   margin: 20px;
@@ -17,7 +19,7 @@ body {
 }
 
 .dropdown {
-  font-size: 18px;
+  font-size: 100%;
   margin-bottom: 1em;
   width: 100%;
 }
@@ -27,22 +29,23 @@ body {
   padding: 0em;
 }
 
+#temporal-selection > div {
+  display: inline;
+  margin: 0em 2em 0em 0.75em;
+}
+
+.react-datepicker-wrapper input {
+  width: 8em;
+}
+
 #spatial-selection {
   border: 2px solid;
   margin: 0em;
   padding: 0em;
 }
 
-
 .submit-button {
-  width: 210px;
-  height: 2.2em;
-  margin: auto;
-  padding: 0.5em 1em 0.5em 1em;
-  background: steelblue;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
+  margin: 5px;
 }
 
 .submit-button:disabled {
@@ -59,8 +62,25 @@ body {
   z-index: 2;
 }
 
-#toolbar .button {
+div.button {
   display: inline-block;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+div.button:hover {
+  background: #eee;
+}
+
+div.button img {
+  margin: 0;
+  width: 100%;
+  border: none;
+}
+
+#granule-list, #order-buttons {
+  margin: 0 1.0em;
 }
 
 table.granuleList {
@@ -70,7 +90,7 @@ table.granuleList {
   table-layout: fixed;
   overflow: scroll;
   overflow-y: scroll;
-  font-size: 14px;
+  font-size: 80%;
 }
 
 td, th {
@@ -79,17 +99,8 @@ td, th {
   text-align: left;
 }
 
-thead {
-  background: steelblue;
-  color: white;
-}
-
-tbody tr:nth-child(odd) {
-  background: #eee;
-}
-
 tbody tr:hover {
-  background: #d7e4ef;
+  background: #b5cede; /* EUI medium blue */
 }
 
 /* Should we be adding to this toolbar? */
@@ -139,10 +150,6 @@ tbody tr:hover {
   width: 25%;
 }
 
-.react-datepicker-wrapper input {
-  width: 100px;
-}
-
 #profile-container {
   display: flex;
 }
@@ -175,32 +182,33 @@ tbody tr:hover {
 }
 
 /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
-div.tooltip {outline:none;}
-div.tooltip:hover {text-decoration:none;}
 div.tooltip span {
-  z-index:10;
-  display:none;
-  padding:14px 20px;
-  margin-top:-12px;
-  margin-left:20px;
-  width:170px;
-  line-height:16px;
-}
-div.tooltip:hover span{
-  display:inline;
-  position:absolute;
-  color:#111;
-  border:1px solid #DCA;
-  background:#fffAF0;}
-.callout {
-  z-index:20;
-  position:absolute;
-  border:0;
-  top: 12px;
-  left:-12px;
-}
-div.tooltip span
-{
-  border-radius:4px;
+  z-index: 10;
+  display: none;
+  padding: 0.5em 1em;
+  margin-top: 0;
+  margin-left: 15px;
+  width: 14em;
+  line-height: 1.5em;
+  border-radius: 4px;
   box-shadow: 5px 5px 8px #CCC;
+}
+
+div.tooltip:hover span{
+  display: inline;
+  position: absolute;
+  color: #111;
+  border: 1px solid #DCA;
+  background: #fffAF0;
+}
+
+img.callout {
+  z-index: 20;
+  position: absolute;
+  border: 0;
+  top: 0px;
+  left: -22px;
+  height: 2.5em;
+  max-width: 1.5em;
+  padding: 0;
 }

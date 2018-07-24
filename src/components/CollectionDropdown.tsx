@@ -42,7 +42,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     return (
       <div id="collection-dropdown">
-        <select className="dropdown" name="collections" onChange={this.handleChange} value={value}>
+        <select className="single-select dropdown" name="collections" onChange={this.handleChange} value={value}>
           <option>{"Select a collection."}</option>
           {collectionOptions}
         </select>

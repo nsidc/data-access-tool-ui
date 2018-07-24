@@ -22,7 +22,7 @@ export class ViewOrderPrompt extends React.Component<IViewOrderPromptProps, {}> 
         </span>
       );
     } else {
-      return (<span>{"Submit an order, " + this.props.environment.user.uid + "!"}</span>);
+      return "";
     }
   }
 }
