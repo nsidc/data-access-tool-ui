@@ -14,7 +14,7 @@
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
     "lint": "scripts/lint.sh",
-    "test": "npx jest"
+    "test": "npx jest --config=jest.config.js"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",
