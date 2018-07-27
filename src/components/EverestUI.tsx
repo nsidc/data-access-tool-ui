@@ -2,7 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
-import { cmrGranuleRequest, globalSpatialSelection } from "../utils/CMR";
+import { cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
@@ -16,6 +16,7 @@ interface IEverestProps {
 
 interface IEverestState {
   cmrResponse?: object[];
+  cmrStatusOk: boolean;
   orderParameters: IOrderParameters;
   orderSubmissionParameters?: IOrderSubmissionParameters;
 }
@@ -27,6 +28,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
       this.state = {
         cmrResponse: undefined,
+        cmrStatusOk: false,
         orderParameters: {
           collection: {},
           collectionId: "",
@@ -36,6 +38,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         },
         orderSubmissionParameters: undefined,
       };
+
+      cmrStatusRequest(
+        () => { this.setState({cmrStatusOk: true}); },
+        () => { this.setState({cmrStatusOk: false}); },
+      );
     }
 
     public render() {
@@ -43,6 +50,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="everest-container">
           <div id="left-side">
             <OrderParameterInputs
+              cmrStatusOk={this.state.cmrStatusOk}
               environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
               orderParameters={this.state.orderParameters} />
@@ -61,6 +69,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     public updateGranulesFromCmr() {
+      if (!this.state.cmrStatusOk) {
+        return;
+      }
       if (this.state.orderParameters.collectionId
           && this.state.orderParameters.spatialSelection
           && this.state.orderParameters.temporalFilterLowerBound

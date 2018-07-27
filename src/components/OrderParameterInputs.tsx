@@ -10,6 +10,7 @@ import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
 
 interface IOrderParametersProps {
+  cmrStatusOk: boolean;
   environment: IEnvironment;
   onChange: any;
   orderParameters: IOrderParameters;
@@ -26,6 +27,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     return (
       <div id="order-params">
         <CollectionDropdown
+          cmrStatusOk={this.props.cmrStatusOk}
           environment={this.props.environment}
           selectedCollection={this.props.orderParameters.collection}
           onCollectionChange={this.handleCollectionChange} />
