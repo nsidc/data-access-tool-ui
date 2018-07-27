@@ -30,6 +30,12 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     });
   }
 
+  public shouldComponentUpdate(nextProps: ICollectionDropdownProps, nextState: ICollectionDropdownState) {
+    const propsChanged = JSON.stringify(nextProps) !== JSON.stringify(this.props);
+    const stateChanged = nextState !== this.state;
+    return propsChanged || stateChanged;
+  }
+
   public render() {
     let collectionOptions = null;
     if (this.state.collections) {
