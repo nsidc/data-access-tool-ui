@@ -38,11 +38,25 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         },
         orderSubmissionParameters: undefined,
       };
+    }
 
-      cmrStatusRequest({
-        onFailure: () => { this.setState({cmrStatusOk: false}); },
-        onSuccess: () => { this.setState({cmrStatusOk: true}); },
-      });
+    public componentDidMount() {
+      const onSuccess = () => {
+        this.setState({cmrStatusOk: true});
+      };
+
+      const self = this;
+      function onFailure() {
+        self.setState({cmrStatusOk: false});
+
+        // retry periodically so that the app comes back to life when CMR is back
+        const delayMilliseconds = 5000;
+        setTimeout(() => {
+          cmrStatusRequest({onFailure, onSuccess});
+        }, delayMilliseconds);
+      }
+
+      cmrStatusRequest({onFailure, onSuccess});
     }
 
     public render() {

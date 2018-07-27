@@ -25,11 +25,13 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
   public componentDidMount() {
     if (this.props.cmrStatusOk) {
-      collectionsRequest().then((response) => {
-        this.setState({
-          collections: response.feed.entry,
-        }, this.selectDefaultCmrCollection);
-      });
+      this.getCmrCollections();
+    }
+  }
+
+  public componentDidUpdate(prevProps: ICollectionDropdownProps) {
+    if ((!prevProps.cmrStatusOk) && this.props.cmrStatusOk) {
+      this.getCmrCollections();
     }
   }
 
@@ -57,6 +59,14 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
         </select>
       </div>
     );
+  }
+
+  private getCmrCollections() {
+    collectionsRequest().then((response) => {
+      this.setState({
+        collections: response.feed.entry,
+      }, this.selectDefaultCmrCollection);
+    });
   }
 
   private selectDefaultCmrCollection = () => {
