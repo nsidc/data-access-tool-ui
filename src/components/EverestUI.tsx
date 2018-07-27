@@ -50,7 +50,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         self.setState({cmrStatusOk: false});
 
         // retry periodically so that the app comes back to life when CMR is back
-        const delayMilliseconds = 5000;
+        const delayMilliseconds = 60 * 1000;
         setTimeout(() => {
           cmrStatusRequest({onFailure, onSuccess});
         }, delayMilliseconds);
