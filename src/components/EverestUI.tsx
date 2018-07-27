@@ -39,10 +39,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         orderSubmissionParameters: undefined,
       };
 
-      cmrStatusRequest(
-        () => { this.setState({cmrStatusOk: true}); },
-        () => { this.setState({cmrStatusOk: false}); },
-      );
+      cmrStatusRequest({
+        onFailure: () => { this.setState({cmrStatusOk: false}); },
+        onSuccess: () => { this.setState({cmrStatusOk: true}); },
+      });
     }
 
     public render() {

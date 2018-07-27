@@ -33,7 +33,7 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
 
 // the lines in this file containing `fetchMock` may be uncommented during
 // development to simulate CMR being down
-export const cmrStatusRequest = (onSuccess: any, onFailure: any) => {
+export const cmrStatusRequest = ({onFailure, onSuccess}: any) => {
   // fetchMock.mock(CMR_STATUS_URL, 500);
 
   const fetchResult = fetch(CMR_STATUS_URL, {
