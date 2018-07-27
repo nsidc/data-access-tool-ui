@@ -4,6 +4,7 @@ import * as React from "react";
 import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
 import { cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
+import { CmrDownBanner } from "./CmrDownBanner";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
@@ -16,6 +17,7 @@ interface IEverestProps {
 
 interface IEverestState {
   cmrResponse?: object[];
+  cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   orderParameters: IOrderParameters;
   orderSubmissionParameters?: IOrderSubmissionParameters;
@@ -28,6 +30,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
       this.state = {
         cmrResponse: undefined,
+        cmrStatusChecked: false,
         cmrStatusOk: false,
         orderParameters: {
           collection: {},
@@ -42,12 +45,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     public componentDidMount() {
       const onSuccess = () => {
-        this.setState({cmrStatusOk: true});
+        this.setState({cmrStatusChecked: true, cmrStatusOk: true});
       };
 
       const self = this;
       function onFailure() {
-        self.setState({cmrStatusOk: false});
+        self.setState({cmrStatusChecked: true, cmrStatusOk: false});
 
         // retry periodically so that the app comes back to life when CMR is back
         const delayMilliseconds = 5 * 1000;
@@ -62,6 +65,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public render() {
       return (
         <div id="everest-container">
+          <div id="cmr-down">
+            <CmrDownBanner
+              cmrStatusChecked={this.state.cmrStatusChecked}
+              cmrStatusOk={this.state.cmrStatusOk}
+            />
+          </div>
           <div id="left-side">
             <OrderParameterInputs
               cmrStatusOk={this.state.cmrStatusOk}
