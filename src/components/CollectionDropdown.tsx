@@ -36,6 +36,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public shouldComponentUpdate(nextProps: ICollectionDropdownProps, nextState: ICollectionDropdownState) {
+    // JSON.stringify used here in lieu of a proper deep-object comparison
     const propsChanged = JSON.stringify(nextProps) !== JSON.stringify(this.props);
     const stateChanged = nextState !== this.state;
     return propsChanged || stateChanged;
