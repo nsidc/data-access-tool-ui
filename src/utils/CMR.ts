@@ -1,3 +1,4 @@
+// import * as fetchMock from "fetch-mock";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
@@ -30,8 +31,12 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   return `&${param}=${value}`;
 };
 
+// the lines in this file containing `fetchMock` may be uncommented during
+// development to simulate CMR being down
 export const cmrStatusRequest = (onSuccess: any, onFailure: any) => {
-  return fetch(CMR_STATUS_URL, {
+  // fetchMock.mock(CMR_STATUS_URL, 500);
+
+  const fetchResult = fetch(CMR_STATUS_URL, {
     headers: cmrHeaders,
   })
     .then((response) => {
@@ -41,6 +46,10 @@ export const cmrStatusRequest = (onSuccess: any, onFailure: any) => {
         onFailure(response);
       }
     });
+
+  // fetchMock.restore();
+
+  return fetchResult;
 };
 
 export const collectionsRequest = () =>
