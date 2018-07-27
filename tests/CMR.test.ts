@@ -1,6 +1,6 @@
 import * as fetchMock from "fetch-mock";
 
-import * as CMR from "../src/utils/CMR.ts";
+import * as CMR from "../src/utils/CMR";
 
 
 describe("CMR utils", () => {
