@@ -23,7 +23,7 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
     }
 
     return (
-      <span>R.I.P. CMR</span>
+      <span>CMR is down. Please try again in a few minutes.</span>
     );
   }
 }
