@@ -6,10 +6,6 @@ interface ICmrDownBannerProps {
 }
 
 export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
-  public constructor(props: ICmrDownBannerProps) {
-    super(props);
-  }
-
   public shouldComponentUpdate(nextProps: ICmrDownBannerProps) {
     const checkedChanged = nextProps.cmrStatusChecked !== this.props.cmrStatusChecked;
     const okChanged = nextProps.cmrStatusOk !== this.props.cmrStatusOk;
