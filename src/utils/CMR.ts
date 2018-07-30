@@ -5,7 +5,7 @@ import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
 import { getEnvironment } from "./environment";
 
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
-export const CMR_STATUS_URL = CMR_URL + "/search/collections.json";
+export const CMR_STATUS_URL = CMR_URL + "/search/health";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
