@@ -30,8 +30,8 @@ module.exports = {
     "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js",
     "cesium/Cesium": "<rootDir>/__mocks__/cesium/cesium.tsx"
   },
-  "testURL": "http://localhost/",
-  "globals": {
-    "Headers": fetch.Headers
+  testURL: "http://localhost/",
+  globals: {
+    Headers: fetch.Headers
   }
 }
