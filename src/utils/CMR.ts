@@ -8,8 +8,9 @@ export const CMR_STATUS_URL = CMR_URL + "/search/health";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
-const cmrHeaders = new Headers();
-cmrHeaders.append("Client-Id", `nsidc-everest-${getEnvironment()}`);
+const cmrHeaders = [
+  ["Client-Id", `nsidc-everest-${getEnvironment()}`],
+];
 
 const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   let param: string;
