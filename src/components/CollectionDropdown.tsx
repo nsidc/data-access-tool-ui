@@ -1,10 +1,10 @@
 import * as React from "react";
 
 import { collectionsRequest } from "../utils/CMR";
-
-declare var Drupal: any;
+import { IEnvironment } from "../utils/environment";
 
 interface ICollectionDropdownProps {
+  environment: IEnvironment;
   selectedCollection: any;
   onCollectionChange: any;
 }
@@ -51,14 +51,12 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   private selectDefaultCmrCollection = () => {
-    if (typeof(Drupal) === "undefined") {
+    if (!this.props.environment.inDrupal) {
       return;
     }
 
-    const drupalDataset = Drupal.settings.data_downloads.dataset;
-
     const matchingCmrCollections = this.state.collections.filter((c: any) => {
-      return this.cmrCollectionMatchesDataset(c, drupalDataset);
+      return this.cmrCollectionMatchesDataset(c, this.props.environment.drupalDataset);
     });
     if (matchingCmrCollections.length === 0) {
       console.warn("No CMR collections found for the given Drupal dataset.");

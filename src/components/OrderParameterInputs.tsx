@@ -4,11 +4,13 @@ import * as React from "react";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { IOrderParameters } from "../types/OrderParameters";
 import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
+import { IEnvironment } from "../utils/environment";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
 
 interface IOrderParametersProps {
+  environment: IEnvironment;
   onChange: any;
   orderParameters: IOrderParameters;
 }
@@ -24,6 +26,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     return (
       <div id="order-params">
         <CollectionDropdown
+          environment={this.props.environment}
           selectedCollection={this.props.orderParameters.collection}
           onCollectionChange={this.handleCollectionChange} />
         <TemporalFilter
