@@ -41,20 +41,20 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public render() {
       return (
         <div id="everest-container">
-          <div id="left-side">
+          <section id="left-side">
             <OrderParameterInputs
               onChange={this.handleOrderParameterChange}
               orderParameters={this.state.orderParameters} />
-          </div>
-          <div id="right-side">
+          </section>
+          <section id="right-side">
             <GranuleList
               collectionId={this.state.orderParameters.collectionId}
               cmrResponse={this.state.cmrResponse} />
             <OrderButtons
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}/>
-          </div>
-          <div id="version">Data Downloads UI v{EVEREST_UI_VERSION}</div>
+          </section>
+          <section id="version">Data Downloads UI v{EVEREST_UI_VERSION}</section>
         </div>
       );
     }
