@@ -2,7 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
-import { cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
+import { CmrCollection, cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { GranuleList } from "./GranuleList";
@@ -33,7 +33,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         cmrStatusChecked: false,
         cmrStatusOk: false,
         orderParameters: {
-          collection: {},
+          collection: new CmrCollection(),
           collectionId: "",
           spatialSelection: globalSpatialSelection,
           temporalFilterLowerBound: moment("20100101"),

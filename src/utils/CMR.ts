@@ -1,5 +1,6 @@
 // uncomment this line to simulate CMR being down during development
 // import * as fetchMock from "fetch-mock";
+import { List, Record } from "immutable";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
@@ -32,6 +33,16 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
 
   return `&${param}=${value}`;
 };
+
+export const CmrCollection = Record({
+  boxes: List(),
+  dataset_id: "",
+  id: "",
+  short_name: "",
+  time_end: "",
+  time_start: "",
+  version_id: "",
+});
 
 // uncomment these lines to simulate CMR being down during development; set
 // mockRequests to the number of times the status check should fail--1 should be
