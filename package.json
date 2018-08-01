@@ -10,7 +10,7 @@
     "build-dev": "webpack",
     "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack",
     "deploy-drupal": "./scripts/deploy.sh",
-    "dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack --watch",
+    "dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack --watch --progress",
     "dev": "webpack --watch",
     "start": "webpack-dev-server",
     "lint": "scripts/lint.sh",
