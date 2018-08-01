@@ -20,8 +20,9 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
 
     return (
       <span>
-        We're sorry, but CMR is currently down, and we cannot process your
-        request. Please try again in a few minutes.
+        We're sorry, but due to the unavailability of an external resource, we
+        cannot process your request at this time. Please try again in a few
+        minutes.
       </span>
     );
   }
