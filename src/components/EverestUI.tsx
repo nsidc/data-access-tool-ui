@@ -2,7 +2,8 @@ import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
-import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
+import { IOrderParameters } from "../types/OrderParameters";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { CmrCollection, cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { CmrDownBanner } from "./CmrDownBanner";
@@ -21,7 +22,7 @@ interface IEverestState {
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   orderParameters: IOrderParameters;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -123,12 +124,16 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     private handleCmrResponse(response: any) {
       const cmrResponse = fromJS(response.feed.entry);
-      this.setState({cmrResponse});
 
       const granuleURs = cmrResponse.map((g: any) => g.get("title"));
+
       const collectionIDs = cmrResponse.map((g: any) => g.get("dataset_id"));
       const collectionLinks = cmrResponse.map((g: any) => g.get("links").slice(-1).get(0).get("href"));
       const collectionInfo = collectionIDs.map((id: string, key: number) => List([id, collectionLinks[key]]));
-      this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
+
+      const orderSubmissionParameters = new OrderSubmissionParameters({collectionInfo,
+                                                                       granuleURs});
+
+      this.setState({cmrResponse, orderSubmissionParameters});
     }
 }

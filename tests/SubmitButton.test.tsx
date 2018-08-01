@@ -3,6 +3,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { SubmitButton } from "../src/components/SubmitButton";
+import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
 import { OrderTypes } from "../src/types/orderTypes";
 import setupEnvironment from "../src/utils/environment";
 

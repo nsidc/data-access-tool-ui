@@ -9,8 +9,3 @@ export interface IOrderParameters {
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
 }
-
-export interface IOrderSubmissionParameters {
-  granuleURs: string[];
-  collectionInfo: any[];
-}

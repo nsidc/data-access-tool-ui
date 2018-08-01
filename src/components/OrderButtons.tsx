@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { IOrderSubmissionParameters } from "../types/OrderParameters";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { SubmitButton } from "./SubmitButton";
@@ -8,7 +8,7 @@ import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IOrderButtonsProps {
   environment: IEnvironment;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 interface IOrderButtonsState {

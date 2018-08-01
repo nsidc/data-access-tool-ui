@@ -1,13 +1,13 @@
 import * as React from "react";
 
-import { IOrderSubmissionParameters } from "../types/OrderParameters";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 
 interface ISubmitButtonProps {
   environment: IEnvironment;
   onSubmitOrderResponse: any;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
   orderType: OrderTypes;
 }
 
