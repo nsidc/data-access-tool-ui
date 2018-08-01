@@ -1,26 +1,28 @@
+import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
 interface IGranuleListProps {
-  collectionId: string;
-  cmrResponse?: object[];
+  cmrResponse: List<object>;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
+  public shouldComponentUpdate(nextProps: IGranuleListProps) {
+    return !this.props.cmrResponse.equals(nextProps.cmrResponse);
+  }
+
   public render() {
-    let granuleList: object[] = [];
-    if (this.props.cmrResponse) {
-      granuleList = this.props.cmrResponse.map((g: any, i: number) => (
-        <tr key={i}>
-          <td>{g.producer_granule_id}</td>
-          <td>{parseFloat(g.granule_size).toFixed(1)}</td>
-          <td>{moment(g.time_start).format(GranuleList.timeFormat)}</td>
-          <td>{moment(g.time_end).format(GranuleList.timeFormat)}</td>
-        </tr>
-      ));
-    }
+    const granuleList = this.props.cmrResponse.map((granule: any, i?: number) => (
+      <tr key={i}>
+        <td>{granule.get("producer_granule_id")}</td>
+        <td>{parseFloat(granule.get("granule_size")).toFixed(1)}</td>
+        <td>{moment(granule.get("time_start")).format(GranuleList.timeFormat)}</td>
+        <td>{moment(granule.get("time_end")).format(GranuleList.timeFormat)}</td>
+      </tr>
+    ));
+
     return (
       <div id="granule-list">
         <table className="granuleList">

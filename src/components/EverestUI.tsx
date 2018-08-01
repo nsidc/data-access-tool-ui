@@ -1,3 +1,4 @@
+import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
@@ -16,7 +17,7 @@ interface IEverestProps {
 }
 
 interface IEverestState {
-  cmrResponse?: object[];
+  cmrResponse: List<object>;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   orderParameters: IOrderParameters;
@@ -29,7 +30,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
       this.state = {
-        cmrResponse: undefined,
+        cmrResponse: List(),
         cmrStatusChecked: false,
         cmrStatusOk: false,
         orderParameters: {
@@ -80,7 +81,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           </div>
           <div id="right-side">
             <GranuleList
-              collectionId={this.state.orderParameters.collectionId}
               cmrResponse={this.state.cmrResponse} />
             <OrderButtons
               environment={this.props.environment}
@@ -91,7 +91,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       );
     }
 
-    public updateGranulesFromCmr() {
+    private updateGranulesFromCmr() {
       if (!this.state.cmrStatusOk) {
         return;
       }
@@ -122,13 +122,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     private handleCmrResponse(response: any) {
-      const cmrResponse = response.feed.entry;
+      const cmrResponse = fromJS(response.feed.entry);
       this.setState({cmrResponse});
 
-      const granuleURs = cmrResponse.map((g: any) => g.title);
-      const collectionIDs = cmrResponse.map((g: any) => g.dataset_id);
-      const collectionLinks = cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
-      const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
+      const granuleURs = cmrResponse.map((g: any) => g.get("title"));
+      const collectionIDs = cmrResponse.map((g: any) => g.get("dataset_id"));
+      const collectionLinks = cmrResponse.map((g: any) => g.get("links").slice(-1).get(0).get("href"));
+      const collectionInfo = collectionIDs.map((id: string, key: number) => List([id, collectionLinks[key]]));
       this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
     }
 }
