@@ -7,6 +7,7 @@ interface ICollectionDropdownProps {
   cmrStatusOk: boolean;
   environment: IEnvironment;
   selectedCollection: any;
+  onCmrRequestFailure: (response: any) => any;
   onCollectionChange: any;
 }
 
@@ -56,11 +57,13 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   private getCmrCollections() {
-    collectionsRequest().then((response) => {
+    const onSuccess = (response: any) => {
       this.setState({
         collections: response.feed.entry,
       }, this.selectDefaultCmrCollection);
-    });
+    };
+
+    collectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
   }
 
   private selectDefaultCmrCollection = () => {

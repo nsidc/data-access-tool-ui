@@ -43,15 +43,15 @@ if (__DEV__) {
   fetchMock.mock(CMR_STATUS_URL, 503);
 }
 
-export const cmrStatusRequest = ({onFailure, onSuccess}: any) => {
+export const cmrStatusRequest = () => {
   const fetchResult = fetch(CMR_STATUS_URL, {
     headers: cmrHeaders,
   })
     .then((response) => {
       if (response.ok) {
-        onSuccess(response);
+        return response.json();
       } else {
-        onFailure(response);
+        return Promise.reject(new Error(`CMR responded with status code ${response.status}`));
       }
     });
 
@@ -65,11 +65,18 @@ export const cmrStatusRequest = ({onFailure, onSuccess}: any) => {
   return fetchResult;
 };
 
-export const collectionsRequest = () =>
-  fetch(CMR_COLLECTION_URL, {
+export const collectionsRequest = () => {
+  return fetch(CMR_COLLECTION_URL, {
     headers: cmrHeaders,
   })
-      .then((response) => response.json());
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(new Error(`CMR responded with status code ${response.status}`));
+      }
+    });
+};
 
 export const cmrGranuleRequest = (collectionId: string,
                                   spatialSelection: IGeoJsonPolygon,
@@ -79,10 +86,17 @@ export const cmrGranuleRequest = (collectionId: string,
     + `&concept_id=${collectionId}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
     + spatialParameter(spatialSelection);
+
   return fetch(URL, {
     headers: cmrHeaders,
   })
-      .then((response) => response.json());
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(new Error(`CMR responded with status code ${response.status}`));
+      }
+    });
 };
 
 export const globalSpatialSelection: IGeoJsonBbox = {

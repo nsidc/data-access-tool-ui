@@ -29,6 +29,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       super(props);
       this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
+      this.onCmrRequestFailure = this.onCmrRequestFailure.bind(this);
       this.state = {
         cmrResponse: undefined,
         cmrStatusChecked: false,
@@ -45,22 +46,21 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     public componentDidMount() {
-      const onSuccess = () => {
+      const onSuccess = (response: any) => {
         this.setState({cmrStatusChecked: true, cmrStatusOk: true});
       };
 
-      const self = this;
-      function onFailure() {
-        self.setState({cmrStatusChecked: true, cmrStatusOk: false});
+      const onFailure = (response: any) => {
+        this.onCmrRequestFailure(response);
 
         // retry periodically so that the app comes back to life when CMR is back
         const delayMilliseconds = 1000 * (__DEV__ ? 5 : 60);
         setTimeout(() => {
-          cmrStatusRequest({onFailure, onSuccess});
+          cmrStatusRequest().then(onSuccess, onFailure);
         }, delayMilliseconds);
-      }
+      };
 
-      cmrStatusRequest({onFailure, onSuccess});
+      cmrStatusRequest().then(onSuccess, onFailure);
     }
 
     public render() {
@@ -77,6 +77,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrStatusOk={this.state.cmrStatusOk}
               environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
+              onCmrRequestFailure={this.onCmrRequestFailure}
               orderParameters={this.state.orderParameters} />
           </div>
           <div id="right-side">
@@ -105,7 +106,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           this.state.orderParameters.spatialSelection,
           this.state.orderParameters.temporalFilterLowerBound,
           this.state.orderParameters.temporalFilterUpperBound,
-        ).then((json: any) => this.handleCmrResponse(json));
+        ).then(this.handleCmrResponse, this.onCmrRequestFailure);
       } else {
         console.log("Insufficient props provided.");
       }
@@ -131,5 +132,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       const collectionLinks = cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
       const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
       this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
+    }
+
+    private onCmrRequestFailure(response: any) {
+      this.setState({cmrStatusChecked: true, cmrStatusOk: false});
     }
 }
