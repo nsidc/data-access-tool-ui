@@ -1,3 +1,4 @@
+import { fromJS, Map } from "immutable";
 import * as React from "react";
 
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
@@ -22,6 +23,17 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.state = {
       orderSubmitResponse: undefined,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
+    const compareMap = (props: IOrderButtonsProps,
+                        state: IOrderButtonsState) => Map({
+                          environment: fromJS(props.environment),
+                          orderSubmissionParameters: props.orderSubmissionParameters,
+                          orderSubmitResponse: fromJS(state.orderSubmitResponse),
+                        });
+
+    return !compareMap(this.props, this.state).equals(compareMap(nextProps, nextState));
   }
 
   public render() {
