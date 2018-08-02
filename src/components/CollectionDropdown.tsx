@@ -71,7 +71,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   private selectDefaultCmrCollection = () => {
-    if ((!this.props.environment.inDrupal) || (!this.props.cmrStatusOk)) {
+    if (!this.props.environment.inDrupal || !this.props.cmrStatusOk) {
       return;
     }
 
