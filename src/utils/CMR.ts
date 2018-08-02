@@ -1,9 +1,10 @@
-// uncomment this line to simulate CMR being down during development
-// import * as fetchMock from "fetch-mock";
+import * as fetchMock from "fetch-mock";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
 import { getEnvironment } from "./environment";
+
+const __DEV__ = false;  // set to true to test CMR failure case in development
 
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
@@ -33,15 +34,14 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   return `&${param}=${value}`;
 };
 
-// uncomment these lines to simulate CMR being down during development; set
-// mockRequests to the number of times the status check should fail--1 should be
-// good enough to demo the functionality. You probably also want to change the
-// value of `delayMilliseconds` in EverestUI.tsx to something short like 5
-// seconds.
-//
-// const mockRequests = 1;
-// let mockedRequests = 0;
-// fetchMock.mock(CMR_STATUS_URL, 503);
+// simulate CMR being down during development; set mockRequests to the number of
+// times the status check should fail--1 should be good enough to demo the
+// functionality.
+let mockedRequests = 0;
+const mockRequests = 1;
+if (__DEV__) {
+  fetchMock.mock(CMR_STATUS_URL, 503);
+}
 
 export const cmrStatusRequest = ({onFailure, onSuccess}: any) => {
   const fetchResult = fetch(CMR_STATUS_URL, {
@@ -55,11 +55,12 @@ export const cmrStatusRequest = ({onFailure, onSuccess}: any) => {
       }
     });
 
-  // uncomment these lines to stop mocking the CMR call and start making real
-  // calls during development
-  // if (++mockedRequests >= mockRequests) {
-  //   fetchMock.restore();
-  // }
+  // stop mocking the CMR call and start making real calls
+  if (__DEV__) {
+    if (++mockedRequests >= mockRequests) {
+      fetchMock.restore();
+    }
+  }
 
   return fetchResult;
 };

@@ -10,6 +10,7 @@ import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 
 declare var EVEREST_UI_VERSION: string;  // defined at compile time by webpack.DefinePlugin
+const __DEV__ = false;  // set to true to test CMR failure case in development
 
 interface IEverestProps {
   environment: IEnvironment;
@@ -53,7 +54,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         self.setState({cmrStatusChecked: true, cmrStatusOk: false});
 
         // retry periodically so that the app comes back to life when CMR is back
-        const delayMilliseconds = 60 * 1000;
+        const delayMilliseconds = 1000 * (__DEV__ ? 5 : 60);
         setTimeout(() => {
           cmrStatusRequest({onFailure, onSuccess});
         }, delayMilliseconds);
