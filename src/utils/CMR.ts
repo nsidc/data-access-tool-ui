@@ -34,6 +34,24 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   return `&${param}=${value}`;
 };
 
+// make a request with cmrHeaders
+// return response.json() on a successful request; reject the Promise otherwise
+const cmrFetch = (url: string) => {
+  const init = {
+    headers: cmrHeaders,
+  };
+
+  const onFulfilled = (response: Response) => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      return Promise.reject(new Error(`CMR responded with status code ${response.status}; request URL: ${url}`));
+    }
+  };
+
+  return fetch(url, init).then(onFulfilled);
+};
+
 // simulate CMR being down during development; set mockRequests to the number of
 // times the status check should fail--1 should be good enough to demo the
 // functionality.
@@ -44,16 +62,7 @@ if (__DEV__) {
 }
 
 export const cmrStatusRequest = () => {
-  const fetchResult = fetch(CMR_STATUS_URL, {
-    headers: cmrHeaders,
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return Promise.reject(new Error(`CMR responded with status code ${response.status}`));
-      }
-    });
+  const fetchResult = cmrFetch(CMR_STATUS_URL);
 
   // stop mocking the CMR call and start making real calls
   if (__DEV__) {
@@ -66,16 +75,7 @@ export const cmrStatusRequest = () => {
 };
 
 export const collectionsRequest = () => {
-  return fetch(CMR_COLLECTION_URL, {
-    headers: cmrHeaders,
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return Promise.reject(new Error(`CMR responded with status code ${response.status}`));
-      }
-    });
+  return cmrFetch(CMR_COLLECTION_URL);
 };
 
 export const cmrGranuleRequest = (collectionId: string,
@@ -87,16 +87,7 @@ export const cmrGranuleRequest = (collectionId: string,
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
     + spatialParameter(spatialSelection);
 
-  return fetch(URL, {
-    headers: cmrHeaders,
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return Promise.reject(new Error(`CMR responded with status code ${response.status}`));
-      }
-    });
+  return cmrFetch(URL);
 };
 
 export const globalSpatialSelection: IGeoJsonBbox = {
