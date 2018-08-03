@@ -7,3 +7,4 @@
   `nsidc-everest-$environment`
 * Display the UI version below the globe widget
 * Use `everest-ui` share instead of `hermes` share
+* Incorporate Earthdata UI CSS.
