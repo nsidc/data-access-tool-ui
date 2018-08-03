@@ -17,10 +17,10 @@ With npm:
 
 1. You can run the webpack-dev-server so the app is served up
    by a web server.
+   _**QUESTION: How is the situation that results from running `npm start` different from that of `npm run build-dev`?**_
 
         $ npm start
 
-   **QUESTION: How is the situation that results from running `npm start` different from that of `npm run build-dev`?**
 
 2. Now you can [open the app](http://localhost:8080/), make changes, and the
    page will be refreshed automatically.

@@ -29,15 +29,13 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           environment={this.props.environment}
           selectedCollection={this.props.orderParameters.collection}
           onCollectionChange={this.handleCollectionChange} />
-        <div id="temporal-selection">
-          <TemporalFilter
-            fromDate={this.props.orderParameters.temporalFilterLowerBound}
-            onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>
-              this.props.onChange({temporalFilterLowerBound})}
-            toDate={this.props.orderParameters.temporalFilterUpperBound}
-            onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
-              this.props.onChange({temporalFilterUpperBound})} />
-        </div>
+        <TemporalFilter
+          fromDate={this.props.orderParameters.temporalFilterLowerBound}
+          onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>
+            this.props.onChange({temporalFilterLowerBound})}
+          toDate={this.props.orderParameters.temporalFilterUpperBound}
+          onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
+            this.props.onChange({temporalFilterUpperBound})} />
         <Globe
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon) =>
             this.props.onChange({spatialSelection})}

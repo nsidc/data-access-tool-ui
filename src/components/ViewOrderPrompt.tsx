@@ -21,8 +21,12 @@ export class ViewOrderPrompt extends React.Component<IViewOrderPromptProps, {}> 
           <a href={this.props.environment.urls.profileUrl}>View your order</a>
         </span>
       );
+    } else if (typeof this.props.environment.user.uid === "undefined") {
+      return (
+        <span>Log in to place your order.</span>
+      );
     } else {
-      return (<span>{"Submit an order, " + this.props.environment.user.uid + "!"}</span>);
+      return "";
     }
   }
 }

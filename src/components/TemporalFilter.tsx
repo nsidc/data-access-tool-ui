@@ -18,30 +18,18 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
 
   public render() {
     return (
-      <table className="temporal-filter">
-        <thead>
-          <tr>
-            <th>From:</th>
-            <th>To:</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <DatePicker
-                id="from"
-                selected={this.props.fromDate}
-                onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
-            </td>
-            <td>
-              <DatePicker
-                id="to"
-                selected={this.props.toDate}
-                onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div id="temporal-selection">
+        <label>From:</label>
+        <DatePicker
+          id="from"
+          selected={this.props.fromDate}
+          onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
+        <label>To:</label>
+        <DatePicker
+          id="to"
+          selected={this.props.toDate}
+          onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
+      </div>
     );
   }
 }
