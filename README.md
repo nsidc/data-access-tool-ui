@@ -34,7 +34,7 @@ under "Custom module development" in the drupal README), this command will build
 and deploy the webapp to the share dir when source files change, clearing the
 Drupal css-js cache on each build:
 
-        $ npm build-dev-drupal
+        $ npm run build-dev-drupal
 
 To debug the app, use the files under `webpack://` in the Sources tab of the
 Developer Tools.
