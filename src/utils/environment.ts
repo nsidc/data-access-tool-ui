@@ -9,6 +9,7 @@ interface IUrls {
   orderNotificationPath: string;
   hermesOrderUrl: string;
   profileUrl: string;
+  hermesScriptUrl: string;
 }
 
 interface IDrupalDataset {
@@ -55,6 +56,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: "/order-proxy",
+      hermesScriptUrl: "/script-proxy",
       profileUrl: "/order-history",
     };
     return {
@@ -69,6 +71,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     const urls = {
       ...getEnvironmentDependentURLs(),
       hermesOrderUrl: `https://${hermesBaseUrl}/api/orders/`,
+      hermesScriptUrl: `https://${hermesBaseUrl}/api/downloader-script/`,
       profileUrl: "/profile.html",
     };
     return {

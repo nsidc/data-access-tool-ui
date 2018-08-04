@@ -33,6 +33,20 @@ body {
   padding: 0em;
 }
 
+.script-button {
+  width: 210px;
+  height: 2.2em;
+  margin: auto;
+  padding: 0.5em 1em 0.5em 1em;
+  background: goldenrod;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.script-button:disabled {
+  background: silver;
+}
 
 .submit-button {
   width: 210px;
