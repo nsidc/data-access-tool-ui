@@ -1,12 +1,10 @@
 import { fromJS, List } from "immutable";
-import * as moment from "moment";
 import * as React from "react";
 
-import { CmrCollection } from "../types/CmrCollection";
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
-import { IOrderParameters } from "../types/OrderParameters";
+import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
+import { cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { GranuleList } from "./GranuleList";
@@ -24,7 +22,7 @@ interface IEverestState {
   cmrResponse: List<CmrGranule>;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
-  orderParameters: IOrderParameters;
+  orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
@@ -38,13 +36,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         cmrResponse: List<CmrGranule>(),
         cmrStatusChecked: false,
         cmrStatusOk: false,
-        orderParameters: {
-          collection: new CmrCollection(),
-          collectionId: "",
-          spatialSelection: globalSpatialSelection,
-          temporalFilterLowerBound: moment("20100101"),
-          temporalFilterUpperBound: moment(),
-        },
+        orderParameters: new OrderParameters(),
         orderSubmissionParameters: undefined,
       };
     }
@@ -115,8 +107,27 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    private handleOrderParameterChange(newOrderParameters: IOrderParameters, callback: any) {
-      const orderParameters = Object.assign({}, this.state.orderParameters, newOrderParameters);
+    private handleOrderParameterChange(newOrderParameters: Partial<IOrderParameters>, callback: any) {
+      // Immutable's typing for Record is incorrect; Record#merge returns a
+      // Record with the same attributes, but the type definition says it
+      // returns a Map (OrderParameters is a subclass of Record)
+      //
+      // @ts-ignore 2322
+      let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
+
+      // really dumb way to get around issue where if spatialSelection is part
+      // of the new parameters, it gets turned into a Map in the merge above; we
+      // always want it to be a POJO
+      if (newOrderParameters.spatialSelection) {
+        orderParameters = new OrderParameters({
+          collection: orderParameters.collection,
+          collectionId: orderParameters.collectionId,
+          spatialSelection: newOrderParameters.spatialSelection,
+          temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
+          temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
+        });
+      }
+
       const modifiedCallback = (): void => {
         this.updateGranulesFromCmr();
         if (callback) {

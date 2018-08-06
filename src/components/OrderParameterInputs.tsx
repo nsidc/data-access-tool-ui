@@ -2,7 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
-import { IOrderParameters } from "../types/OrderParameters";
+import { OrderParameters } from "../types/OrderParameters";
 import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { CollectionDropdown } from "./CollectionDropdown";
@@ -14,7 +14,7 @@ interface IOrderParametersProps {
   environment: IEnvironment;
   onChange: any;
   onCmrRequestFailure: (response: any) => any;
-  orderParameters: IOrderParameters;
+  orderParameters: OrderParameters;
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
