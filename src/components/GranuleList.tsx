@@ -2,8 +2,10 @@ import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
+import { CmrGranule } from "../types/CmrGranule";
+
 interface IGranuleListProps {
-  cmrResponse: List<object>;
+  cmrResponse: List<CmrGranule>;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
@@ -14,12 +16,12 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   public render() {
-    const granuleList = this.props.cmrResponse.map((granule: any, i?: number) => (
+    const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => (
       <tr key={i}>
-        <td>{granule.get("producer_granule_id")}</td>
-        <td>{parseFloat(granule.get("granule_size")).toFixed(1)}</td>
-        <td>{moment(granule.get("time_start")).format(GranuleList.timeFormat)}</td>
-        <td>{moment(granule.get("time_end")).format(GranuleList.timeFormat)}</td>
+        <td>{granule.producer_granule_id}</td>
+        <td>{parseFloat(granule.granule_size).toFixed(1)}</td>
+        <td>{moment(granule.time_start).format(GranuleList.timeFormat)}</td>
+        <td>{moment(granule.time_end).format(GranuleList.timeFormat)}</td>
       </tr>
     ));
 
