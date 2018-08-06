@@ -2,9 +2,10 @@ import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
+import { CmrCollection } from "../types/CmrCollection";
 import { IOrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { CmrCollection, cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
+import { cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { GranuleList } from "./GranuleList";

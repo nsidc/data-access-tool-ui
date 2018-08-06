@@ -1,7 +1,8 @@
 import { List, Map } from "immutable";
 import * as React from "react";
 
-import { CmrCollection, collectionsRequest } from "../utils/CMR";
+import { CmrCollection } from "../types/CmrCollection";
+import { collectionsRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 
 interface ICollectionDropdownProps {
@@ -81,8 +82,8 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
       return;
     }
 
-    const matchingCmrCollections = this.state.collections.filter((c: any) => {
-      return this.cmrCollectionMatchesDrupalDataset(c, this.props.environment.drupalDataset);
+    const matchingCmrCollections = this.state.collections.filter((collection: CmrCollection) => {
+      return this.cmrCollectionMatchesDrupalDataset(collection, this.props.environment.drupalDataset);
     });
     if (matchingCmrCollections.size === 0) {
       console.warn("No CMR collections found for the given Drupal dataset.");
@@ -91,14 +92,13 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     if (matchingCmrCollections.size > 1) {
       console.warn(`More than one CMR collection found for the given Drupal dataset (will use the first): ` +
-                   `${matchingCmrCollections.map((c: any) => c.short_name)}`);
+                   `${matchingCmrCollections.map((collection: CmrCollection) => collection.short_name)}`);
     }
 
-    const collection = matchingCmrCollections.get(0);
-    this.props.onCollectionChange(collection);
+    this.props.onCollectionChange(matchingCmrCollections.get(0));
   }
 
-  private cmrCollectionMatchesDrupalDataset = (cmrCollection: any, drupalDataset: any): boolean => {
+  private cmrCollectionMatchesDrupalDataset = (cmrCollection: CmrCollection, drupalDataset: any): boolean => {
     if ((!cmrCollection) || (!drupalDataset)) {
       return false;
     }
