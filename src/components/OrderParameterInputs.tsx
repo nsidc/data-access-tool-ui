@@ -13,6 +13,7 @@ interface IOrderParametersProps {
   cmrStatusOk: boolean;
   environment: IEnvironment;
   onChange: any;
+  onCmrRequestFailure: (response: any) => any;
   orderParameters: IOrderParameters;
 }
 
@@ -27,6 +28,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     return (
       <div id="order-params">
         <CollectionDropdown
+          onCmrRequestFailure={this.props.onCmrRequestFailure}
           cmrStatusOk={this.props.cmrStatusOk}
           environment={this.props.environment}
           selectedCollection={this.props.orderParameters.collection}
