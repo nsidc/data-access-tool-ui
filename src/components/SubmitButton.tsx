@@ -35,7 +35,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     }
     return (
       <button
-        className="submit-button"
+        className="submit-button eui-btn--green"
         disabled={!this.props.orderSubmissionParameters}
         onClick={this.handleClick}>
         {buttonText}
