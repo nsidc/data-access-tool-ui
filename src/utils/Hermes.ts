@@ -5,10 +5,13 @@ import { OrderTypes } from "../types/orderTypes";
 import { IUser } from "../types/User";
 
 export interface IHermesAPI {
-    getOrder: (orderId: string) => any;
-    getUserOrders: (user: IUser) => any;
-    openNotificationConnection: (user: IUser, callback: any) => void ;
-    submitOrder: (user: IUser, granuleURs: List<string>, collectionInfo: List<any>, orderType: OrderTypes) => any;
+  getOrder: (orderId: string) => any;
+  getUserOrders: (user: IUser) => any;
+  openNotificationConnection: (user: IUser, callback: any) => void;
+  submitOrder: (user: IUser,
+                granuleURs: List<string>,
+                collectionInfo: List<List<string>>,
+                orderType: OrderTypes) => Promise<any>;
 }
 
 const getOrderParamsByType = (orderType: OrderTypes): any => {
@@ -62,7 +65,12 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
         ws.on("notification", callback);
     };
 
-    const submitOrder = (user: any, granuleURs: List<string>, collectionInfo: List<any>, orderType: OrderTypes) => {
+    const submitOrder = (
+      user: any,
+      granuleURs: List<string>,
+      collectionInfo: List<List<string>>,
+      orderType: OrderTypes,
+    ) => {
         const headers: any = {
             "Content-Type": "application/json",
         };

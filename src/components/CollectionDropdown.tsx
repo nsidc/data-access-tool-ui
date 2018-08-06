@@ -14,7 +14,7 @@ interface ICollectionDropdownProps {
 }
 
 interface ICollectionDropdownState {
-  collections: List<any>;
+  collections: List<CmrCollection>;
 }
 
 export class CollectionDropdown extends React.Component<ICollectionDropdownProps, ICollectionDropdownState> {
@@ -50,9 +50,9 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public render() {
-    const sortedCollections = this.state.collections.sortBy((collection: any) => collection.dataset_id);
-    const collectionOptions = sortedCollections.map((collection: any, key?: number) => (
-      <option key={key} value={JSON.stringify(collection.toJS())}>{collection.dataset_id}</option>
+    const sortedCollections = this.state.collections.sortBy((c: CmrCollection= new CmrCollection()) => c.dataset_id);
+    const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => (
+      <option key={key} value={JSON.stringify(c.toJS())}>{c.dataset_id}</option>
     ));
 
     const value = JSON.stringify(this.props.selectedCollection.toJS());
@@ -82,8 +82,8 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
       return;
     }
 
-    const matchingCmrCollections = this.state.collections.filter((collection: CmrCollection) => {
-      return this.cmrCollectionMatchesDrupalDataset(collection, this.props.environment.drupalDataset);
+    const matchingCmrCollections = this.state.collections.filter((c: CmrCollection = new CmrCollection()) => {
+      return this.cmrCollectionMatchesDrupalDataset(c, this.props.environment.drupalDataset);
     });
     if (matchingCmrCollections.size === 0) {
       console.warn("No CMR collections found for the given Drupal dataset.");
@@ -92,10 +92,11 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     if (matchingCmrCollections.size > 1) {
       console.warn(`More than one CMR collection found for the given Drupal dataset (will use the first): ` +
-                   `${matchingCmrCollections.map((collection: CmrCollection) => collection.short_name)}`);
+                   `${matchingCmrCollections.map((c: CmrCollection = new CmrCollection()) => c.short_name)}`);
     }
 
-    this.props.onCollectionChange(matchingCmrCollections.first());
+    const collection = matchingCmrCollections.first();
+    this.props.onCollectionChange(collection);
   }
 
   private cmrCollectionMatchesDrupalDataset = (cmrCollection: CmrCollection, drupalDataset: any): boolean => {
@@ -117,7 +118,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   private handleChange = (e: any) => {
-    const collection: any = new CmrCollection(JSON.parse(e.target.value));
+    const collection = new CmrCollection(JSON.parse(e.target.value));
     this.props.onCollectionChange(collection);
   }
 }
