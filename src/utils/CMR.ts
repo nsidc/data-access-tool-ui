@@ -1,5 +1,5 @@
-import { List, Record } from "immutable";
 import * as fetchMock from "fetch-mock";
+import { List, Record } from "immutable";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
