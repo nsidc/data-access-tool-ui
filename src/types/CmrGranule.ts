@@ -1,10 +1,10 @@
-import { Record } from "immutable";
+import { List, Map, Record } from "immutable";
 import * as moment from "moment";
 
 export interface ICmrGranule {
   dataset_id: string;
   granule_size: string;
-  links: any;
+  links: List<Map<string, string>>;
   producer_granule_id: string;
   time_end: moment.Moment;
   time_start: moment.Moment;
@@ -14,7 +14,7 @@ export interface ICmrGranule {
 const defaultCmrGranule = {
   dataset_id: "",
   granule_size: "",
-  links: [],
+  links: List<Map<string, string>>(),
   producer_granule_id: "",
   time_end: moment(),
   time_start: moment(),
@@ -28,7 +28,7 @@ const CmrGranuleRecord = Record(defaultCmrGranule);
 export class CmrGranule extends CmrGranuleRecord implements ICmrGranule, Object {
   public dataset_id: string;
   public granule_size: string;
-  public links: any;
+  public links: List<Map<string, string>>;
   public producer_granule_id: string;
   public time_end: moment.Moment;
   public time_start: moment.Moment;

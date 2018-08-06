@@ -1,18 +1,18 @@
 import { List, Record } from "immutable";
 
 interface IOrderSubmissionParameters {
-  collectionInfo: List<any>;
+  collectionInfo: List<List<string>>;
   granuleURs: List<string>;
 }
 
 const defaultOrderSubmissionParameters = {
-  collectionInfo: List(),
+  collectionInfo: List<List<string>>(),
   granuleURs: List<string>(),
 };
 const OrderSubmissionParametersRecord = Record(defaultOrderSubmissionParameters);
 
 export class OrderSubmissionParameters extends OrderSubmissionParametersRecord implements IOrderSubmissionParameters {
-  public collectionInfo: List<any>;
+  public collectionInfo: List<List<string>>;
   public granuleURs: List<string>;
 
   constructor(props: IOrderSubmissionParameters = defaultOrderSubmissionParameters) {
