@@ -12,10 +12,6 @@ interface ITemporalFilterProps {
 }
 
 export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
-  public constructor(props: ITemporalFilterProps) {
-    super(props);
-  }
-
   public render() {
     return (
       <table className="temporal-filter">

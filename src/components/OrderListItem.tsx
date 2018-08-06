@@ -10,10 +10,6 @@ interface IOrderListItemProps {
 export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
   private static timeFormat = "l LT";
 
-  public constructor(props: IOrderListItemProps) {
-    super(props);
-  }
-
   public render() {
     let style: string = "order-list-item";
     if (this.props.selected) {

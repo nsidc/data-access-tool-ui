@@ -12,10 +12,6 @@ interface ISpatialSelectionToolbarProps {
 }
 
 export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionToolbarProps, {}> {
-    public constructor(props: ISpatialSelectionToolbarProps) {
-      super(props);
-    }
-
     public render() {
       return (
         <div id="toolbar">

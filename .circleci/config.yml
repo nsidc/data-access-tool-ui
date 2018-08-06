@@ -7,7 +7,6 @@ jobs:
     working_directory: ~/everest-ui
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: Run tests
           command: |
