@@ -95,7 +95,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
                    `${matchingCmrCollections.map((collection: CmrCollection) => collection.short_name)}`);
     }
 
-    this.props.onCollectionChange(matchingCmrCollections.get(0));
+    this.props.onCollectionChange(matchingCmrCollections.first());
   }
 
   private cmrCollectionMatchesDrupalDataset = (cmrCollection: CmrCollection, drupalDataset: any): boolean => {
