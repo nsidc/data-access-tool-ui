@@ -86,9 +86,11 @@ No CI machine exists for `everest-ui` (yet), so use a
 [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) VM to
 deploy the application.
 
-First, build the app:
+### Build the app:
 
         $ npm run build-drupal
+
+### Deploy the app:
 
 If you're on a dev VM with `/share/apps/everest-ui-all` mounted, you can
 deploy to any environment by passing an argument. This command **will additionally
@@ -104,3 +106,10 @@ built for the `integration` environment, and you want to deploy to `integration`
         $ npm run deploy-drupal
 
 However, this option will not add a git tag.
+
+### Refresh Drupal!
+
+If you deployed to an environment that differs from the environment on which you
+built the app (e.g., you're working on your dev VM and deployed to integration),
+`ssh` to the target environment VM and do `drush cache-clear css-js`. If that
+doesn't work, you may also need to disable/re-enable the module: `cd /vagrant; ./reload_mods.sh`.
