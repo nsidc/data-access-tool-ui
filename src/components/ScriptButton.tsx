@@ -26,7 +26,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
         <input type="hidden" name="urls" value={urls}/>
         <button
           type="submit"
-          className="script-button"
+          className="script-button eui-btn--blue"
           disabled={!this.props.orderSubmissionParameters}>
           Download Script
         </button>
