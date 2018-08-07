@@ -1,3 +1,5 @@
+@import 'https://cdn.earthdata.nasa.gov/eui/1.1.4/stylesheets/application.css';
+
 body {
   font-family: 'Arial';
   margin: 20px;
@@ -14,17 +16,26 @@ body {
 
 #right-side {
   grid-column: 2;
+  padding-left: 1em;
 }
 
 .dropdown {
-  font-size: 18px;
-  margin-bottom: 1em;
+  margin: 0.5em 0em;
   width: 100%;
 }
 
 #temporal-selection {
-  margin: 0em;
+  margin: 0.5em 0em;
   padding: 0em;
+}
+
+#temporal-selection > div {
+  display: inline;
+  margin: 0em 2em 0em 0.75em;
+}
+
+.react-datepicker-wrapper input {
+  width: 8em;
 }
 
 #spatial-selection {
@@ -49,14 +60,7 @@ body {
 }
 
 .submit-button {
-  width: 210px;
-  height: 2.2em;
-  margin: auto;
-  padding: 0.5em 1em 0.5em 1em;
-  background: steelblue;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
+  margin: 0.5em 0.8em;
 }
 
 .submit-button:disabled {
@@ -83,27 +87,28 @@ table.granuleList {
   border-collapse: collapse;
   table-layout: fixed;
   overflow: scroll;
-  overflow-y: scroll;
-  font-size: 14px;
+  padding: 0;
+  font-size: 90%;
 }
 
-td, th {
+table.granuleList thead th {
+  color: white;
+  background: #7ab5da; /* EUI Sky Blue */
+}
+
+table.granuleList td, th {
   border: 1px solid #999;
   padding: 0.5rem;
   text-align: left;
-}
-
-thead {
-  background: steelblue;
-  color: white;
+  word-wrap: break-word;
 }
 
 tbody tr:nth-child(odd) {
-  background: #eee;
+  background: #ebebeb; /* EUI Light Gray */
 }
 
 tbody tr:hover {
-  background: #d7e4ef;
+  background: #b5cede; /* EUI Medium Blue */
 }
 
 /* Should we be adding to this toolbar? */
@@ -153,10 +158,6 @@ tbody tr:hover {
   width: 25%;
 }
 
-.react-datepicker-wrapper input {
-  width: 100px;
-}
-
 #profile-container {
   display: flex;
 }
@@ -186,6 +187,13 @@ tbody tr:hover {
 
 #version {
   font-size: 8px;
+}
+
+#cmr-down {
+  background: red;
+  color: white;
+  position: absolute;
+  width: 100%;
 }
 
 /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */

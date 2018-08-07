@@ -4,8 +4,10 @@ import { collectionsRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 
 interface ICollectionDropdownProps {
+  cmrStatusOk: boolean;
   environment: IEnvironment;
   selectedCollection: any;
+  onCmrRequestFailure: (response: any) => any;
   onCollectionChange: any;
 }
 
@@ -23,11 +25,15 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public componentDidMount() {
-    collectionsRequest().then((response) => {
-      this.setState({
-        collections: response.feed.entry,
-      }, this.selectDefaultCmrCollection);
-    });
+    if (this.props.cmrStatusOk) {
+      this.getCmrCollections();
+    }
+  }
+
+  public componentDidUpdate(prevProps: ICollectionDropdownProps) {
+    if ((!prevProps.cmrStatusOk) && this.props.cmrStatusOk) {
+      this.getCmrCollections();
+    }
   }
 
   public render() {
@@ -50,8 +56,18 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     );
   }
 
+  private getCmrCollections() {
+    const onSuccess = (response: any) => {
+      this.setState({
+        collections: response.feed.entry,
+      }, this.selectDefaultCmrCollection);
+    };
+
+    collectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
+  }
+
   private selectDefaultCmrCollection = () => {
-    if (!this.props.environment.inDrupal) {
+    if (!this.props.environment.inDrupal || !this.props.cmrStatusOk) {
       return;
     }
 
