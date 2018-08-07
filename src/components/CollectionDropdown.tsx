@@ -47,6 +47,10 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public render() {
+    if (this.props.environment.inDrupal) {
+      return null;
+    }
+
     const sortedCollections = this.state.collections.sortBy((c: CmrCollection= new CmrCollection()) => c.dataset_id);
     const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => (
       <option key={key} value={JSON.stringify(c.toJS())}>{c.dataset_id}</option>
