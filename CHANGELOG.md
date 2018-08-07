@@ -10,3 +10,4 @@
 * Incorporate Earthdata UI CSS.
 * Do a CMR status check before making any other CMR requests. If it is down,
   display a banner and retry the status check every 60 seconds.
+* Only render the "Collection Dropdown" in the "standalone" app, not in Drupal
