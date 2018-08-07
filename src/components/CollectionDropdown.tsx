@@ -1,7 +1,10 @@
+import { List, Map } from "immutable";
 import * as React from "react";
 
+import { CmrCollection } from "../types/CmrCollection";
 import { collectionsRequest } from "../utils/CMR";
-import { IEnvironment } from "../utils/environment";
+import { IDrupalDataset, IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
   cmrStatusOk: boolean;
@@ -12,7 +15,7 @@ interface ICollectionDropdownProps {
 }
 
 interface ICollectionDropdownState {
-  collections: any;
+  collections: List<CmrCollection>;
 }
 
 export class CollectionDropdown extends React.Component<ICollectionDropdownProps, ICollectionDropdownState> {
@@ -20,7 +23,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     super(props);
 
     this.state = {
-      collections: [{}],
+      collections: List<CmrCollection>(),
     };
   }
 
@@ -36,15 +39,20 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     }
   }
 
-  public render() {
-    let collectionOptions = null;
-    if (this.state.collections) {
-      collectionOptions = this.state.collections.map((c: any, i: number) => (
-        <option key={i} value={JSON.stringify(c)}>{c.dataset_id}</option>
-      ));
-    }
+  public shouldComponentUpdate(nextProps: ICollectionDropdownProps, nextState: ICollectionDropdownState) {
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrStatusOk", "selectedCollection"]);
+    const stateChanged = hasChanged(this.state, nextState, ["collections"]);
 
-    const value = JSON.stringify(this.props.selectedCollection);
+    return propsChanged || stateChanged;
+  }
+
+  public render() {
+    const sortedCollections = this.state.collections.sortBy((c: CmrCollection= new CmrCollection()) => c.dataset_id);
+    const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => (
+      <option key={key} value={JSON.stringify(c.toJS())}>{c.dataset_id}</option>
+    ));
+
+    const value = JSON.stringify(this.props.selectedCollection.toJS());
 
     return (
       <div id="collection-dropdown">
@@ -59,7 +67,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   private getCmrCollections() {
     const onSuccess = (response: any) => {
       this.setState({
-        collections: response.feed.entry,
+        collections: List(response.feed.entry.map((e: any) => new CmrCollection(e))),
       }, this.selectDefaultCmrCollection);
     };
 
@@ -71,38 +79,45 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
       return;
     }
 
-    const matchingCmrCollections = this.state.collections.filter((c: any) => {
-      return this.cmrCollectionMatchesDataset(c, this.props.environment.drupalDataset);
+    const matchingCmrCollections = this.state.collections.filter((c: CmrCollection = new CmrCollection()) => {
+      return this.cmrCollectionMatchesDrupalDataset(c, this.props.environment.drupalDataset);
     });
-    if (matchingCmrCollections.length === 0) {
+    if (matchingCmrCollections.size === 0) {
       console.warn("No CMR collections found for the given Drupal dataset.");
       return;
     }
 
-    if (matchingCmrCollections.length > 1) {
+    if (matchingCmrCollections.size > 1) {
       console.warn(`More than one CMR collection found for the given Drupal dataset (will use the first): ` +
-                   `${matchingCmrCollections.map((c: any) => c.short_name)}`);
+                   `${matchingCmrCollections.map((c: CmrCollection = new CmrCollection()) => c.short_name)}`);
     }
 
-    const collection = matchingCmrCollections[0];
+    const collection = matchingCmrCollections.first();
     this.props.onCollectionChange(collection);
   }
 
-  private cmrCollectionMatchesDataset = (collection: any, dataset: any): boolean => {
-    if ((!collection) || (!dataset)) {
+  private cmrCollectionMatchesDrupalDataset = (
+    cmrCollection: CmrCollection, drupalDataset?: IDrupalDataset,
+  ): boolean => {
+    if ((!cmrCollection) || (!drupalDataset)) {
       return false;
     }
 
-    const match = [
-      collection.short_name === dataset.id,
-      collection.version_id === dataset.version,
-    ].every((e) => e === true);
+    const cmrCollectionMap = Map({
+      short_name: cmrCollection.short_name,
+      version_id: cmrCollection.version_id,
+    });
 
-    return match;
+    const drupalDatasetMap = Map({
+      short_name: drupalDataset.id,
+      version_id: drupalDataset.version,
+    });
+
+    return cmrCollectionMap.equals(drupalDatasetMap);
   }
 
   private handleChange = (e: any) => {
-    const collection: any = JSON.parse(e.target.value);
+    const collection = new CmrCollection(JSON.parse(e.target.value));
     this.props.onCollectionChange(collection);
   }
 }

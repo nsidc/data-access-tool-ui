@@ -1,9 +1,12 @@
-import * as moment from "moment";
+import { fromJS, List } from "immutable";
 import * as React from "react";
 
-import { IOrderParameters, IOrderSubmissionParameters } from "../types/OrderParameters";
-import { cmrGranuleRequest, cmrStatusRequest, globalSpatialSelection } from "../utils/CMR";
+import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
+import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+import { cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
@@ -17,11 +20,11 @@ interface IEverestProps {
 }
 
 interface IEverestState {
-  cmrResponse?: object[];
+  cmrResponse: List<CmrGranule>;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
-  orderParameters: IOrderParameters;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderParameters: OrderParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -31,16 +34,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
       this.onCmrRequestFailure = this.onCmrRequestFailure.bind(this);
       this.state = {
-        cmrResponse: undefined,
+        cmrResponse: List<CmrGranule>(),
         cmrStatusChecked: false,
         cmrStatusOk: false,
-        orderParameters: {
-          collection: {},
-          collectionId: "",
-          spatialSelection: globalSpatialSelection,
-          temporalFilterLowerBound: moment("20100101"),
-          temporalFilterUpperBound: moment(),
-        },
+        orderParameters: new OrderParameters(),
         orderSubmissionParameters: undefined,
       };
     }
@@ -63,6 +60,19 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrStatusRequest().then(onSuccess, onFailure);
     }
 
+    public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
+      const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
+      const stateChanged = hasChanged(this.state, nextState, [
+        "cmrResponse",
+        "cmrStatusChecked",
+        "cmrStatusOk",
+        "orderParameters",
+        "orderSubmissionParameters",
+      ]);
+
+      return propsChanged || stateChanged;
+    }
+
     public render() {
       return (
         <div id="everest-container">
@@ -82,7 +92,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           </div>
           <div id="right-side">
             <GranuleList
-              collectionId={this.state.orderParameters.collectionId}
               cmrResponse={this.state.cmrResponse} />
             <OrderButtons
               environment={this.props.environment}
@@ -94,7 +103,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       );
     }
 
-    public updateGranulesFromCmr() {
+    private updateGranulesFromCmr() {
       if (!this.state.cmrStatusOk) {
         return;
       }
@@ -113,8 +122,27 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    private handleOrderParameterChange(newOrderParameters: IOrderParameters, callback: any) {
-      const orderParameters = Object.assign({}, this.state.orderParameters, newOrderParameters);
+    private handleOrderParameterChange(newOrderParameters: Partial<IOrderParameters>, callback: () => void) {
+      // Immutable's typing for Record is incorrect; Record#merge returns a
+      // Record with the same attributes, but the type definition says it
+      // returns a Map (OrderParameters is a subclass of Record)
+      //
+      // @ts-ignore 2322
+      let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
+
+      // really dumb way to get around issue where if spatialSelection is part
+      // of the new parameters, it gets turned into a Map in the merge above; we
+      // always want it to be a POJO
+      if (newOrderParameters.spatialSelection) {
+        orderParameters = new OrderParameters({
+          collection: orderParameters.collection,
+          collectionId: orderParameters.collectionId,
+          spatialSelection: newOrderParameters.spatialSelection,
+          temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
+          temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
+        });
+      }
+
       const modifiedCallback = (): void => {
         this.updateGranulesFromCmr();
         if (callback) {
@@ -125,14 +153,17 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     private handleCmrResponse(response: any) {
-      const cmrResponse = response.feed.entry;
-      this.setState({cmrResponse});
+      const cmrResponse = fromJS(response.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
 
-      const granuleURs = cmrResponse.map((g: any) => g.title);
-      const collectionIDs = cmrResponse.map((g: any) => g.dataset_id);
-      const collectionLinks = cmrResponse.map((g: any) => g.links.slice(-1)[0].href);
-      const collectionInfo = collectionIDs.map((id: string, index: number) => [id, collectionLinks[index]]);
-      this.setState({orderSubmissionParameters: {granuleURs, collectionInfo}});
+      const granuleURs = cmrResponse.map((g: CmrGranule) => g.title);
+
+      const collectionIDs = cmrResponse.map((g: CmrGranule) => g.dataset_id);
+      const collectionLinks = cmrResponse.map((g: CmrGranule) => g.links.last().get("href"));
+      const collectionInfo = collectionIDs.map((id: string, key: number) => List([id, collectionLinks.get(key)]));
+
+      const orderSubmissionParameters = new OrderSubmissionParameters({collectionInfo, granuleURs});
+
+      this.setState({cmrResponse, orderSubmissionParameters});
     }
 
     private onCmrRequestFailure(response: any) {

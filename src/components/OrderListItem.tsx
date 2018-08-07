@@ -1,6 +1,8 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import { hasChanged } from "../utils/hasChanged";
+
 interface IOrderListItemProps {
   order: any;
   onOrderSelection: (orderId: string) => void;
@@ -9,6 +11,10 @@ interface IOrderListItemProps {
 
 export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
   private static timeFormat = "l LT";
+
+  public shouldComponentUpdate(nextProps: IOrderListItemProps) {
+    return hasChanged(this.props, nextProps, ["order", "selected"]);
+  }
 
   public render() {
     let style: string = "order-list-item";

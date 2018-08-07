@@ -2,6 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
@@ -21,6 +22,10 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     this.state = {
       order: undefined,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
+    return hasChanged(this.state, nextState, ["order"]);
   }
 
   public render() {

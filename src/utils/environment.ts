@@ -12,7 +12,7 @@ interface IUrls {
   hermesScriptUrl: string;
 }
 
-interface IDrupalDataset {
+export interface IDrupalDataset {
   title: string;
   id: string;
   version: string;

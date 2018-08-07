@@ -1,8 +1,9 @@
 import * as moment from "moment";
 import * as React from "react";
-
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+import { hasChanged } from "../utils/hasChanged";
 
 interface ITemporalFilterProps {
   fromDate: any;
@@ -12,6 +13,10 @@ interface ITemporalFilterProps {
 }
 
 export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
+  public shouldComponentUpdate(nextProps: ITemporalFilterProps) {
+    return hasChanged(this.props, nextProps, ["fromDate", "toDate"]);
+  }
+
   public render() {
     return (
       <div id="temporal-selection">

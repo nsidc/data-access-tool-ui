@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { hasChanged } from "../utils/hasChanged";
+
 interface ICmrDownBannerProps {
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
@@ -7,10 +9,7 @@ interface ICmrDownBannerProps {
 
 export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
   public shouldComponentUpdate(nextProps: ICmrDownBannerProps) {
-    const checkedChanged = nextProps.cmrStatusChecked !== this.props.cmrStatusChecked;
-    const okChanged = nextProps.cmrStatusOk !== this.props.cmrStatusOk;
-
-    return checkedChanged || okChanged;
+    return hasChanged(this.props, nextProps, ["cmrStatusChecked", "cmrStatusOk"]);
   }
 
   public render() {

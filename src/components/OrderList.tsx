@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 import { OrderListItem } from "./OrderListItem";
 
 interface IOrderListProps {
@@ -19,6 +20,13 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
     this.state = {
       orderList: [],
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IOrderListProps, nextState: IOrderListState) {
+    const propsChanged = hasChanged(this.props, nextProps, ["selectedOrder"]);
+    const stateChanged = hasChanged(this.state, nextState, ["orderList"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {

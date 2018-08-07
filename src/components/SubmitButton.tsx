@@ -1,13 +1,14 @@
 import * as React from "react";
 
-import { IOrderSubmissionParameters } from "../types/OrderParameters";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   environment: IEnvironment;
   onSubmitOrderResponse: any;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
   orderType: OrderTypes;
 }
 
@@ -22,6 +23,10 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     this.state = {
       orderSubmissionResponse: undefined,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
+    return hasChanged(this.props, nextProps, ["orderSubmissionParameters", "orderType"]);
   }
 
   public render() {

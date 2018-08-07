@@ -2,9 +2,10 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
-import { IOrderParameters } from "../types/OrderParameters";
+import { OrderParameters } from "../types/OrderParameters";
 import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
@@ -14,7 +15,7 @@ interface IOrderParametersProps {
   environment: IEnvironment;
   onChange: any;
   onCmrRequestFailure: (response: any) => any;
-  orderParameters: IOrderParameters;
+  orderParameters: OrderParameters;
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
@@ -22,6 +23,10 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     super(props);
     this.setSpatialSelectionToCollectionDefault = this.setSpatialSelectionToCollectionDefault.bind(this);
     this.handleCollectionChange = this.handleCollectionChange.bind(this);
+  }
+
+  public shouldComponentUpdate(nextProps: IOrderParametersProps) {
+    return hasChanged(this.props, nextProps, ["cmrStatusOk", "environment", "orderParameters"]);
   }
 
   public render() {

@@ -3,6 +3,7 @@ import * as React from "react";
 import "../css/index.css";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
+import { hasChanged } from "../utils/hasChanged";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
@@ -24,8 +25,8 @@ export class Globe extends React.Component<IGlobeProps, {}> {
     this.cesiumAdapter.createViewer(this.elementId, this.props.spatialSelection);
   }
 
-  public shouldComponentUpdate(nextProps: any, nextState: any) {
-    return this.props.spatialSelection !== nextProps.spatialSelection;
+  public shouldComponentUpdate(nextProps: IGlobeProps) {
+    return hasChanged(this.props, nextProps, ["spatialSelection"]);
   }
 
   public componentDidUpdate() {

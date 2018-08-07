@@ -1,16 +1,19 @@
+import { List } from "immutable";
 import * as React from "react";
 
-import { IOrderSubmissionParameters } from "../types/OrderParameters";
+import { CmrGranule } from "../types/CmrGranule";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IOrderButtonsProps {
-  cmrResponse?: object[];
+  cmrResponse?: List<CmrGranule>;
   environment: IEnvironment;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 interface IOrderButtonsState {
@@ -24,6 +27,13 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.state = {
       orderSubmitResponse: undefined,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
+    const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmissionParameters"]);
+    const stateChanged = hasChanged(this.state, nextState, ["orderSubmitResponse"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {

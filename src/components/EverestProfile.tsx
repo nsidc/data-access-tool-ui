@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
+import { hasChanged } from "../utils/hasChanged";
 import { OrderDetails } from "./OrderDetails";
 import { OrderList } from "./OrderList";
 
@@ -19,6 +20,13 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
     this.state = {
       selectedOrder: undefined,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestProfileState) {
+    const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
+    const stateChanged = hasChanged(this.state, nextState, ["selectedOrder"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {
