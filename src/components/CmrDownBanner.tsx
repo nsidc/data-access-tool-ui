@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { genericShouldUpdate } from "../utils/shouldUpdate";
+
 interface ICmrDownBannerProps {
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
@@ -7,10 +9,11 @@ interface ICmrDownBannerProps {
 
 export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
   public shouldComponentUpdate(nextProps: ICmrDownBannerProps) {
-    const checkedChanged = nextProps.cmrStatusChecked !== this.props.cmrStatusChecked;
-    const okChanged = nextProps.cmrStatusOk !== this.props.cmrStatusOk;
-
-    return checkedChanged || okChanged;
+    return genericShouldUpdate({
+      currentProps: this.props,
+      nextProps,
+      propsToCheck: ["cmrStatusChecked", "cmrStatusOk"],
+    });
   }
 
   public render() {

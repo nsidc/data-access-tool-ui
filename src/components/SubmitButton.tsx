@@ -1,9 +1,9 @@
-import { Map } from "immutable";
 import * as React from "react";
 
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
+import { genericShouldUpdate } from "../utils/shouldUpdate";
 
 interface ISubmitButtonProps {
   environment: IEnvironment;
@@ -25,14 +25,12 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     };
   }
 
-  public shouldComponentUpdate(nextProps: ISubmitButtonProps, nextState: ISubmitButtonState) {
-    const compareMap = (props: ISubmitButtonProps,
-                        state: ISubmitButtonState) => Map({
-                          orderSubmissionParameters: props.orderSubmissionParameters,
-                          orderType: props.orderType,
-                        });
-
-    return !compareMap(this.props, this.state).equals(compareMap(nextProps, nextState));
+  public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
+    return genericShouldUpdate({
+      currentProps: this.props,
+      nextProps,
+      propsToCheck: ["orderSubmissionParameters", "orderType"],
+    });
   }
 
   public render() {

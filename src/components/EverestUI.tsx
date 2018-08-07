@@ -6,6 +6,7 @@ import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
+import { genericShouldUpdate } from "../utils/shouldUpdate";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
@@ -57,6 +58,23 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       };
 
       cmrStatusRequest().then(onSuccess, onFailure);
+    }
+
+    public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
+      return genericShouldUpdate({
+        currentProps: this.props,
+        currentState: this.state,
+        nextProps,
+        nextState,
+        propsToCheck: ["environment"],
+        stateToCheck: [
+          "cmrResponse",
+          "cmrStatusChecked",
+          "cmrStatusOk",
+          "orderParameters",
+          "orderSubmissionParameters",
+        ],
+      });
     }
 
     public render() {

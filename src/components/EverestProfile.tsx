@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
+import { genericShouldUpdate } from "../utils/shouldUpdate";
 import { OrderDetails } from "./OrderDetails";
 import { OrderList } from "./OrderList";
 
@@ -19,6 +20,17 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
     this.state = {
       selectedOrder: undefined,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestProfileState) {
+    return genericShouldUpdate({
+      currentProps: this.props,
+      currentState: this.state,
+      nextProps,
+      nextState,
+      propsToCheck: ["environment"],
+      stateToCheck: ["selectedOrder"],
+    });
   }
 
   public render() {

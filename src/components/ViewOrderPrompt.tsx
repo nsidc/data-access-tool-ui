@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
+import { genericShouldUpdate } from "../utils/shouldUpdate";
 
 interface IViewOrderPromptProps {
   environment: IEnvironment;
@@ -10,6 +11,14 @@ interface IViewOrderPromptProps {
 export class ViewOrderPrompt extends React.Component<IViewOrderPromptProps, {}> {
   public constructor(props: IViewOrderPromptProps) {
     super(props);
+  }
+
+  public shouldComponentUpdate(nextProps: IViewOrderPromptProps) {
+    return genericShouldUpdate({
+      currentProps: this.props,
+      nextProps,
+      propsToCheck: ["environment", "orderSubmitResponse"],
+    });
   }
 
   public render() {

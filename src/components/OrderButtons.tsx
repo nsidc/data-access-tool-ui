@@ -1,9 +1,9 @@
-import { fromJS, Map } from "immutable";
 import * as React from "react";
 
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
+import { genericShouldUpdate } from "../utils/shouldUpdate";
 import { SubmitButton } from "./SubmitButton";
 import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
@@ -26,14 +26,14 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
-    const compareMap = (props: IOrderButtonsProps,
-                        state: IOrderButtonsState) => Map({
-                          environment: fromJS(props.environment),
-                          orderSubmissionParameters: props.orderSubmissionParameters,
-                          orderSubmitResponse: fromJS(state.orderSubmitResponse),
-                        });
-
-    return !compareMap(this.props, this.state).equals(compareMap(nextProps, nextState));
+    return genericShouldUpdate({
+      currentProps: this.props,
+      currentState: this.state,
+      nextProps,
+      nextState,
+      propsToCheck: ["environment", "orderSubmissionParameters"],
+      stateToCheck: ["orderSubmitResponse"],
+    });
   }
 
   public render() {

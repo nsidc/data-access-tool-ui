@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
+import { genericShouldUpdate } from "../utils/shouldUpdate";
 import { OrderListItem } from "./OrderListItem";
 
 interface IOrderListProps {
@@ -19,6 +20,17 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
     this.state = {
       orderList: [],
     };
+  }
+
+  public shouldComponentUpdate(nextProps: IOrderListProps, nextState: IOrderListState) {
+    return genericShouldUpdate({
+      currentProps: this.props,
+      currentState: this.state,
+      nextProps,
+      nextState,
+      propsToCheck: ["selectedOrder"],
+      stateToCheck: ["orderList"],
+    });
   }
 
   public render() {

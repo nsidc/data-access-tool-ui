@@ -1,6 +1,8 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import { genericShouldUpdate } from "../utils/shouldUpdate";
+
 interface IOrderListItemProps {
   order: any;
   onOrderSelection: (orderId: string) => void;
@@ -9,6 +11,14 @@ interface IOrderListItemProps {
 
 export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
   private static timeFormat = "l LT";
+
+  public shouldComponentUpdate(nextProps: IOrderListItemProps) {
+    return genericShouldUpdate({
+      currentProps: this.props,
+      nextProps,
+      propsToCheck: ["order", "selected"],
+    });
+  }
 
   public render() {
     let style: string = "order-list-item";
