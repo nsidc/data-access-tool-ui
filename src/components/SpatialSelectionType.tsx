@@ -2,7 +2,7 @@ import * as React from "react";
 
 import "../css/SpatialSelection.css";
 import * as callout from "../img/callout.png";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 
 interface ISpatialSelectionTypeProps {
   alt: string;
@@ -17,11 +17,7 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
   }
 
   public shouldComponentUpdate(nextProps: ISpatialSelectionTypeProps) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      nextProps,
-      propsToCheck: ["alt", "img", "name"],
-    });
+    return hasChanged(this.props, nextProps, ["alt", "img", "name"]);
   }
 
   public render() {

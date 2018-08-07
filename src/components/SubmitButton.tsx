@@ -3,7 +3,7 @@ import * as React from "react";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   environment: IEnvironment;
@@ -26,11 +26,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
   }
 
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      nextProps,
-      propsToCheck: ["orderSubmissionParameters", "orderType"],
-    });
+    return hasChanged(this.props, nextProps, ["orderSubmissionParameters", "orderType"]);
   }
 
   public render() {

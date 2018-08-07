@@ -5,7 +5,7 @@ import { CmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 import { ViewOrderPrompt } from "./ViewOrderPrompt";
@@ -30,14 +30,10 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      currentState: this.state,
-      nextProps,
-      nextState,
-      propsToCheck: ["environment", "orderSubmissionParameters"],
-      stateToCheck: ["orderSubmitResponse"],
-    });
+    const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmissionParameters"]);
+    const stateChanged = hasChanged(this.state, nextState, ["orderSubmitResponse"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {

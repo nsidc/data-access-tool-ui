@@ -3,7 +3,7 @@ import * as React from "react";
 import "../css/index.css";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
@@ -26,11 +26,7 @@ export class Globe extends React.Component<IGlobeProps, {}> {
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      nextProps,
-      propsToCheck: ["spatialSelection"],
-    });
+    return hasChanged(this.props, nextProps, ["spatialSelection"]);
   }
 
   public componentDidUpdate() {

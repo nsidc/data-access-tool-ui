@@ -4,7 +4,7 @@ import * as React from "react";
 import { CmrCollection } from "../types/CmrCollection";
 import { collectionsRequest } from "../utils/CMR";
 import { IDrupalDataset, IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
   cmrStatusOk: boolean;
@@ -40,14 +40,10 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public shouldComponentUpdate(nextProps: ICollectionDropdownProps, nextState: ICollectionDropdownState) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      currentState: this.state,
-      nextProps,
-      nextState,
-      propsToCheck: ["cmrStatusOk", "selectedCollection"],
-      stateToCheck: ["collections"],
-    });
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrStatusOk", "selectedCollection"]);
+    const stateChanged = hasChanged(this.state, nextState, ["collections"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {

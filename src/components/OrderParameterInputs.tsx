@@ -5,7 +5,7 @@ import { IGeoJsonPolygon } from "../types/GeoJson";
 import { OrderParameters } from "../types/OrderParameters";
 import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
@@ -26,15 +26,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   }
 
   public shouldComponentUpdate(nextProps: IOrderParametersProps) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      nextProps,
-      propsToCheck: [
-        "cmrStatusOk",
-        "environment",
-        "orderParameters",
-      ],
-    });
+    return hasChanged(this.props, nextProps, ["cmrStatusOk", "environment", "orderParameters"]);
   }
 
   public render() {

@@ -4,7 +4,7 @@ import * as React from "react";
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 
 interface IScriptButtonProps {
   cmrResponse?: List<CmrGranule>;
@@ -18,11 +18,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
   }
 
   public shouldComponentUpdate(nextProps: IScriptButtonProps) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      nextProps,
-      propsToCheck: ["cmrResponse"],
-    });
+    return hasChanged(this.props, nextProps, ["cmrResponse"]);
   }
 
   public render() {

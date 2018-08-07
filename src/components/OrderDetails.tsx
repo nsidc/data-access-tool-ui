@@ -2,7 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
@@ -25,11 +25,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
-    return genericShouldUpdate({
-      currentState: this.state,
-      nextState,
-      stateToCheck: ["order"],
-    });
+    return hasChanged(this.state, nextState, ["order"]);
   }
 
   public render() {

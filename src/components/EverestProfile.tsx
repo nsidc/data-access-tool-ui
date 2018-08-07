@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
-import { genericShouldUpdate } from "../utils/shouldUpdate";
+import { hasChanged } from "../utils/hasChanged";
 import { OrderDetails } from "./OrderDetails";
 import { OrderList } from "./OrderList";
 
@@ -23,14 +23,10 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
   }
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestProfileState) {
-    return genericShouldUpdate({
-      currentProps: this.props,
-      currentState: this.state,
-      nextProps,
-      nextState,
-      propsToCheck: ["environment"],
-      stateToCheck: ["selectedOrder"],
-    });
+    const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
+    const stateChanged = hasChanged(this.state, nextState, ["selectedOrder"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {
