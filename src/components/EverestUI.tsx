@@ -107,7 +107,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    private handleOrderParameterChange(newOrderParameters: Partial<IOrderParameters>, callback: any) {
+    private handleOrderParameterChange(newOrderParameters: Partial<IOrderParameters>, callback: () => void) {
       // Immutable's typing for Record is incorrect; Record#merge returns a
       // Record with the same attributes, but the type definition says it
       // returns a Map (OrderParameters is a subclass of Record)
