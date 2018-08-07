@@ -1,5 +1,7 @@
+import { List } from "immutable";
 import * as React from "react";
 
+import { CmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
@@ -9,7 +11,7 @@ import { SubmitButton } from "./SubmitButton";
 import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IOrderButtonsProps {
-  cmrResponse?: object[];
+  cmrResponse?: List<CmrGranule>;
   environment: IEnvironment;
   orderSubmissionParameters?: OrderSubmissionParameters;
 }

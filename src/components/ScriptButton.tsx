@@ -1,12 +1,14 @@
+import { List } from "immutable";
 import * as React from "react";
 
-import { IOrderSubmissionParameters } from "../types/OrderParameters";
+import { CmrGranule } from "../types/CmrGranule";
+import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 
 interface IScriptButtonProps {
-  cmrResponse?: any[];
+  cmrResponse?: List<CmrGranule>;
   environment: IEnvironment;
-  orderSubmissionParameters?: IOrderSubmissionParameters;
+  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
