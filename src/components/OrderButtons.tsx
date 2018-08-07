@@ -3,10 +3,12 @@ import * as React from "react";
 import { IOrderSubmissionParameters } from "../types/OrderParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
+import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IOrderButtonsProps {
+  cmrResponse?: object[];
   environment: IEnvironment;
   orderSubmissionParameters?: IOrderSubmissionParameters;
 }
@@ -37,6 +39,10 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderSubmissionParameters={this.props.orderSubmissionParameters}
           onSubmitOrderResponse={this.handleSubmitOrderResponse}
           orderType={OrderTypes.zipFile} />
+        <ScriptButton
+          environment={this.props.environment}
+          cmrResponse={this.props.cmrResponse}
+          orderSubmissionParameters={this.props.orderSubmissionParameters} />
         <ViewOrderPrompt
           environment={this.props.environment}
           orderSubmitResponse={this.state.orderSubmitResponse} />

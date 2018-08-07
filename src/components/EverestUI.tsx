@@ -86,7 +86,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrResponse={this.state.cmrResponse} />
             <OrderButtons
               environment={this.props.environment}
-              orderSubmissionParameters={this.state.orderSubmissionParameters}/>
+              orderSubmissionParameters={this.state.orderSubmissionParameters}
+              cmrResponse={this.state.cmrResponse} />
           </div>
           <div id="version">Data Downloads UI v{EVEREST_UI_VERSION}</div>
         </div>
