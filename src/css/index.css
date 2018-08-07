@@ -44,6 +44,13 @@ body {
   padding: 0em;
 }
 
+.script-button {
+  margin: 0.5em 0.8em;
+}
+
+.script-button:disabled {
+  background: silver;
+}
 
 .submit-button {
   margin: 0.5em 0.8em;
