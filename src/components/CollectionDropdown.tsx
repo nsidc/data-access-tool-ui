@@ -22,7 +22,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     super(props);
 
     this.state = {
-      collections: List(),
+      collections: List<CmrCollection>(),
     };
   }
 
