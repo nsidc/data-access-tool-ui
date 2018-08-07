@@ -11,7 +11,7 @@ interface IUrls {
   profileUrl: string;
 }
 
-interface IDrupalDataset {
+export interface IDrupalDataset {
   title: string;
   id: string;
   version: string;

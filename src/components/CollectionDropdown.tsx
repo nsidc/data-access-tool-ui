@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
 import { collectionsRequest } from "../utils/CMR";
-import { IEnvironment } from "../utils/environment";
+import { IDrupalDataset, IEnvironment } from "../utils/environment";
 
 interface ICollectionDropdownProps {
   cmrStatusOk: boolean;
@@ -99,7 +99,9 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     this.props.onCollectionChange(collection);
   }
 
-  private cmrCollectionMatchesDrupalDataset = (cmrCollection: CmrCollection, drupalDataset: any): boolean => {
+  private cmrCollectionMatchesDrupalDataset = (
+    cmrCollection: CmrCollection, drupalDataset?: IDrupalDataset,
+  ): boolean => {
     if ((!cmrCollection) || (!drupalDataset)) {
       return false;
     }
