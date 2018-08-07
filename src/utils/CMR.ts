@@ -1,4 +1,5 @@
 import * as fetchMock from "fetch-mock";
+import { List } from "immutable";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
@@ -108,7 +109,7 @@ export const globalSpatialSelection: IGeoJsonBbox = {
 // take the list of bounding boxes from a CMR response
 // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
 // encompassing them all
-export const cmrBoxArrToSpatialSelection = (boxes: string[]): IGeoJsonBbox => {
+export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGeoJsonBbox => {
   if (!boxes) {
     return globalSpatialSelection;
   }
@@ -118,7 +119,9 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[]): IGeoJsonBbox => {
   const norths: number[] = [];
   const easts: number[] = [];
 
-  boxes.forEach((box: string) => {
+  const boxesList: List<string> = boxes instanceof Array ? List(boxes) : boxes;
+
+  boxesList.forEach((box: string = "-90 -180 90 180") => {
     const coords: number[] = box.split(" ")
                                 .map(parseFloat)
                                 .map((f) => f.toFixed(2))

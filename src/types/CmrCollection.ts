@@ -1,7 +1,7 @@
-import { Record } from "immutable";
+import { List, Record } from "immutable";
 
 interface ICmrCollection {
-  boxes: string[];
+  boxes: string[] | List<string>;
   dataset_id: string;
   id: string;
   short_name: string;
@@ -11,7 +11,7 @@ interface ICmrCollection {
 }
 
 const defaultCmrCollection = {
-  boxes: ["-90 -180 90 180"],
+  boxes: List(["-90 -180 90 180"]),
   dataset_id: "",
   id: "",
   short_name: "",
@@ -25,7 +25,7 @@ const CmrCollectionRecord = Record(defaultCmrCollection);
 // matching the names to how they appear in the CMR JSON response is easier than
 // mapping them all to their camelCase equivalents
 export class CmrCollection extends CmrCollectionRecord implements ICmrCollection {
-  public boxes: string[];
+  public boxes: List<string>;
   public dataset_id: string;
   public id: string;
   public short_name: string;
@@ -34,6 +34,10 @@ export class CmrCollection extends CmrCollectionRecord implements ICmrCollection
   public version_id: string;
 
   constructor(props: ICmrCollection = defaultCmrCollection) {
+    if (props.boxes instanceof Array) {
+      props.boxes = List(props.boxes);
+    }
+
     super(props);
   }
 }
