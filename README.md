@@ -1,6 +1,6 @@
 # Everest UI
 
-A user interface for placing Hermes data orders on a dataproduct landing page.
+A "data orders" user interface that can be embedded into dataset landing pages.
 
 ## Requirements
 
@@ -15,27 +15,42 @@ With npm:
 
 ### Option 1: Continuously build & deploy locally
 
-1. You can run the webpack-dev-server to both build the application and serve it
-   up:
+1. Run the webpack-dev-server to both build the application and serve it up:
 
         $ npm start
 
-2. Now you can [open the app](http://localhost:8080/), make changes, and the
+2. [Open the app](http://localhost:8080/), make changes, and the
    page will be refreshed automatically.
 
 ### Option 2: Continuously build & deploy in Drupal
 
-On a [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) dev
-VM with `/share/apps/everest-ui` mounted and a symlink at
-`/var/www/drupal/apps/everest-ui` pointing to the mounted share dir (like step 1
-under "Custom module development" in the drupal README), this command will build
-and deploy the webapp to the share dir when source files change, clearing the
-Drupal css-js cache on each build:
+Use the configuration in the
+[drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) 
+to build a VM for the `dev` environment. See the `Quickstart` section in the
+[drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md) 
+for information about cloning the drupal project with its associated submodules.
+Then build the `dev` VM:
 
-        $ npm run build-dev-drupal
+    vagrant nsidc up --env=dev
 
-To debug the app, use the files under `webpack://` in the Sources tab of the
-Developer Tools.
+This should build a VM with `/share/apps/everest-ui` mounted from
+`/share/apps/everest-ui-all/dev/<your-login>`, and a symlink at
+`/var/www/drupal/apps/everest-ui` pointing to `/share/apps/everest-ui`. In other
+words, step 1 under "Custom module development" in the 
+[drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md) 
+will be automatically handled when the VM is provisioned. The provisioning
+process will also clone the `everest-ui` project and install `npm`. You can then
+`ssh` to the VM and run the app in a "watch" mode which will build and deploy
+the webapp to the share directory when source files change. This method will
+also clear Drupal's css-js cache on each build. Do:
+
+    $ vagrant nsidc ssh --env=dev
+    $ cd ~vagrant/everest-ui
+    $ git checkout my-favorite-branch   # If you want to work on a branch besides master
+    $ npm install
+    $ npm run build-dev-drupal
+
+To debug the app, use the files under `webpack://` in the Sources tab of the Developer Tools.
 
 ### Testing
 
@@ -49,17 +64,25 @@ To see extra detail:
 
     npm run lint
 
-## Build
+## Building for use in non-development environments
 
-### Production
+No CI machine exists for `everest-ui` (yet), so use a
+[drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) VM to
+build the application if you intend to deploy it somewhere besides your
+local working environment.  See "Continuously build & deploy in Drupal", above,
+for notes regarding VM setup.
 
-Currently, the application is only deployed to production in a Drupal
-environment, and for this reason only a `build-drupal` option is configured.
-**This may change in the future.** In order for the app to work in Drupal,
-`CESIUM_BASE_URL` must be set to a Drupal-relative location where Cesium's
-assets can be found.
+Currently, the application is only deployed for use in a Drupal
+environment, and for this reason only a `build-drupal` "production" build option
+is configured.  **This may change in the future.** The `build-drupal` target
+sets the value of `CESIUM_BASE_URL` to a Drupal-relative location where
+Cesium's assets can be found.
+**NOTE: Until we add environment-specific configuration, in staging and
+production environments, manually confirm that
+the value of `CMR_URL` in `src/utils/CMR.ts` is set to
+`https://cmr.earthdata.nasa.gov` before building the application.**
 
-To build the app:
+To build the app (minified):
 
         $ npm run build-drupal
 
@@ -82,21 +105,17 @@ indicate that it is a new version.
 
 ## Deployment
 
-No CI machine exists for `everest-ui` (yet), so use a
-[drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) VM to
-deploy the application.
+Deploy the application from the same [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/)
+VM that you used to build the application.
 
-### Build the app:
+### Move the build content
 
-        $ npm run build-drupal
-
-### Deploy the app:
-
-If you're on a dev VM with `/share/apps/everest-ui-all` mounted, you can
-deploy to any environment by passing an argument. This command **will additionally
+If you're on a `dev` VM with `/share/apps/everest-ui-all` mounted (which should
+be the case, if the VM provisioned successfully), you can deploy to any
+environment by passing it as an argument. This command **will additionally
 update the git tag for the environment, and should be used to deploy to all
-non-dev environments until we configure a CI machine for this application.**
-For example:
+non-dev environments until we configure a CI machine for this application.** For
+example:
 
         $ npm run deploy-drupal -- integration
 
@@ -113,3 +132,22 @@ If you deployed to an environment that differs from the environment on which you
 built the app (e.g., you're working on your dev VM and deployed to integration),
 `ssh` to the target environment VM and do `drush cache-clear css-js`. If that
 doesn't work, you may also need to disable/re-enable the module: `cd /vagrant; ./reload_mods.sh`.
+
+## Example sequence of events for deploying to QA
+
+  * Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/), including the submodules. `cd` to that working directory.
+  * Provision a `dev` VM: `vagrant nsidc up --env=dev`
+  * `ssh` to the VM and check out the desired version (tag)
+      * `$ vagrant nsidc ssh --env=dev`
+      * `$ cd ~vagrant/everest-ui`
+      * `$ git checkout branch-to-deploy`
+  * Confirm that `CMR_URL` in `src/utils/CMR.ts` is set to
+    the desired value (either `https://cmr.earthdata.nasa.gov` or `https://cmr.uat.earthdata.nasa.gov/`)
+  * Install packages and build the app:
+      *  $ npm install
+      *  $ npm run build-drupal
+  * Move the app to the right place so the QA Drupal machine can find it:
+      *  $ npm run deploy-drupal -- qa
+  * Exit the VM and refer to the
+    [drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md) 
+    for the Drupal portion of the deployment.
