@@ -82,7 +82,9 @@ indicate that it is a new version.
 ## Building for deployment to a non-development location
 
 No CI machine exists for `everest-ui` (yet), so use a
-[drupal VM](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) to
+[drupal VM](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) (or
+another machine with `/share/apps/everest-ui` and/or
+`/share/apps/everest-ui-all` mounted appropriately) to
 build the application if you intend to deploy it somewhere besides your local
 working environment.  See "Development with Drupal integration," above, for
 notes regarding VM setup.
@@ -107,8 +109,8 @@ Verify the build by opening the output `dist/index.html` in a browser.
 
 ## Deployment
 
-Deploy the application from the same [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/)
-VM that you used to build the application.
+Deploy the application from the same VM that you used to build the application
+(e.g., your [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) dev VM).
 
 ### Move the build content
 
