@@ -105,12 +105,12 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     const cmrCollectionMap = Map({
       short_name: cmrCollection.short_name,
-      version_id: cmrCollection.version_id,
+      version_id: Number(cmrCollection.version_id),
     });
 
     const drupalDatasetMap = Map({
       short_name: drupalDataset.id,
-      version_id: drupalDataset.version,
+      version_id: Number(drupalDataset.version),
     });
 
     return cmrCollectionMap.equals(drupalDatasetMap);
