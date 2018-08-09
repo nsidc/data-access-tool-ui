@@ -15,12 +15,11 @@ With npm:
 
 ### Option 1: Continuously build & deploy locally
 
-1. Run the webpack-dev-server to both build the application and serve it up:
+Run the webpack-dev-server to both build the application and serve it up:
 
         $ npm start
 
-2. [Open the app](http://localhost:8080/), make changes, and the
-   page will be refreshed automatically.
+[Open the app](http://localhost:8080/), make changes, and the page will be refreshed automatically.
 
 ### Option 2: Continuously build & deploy in Drupal
 
