@@ -59,7 +59,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
       collection,
       collectionId: collection.id,
       temporalFilterLowerBound: moment(collection.time_start),
-      temporalFilterUpperBound: moment(collection.time_end),
+      temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
     }, this.setSpatialSelectionToCollectionDefault);
   }
 
