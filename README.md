@@ -143,18 +143,16 @@ doesn't work, you may also need to disable/re-enable the module: `cd /vagrant; .
   including the submodules. `cd` to that working directory.
   * Provision a `dev` VM: `vagrant nsidc up --env=dev`
   * `ssh` to the VM and check out the desired version (tag)
-
-      $ vagrant nsidc ssh --env=dev
-      $ cd ~vagrant/everest-ui
-      $ git checkout branch-to-deploy
-
+      * `$ vagrant nsidc ssh --env=dev`
+      * `$ cd ~vagrant/everest-ui`
+      * `$ git checkout branch-or-tag-to-deploy`
   * Confirm that `CMR_URL` in `src/utils/CMR.ts` is set to
-    the desired value (either `https://cmr.earthdata.nasa.gov` or `https://cmr.uat.earthdata.nasa.gov/`)
+    the desired value (choices are `https://cmr.earthdata.nasa.gov` or `https://cmr.uat.earthdata.nasa.gov/`)
   * Install packages and build the app:
-      *  $ npm install
-      *  $ npm run build-drupal
+      *  `$ npm install`
+      *  `$ npm run build-drupal`
   * Move the app to the right place so the QA Drupal machine can find it:
-      *  $ npm run deploy-drupal -- qa
-  * Exit the VM and refer to the
+      *  `$ npm run deploy-drupal -- qa`
+  * But wait, there's more! Exit the VM and refer to the
     [drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md) 
     for the Drupal portion of the deployment.
