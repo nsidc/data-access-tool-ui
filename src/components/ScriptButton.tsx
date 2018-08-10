@@ -1,6 +1,7 @@
 import { List, Map } from "immutable";
 import * as React from "react";
 
+import * as callout from "../img/callout.png";
 import { CmrGranule } from "../types/CmrGranule";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
@@ -30,12 +31,18 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
     return (
       <form action={this.props.environment.urls.hermesScriptUrl} method="post">
         <input type="hidden" name="urls" value={urls.toJS()}/>
-        <button
-          type="submit"
-          className="script-button eui-btn--blue"
-          disabled={this.props.disabled}>
-          Download Script
-        </button>
+        <div className="tooltip">
+          <button
+            type="submit"
+            className="script-button eui-btn--blue"
+            disabled={this.props.disabled}>
+            Download Script
+          </button>
+          <span>
+            <img className="img-no-border-left callout" src={callout} />
+            Download a command line script that will retrieve all the files.
+          </span>
+        </div>
       </form>
     );
   }
