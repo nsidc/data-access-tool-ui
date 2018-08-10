@@ -53,7 +53,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     const sortedCollections = this.state.collections.sortBy((c: CmrCollection= new CmrCollection()) => c.dataset_id);
     const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => (
-      <option key={key} value={JSON.stringify(c.toJS())}>{c.dataset_id}</option>
+      <option key={key} value={JSON.stringify(c.toJS())}>({c.short_name}) {c.dataset_id}</option>
     ));
 
     const value = JSON.stringify(this.props.selectedCollection.toJS());
@@ -109,12 +109,12 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     const cmrCollectionMap = Map({
       short_name: cmrCollection.short_name,
-      version_id: cmrCollection.version_id,
+      version_id: Number(cmrCollection.version_id),
     });
 
     const drupalDatasetMap = Map({
       short_name: drupalDataset.id,
-      version_id: drupalDataset.version,
+      version_id: Number(drupalDataset.version),
     });
 
     return cmrCollectionMap.equals(drupalDatasetMap);
