@@ -50,7 +50,7 @@ describe("Click submit", () => {
   test("Responds to click", () => {
     const mockClick = jest.fn();
     SubmitButton.prototype.handleClick = mockClick;
-    const button = setup().button;
+    const button = setup().button.find("button");
     button.simulate("click");
     expect(mockClick).toHaveBeenCalled();
   });
