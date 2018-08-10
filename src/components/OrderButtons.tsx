@@ -41,8 +41,12 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     return (
       <div id="order-buttons">
+        <ScriptButton
+          disabled={orderButtonsDisabled}
+          environment={this.props.environment}
+          cmrResponse={this.props.cmrResponse} />
         <SubmitButton
-          buttonText={"Order List of Links"}
+          buttonText={"Get Individual Files"}
           disabled={orderButtonsDisabled}
           environment={this.props.environment}
           hoverText={"Once the order is processed, go to the Order page for a list of links to your files."}
@@ -57,10 +61,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderSubmissionParameters={this.props.orderSubmissionParameters}
           onSubmitOrderResponse={this.handleSubmitOrderResponse}
           orderType={OrderTypes.zipFile} />
-        <ScriptButton
-          disabled={orderButtonsDisabled}
-          environment={this.props.environment}
-          cmrResponse={this.props.cmrResponse} />
         <ViewOrderPrompt
           environment={this.props.environment}
           orderSubmitResponse={this.state.orderSubmitResponse} />
