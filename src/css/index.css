@@ -220,3 +220,7 @@ div.tooltip:hover span{
 #order-buttons .inline {
   display: inline;
 }
+
+#order-buttons span {
+  margin-left: 0px;
+}
