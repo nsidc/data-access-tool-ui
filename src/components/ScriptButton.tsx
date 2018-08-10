@@ -29,9 +29,9 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
                  granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
     }
     return (
-      <form action={this.props.environment.urls.hermesScriptUrl} method="post">
+      <form action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={urls.toJS()}/>
-        <div className="tooltip">
+        <div className="tooltip inline">
           <button
             type="submit"
             className="script-button eui-btn--blue"

@@ -35,7 +35,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
 
   public render() {
     return (
-      <div className="tooltip">
+      <div className="tooltip inline">
         <button
           className="submit-button eui-btn--green"
           disabled={this.props.disabled}
