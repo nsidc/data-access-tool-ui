@@ -6,6 +6,7 @@ import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
+  disabled: boolean;
   environment: IEnvironment;
   onSubmitOrderResponse: any;
   orderSubmissionParameters?: OrderSubmissionParameters;
@@ -26,7 +27,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
   }
 
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
-    return hasChanged(this.props, nextProps, ["orderSubmissionParameters", "orderType"]);
+    return hasChanged(this.props, nextProps, ["disabled", "orderSubmissionParameters", "orderType"]);
   }
 
   public render() {
@@ -38,10 +39,11 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
     } else {
       throw new Error("Order type not recognized");
     }
+
     return (
       <button
         className="submit-button eui-btn--green"
-        disabled={!this.props.orderSubmissionParameters}
+        disabled={this.props.disabled}
         onClick={this.handleClick}>
         {buttonText}
       </button>

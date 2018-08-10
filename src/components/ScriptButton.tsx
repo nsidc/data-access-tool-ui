@@ -2,14 +2,13 @@ import { List, Map } from "immutable";
 import * as React from "react";
 
 import { CmrGranule } from "../types/CmrGranule";
-import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IScriptButtonProps {
+  disabled: boolean;
   cmrResponse?: List<CmrGranule>;
   environment: IEnvironment;
-  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
@@ -18,7 +17,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
   }
 
   public shouldComponentUpdate(nextProps: IScriptButtonProps) {
-    return hasChanged(this.props, nextProps, ["cmrResponse"]);
+    return hasChanged(this.props, nextProps, ["cmrResponse", "disabled"]);
   }
 
   public render() {
@@ -34,7 +33,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
         <button
           type="submit"
           className="script-button eui-btn--blue"
-          disabled={!this.props.orderSubmissionParameters}>
+          disabled={this.props.disabled}>
           Download Script
         </button>
       </form>

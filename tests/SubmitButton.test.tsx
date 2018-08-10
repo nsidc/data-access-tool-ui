@@ -8,6 +8,7 @@ import setupEnvironment from "../src/utils/environment";
 
 const setup = () => {
   const props = {
+    disabled: false,
     environment: setupEnvironment(false),
     collectionId: "abcd123",
     onGranuleResponse: jest.fn(),
