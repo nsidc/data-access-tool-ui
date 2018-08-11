@@ -6,9 +6,9 @@ import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { ConfirmationFlow } from "./ConfirmationFlow";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
-import { ViewOrderPrompt } from "./ViewOrderPrompt";
 
 interface IOrderButtonsProps {
   cmrResponse?: List<CmrGranule>;
@@ -18,20 +18,25 @@ interface IOrderButtonsProps {
 
 interface IOrderButtonsState {
   orderSubmitResponse: any;
+  orderType?: OrderTypes;
+  showConfirmationFlow: boolean;
 }
 
 export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButtonsState> {
   public constructor(props: IOrderButtonsProps) {
     super(props);
-    this.handleSubmitOrderResponse = this.handleSubmitOrderResponse.bind(this);
     this.state = {
       orderSubmitResponse: undefined,
+      orderType: undefined, // Don't forget to set it back after submitting order
+      showConfirmationFlow: false,
     };
+    this.handleSubmitOrder = this.handleSubmitOrder.bind(this);
+    this.closeConfirmationFlow = this.closeConfirmationFlow.bind(this);
   }
 
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
     const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmissionParameters"]);
-    const stateChanged = hasChanged(this.state, nextState, ["orderSubmitResponse"]);
+    const stateChanged = hasChanged(this.state, nextState, ["orderSubmitResponse", "showConfirmationFlow"]);
 
     return propsChanged || stateChanged;
   }
@@ -42,25 +47,36 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
         <SubmitButton
           environment={this.props.environment}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
-          onSubmitOrderResponse={this.handleSubmitOrderResponse}
+          onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.listOfLinks} />
         <SubmitButton
           environment={this.props.environment}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
-          onSubmitOrderResponse={this.handleSubmitOrderResponse}
+          onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.zipFile} />
         <ScriptButton
           environment={this.props.environment}
           cmrResponse={this.props.cmrResponse}
           orderSubmissionParameters={this.props.orderSubmissionParameters} />
-        <ViewOrderPrompt
+        <ConfirmationFlow
           environment={this.props.environment}
-          orderSubmitResponse={this.state.orderSubmitResponse} />
+          onRequestClose={this.closeConfirmationFlow}
+          orderSubmissionParameters={this.props.orderSubmissionParameters}
+          orderSubmitResponse={this.state.orderSubmitResponse}
+          orderType={this.state.orderType}
+          show={this.state.showConfirmationFlow} />
       </div>
     );
   }
 
-  private handleSubmitOrderResponse(hermesResponse: any) {
-    this.setState({orderSubmitResponse: hermesResponse});
+  public closeConfirmationFlow = () => {
+    this.setState({showConfirmationFlow: false});
+  }
+
+  private handleSubmitOrder(orderType: OrderTypes) {
+    this.setState({
+      orderType,
+      showConfirmationFlow: true,
+    });
   }
 }

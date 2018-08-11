@@ -11,7 +11,7 @@ const setup = () => {
     environment: setupEnvironment(false),
     collectionId: "abcd123",
     onGranuleResponse: jest.fn(),
-    onSubmitOrderResponse: jest.fn(),
+    onSubmitOrder: jest.fn(),
     orderType: OrderTypes.listOfLinks,
     spatialSelection: {
       bbox: [0, 0, 0, 0],

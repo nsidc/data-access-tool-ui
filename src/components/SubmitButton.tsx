@@ -7,7 +7,7 @@ import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   environment: IEnvironment;
-  onSubmitOrderResponse: any;
+  onSubmitOrder: any;
   orderSubmissionParameters?: OrderSubmissionParameters;
   orderType: OrderTypes;
 }
@@ -19,10 +19,10 @@ interface ISubmitButtonState {
 export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
   public constructor(props: ISubmitButtonProps) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
     this.state = {
       orderSubmissionResponse: undefined,
     };
+    this.handleClick = this.handleClick.bind(this);
   }
 
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
@@ -49,20 +49,6 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
   }
 
   public handleClick() {
-    if (this.props.orderSubmissionParameters) {
-      this.props.environment.hermesAPI.submitOrder(
-        this.props.environment.user,
-        this.props.orderSubmissionParameters.granuleURs,
-        this.props.orderSubmissionParameters.collectionInfo,
-        this.props.orderType,
-      )
-      .then((json: any) => this.handleOrderSubmissionResponse(json))
-      .catch((err: any) => console.log("Order submission failed: " + err));
-    }
-  }
-
-  private handleOrderSubmissionResponse(orderSubmissionResponseJSON: object) {
-    this.setState({orderSubmissionResponse: orderSubmissionResponseJSON});
-    this.props.onSubmitOrderResponse(this.state.orderSubmissionResponse);
+    this.props.onSubmitOrder(this.props.orderType);
   }
 }

@@ -5,6 +5,22 @@ body {
   margin: 20px;
 }
 
+.modal-content {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: auto;
+  outline: none;
+  padding: 20px;
+  position: absolute;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  -webkit-overflow-scrolling: touch;
+}
+
 #everest-container {
   display: grid;
   grid-template-columns: 50% 50%;
