@@ -122,7 +122,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           this.state.orderParameters.spatialSelection,
           this.state.orderParameters.temporalFilterLowerBound,
           this.state.orderParameters.temporalFilterUpperBound,
-        ).then(this.handleCmrResponse, this.onCmrRequestFailure);
+        ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure);
       } else {
         console.log("Insufficient props provided.");
       }
@@ -157,7 +157,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.setState({orderParameters}, modifiedCallback);
     }
 
-    private handleCmrResponse = (response: any) => {
+    private handleCmrGranuleResponse = (response: any) => {
       const cmrResponse = fromJS(response.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
 
       const granuleURs = cmrResponse.map((g: CmrGranule) => g.title);
@@ -177,6 +177,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     private handleCmrCollectionResponse = (response: any) => {
       const cmrCollections = fromJS(response.feed.entry).map((c: ICmrCollection) => new CmrCollection(c));
+
+      if (cmrCollections.size > 1) {
+        console.warn("Multiple collections matched, using first: " + cmrCollections.toJS());
+      } else if (cmrCollections.size === 0) {
+        console.warn("No collections matched: " + this.props.environment.drupalDataset);
+      }
 
       // @ts-ignore 2322
       const orderParameters: OrderParameters = this.state.orderParameters.merge({collection: cmrCollections.first()});
