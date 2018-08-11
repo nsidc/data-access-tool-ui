@@ -1,17 +1,13 @@
-import { List, Map } from "immutable";
+import { List } from "immutable";
 import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
 import { collectionsRequest } from "../utils/CMR";
-import { IDrupalDataset, IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
   cmrStatusOk: boolean;
-  environment: IEnvironment;
-  selectedCollection: any;
-  onCmrRequestFailure: (response: any) => any;
-  onCollectionChange: any;
+  onCmrRequestFailure: (response: any) => any; onCollectionChange: any;
 }
 
 interface ICollectionDropdownState {
@@ -40,27 +36,21 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public shouldComponentUpdate(nextProps: ICollectionDropdownProps, nextState: ICollectionDropdownState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["cmrStatusOk", "selectedCollection"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrStatusOk"]);
     const stateChanged = hasChanged(this.state, nextState, ["collections"]);
 
     return propsChanged || stateChanged;
   }
 
   public render() {
-    if (this.props.environment.inDrupal) {
-      return null;
-    }
-
     const sortedCollections = this.state.collections.sortBy((c: CmrCollection= new CmrCollection()) => c.dataset_id);
     const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => (
       <option key={key} value={JSON.stringify(c.toJS())}>({c.short_name}) {c.dataset_id}</option>
     ));
 
-    const value = JSON.stringify(this.props.selectedCollection.toJS());
-
     return (
       <div id="collection-dropdown">
-        <select className="dropdown" name="collections" onChange={this.handleChange} value={value}>
+        <select className="dropdown" name="collections" onChange={this.handleChange}>
           <option>{"Select a collection."}</option>
           {collectionOptions}
         </select>
@@ -72,52 +62,10 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     const onSuccess = (response: any) => {
       this.setState({
         collections: List(response.feed.entry.map((e: any) => new CmrCollection(e))),
-      }, this.selectDefaultCmrCollection);
+      });
     };
 
     collectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
-  }
-
-  private selectDefaultCmrCollection = () => {
-    if (!this.props.environment.inDrupal || !this.props.cmrStatusOk) {
-      return;
-    }
-
-    const matchingCmrCollections = this.state.collections.filter((c: CmrCollection = new CmrCollection()) => {
-      return this.cmrCollectionMatchesDrupalDataset(c, this.props.environment.drupalDataset);
-    });
-    if (matchingCmrCollections.size === 0) {
-      console.warn("No CMR collections found for the given Drupal dataset.");
-      return;
-    }
-
-    if (matchingCmrCollections.size > 1) {
-      console.warn(`More than one CMR collection found for the given Drupal dataset (will use the first): ` +
-                   `${matchingCmrCollections.map((c: CmrCollection = new CmrCollection()) => c.short_name)}`);
-    }
-
-    const collection = matchingCmrCollections.first();
-    this.props.onCollectionChange(collection);
-  }
-
-  private cmrCollectionMatchesDrupalDataset = (
-    cmrCollection: CmrCollection, drupalDataset?: IDrupalDataset,
-  ): boolean => {
-    if ((!cmrCollection) || (!drupalDataset)) {
-      return false;
-    }
-
-    const cmrCollectionMap = Map({
-      short_name: cmrCollection.short_name,
-      version_id: Number(cmrCollection.version_id),
-    });
-
-    const drupalDatasetMap = Map({
-      short_name: drupalDataset.id,
-      version_id: Number(drupalDataset.version),
-    });
-
-    return cmrCollectionMap.equals(drupalDatasetMap);
   }
 
   private handleChange = (e: any) => {

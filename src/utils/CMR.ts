@@ -9,8 +9,9 @@ const __DEV__ = false;  // set to true to test CMR failure case in development
 
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
+const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
 const cmrHeaders = [
   ["Client-Id", `nsidc-everest-${getEnvironment()}`],
@@ -76,7 +77,12 @@ export const cmrStatusRequest = () => {
 };
 
 export const collectionsRequest = () => {
-  return cmrFetch(CMR_COLLECTION_URL);
+  return cmrFetch(CMR_COLLECTIONS_URL);
+};
+
+export const cmrCollectionRequest = (shortName: string, version: string) => {
+  const collectionUrl = CMR_COLLECTION_URL + `short_name=${shortName}&version=${version}`;
+  return cmrFetch(collectionUrl);
 };
 
 export const cmrGranuleRequest = (collectionId: string,
