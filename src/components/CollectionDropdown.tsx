@@ -7,7 +7,8 @@ import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
   cmrStatusOk: boolean;
-  onCmrRequestFailure: (response: any) => any; onCollectionChange: any;
+  onCmrRequestFailure: (response: any) => any;
+  onCollectionChange: any;
 }
 
 interface ICollectionDropdownState {
