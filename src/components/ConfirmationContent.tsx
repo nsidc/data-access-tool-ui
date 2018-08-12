@@ -4,8 +4,8 @@ import * as React from "react";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IOrderConfirmationContentProps {
-  onCancel: any;
-  onOK: any;
+  onCancel: () => void;
+  onOK: () => void;
 }
 
 export class OrderConfirmationContent extends React.Component<IOrderConfirmationContentProps, {}> {
@@ -39,7 +39,7 @@ export class OrderConfirmationContent extends React.Component<IOrderConfirmation
 
 interface IOrderErrorContentProps {
   error: any;
-  onOK: any;
+  onOK: () => void;
 }
 
 export class OrderErrorContent extends React.Component<IOrderErrorContentProps, {}> {
@@ -68,7 +68,7 @@ export class OrderErrorContent extends React.Component<IOrderErrorContentProps, 
 }
 
 interface IOrderSuccessContentProps {
-  onOK: any;
+  onOK: () => void;
   response: any;
 }
 

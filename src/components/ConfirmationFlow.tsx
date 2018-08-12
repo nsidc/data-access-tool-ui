@@ -10,7 +10,7 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IConfirmationFlowProps {
   environment: IEnvironment;
-  onRequestClose: any;
+  onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
   orderSubmitResponse?: any;
   orderType?: OrderTypes;
@@ -18,22 +18,17 @@ interface IConfirmationFlowProps {
 }
 
 interface IConfirmationFlowState {
-  visibleUI: any;
+  visibleUI: JSX.Element;
 }
 
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
   private orderConfirmationContent = (
-    <OrderConfirmationContent onOK={this.handleConfirmationClick.bind(this)}
-                              onCancel={this.props.onRequestClose.bind(this)} />
+    <OrderConfirmationContent onOK={() => { this.handleConfirmationClick(); }}
+                              onCancel={this.props.onRequestClose} />
   );
 
   public constructor(props: IConfirmationFlowProps) {
     super(props);
-
-    this.handleConfirmationClick = this.handleConfirmationClick.bind(this);
-    this.handleOrderResponse = this.handleOrderResponse.bind(this);
-    this.handleOrderError = this.handleOrderError.bind(this);
-    this.resetUI = this.resetUI.bind(this);
 
     this.state = {
       visibleUI: this.orderConfirmationContent,
@@ -56,7 +51,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     );
   }
 
-  public handleConfirmationClick() {
+  public handleConfirmationClick = () => {
     if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
       this.showLoadingIcon();
       this.props.environment.hermesAPI.submitOrder(
@@ -80,21 +75,21 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     this.setState({visibleUI: <LoadingIcon />});
   }
 
-  private resetUI() {
+  private resetUI = () => {
     this.props.onRequestClose();
     this.setState({
       visibleUI: this.orderConfirmationContent,
     });
   }
 
-  private handleOrderError(err: any) {
+  private handleOrderError = (err: any) => {
     this.setState({
       visibleUI: <OrderErrorContent error={err}
                                     onOK={this.resetUI} />,
     });
   }
 
-  private handleOrderResponse(json: any) {
+  private handleOrderResponse = (json: any) => {
     this.setState({
       visibleUI: <OrderSuccessContent response={json}
                                       onOK={this.resetUI} />,
