@@ -10,7 +10,7 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IConfirmationFlowProps {
   environment: IEnvironment;
-  onRequestClose: any;
+  onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
   orderSubmitResponse?: any;
   orderType?: OrderTypes;
@@ -18,7 +18,7 @@ interface IConfirmationFlowProps {
 }
 
 interface IConfirmationFlowState {
-  visibleUI: any;
+  visibleUI: JSX.Element;
 }
 
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
