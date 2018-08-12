@@ -50,9 +50,12 @@ export class OrderErrorContent extends React.Component<IOrderErrorContentProps, 
   }
 
   public render() {
+    const msg = "There was an issue submitting your order. " +
+      "Please contact User Services at nsidc@nsidc.org for further information and assistance.";
     return (
       <div>
-        <p>ERROR: {JSON.stringify(this.props.error)}</p>
+        <h3>Something went wrong!</h3>
+        <p>{msg}</p>
         <button className="submit-button eui-btn--red"
                 onClick={this.props.onOK}>
           OK
