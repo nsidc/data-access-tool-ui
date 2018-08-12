@@ -1,7 +1,10 @@
+import { shim } from "promise.prototype.finally";
+
 import setupEnvironment from "./utils/environment";
 
 declare var Drupal: any;
 
+shim(); // Get support for Promise.finally(). Can be replaced with Typescript 2.7+ and esnext
 let renderUI: any;
 if (typeof(Drupal) !== "undefined") {
   // By extending Drupal.behaviors with a new behavior and callback, we can
