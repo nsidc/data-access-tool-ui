@@ -63,6 +63,12 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
         this.props.orderSubmissionParameters.collectionInfo,
         this.props.orderType,
       )
+      .then((response: any) => {
+        if (![200, 201].includes(response.status)) {
+          throw new Error(`${response.status} received from order system: "${response.statusText}"`);
+        }
+        return response.json();
+      })
       .then((json: any) => this.handleOrderResponse(json))
       .catch((err: any) => this.handleOrderError(err));
     }
@@ -76,7 +82,6 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   private handleOrderError(err: any) {
-    console.log("Order submission failed: " + err);
     this.setState({
       visibleUI: <OrderErrorContent error={err}
                                     onOK={this.resetUI} />,
@@ -84,8 +89,6 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   private handleOrderResponse(json: any) {
-    // TODO: Stop returning JSON and check the status code to decide which component to use
-    // I think.
     this.setState({
       visibleUI: <OrderSuccessContent response={json}
                                       onOK={this.resetUI} />,

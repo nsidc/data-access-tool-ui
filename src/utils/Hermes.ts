@@ -87,7 +87,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
             credentials: "include",
             headers,
             method: "POST",
-        }).then((response) => response.json());
+        });
     };
 
     return {
