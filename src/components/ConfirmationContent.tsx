@@ -18,10 +18,12 @@ export class OrderConfirmationContent extends React.Component<IOrderConfirmation
   }
 
   public render() {
+    const msg = "Your download order is about to be submitted. " +
+      "You will be able to view the status of your order on the Orders page.";
     return (
       <div>
-        <h3>{"Confirm Your Download Order"}</h3>
-        <p>{"Your download order is about to be submitted."}</p>
+        <h3>Confirm Your Download Order</h3>
+        <p>{msg}</p>
         <button className="submit-button eui-btn--green"
                 onClick={this.props.onOK}>
           OK
@@ -80,9 +82,13 @@ export class OrderSuccessContent extends React.Component<IOrderSuccessContentPro
   }
 
   public render() {
+    const orderId = this.props.response.message.order_id;
+    const msg = "Your download order has been submitted. " +
+      `You may view the status of your order (${orderId}) on the Orders page.`;
     return (
       <div>
-        <p>yay: {JSON.stringify(this.props.response)}</p>
+        <h3>Order Received</h3>
+        <p>{msg}</p>
         <button className="submit-button eui-btn--green"
                 onClick={this.props.onOK}>
           OK
