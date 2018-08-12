@@ -5,6 +5,7 @@ import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from "./ConfirmationContent";
 
 interface IConfirmationFlowProps {
   environment: IEnvironment;
@@ -20,16 +21,21 @@ interface IConfirmationFlowState {
 }
 
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
+  private orderConfirmationContent = (
+    <OrderConfirmationContent onOK={this.handleConfirmationClick.bind(this)}
+                              onCancel={this.props.onRequestClose.bind(this)} />
+  );
+
   public constructor(props: IConfirmationFlowProps) {
     super(props);
-    this.generateConfirmationContent = this.generateConfirmationContent.bind(this);
+
     this.handleConfirmationClick = this.handleConfirmationClick.bind(this);
-    this.handleOrderReceivedResponse = this.handleOrderReceivedResponse.bind(this);
-    this.handleOrderNotReceivedResponse = this.handleOrderNotReceivedResponse.bind(this);
-    this.generateResponseContent = this.generateResponseContent.bind(this);
+    this.handleOrderResponse = this.handleOrderResponse.bind(this);
+    this.handleOrderError = this.handleOrderError.bind(this);
     this.resetUI = this.resetUI.bind(this);
+
     this.state = {
-      visibleUI: this.generateConfirmationContent(),
+      visibleUI: this.orderConfirmationContent,
     };
   }
 
@@ -57,61 +63,32 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
         this.props.orderSubmissionParameters.collectionInfo,
         this.props.orderType,
       )
-      .then((json: any) => this.handleOrderReceivedResponse(json))
-      .catch((err: any) => this.handleOrderNotReceivedResponse(err));
+      .then((json: any) => this.handleOrderResponse(json))
+      .catch((err: any) => this.handleOrderError(err));
     }
   }
 
   private resetUI() {
-    this.setState({visibleUI: this.generateConfirmationContent()});
+    this.props.onRequestClose();
+    this.setState({
+      visibleUI: this.orderConfirmationContent,
+    });
   }
 
-  private handleOrderNotReceivedResponse(err: any) {
+  private handleOrderError(err: any) {
     console.log("Order submission failed: " + err);
-    this.setState({visibleUI: this.generateErrorResponseContent(err)});
+    this.setState({
+      visibleUI: <OrderErrorContent error={err}
+                                    onOK={this.resetUI} />,
+    });
   }
 
-  private handleOrderReceivedResponse(json: any) {
-    this.setState({visibleUI: this.generateResponseContent(json)});
-  }
-
-  private generateConfirmationContent() {
-    return (
-      <div>
-        <h3>{"Confirm Your Download Order"}</h3>
-        <p>{"Your download order is about to be submitted."}</p>
-        <button className="submit-button eui-btn--green"
-                onClick={this.handleConfirmationClick}>
-          OK
-        </button>
-        <button className="cancel-button eui-btn--red"
-                onClick={this.props.onRequestClose}>
-          Cancel
-        </button>
-      </div>
-    );
-  }
-
-  private generateResponseContent(response: any) {
-    return (
-      <div>
-        <p>foo: {JSON.stringify(response)}</p>
-        <button className="submit-button eui-btn--green"
-                onClick={ () => { this.props.onRequestClose(); this.resetUI(); } }>
-          OK
-        </button>
-      </div>
-    );
-  }
-  private generateErrorResponseContent(err: any) {
-    return (
-      <div>
-        <p>ERROR: {JSON.stringify(err)}</p>
-        <button className="submit-button eui-btn--red"
-                onClick={ () => { this.props.onRequestClose(); this.resetUI(); } }>
-          OK
-        </button>
-      </div>
-    );
+  private handleOrderResponse(json: any) {
+    // TODO: Stop returning JSON and check the status code to decide which component to use
+    // I think.
+    this.setState({
+      visibleUI: <OrderSuccessContent response={json}
+                                      onOK={this.resetUI} />,
+    });
   }
 }
