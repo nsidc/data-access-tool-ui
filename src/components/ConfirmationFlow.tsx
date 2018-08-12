@@ -6,6 +6,7 @@ import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from "./ConfirmationContent";
+import { LoadingIcon } from "./LoadingIcon";
 
 interface IConfirmationFlowProps {
   environment: IEnvironment;
@@ -57,6 +58,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
 
   public handleConfirmationClick() {
     if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
+      this.showLoadingIcon();
       this.props.environment.hermesAPI.submitOrder(
         this.props.environment.user,
         this.props.orderSubmissionParameters.granuleURs,
@@ -72,6 +74,10 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       .then((json: any) => this.handleOrderResponse(json))
       .catch((err: any) => this.handleOrderError(err));
     }
+  }
+
+  private showLoadingIcon() {
+    this.setState({visibleUI: <LoadingIcon />});
   }
 
   private resetUI() {
