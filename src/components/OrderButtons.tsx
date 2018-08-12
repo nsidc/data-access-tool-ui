@@ -30,8 +30,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       orderType: undefined, // Don't forget to set it back after submitting order
       showConfirmationFlow: false,
     };
-    this.handleSubmitOrder = this.handleSubmitOrder.bind(this);
-    this.closeConfirmationFlow = this.closeConfirmationFlow.bind(this);
   }
 
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
@@ -73,7 +71,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.setState({showConfirmationFlow: false});
   }
 
-  private handleSubmitOrder(orderType: OrderTypes) {
+  private handleSubmitOrder = (orderType: OrderTypes) => {
     this.setState({
       orderType,
       showConfirmationFlow: true,
