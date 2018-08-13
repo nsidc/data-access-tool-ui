@@ -52,8 +52,9 @@ export class OrderErrorContent extends React.Component<IOrderErrorContentProps, 
   }
 
   public render() {
-    const msg = "There was an issue submitting your order. " +
-      "Please contact User Services at nsidc@nsidc.org for further information and assistance.";
+    const msg = "We're sorry, but there was an error processing your request. " +
+      "Please contact User Services (nsidc@nsidc.org) for further information and assistance. " +
+      "User Services operates from 9:00 a.m. to 5 p.m. (MT).";
     return (
       <div>
         <h3>Something went wrong!</h3>
