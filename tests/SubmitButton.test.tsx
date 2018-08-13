@@ -8,8 +8,11 @@ import setupEnvironment from "../src/utils/environment";
 
 const setup = () => {
   const props = {
+    buttonText: "Order List of Links",
+    disabled: false,
     environment: setupEnvironment(false),
     collectionId: "abcd123",
+    hoverText: "Once the order is processed, go to the Order page for a list of links to your files.",
     onGranuleResponse: jest.fn(),
     onSubmitOrder: jest.fn(),
     orderType: OrderTypes.listOfLinks,
@@ -47,7 +50,7 @@ describe("Click submit", () => {
   test("Responds to click", () => {
     const mockClick = jest.fn();
     SubmitButton.prototype.handleClick = mockClick;
-    const button = setup().button;
+    const button = setup().button.find("button");
     button.simulate("click");
     expect(mockClick).toHaveBeenCalled();
   });

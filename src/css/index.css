@@ -216,6 +216,8 @@ div.tooltip span {
   margin-left:20px;
   width:170px;
   line-height:16px;
+  border-radius:4px;
+  box-shadow: 5px 5px 8px #CCC;
 }
 div.tooltip:hover span{
   display:inline;
@@ -230,8 +232,11 @@ div.tooltip:hover span{
   top: 12px;
   left:-12px;
 }
-div.tooltip span
-{
-  border-radius:4px;
-  box-shadow: 5px 5px 8px #CCC;
+
+#order-buttons .inline {
+  display: inline;
+}
+
+#order-buttons span {
+  margin-left: 0px;
 }
