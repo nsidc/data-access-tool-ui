@@ -1,4 +1,5 @@
 import { fromJS, List } from "immutable";
+import * as moment from "moment";
 import * as React from "react";
 
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
@@ -6,6 +7,7 @@ import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
+import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { CmrDownBanner } from "./CmrDownBanner";
@@ -184,9 +186,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         console.warn("No collections matched: " + this.props.environment.drupalDataset);
       }
 
-      // @ts-ignore 2322
-      const orderParameters: OrderParameters = this.state.orderParameters.merge({collection: cmrCollections.first()});
-
-      this.setState({orderParameters}, this.updateGranulesFromCmr);
+      const collection = cmrCollections.first();
+      const spatialSelection = cmrBoxArrToSpatialSelection(collection.boxes);
+      this.handleOrderParameterChange({
+        collection,
+        spatialSelection,
+        temporalFilterLowerBound: moment(collection.time_start),
+        temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
+      }, () => null);
     }
 }
