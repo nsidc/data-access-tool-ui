@@ -1,15 +1,15 @@
 import { List, Map } from "immutable";
 import * as React from "react";
 
+import * as callout from "../img/callout.png";
 import { CmrGranule } from "../types/CmrGranule";
-import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IScriptButtonProps {
+  disabled: boolean;
   cmrResponse?: List<CmrGranule>;
   environment: IEnvironment;
-  orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
 export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
@@ -18,7 +18,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
   }
 
   public shouldComponentUpdate(nextProps: IScriptButtonProps) {
-    return hasChanged(this.props, nextProps, ["cmrResponse"]);
+    return hasChanged(this.props, nextProps, ["cmrResponse", "disabled"]);
   }
 
   public render() {
@@ -29,14 +29,20 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
                  granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
     }
     return (
-      <form action={this.props.environment.urls.hermesScriptUrl} method="post">
+      <form action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={urls.toJS()}/>
-        <button
-          type="submit"
-          className="script-button eui-btn--blue"
-          disabled={!this.props.orderSubmissionParameters}>
-          Download Script
-        </button>
+        <div className="tooltip inline">
+          <button
+            type="submit"
+            className="script-button eui-btn--blue"
+            disabled={this.props.disabled}>
+            Download Script
+          </button>
+          <span>
+            <img className="img-no-border-left callout" src={callout} />
+            Download a command line script that will retrieve all the files.
+          </span>
+        </div>
       </form>
     );
   }
