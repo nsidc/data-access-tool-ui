@@ -13,3 +13,5 @@
 * Only render the "Collection Dropdown" in the "standalone" app, not in Drupal
 * When in Drupal, use Drupal's dataset id and version.
 * Simplify the state and properties passed down the component hierarchy.
+* Order buttons have a tooltip with instructions for when the order is complete.
+* Order buttons are disabled when not logged into Earthdata.
