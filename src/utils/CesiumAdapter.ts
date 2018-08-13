@@ -74,6 +74,7 @@ export class CesiumAdapter {
     const globalBbox = [-180, -90, 180, 90];
 
     if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
+      this.clearSpatialSelection();
       return;
     }
 
