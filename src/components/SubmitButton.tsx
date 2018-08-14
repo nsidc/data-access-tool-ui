@@ -16,16 +16,9 @@ interface ISubmitButtonProps {
   orderType: OrderTypes;
 }
 
-interface ISubmitButtonState {
-  orderSubmissionResponse?: {[index: string]: any};
-}
-
-export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
+export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   public constructor(props: ISubmitButtonProps) {
     super(props);
-    this.state = {
-      orderSubmissionResponse: undefined,
-    };
     this.handleClick = this.handleClick.bind(this);
   }
 
