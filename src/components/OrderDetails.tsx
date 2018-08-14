@@ -40,7 +40,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else if (this.state.order) {
       const order: any = this.state.order;
-      const links = this.renderOrderLinks(order);
+      const links = this.buildOrderLinks(order);
       const orderPlacedDate = moment.unix(order.date);
       const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
@@ -74,7 +74,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     }
   }
 
-  private renderOrderLinks(order: any) {
+  private buildOrderLinks(order: any): JSX.Element[] {
     if (["inprogress", "expired"].includes(order.status)) {
       return [];
     }
@@ -84,7 +84,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       if (!zipLink.uri.includes("https://")) {
         zipLink.uri = "https://" + this.props.environment.urls.hermesBaseUrl + zipLink.uri;
       }
-      return ( <li><a href={zipLink.uri}>{zipLink.uri}</a></li> );
+      return [( <li><a href={zipLink.uri}>{zipLink.uri}</a></li> )];
     } else {
       const links = order.links.map((link: any, index: number) => {
         return ( <li key={index}><a href={link.uri}>{link.uri}</a></li> );
