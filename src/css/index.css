@@ -38,7 +38,7 @@ body {
   width: 8em;
 }
 
-#spatial-selection {
+#spatial-selection:first-child {
   border: 2px solid;
   margin: 0em;
   padding: 0em;
@@ -63,15 +63,28 @@ body {
 #toolbar {
   position: absolute;
   right: 0;
-  width: 36px;
+  width: 40px;
   margin: 0px;
   background: white;
   height: auto;
+  line-height: 1em;
+  border: solid 2px black;
   z-index: 2;
 }
 
-#toolbar .button {
+#toolbar > .button {
   display: inline-block;
+  margin: 2px 2px 0px 2px;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
+
+#toolbar > .button:hover {
+  background: #eee;
+}
+
+#toolbar .tooltip.button img {
+  padding: 3px;
 }
 
 table.granuleList {

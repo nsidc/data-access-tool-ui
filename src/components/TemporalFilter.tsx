@@ -20,6 +20,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
   public render() {
     return (
       <div id="temporal-selection">
+        <span>Limit by date:</span>
         <label>From:</label>
         <DatePicker
           id="from"
