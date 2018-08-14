@@ -64,7 +64,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       hermesAPI: constructAPI(urls, true),
       inDrupal,
       urls,
-      user: Drupal.settings.data_downloads.user,  // TODO: Use the Eardata Login module function?
+      user: Drupal.settings.data_downloads.user,  // TODO: Use the Earthdata Login module function?
     };
   } else {
     const hermesBaseUrl = `${window.location.hostname}`;
