@@ -1,18 +1,14 @@
 import * as React from "react";
 
 import * as callout from "../img/callout.png";
-import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
-import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   buttonText: string;
   disabled: boolean;
-  environment: IEnvironment;
   onSubmitOrder: any;
   hoverText: string;
-  orderSubmissionParameters?: OrderSubmissionParameters;
   orderType: OrderTypes;
 }
 

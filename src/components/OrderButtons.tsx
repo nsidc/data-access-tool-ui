@@ -49,17 +49,13 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
         <SubmitButton
           buttonText={"Get Individual Files"}
           disabled={orderButtonsDisabled}
-          environment={this.props.environment}
           hoverText={"Once the order is processed, go to the Order page for a list of links to your files."}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.listOfLinks} />
         <SubmitButton
           buttonText={"Order Zip File"}
           disabled={orderButtonsDisabled}
-          environment={this.props.environment}
           hoverText={"Once the order is processed, go to the Order page for a list of links to your files."}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.zipFile} />
         <ConfirmationFlow
