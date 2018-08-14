@@ -6,6 +6,7 @@ import "./css/index.css";
 
 import { EverestUI } from "./components/EverestUI";
 
+// http://reactcommunity.org/react-modal/accessibility/#app-element
 ReactModal.setAppElement("#everest-ui");
 
 export const renderApp = (environment: any) => {
