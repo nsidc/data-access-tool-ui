@@ -51,24 +51,40 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     );
   }
 
-  public handleConfirmationClick = () => {
+  public handleConfirmationClick() {
     if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
       this.showLoadingIcon();
-      this.props.environment.hermesAPI.submitOrder(
+
+      return this.props.environment.hermesAPI.submitOrder(
         this.props.environment.user,
         this.props.orderSubmissionParameters.granuleURs,
         this.props.orderSubmissionParameters.collectionInfo,
         this.props.orderType,
       )
       .then((response: any) => {
+        console.log(response);
+        console.log(response.json);
+        console.log("hello then");
         if (![200, 201].includes(response.status)) {
+          console.log("hello error");
           throw new Error(`${response.status} received from order system: "${response.statusText}"`);
         }
-        return response.json();
+        const json = response.json();
+        console.log(json);
+        return json;
       })
-      .then((json: any) => this.handleOrderResponse(json))
-      .catch((err: any) => this.handleOrderError(err));
+      .then((json: any) => {
+        console.log("success json");
+        console.log(json);
+        this.handleOrderResponse(json);
+      })
+      .catch((err: any) => {
+        console.log(`err: ${err}`);
+        console.log(err);
+        this.handleOrderError(err);
+      });
     }
+    return;
   }
 
   private showLoadingIcon() {
@@ -82,7 +98,8 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     });
   }
 
-  private handleOrderError = (err: any) => {
+  private handleOrderError(err: any) {
+    console.log("original handleOrderError()");
     this.setState({
       visibleUI: <OrderErrorContent error={err}
                                     onOK={this.resetUI} />,
