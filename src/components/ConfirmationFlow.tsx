@@ -12,7 +12,6 @@ interface IConfirmationFlowProps {
   environment: IEnvironment;
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
-  orderSubmitResponse?: any;
   orderType?: OrderTypes;
   show: boolean;
 }
@@ -24,7 +23,8 @@ interface IConfirmationFlowState {
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
   private orderConfirmationContent = (
     <OrderConfirmationContent onOK={() => { this.handleConfirmationClick(); }}
-                              onCancel={this.props.onRequestClose} />
+                              onCancel={this.props.onRequestClose}
+                              environment={this.props.environment} />
   );
 
   public constructor(props: IConfirmationFlowProps) {
@@ -36,7 +36,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   public shouldComponentUpdate(nextProps: IConfirmationFlowProps, nextState: IConfirmationFlowState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmitResponse", "show", "orderType"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["environment", "show", "orderType"]);
     const stateChanged = hasChanged(this.state, nextState, ["visibleUI"]);
     return stateChanged || propsChanged;
   }
@@ -92,7 +92,8 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   private handleOrderResponse = (json: any) => {
     this.setState({
       visibleUI: <OrderSuccessContent response={json}
-                                      onOK={this.resetUI} />,
+                                      onOK={this.resetUI}
+                                      environment={this.props.environment} />,
     });
   }
 }

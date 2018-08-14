@@ -17,7 +17,6 @@ interface IOrderButtonsProps {
 }
 
 interface IOrderButtonsState {
-  orderSubmitResponse: any;
   orderType?: OrderTypes;
   showConfirmationFlow: boolean;
 }
@@ -26,7 +25,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   public constructor(props: IOrderButtonsProps) {
     super(props);
     this.state = {
-      orderSubmitResponse: undefined,
       orderType: undefined, // Don't forget to set it back after submitting order
       showConfirmationFlow: false,
     };
@@ -34,7 +32,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
     const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmissionParameters"]);
-    const stateChanged = hasChanged(this.state, nextState, ["orderSubmitResponse", "showConfirmationFlow"]);
+    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow"]);
 
     return propsChanged || stateChanged;
   }
@@ -51,24 +49,19 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
         <SubmitButton
           buttonText={"Get Individual Files"}
           disabled={orderButtonsDisabled}
-          environment={this.props.environment}
           hoverText={"Once the order is processed, go to the Order page for a list of links to your files."}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.listOfLinks} />
         <SubmitButton
           buttonText={"Order Zip File"}
           disabled={orderButtonsDisabled}
-          environment={this.props.environment}
           hoverText={"Once the order is processed, go to the Order page for a list of links to your files."}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.zipFile} />
         <ConfirmationFlow
           environment={this.props.environment}
           onRequestClose={this.closeConfirmationFlow}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
-          orderSubmitResponse={this.state.orderSubmitResponse}
           orderType={this.state.orderType}
           show={this.state.showConfirmationFlow} />
       </div>

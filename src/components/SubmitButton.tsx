@@ -1,31 +1,20 @@
 import * as React from "react";
 
 import * as callout from "../img/callout.png";
-import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
-import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   buttonText: string;
   disabled: boolean;
-  environment: IEnvironment;
   hoverText: string;
   onSubmitOrder: any;
-  orderSubmissionParameters?: OrderSubmissionParameters;
   orderType: OrderTypes;
 }
 
-interface ISubmitButtonState {
-  orderSubmissionResponse?: {[index: string]: any};
-}
-
-export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
+export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   public constructor(props: ISubmitButtonProps) {
     super(props);
-    this.state = {
-      orderSubmissionResponse: undefined,
-    };
     this.handleClick = this.handleClick.bind(this);
   }
 
