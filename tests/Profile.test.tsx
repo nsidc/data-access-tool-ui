@@ -5,7 +5,7 @@ import { OrderDetails } from "../src/components/OrderDetails";
 import setupEnvironment from "../src/utils/environment";
 
 const setup = () => {
-  const orders = {
+  const orders: any = {
     "order1": {
       "collection_info": [["A Collection", "https://a.collection.url"]],
       "date": 1533864141.4570563,
@@ -50,8 +50,8 @@ describe("The user profile", () => {
       expect(instance.state.order).not.toBeDefined();
       expect(instance.props.orderId).not.toBeDefined();
 
-      const nextProps = {environment, orderId: "order1"};
-      expect(instance.shouldComponentUpdate(nextProps)).toBe(true);
+      const nextProps: any = {environment, orderId: "order1"};
+      expect(instance.shouldComponentUpdate!(nextProps, {}, {})).toBe(true);
 
       // Test the component state changes and renders expected HTML
       // TODO: Fix. Doesn't actually produce a state change or HTML change.
