@@ -23,7 +23,8 @@ interface IConfirmationFlowState {
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
   private orderConfirmationContent = (
     <OrderConfirmationContent onOK={() => { this.handleConfirmationClick(); }}
-                              onCancel={this.props.onRequestClose} />
+                              onCancel={this.props.onRequestClose}
+                              environment={this.props.environment} />
   );
 
   public constructor(props: IConfirmationFlowProps) {
@@ -91,7 +92,8 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   private handleOrderResponse = (json: any) => {
     this.setState({
       visibleUI: <OrderSuccessContent response={json}
-                                      onOK={this.resetUI} />,
+                                      onOK={this.resetUI}
+                                      environment={this.props.environment} />,
     });
   }
 }

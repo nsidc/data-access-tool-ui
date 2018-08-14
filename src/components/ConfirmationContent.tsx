@@ -1,17 +1,21 @@
 import * as React from "react";
 
+import { IEnvironment } from "../utils/environment";
+
 interface IOrderConfirmationContentProps {
+  environment: IEnvironment;
   onCancel: () => void;
   onOK: () => void;
 }
 
 export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) => {
-  const msg = "Your download order is about to be submitted. " +
-              "You will be able to view the status of your order on the Orders page.";
   return (
     <div>
       <h3>Confirm Your Download Order</h3>
-      <p>{msg}</p>
+      <p>
+        Your download order is about to be submitted. You will be able to view
+        the status of your order on the <a href={props.environment.urls.profileUrl}>Orders page</a>.
+      </p>
       <button className="submit-button eui-btn--green"
               onClick={props.onOK}>
         OK
@@ -48,18 +52,20 @@ export const OrderErrorContent = (props: IOrderErrorContentProps) => {
 };
 
 interface IOrderSuccessContentProps {
+  environment: IEnvironment;
   onOK: () => void;
   response: any;
 }
 
 export const OrderSuccessContent = (props: IOrderSuccessContentProps) => {
   const orderId = props.response.message.order_id;
-  const msg = "Your download order has been submitted. " +
-              `You may view the status of your order (${orderId}) on the Orders page.`;
   return (
     <div>
       <h3>Order Received</h3>
-      <p>{msg}</p>
+      <p>
+        Your download order has been submitted. You may view the status of your
+        order ({orderId}) on the <a href={props.environment.urls.profileUrl}>Orders page</a>.
+      </p>
       <button className="submit-button eui-btn--green"
               onClick={props.onOK}>
         OK
