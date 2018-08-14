@@ -12,7 +12,6 @@ interface IConfirmationFlowProps {
   environment: IEnvironment;
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
-  orderSubmitResponse?: any;
   orderType?: OrderTypes;
   show: boolean;
 }
@@ -36,7 +35,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   public shouldComponentUpdate(nextProps: IConfirmationFlowProps, nextState: IConfirmationFlowState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmitResponse", "show", "orderType"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["environment", "show", "orderType"]);
     const stateChanged = hasChanged(this.state, nextState, ["visibleUI"]);
     return stateChanged || propsChanged;
   }
