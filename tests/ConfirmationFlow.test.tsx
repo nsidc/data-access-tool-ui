@@ -36,29 +36,39 @@ describe("ConfirmationFlow", () => {
   });
 
   describe("with a failing submit order request", () => {
+    let mockShowLoadingIcon;
+    let mockHandleOrderError;
+
+    const describedComponent = setup({
+      orderSubmissionParameters: new OrderSubmissionParameters(),
+      orderType: OrderTypes.listOfLinks,
+    });
+
     beforeAll(() => {
       fetchMock.mock(environment.urls.hermesOrderUrl, 500, {method: "POST"});
+
+      mockShowLoadingIcon = jest.fn();
+      ConfirmationFlow.prototype.showLoadingIcon = mockShowLoadingIcon;
+
+      mockHandleOrderError = jest.fn();
+      ConfirmationFlow.prototype.handleOrderError = mockHandleOrderError;
+    });
+
+    afterEach(() => {
+      mockShowLoadingIcon.mockReset();
+      mockHandleOrderError.mockReset();
     });
 
     afterAll(() => {
       fetchMock.restore();
+      mockShowLoadingIcon.mockRestore();
+      mockHandleOrderError.mockRestore();
     });
 
-    test("shows spinner while and then handles the error", async () => {
+    test("shows spinner and then handles the error", async () => {
       expect.assertions(2);
 
-      const mockShowLoadingIcon = jest.fn();
-      ConfirmationFlow.prototype.showLoadingIcon = mockShowLoadingIcon;
-
-      const mockHandleOrderError = jest.fn();
-      ConfirmationFlow.prototype.handleOrderError = mockHandleOrderError;
-
-      const component = setup({
-        orderSubmissionParameters: new OrderSubmissionParameters(),
-        orderType: OrderTypes.listOfLinks,
-      });
-
-      return component.instance().handleConfirmationClick().finally(() => {
+      return describedComponent.instance().handleConfirmationClick().finally(() => {
         expect(mockShowLoadingIcon).toHaveBeenCalled();
         expect(mockHandleOrderError).toHaveBeenCalled();
       });
