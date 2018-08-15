@@ -7,7 +7,6 @@ import { IGeoJsonPolygon } from "./GeoJson";
 
 export interface IOrderParameters {
   collection: CmrCollection;
-  collectionId: string;
   spatialSelection: IGeoJsonPolygon;
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
@@ -15,7 +14,6 @@ export interface IOrderParameters {
 
 const defaultOrderParameters = {
   collection: new CmrCollection(),
-  collectionId: "",
   spatialSelection: globalSpatialSelection,
   temporalFilterLowerBound: moment("20100101"),
   temporalFilterUpperBound: moment(),
@@ -24,7 +22,6 @@ const OrderParametersRecord = Record(defaultOrderParameters);
 
 export class OrderParameters extends OrderParametersRecord implements IOrderParameters {
   public collection: CmrCollection;
-  public collectionId: string;
   public spatialSelection: IGeoJsonPolygon;
   public temporalFilterLowerBound: moment.Moment;
   public temporalFilterUpperBound: moment.Moment;
