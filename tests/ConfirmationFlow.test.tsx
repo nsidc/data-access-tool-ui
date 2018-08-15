@@ -36,8 +36,8 @@ describe("ConfirmationFlow", () => {
   });
 
   describe("with a failing submit order request", () => {
-    let mockShowLoadingIcon;
-    let mockHandleOrderError;
+    let mockShowLoadingIcon: any;
+    let mockHandleOrderError: any;
 
     const describedComponent = setup({
       orderSubmissionParameters: new OrderSubmissionParameters(),
@@ -48,9 +48,11 @@ describe("ConfirmationFlow", () => {
       fetchMock.mock(environment.urls.hermesOrderUrl, 500, {method: "POST"});
 
       mockShowLoadingIcon = jest.fn();
+      // @ts-ignore TS2341
       ConfirmationFlow.prototype.showLoadingIcon = mockShowLoadingIcon;
 
       mockHandleOrderError = jest.fn();
+      // @ts-ignore TS2341
       ConfirmationFlow.prototype.handleOrderError = mockHandleOrderError;
     });
 
@@ -68,6 +70,7 @@ describe("ConfirmationFlow", () => {
     test("shows spinner and then handles the error", async () => {
       expect.assertions(2);
 
+      // @ts-ignore TS2339
       return describedComponent.instance().handleConfirmationClick().finally(() => {
         expect(mockShowLoadingIcon).toHaveBeenCalled();
         expect(mockHandleOrderError).toHaveBeenCalled();
