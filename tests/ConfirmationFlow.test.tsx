@@ -14,7 +14,6 @@ shim();
 const environment = setupEnvironment(false);
 
 const setup = (props = {}) => {
-
   const defaultProps = {
     environment,
     onRequestClose: () => {},  // set props.show to false
@@ -35,9 +34,10 @@ describe("ConfirmationFlow", () => {
     expect(component.find(OrderConfirmationContent).length).toEqual(1);
   });
 
-  describe("with a failing submit order request", () => {
+  describe("with a submit order request", () => {
     let mockShowLoadingIcon: any;
     let mockHandleOrderError: any;
+    let mockHandleOrderResponse: any;
 
     const describedComponent = setup({
       orderSubmissionParameters: new OrderSubmissionParameters(),
@@ -45,8 +45,6 @@ describe("ConfirmationFlow", () => {
     });
 
     beforeAll(() => {
-      fetchMock.mock(environment.urls.hermesOrderUrl, 500, {method: "POST"});
-
       mockShowLoadingIcon = jest.fn();
       // @ts-ignore TS2341
       ConfirmationFlow.prototype.showLoadingIcon = mockShowLoadingIcon;
@@ -54,6 +52,10 @@ describe("ConfirmationFlow", () => {
       mockHandleOrderError = jest.fn();
       // @ts-ignore TS2341
       ConfirmationFlow.prototype.handleOrderError = mockHandleOrderError;
+
+      mockHandleOrderResponse = jest.fn();
+      // @ts-ignore TS2341
+      ConfirmationFlow.prototype.handleOrderResponse = mockHandleOrderResponse;
     });
 
     afterEach(() => {
@@ -62,18 +64,51 @@ describe("ConfirmationFlow", () => {
     });
 
     afterAll(() => {
-      fetchMock.restore();
       mockShowLoadingIcon.mockRestore();
       mockHandleOrderError.mockRestore();
     });
 
-    test("shows spinner and then handles the error", async () => {
-      expect.assertions(2);
+    describe("that is successful", () => {
+      beforeEach(() => {
+        const matcher = environment.urls.hermesOrderUrl;
+        const response = {status: 200, body: "{}"};
+        const options = {method: "POST"};
 
-      // @ts-ignore TS2339
-      return describedComponent.instance().handleConfirmationClick().finally(() => {
-        expect(mockShowLoadingIcon).toHaveBeenCalled();
-        expect(mockHandleOrderError).toHaveBeenCalled();
+        fetchMock.mock(matcher, response, options);
+      });
+
+      afterEach(() => {
+        fetchMock.restore();
+      });
+
+      test("shows spinner and then handles the response", async () => {
+        // @ts-ignore TS2339
+        return describedComponent.instance().handleConfirmationClick().finally(() => {
+          expect(mockShowLoadingIcon).toHaveBeenCalled();
+          expect(mockHandleOrderResponse).toHaveBeenCalled();
+        });
+      })
+    });
+
+    describe("that fails", () => {
+      beforeEach(() => {
+        const matcher = environment.urls.hermesOrderUrl;
+        const response = {status: 500};
+        const options = {method: "POST"};
+
+        fetchMock.mock(matcher, response, options);
+      });
+
+      afterEach(() => {
+        fetchMock.restore();
+      });
+
+      test("shows spinner and then handles the error", async () => {
+        // @ts-ignore TS2339
+        return describedComponent.instance().handleConfirmationClick().finally(() => {
+          expect(mockShowLoadingIcon).toHaveBeenCalled();
+          expect(mockHandleOrderError).toHaveBeenCalled();
+        });
       });
     });
   });

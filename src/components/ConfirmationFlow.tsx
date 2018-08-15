@@ -96,7 +96,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     });
   }
 
-  private handleOrderResponse = (json: any) => {
+  private handleOrderResponse(json: any) {
     this.setState({
       visibleUI: <OrderSuccessContent response={json}
                                       onOK={this.resetUI}
