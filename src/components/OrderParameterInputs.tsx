@@ -19,25 +19,24 @@ interface IOrderParametersProps {
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
-  public constructor(props: any) {
-    super(props);
-    this.setSpatialSelectionToCollectionDefault = this.setSpatialSelectionToCollectionDefault.bind(this);
-    this.handleCollectionChange = this.handleCollectionChange.bind(this);
-  }
-
   public shouldComponentUpdate(nextProps: IOrderParametersProps) {
     return hasChanged(this.props, nextProps, ["cmrStatusOk", "environment", "orderParameters"]);
   }
 
   public render() {
-    return (
-      <div id="order-params">
+    let collectionDropdown = null;
+    if (!this.props.environment.inDrupal) {
+      collectionDropdown = (
         <CollectionDropdown
           onCmrRequestFailure={this.props.onCmrRequestFailure}
           cmrStatusOk={this.props.cmrStatusOk}
-          environment={this.props.environment}
-          selectedCollection={this.props.orderParameters.collection}
           onCollectionChange={this.handleCollectionChange} />
+      );
+    }
+
+    return (
+      <div id="order-params">
+        {collectionDropdown}
         <TemporalFilter
           fromDate={this.props.orderParameters.temporalFilterLowerBound}
           onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>
@@ -54,16 +53,15 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
     );
   }
 
-  private handleCollectionChange(collection: any) {
+  private handleCollectionChange = (collection: any) => {
     this.props.onChange({
       collection,
-      collectionId: collection.id,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
     }, this.setSpatialSelectionToCollectionDefault);
   }
 
-  private setSpatialSelectionToCollectionDefault() {
+  private setSpatialSelectionToCollectionDefault = () => {
     const boundingBoxes = this.props.orderParameters.collection.boxes;
     const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
     this.props.onChange({spatialSelection});
