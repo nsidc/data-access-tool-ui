@@ -34,7 +34,6 @@ interface IEverestState {
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public constructor(props: any) {
       super(props);
-      this.handleCmrGranuleRequest = this.handleCmrGranuleRequest.bind(this);
       this.state = {
         cmrLoading: false,
         cmrResponse: List<CmrGranule>(),
@@ -129,7 +128,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    private handleCmrGranuleRequest() {
+    private handleCmrGranuleRequest = () => {
       this.setState({cmrLoading: true});
       return cmrGranuleRequest(
         this.state.orderParameters.collection.id,
