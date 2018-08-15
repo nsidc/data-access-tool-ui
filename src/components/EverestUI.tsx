@@ -1,10 +1,13 @@
 import { fromJS, List } from "immutable";
+import * as moment from "moment";
 import * as React from "react";
 
+import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
+import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
+import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { CmrDownBanner } from "./CmrDownBanner";
@@ -31,10 +34,7 @@ interface IEverestState {
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public constructor(props: any) {
       super(props);
-      this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
       this.handleCmrGranuleRequest = this.handleCmrGranuleRequest.bind(this);
-      this.handleCmrResponse = this.handleCmrResponse.bind(this);
-      this.onCmrRequestFailure = this.onCmrRequestFailure.bind(this);
       this.state = {
         cmrLoading: false,
         cmrResponse: List<CmrGranule>(),
@@ -61,6 +61,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       };
 
       cmrStatusRequest().then(onSuccess, onFailure);
+
+      if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
+        cmrCollectionRequest(this.props.environment.drupalDataset.id,
+          this.props.environment.drupalDataset.version)
+          .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure);
+      }
     }
 
     public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
@@ -108,11 +114,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       );
     }
 
-    private updateGranulesFromCmr() {
-      if (!this.state.cmrStatusOk) {
+    private updateGranulesFromCmr = () => {
+      if (this.state.cmrStatusChecked && !this.state.cmrStatusOk) {
         return;
       }
-      if (this.state.orderParameters.collectionId
+      if (this.state.orderParameters.collection
+          && this.state.orderParameters.collection.id
           && this.state.orderParameters.spatialSelection
           && this.state.orderParameters.temporalFilterLowerBound
           && this.state.orderParameters.temporalFilterUpperBound) {
@@ -125,15 +132,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     private handleCmrGranuleRequest() {
       this.setState({cmrLoading: true});
       return cmrGranuleRequest(
-        this.state.orderParameters.collectionId,
+        this.state.orderParameters.collection.id,
         this.state.orderParameters.spatialSelection,
         this.state.orderParameters.temporalFilterLowerBound,
         this.state.orderParameters.temporalFilterUpperBound,
-      ).then(this.handleCmrResponse, this.onCmrRequestFailure)
+      ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
        .finally(() => this.setState({cmrLoading: false}));
     }
 
-    private handleOrderParameterChange(newOrderParameters: Partial<IOrderParameters>, callback: () => void) {
+    private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback: () => void) => {
       // Immutable's typing for Record is incorrect; Record#merge returns a
       // Record with the same attributes, but the type definition says it
       // returns a Map (OrderParameters is a subclass of Record)
@@ -147,7 +154,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       if (newOrderParameters.spatialSelection) {
         orderParameters = new OrderParameters({
           collection: orderParameters.collection,
-          collectionId: orderParameters.collectionId,
           spatialSelection: newOrderParameters.spatialSelection,
           temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
           temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
@@ -163,7 +169,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.setState({orderParameters}, modifiedCallback);
     }
 
-    private handleCmrResponse(response: any) {
+    private handleCmrGranuleResponse = (response: any) => {
       const cmrResponse = fromJS(response.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
 
       const granuleURs = cmrResponse.map((g: CmrGranule) => g.title);
@@ -177,7 +183,26 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.setState({cmrResponse, orderSubmissionParameters});
     }
 
-    private onCmrRequestFailure(response: any) {
+    private onCmrRequestFailure = (response: any) => {
       this.setState({cmrStatusChecked: true, cmrStatusOk: false});
+    }
+
+    private handleCmrCollectionResponse = (response: any) => {
+      const cmrCollections = fromJS(response.feed.entry).map((c: ICmrCollection) => new CmrCollection(c));
+
+      if (cmrCollections.size > 1) {
+        console.warn("Multiple collections matched, using first: " + cmrCollections.toJS());
+      } else if (cmrCollections.size === 0) {
+        console.warn("No collections matched: " + this.props.environment.drupalDataset);
+      }
+
+      const collection = cmrCollections.first();
+      const spatialSelection = cmrBoxArrToSpatialSelection(collection.boxes);
+      this.handleOrderParameterChange({
+        collection,
+        spatialSelection,
+        temporalFilterLowerBound: moment(collection.time_start),
+        temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
+      }, () => null);
     }
 }

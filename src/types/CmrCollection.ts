@@ -1,6 +1,6 @@
 import { List, Record } from "immutable";
 
-interface ICmrCollection {
+export interface ICmrCollection {
   boxes: string[] | List<string>;
   dataset_id: string;
   id: string;
