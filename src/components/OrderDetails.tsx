@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { LoadingIcon } from "./LoadingIcon";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
@@ -10,6 +11,7 @@ interface IOrderDetailsProps {
 }
 
 interface IOrderDetailsState {
+  loading: boolean;
   order?: any;
 }
 
@@ -20,20 +22,25 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     super(props);
 
     this.state = {
+      loading: false,
       order: undefined,
     };
   }
 
   public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
-    const stateChanged = hasChanged(this.state, nextState, ["order"]);
+    const stateChanged = hasChanged(this.state, nextState, ["order", "loading"]);
     const propsChanged = hasChanged(this.props, nextProps, ["orderId"]);
     return stateChanged || propsChanged;
   }
 
   public render() {
-    if (this.state.order) {
+    if (this.state.loading) {
+      return (
+        <LoadingIcon />
+      );
+    } else if (this.state.order) {
       const order: any = this.state.order;
-      const links = this.getOrderLinks(order);
+      const links = this.buildOrderLinks(order);
       const orderPlacedDate = moment.unix(order.date);
       const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
@@ -63,11 +70,11 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   public componentDidUpdate() {
     const orderSynced: boolean = this.state.order && (this.props.orderId === this.state.order.order_id);
     if (this.props.orderId && !orderSynced) {
-      this.refreshOrder();
+      this.loadOrder();
     }
   }
 
-  private getOrderLinks(order: any) {
+  private buildOrderLinks(order: any): JSX.Element[] {
     if (["inprogress", "expired"].includes(order.status)) {
       return [];
     }
@@ -77,7 +84,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       if (!zipLink.uri.includes("https://")) {
         zipLink.uri = "https://" + this.props.environment.urls.hermesBaseUrl + zipLink.uri;
       }
-      return ( <li><a href={zipLink.uri}>{zipLink.uri}</a></li> );
+      return [( <li><a href={zipLink.uri}>{zipLink.uri}</a></li> )];
     } else {
       const links = order.links.map((link: any, index: number) => {
         return ( <li key={index}><a href={link.uri}>{link.uri}</a></li> );
@@ -86,17 +93,22 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     }
   }
 
-  private refreshOrder() {
+  private loadOrder = () => {
     if (this.props.orderId) {
-      this.props.environment.hermesAPI.getOrder(this.props.orderId)
-        .then((order: object) => this.setState({order}));
+      this.setState({loading: true}, this.requestOrder);
     }
+  }
+
+  private requestOrder = () => {
+    this.props.environment.hermesAPI.getOrder(this.props.orderId!)
+      .then((order: object) => this.setState({order}))
+      .finally(() => this.setState({loading: false}));
   }
 
   private handleNotification = (event: any) => {
     const notification: any = JSON.parse(event);
     if (notification.order_id === this.props.orderId) {
-      this.refreshOrder();
+      this.loadOrder();
     }
   }
 }

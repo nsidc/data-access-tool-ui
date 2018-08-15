@@ -23,6 +23,7 @@ interface IEverestProps {
 }
 
 interface IEverestState {
+  cmrLoading: boolean;
   cmrResponse: List<CmrGranule>;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
@@ -33,8 +34,8 @@ interface IEverestState {
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public constructor(props: any) {
       super(props);
-
       this.state = {
+        cmrLoading: false,
         cmrResponse: List<CmrGranule>(),
         cmrStatusChecked: false,
         cmrStatusOk: false,
@@ -70,6 +71,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
       const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
       const stateChanged = hasChanged(this.state, nextState, [
+        "cmrLoading",
         "cmrResponse",
         "cmrStatusChecked",
         "cmrStatusOk",
@@ -99,7 +101,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           </div>
           <div id="right-side">
             <GranuleList
-              cmrResponse={this.state.cmrResponse} />
+              cmrResponse={this.state.cmrResponse}
+              loading={this.state.cmrLoading} />
             <OrderButtons
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
@@ -119,15 +122,21 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           && this.state.orderParameters.spatialSelection
           && this.state.orderParameters.temporalFilterLowerBound
           && this.state.orderParameters.temporalFilterUpperBound) {
-        cmrGranuleRequest(
-          this.state.orderParameters.collection.id,
-          this.state.orderParameters.spatialSelection,
-          this.state.orderParameters.temporalFilterLowerBound,
-          this.state.orderParameters.temporalFilterUpperBound,
-        ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure);
+        this.handleCmrGranuleRequest();
       } else {
         console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
       }
+    }
+
+    private handleCmrGranuleRequest = () => {
+      this.setState({cmrLoading: true});
+      return cmrGranuleRequest(
+        this.state.orderParameters.collection.id,
+        this.state.orderParameters.spatialSelection,
+        this.state.orderParameters.temporalFilterLowerBound,
+        this.state.orderParameters.temporalFilterUpperBound,
+      ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
+       .finally(() => this.setState({cmrLoading: false}));
     }
 
     private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback: () => void) => {

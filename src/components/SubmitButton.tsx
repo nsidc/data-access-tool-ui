@@ -7,8 +7,8 @@ import { hasChanged } from "../utils/hasChanged";
 interface ISubmitButtonProps {
   buttonText: string;
   disabled: boolean;
-  onSubmitOrder: any;
   hoverText: string;
+  onSubmitOrder: any;
   orderType: OrderTypes;
 }
 
