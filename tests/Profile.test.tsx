@@ -9,7 +9,7 @@ const setup = () => {
     "order1": {
       "collection_info": [["A Collection", "https://a.collection.url"]],
       "date": 1533864141.4570563,
-      "destination": "archive", 
+      "destination": "archive",
       "granule_URs": ["1 granule", "2 granule"],
       "links": [],
       "order_id": "order1",
@@ -18,7 +18,7 @@ const setup = () => {
     "order2": {
       "collection_info": [["B Collection", "https://b.collection.url"]],
       "date": 1533864141.4570563,
-      "destination": "archive", 
+      "destination": "archive",
       "granule_URs": ["3 granule", "4 granule"],
       "links": [],
       "order_id": "order2",
@@ -46,7 +46,7 @@ describe("The user profile", () => {
         <OrderDetails {...oldProps} />
       );
       const instance = wrapper.instance();
-      
+
       expect(instance.state.order).not.toBeDefined();
       expect(instance.props.orderId).not.toBeDefined();
 

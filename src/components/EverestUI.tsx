@@ -124,7 +124,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           && this.state.orderParameters.temporalFilterUpperBound) {
         this.handleCmrGranuleRequest();
       } else {
-        console.log("Insufficient props provided.");
+        console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
       }
     }
 
