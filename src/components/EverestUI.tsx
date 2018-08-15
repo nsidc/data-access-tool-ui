@@ -105,7 +105,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               orderSubmissionParameters={this.state.orderSubmissionParameters}
               cmrResponse={this.state.cmrResponse} />
           </div>
-          <div id="version">Data Downloads UI v{EVEREST_UI_VERSION}</div>
+          <div id="version">Download Data UI v{EVEREST_UI_VERSION}</div>
         </div>
       );
     }

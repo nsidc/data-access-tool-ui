@@ -10,8 +10,9 @@
 * Incorporate Earthdata UI CSS.
 * Do a CMR status check before making any other CMR requests. If it is down,
   display a banner and retry the status check every 60 seconds.
+* Deployment details are included in README.
+* Order buttons have a tooltip with instructions for when the order is complete.
+* Order buttons are disabled when not logged into Earthdata.
 * Only render the "Collection Dropdown" in the "standalone" app, not in Drupal
 * When in Drupal, use Drupal's dataset id and version.
 * Simplify the state and properties passed down the component hierarchy.
-* Order buttons have a tooltip with instructions for when the order is complete.
-* Order buttons are disabled when not logged into Earthdata.
