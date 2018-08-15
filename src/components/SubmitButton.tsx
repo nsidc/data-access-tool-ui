@@ -1,32 +1,21 @@
 import * as React from "react";
 
 import * as callout from "../img/callout.png";
-import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
-import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   buttonText: string;
   disabled: boolean;
-  environment: IEnvironment;
+  onSubmitOrder: any;
   hoverText: string;
-  onSubmitOrderResponse: any;
-  orderSubmissionParameters?: OrderSubmissionParameters;
   orderType: OrderTypes;
 }
 
-interface ISubmitButtonState {
-  orderSubmissionResponse?: {[index: string]: any};
-}
-
-export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
+export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   public constructor(props: ISubmitButtonProps) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
-    this.state = {
-      orderSubmissionResponse: undefined,
-    };
   }
 
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
@@ -51,20 +40,6 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
   }
 
   public handleClick() {
-    if (this.props.orderSubmissionParameters) {
-      this.props.environment.hermesAPI.submitOrder(
-        this.props.environment.user,
-        this.props.orderSubmissionParameters.granuleURs,
-        this.props.orderSubmissionParameters.collectionInfo,
-        this.props.orderType,
-      )
-      .then((json: any) => this.handleOrderSubmissionResponse(json))
-      .catch((err: any) => console.log("Order submission failed: " + err));
-    }
-  }
-
-  private handleOrderSubmissionResponse(orderSubmissionResponseJSON: object) {
-    this.setState({orderSubmissionResponse: orderSubmissionResponseJSON});
-    this.props.onSubmitOrderResponse(this.state.orderSubmissionResponse);
+    this.props.onSubmitOrder(this.props.orderType);
   }
 }
