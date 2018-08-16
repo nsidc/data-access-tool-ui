@@ -42,14 +42,13 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
 export const versionParameters = (versionId: number): string => {
   const desiredPadLength = 3;
   const versionLength = String(versionId).length;
-  const extraVersionsNeeded = desiredPadLength - versionLength;
+  let extraVersionsNeeded = desiredPadLength - versionLength;
   let queryParams = `version=${versionId}`;
 
-  if (extraVersionsNeeded > 0) {
-    for (let i = 1; i <= extraVersionsNeeded; i++) {
-      const paddedVersionId = String(versionId).padStart(versionLength + i, "0");
-      queryParams += `&version=${paddedVersionId}`;
-    }
+  while (extraVersionsNeeded--) {
+    const targetLength = desiredPadLength - extraVersionsNeeded;
+    const paddedVersionId = String(versionId).padStart(targetLength, "0");
+    queryParams += `&version=${paddedVersionId}`;
   }
 
   return queryParams;
