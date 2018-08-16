@@ -38,6 +38,7 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   return `${param}=${value}`;
 };
 
+// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
 export const versionParameters = (versionId: number): string => {
   const desiredPadLength = 3;
   const versionLength = String(versionId).length;
