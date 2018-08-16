@@ -17,3 +17,4 @@
 * Only render the "Collection Dropdown" in the "standalone" app, not in Drupal
 * When in Drupal, use Drupal''s dataset id and version.
 * Simplify the state and properties passed down the component hierarchy.
+* Workaround unknown CMR version length by padding, e.g.: `&version_id=6&version_id=06&version_id=006`
