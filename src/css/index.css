@@ -226,7 +226,7 @@ div.tooltip:hover span{
   border:1px solid #DCA;
   background:#fffAF0;}
 .callout {
-  z-index:20;
+  z-index:10;
   position:absolute;
   border:0;
   top: 12px;
@@ -239,4 +239,8 @@ div.tooltip:hover span{
 
 #order-buttons span {
   margin-left: 0px;
+}
+
+.ReactModal__Overlay {
+    z-index: 11;
 }
