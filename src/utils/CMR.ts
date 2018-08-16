@@ -35,7 +35,23 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
     return "";
   }
 
-  return `&${param}=${value}`;
+  return `${param}=${value}`;
+};
+
+// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
+export const versionParameters = (versionId: number): string => {
+  const desiredPadLength = 3;
+  const versionLength = String(versionId).length;
+  let extraVersionsNeeded = desiredPadLength - versionLength;
+  let queryParams = `version=${versionId}`;
+
+  while (extraVersionsNeeded--) {
+    const targetLength = desiredPadLength - extraVersionsNeeded;
+    const paddedVersionId = String(versionId).padStart(targetLength, "0");
+    queryParams += `&version=${paddedVersionId}`;
+  }
+
+  return queryParams;
 };
 
 // make a request with cmrHeaders
@@ -82,19 +98,22 @@ export const collectionsRequest = () => {
   return cmrFetch(CMR_COLLECTIONS_URL);
 };
 
-export const cmrCollectionRequest = (shortName: string, version: string) => {
-  const collectionUrl = CMR_COLLECTION_URL + `short_name=${shortName}&version=${version}`;
+export const cmrCollectionRequest = (shortName: string, version: number) => {
+  const collectionUrl = CMR_COLLECTION_URL + `short_name=${shortName}`
+    + `&${versionParameters(version)}`;
   return cmrFetch(collectionUrl);
 };
 
-export const cmrGranuleRequest = (collectionId: string,
+export const cmrGranuleRequest = (collectionAuthId: string,
+                                  collectionVersionId: number,
                                   spatialSelection: IGeoJsonPolygon,
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL
-    + `&concept_id=${collectionId}`
+    + `&short_name=${collectionAuthId}`
+    + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + spatialParameter(spatialSelection);
+    + `&${spatialParameter(spatialSelection)}`;
 
   return cmrFetch(URL);
 };

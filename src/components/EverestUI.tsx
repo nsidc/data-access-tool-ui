@@ -63,7 +63,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
       if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
         cmrCollectionRequest(this.props.environment.drupalDataset.id,
-          this.props.environment.drupalDataset.version)
+          Number(this.props.environment.drupalDataset.version))
           .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure);
       }
     }
@@ -131,7 +131,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     private handleCmrGranuleRequest = () => {
       this.setState({cmrLoading: true});
       return cmrGranuleRequest(
-        this.state.orderParameters.collection.id,
+        this.state.orderParameters.collection.short_name,
+        Number(this.state.orderParameters.collection.version_id),
         this.state.orderParameters.spatialSelection,
         this.state.orderParameters.temporalFilterLowerBound,
         this.state.orderParameters.temporalFilterUpperBound,
