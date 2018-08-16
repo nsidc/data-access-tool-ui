@@ -8,6 +8,7 @@ interface ISubmitButtonProps {
   buttonText: string;
   disabled: boolean;
   hoverText: string;
+  loggedOut: boolean;
   onSubmitOrder: any;
   orderType: OrderTypes;
 }
@@ -23,12 +24,18 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   }
 
   public render() {
+    const loggedOutSpan = this.props.loggedOut ? (
+      <span>
+        <br/>
+        <span className="must-be-logged-in">You must be logged in.</span>
+      </span>
+    ) : null;
+
     return (
       <div className="tooltip inline">
         <span className="hover-text">
           {this.props.hoverText}
-          <br/>
-          <span className="must-be-logged-in">You must be logged in.</span>
+          {loggedOutSpan}
           <img className="img-no-border-left callout" src={callout} />
         </span>
         <button

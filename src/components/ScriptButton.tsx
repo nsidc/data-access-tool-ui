@@ -10,6 +10,7 @@ interface IScriptButtonProps {
   disabled: boolean;
   cmrResponse?: List<CmrGranule>;
   environment: IEnvironment;
+  loggedOut: boolean;
 }
 
 export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
@@ -28,14 +29,21 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
                .flatMap((granule: CmrGranule = new CmrGranule()) =>
                  granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
     }
+
+    const loggedOutSpan = this.props.loggedOut ? (
+      <span>
+        <br/>
+        <span className="must-be-logged-in">You must be logged in.</span>
+      </span>
+    ) : null;
+
     return (
       <form action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={urls.toJS()}/>
         <div className="tooltip inline">
           <span className="hover-text">
             Download a command line script that will retrieve all the files.
-            <br/>
-            <span className="must-be-logged-in">You must be logged in.</span>
+            {loggedOutSpan}
             <img className="img-no-border-left callout" src={callout} />
           </span>
           <button

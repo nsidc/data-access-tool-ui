@@ -38,24 +38,28 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public render() {
-    const orderButtonsDisabled = !this.props.orderSubmissionParameters || !this.props.environment.user;
+    const loggedOut = !this.props.environment.user;
+    const orderButtonsDisabled = !this.props.orderSubmissionParameters || loggedOut;
 
     return (
       <div id="order-buttons">
         <ScriptButton
           disabled={orderButtonsDisabled}
           environment={this.props.environment}
+          loggedOut={loggedOut}
           cmrResponse={this.props.cmrResponse} />
         <SubmitButton
           buttonText={"Get Individual Files"}
           disabled={orderButtonsDisabled}
           hoverText={"Once processed, your Order page will have a linked list of files."}
+          loggedOut={loggedOut}
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.listOfLinks} />
         <SubmitButton
           buttonText={"Order Zip File"}
           disabled={orderButtonsDisabled}
           hoverText={"Once processed, your Order page will link to one or more zipped files."}
+          loggedOut={loggedOut}
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.zipFile} />
         <ConfirmationFlow
