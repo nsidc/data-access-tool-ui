@@ -240,3 +240,7 @@ div.tooltip:hover span{
 #order-buttons span {
   margin-left: 0px;
 }
+
+.ReactModal__Overlay {
+    z-index: 11;
+}
