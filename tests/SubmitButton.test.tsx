@@ -11,6 +11,7 @@ const setup = () => {
     disabled: false,
     collectionId: "abcd123",
     hoverText: "Once the order is processed, go to the Order page for a list of links to your files.",
+    loggedOut: false,
     onGranuleResponse: jest.fn(),
     onSubmitOrder: jest.fn(),
     orderType: OrderTypes.listOfLinks,

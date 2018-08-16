@@ -11,7 +11,8 @@
 * Do a CMR status check before making any other CMR requests. If it is down,
   display a banner and retry the status check every 60 seconds.
 * Deployment details are included in README.
-* Order buttons have a tooltip with instructions for when the order is complete.
+* Order buttons have a tooltip with instructions for when the order is
+  complete. If the user is logged out, the tooltips instruct the user to log in.
 * Order buttons are disabled when not logged into Earthdata.
 * Add spinner to show when granules are loading.
 * Only render the "Collection Dropdown" in the "standalone" app, not in Drupal

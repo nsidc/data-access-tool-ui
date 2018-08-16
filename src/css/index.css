@@ -208,7 +208,7 @@ tbody tr:hover {
 /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
 div.tooltip {outline:none;}
 div.tooltip:hover {text-decoration:none;}
-div.tooltip span {
+div.tooltip > span {
   z-index:10;
   display:none;
   padding:14px 20px;
@@ -219,7 +219,7 @@ div.tooltip span {
   border-radius:4px;
   box-shadow: 5px 5px 8px #CCC;
 }
-div.tooltip:hover span{
+div.tooltip:hover > span {
   display:inline;
   position:absolute;
   color:#111;
@@ -233,12 +233,31 @@ div.tooltip:hover span{
   left:-12px;
 }
 
+#order-buttons .callout {
+  bottom: -17px;
+  left: 24px;
+  position: absolute;
+  top: unset;
+  transform: rotate(270deg);
+}
+
 #order-buttons .inline {
   display: inline;
 }
 
-#order-buttons span {
+#order-buttons .tooltip > span {
+  bottom: 100px;
+  display: none;
   margin-left: 0px;
+}
+
+#order-buttons .tooltip:hover > span {
+  display: inline-block;
+}
+
+#order-buttons div.tooltip span.must-be-logged-in {
+  color: green;
+  font-style: italic;
 }
 
 .ReactModal__Overlay {
