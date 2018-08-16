@@ -38,7 +38,7 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
   return `${param}=${value}`;
 };
 
-const versionParameters = (versionId: number): string => {
+export const versionParameters = (versionId: number): string => {
   const desiredPadLength = 3;
   const versionLength = String(versionId).length;
   const extraVersionsNeeded = desiredPadLength - versionLength;
