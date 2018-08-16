@@ -32,18 +32,18 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
       <form action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={urls.toJS()}/>
         <div className="tooltip inline">
+          <span className="hover-text">
+            Download a command line script that will retrieve all the files.
+            <br/>
+            <span className="must-be-logged-in">You must be logged in.</span>
+            <img className="img-no-border-left callout" src={callout} />
+          </span>
           <button
             type="submit"
             className="script-button eui-btn--blue"
             disabled={this.props.disabled}>
             Download Script
           </button>
-          <span className="hover-text">
-            <img className="img-no-border-left callout" src={callout} />
-            Download a command line script that will retrieve all the files.
-            <br/>
-            <span className="must-be-logged-in">You must be logged in.</span>
-          </span>
         </div>
       </form>
     );

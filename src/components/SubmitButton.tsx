@@ -25,18 +25,18 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   public render() {
     return (
       <div className="tooltip inline">
+        <span className="hover-text">
+          {this.props.hoverText}
+          <br/>
+          <span className="must-be-logged-in">You must be logged in.</span>
+          <img className="img-no-border-left callout" src={callout} />
+        </span>
         <button
           className="submit-button eui-btn--green"
           disabled={this.props.disabled}
           onClick={this.handleClick}>
           {this.props.buttonText}
         </button>
-        <span className="hover-text">
-          <img className="img-no-border-left callout" src={callout} />
-          {this.props.hoverText}
-          <br/>
-          <span className="must-be-logged-in">You must be logged in.</span>
-        </span>
       </div>
     );
   }
