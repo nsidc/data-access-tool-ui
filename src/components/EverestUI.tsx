@@ -1,13 +1,16 @@
 import { fromJS, List } from "immutable";
+import * as moment from "moment";
 import * as React from "react";
 
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { CmrDownBanner } from "./CmrDownBanner";
+import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
@@ -32,7 +35,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       super(props);
       this.handleOrderParameterChange = this.handleOrderParameterChange.bind(this);
       this.handleCmrResponse = this.handleCmrResponse.bind(this);
+      this.handleCollectionChange = this.handleCollectionChange.bind(this);
       this.onCmrRequestFailure = this.onCmrRequestFailure.bind(this);
+      this.setSpatialSelectionToCollectionDefault = this.setSpatialSelectionToCollectionDefault.bind(this);
       this.state = {
         cmrResponse: List<CmrGranule>(),
         cmrStatusChecked: false,
@@ -76,11 +81,19 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     public render() {
       return (
         <div id="everest-container">
-          <div id="cmr-down">
+          <div id="cmr-status">
             <CmrDownBanner
               cmrStatusChecked={this.state.cmrStatusChecked}
               cmrStatusOk={this.state.cmrStatusOk}
             />
+          </div>
+          <div id="collection-list">
+            <CollectionDropdown
+            onCmrRequestFailure={this.onCmrRequestFailure}
+            cmrStatusOk={this.state.cmrStatusOk}
+            environment={this.props.environment}
+            selectedCollection={this.state.orderParameters.collection}
+            onCollectionChange={this.handleCollectionChange} />
           </div>
           <div id="left-side">
             <OrderParameterInputs
@@ -88,7 +101,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
               onCmrRequestFailure={this.onCmrRequestFailure}
-              orderParameters={this.state.orderParameters} />
+              orderParameters={this.state.orderParameters}
+              resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
           </div>
           <div id="right-side">
             <GranuleList
@@ -166,7 +180,23 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.setState({cmrResponse, orderSubmissionParameters});
     }
 
+    private handleCollectionChange(collection: any) {
+      this.handleOrderParameterChange({
+        collection,
+        collectionId: collection.id,
+        temporalFilterLowerBound: moment(collection.time_start),
+        temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
+      }, this.setSpatialSelectionToCollectionDefault);
+    }
+
     private onCmrRequestFailure(response: any) {
       this.setState({cmrStatusChecked: true, cmrStatusOk: false});
+    }
+
+    private setSpatialSelectionToCollectionDefault() {
+      const boundingBoxes = this.state.orderParameters.collection.boxes;
+      const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
+      // @ts-ignore
+      this.handleOrderParameterChange({spatialSelection});
     }
 }

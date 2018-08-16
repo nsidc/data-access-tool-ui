@@ -1,6 +1,7 @@
 import * as React from "react";
-
 import "../css/index.css";
+import * as resetImg from "../img/glyphicons_067_cleaning.png";
+import * as polygonImg from "../img/glyphicons_096_vector_path_polygon.png";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { hasChanged } from "../utils/hasChanged";
@@ -38,17 +39,17 @@ export class Globe extends React.Component<IGlobeProps, {}> {
       <div id="spatial-selection">
         <div className="help-text">
           <h3>Limit spatially by drawing a polygon:</h3>
-          <section>
           <span>Note: Green overlay shows coverage, unless global.</span>
-          <ul>
+          <section>
+          <ul id="left-column">
             <li>Size: Scroll or two-finger drag</li>
             <li>Rotation: Click and drag globe</li>
-            <li>Begin: Click icon to start</li>
+            <li>Begin: Click <img src={polygonImg} alt="the polygon" /> icon to start</li>
           </ul>
-          <ul>
+          <ul id="right-column">
             <li>Draw: Click on desired points</li>
-            <li>Finish: Double-click</li>
-            <li>Clear: Click icon</li>
+            <li>Finish drawing: Double-click</li>
+            <li>Clear: Click <img src={resetImg} alt="the cleanup" /> icon</li>
           </ul>
           </section>
         </div>
