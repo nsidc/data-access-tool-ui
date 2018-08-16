@@ -20,7 +20,8 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
   public render() {
     return (
       <div id="temporal-selection">
-        <span>Limit by date:</span>
+        <h3>Limit by date:</h3>
+        <section>
         <label>From:</label>
         <DatePicker
           id="from"
@@ -31,6 +32,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           id="to"
           selected={this.props.toDate}
           onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
+        </section>
       </div>
     );
   }

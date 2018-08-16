@@ -36,18 +36,21 @@ export class Globe extends React.Component<IGlobeProps, {}> {
   public render() {
     return (
       <div id="spatial-selection">
-        <div id={"help-text"}>
-          <span>Limit spatially by drawing a polygon:</span>
-          <span>Hide instructions</span>
+        <div className="help-text">
+          <h3>Limit spatially by drawing a polygon:</h3>
+          <section>
           <span>Note: Green overlay shows coverage, unless global.</span>
-          <ol>
+          <ul>
             <li>Size: Scroll or two-finger drag</li>
             <li>Rotation: Click and drag globe</li>
             <li>Begin: Click icon to start</li>
+          </ul>
+          <ul>
             <li>Draw: Click on desired points</li>
             <li>Finish: Double-click</li>
             <li>Clear: Click icon</li>
-          </ol>
+          </ul>
+          </section>
         </div>
         <div id={this.elementId}>
           <SpatialSelectionToolbar

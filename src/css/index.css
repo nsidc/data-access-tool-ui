@@ -7,7 +7,7 @@ body {
 
 #everest-container {
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 #left-side {
@@ -24,17 +24,32 @@ body {
   width: 100%;
 }
 
+.help-text {
+  display: inline;
+}
+
+#order-params h3 {
+  font-size: 100%;
+}
+
 #temporal-selection {
   margin: 0.5em 0em;
   padding: 0em;
 }
 
-#temporal-selection > div {
+#temporal-selection div {
   display: inline;
+}
+
+#temporal-selection section {
+  padding-left: 2em;
+}
+
+div.react-datepicker-wrapper {
   margin: 0em 2em 0em 0.75em;
 }
 
-.react-datepicker-wrapper input {
+div.react-datepicker-wrapper input {
   width: 8em;
 }
 
