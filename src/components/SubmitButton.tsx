@@ -31,9 +31,11 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
           onClick={this.handleClick}>
           {this.props.buttonText}
         </button>
-        <span>
+        <span className="hover-text">
           <img className="img-no-border-left callout" src={callout} />
           {this.props.hoverText}
+          <br/>
+          <span className="must-be-logged-in">You must be logged in.</span>
         </span>
       </div>
     );

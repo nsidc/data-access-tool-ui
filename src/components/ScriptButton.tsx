@@ -38,9 +38,11 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
             disabled={this.props.disabled}>
             Download Script
           </button>
-          <span>
+          <span className="hover-text">
             <img className="img-no-border-left callout" src={callout} />
             Download a command line script that will retrieve all the files.
+            <br/>
+            <span className="must-be-logged-in">You must be logged in.</span>
           </span>
         </div>
       </form>
