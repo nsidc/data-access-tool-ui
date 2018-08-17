@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --https",
     "build-dev": "webpack --watch",
     "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack -p",
     "build-dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack --watch --progress",
