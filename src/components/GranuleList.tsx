@@ -3,16 +3,21 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { CmrGranule } from "../types/CmrGranule";
+import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
   cmrResponse: List<CmrGranule>;
+  loading: boolean;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
-    return !this.props.cmrResponse.equals(nextProps.cmrResponse);
+    const cmrResponseChanged = !this.props.cmrResponse.equals(nextProps.cmrResponse);
+    const loadingChanged = this.props.loading !== nextProps.loading;
+
+    return cmrResponseChanged || loadingChanged;
   }
 
   public render() {
@@ -24,6 +29,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <td>{moment(granule.time_end).format(GranuleList.timeFormat)}</td>
       </tr>
     ));
+
+    if (this.props.loading) {
+      return (<LoadingIcon />);
+    }
 
     return (
       <div id="granule-list">

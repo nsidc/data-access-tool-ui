@@ -18,10 +18,6 @@ interface IOrderParametersProps {
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
-  public constructor(props: any) {
-    super(props);
-  }
-
   public shouldComponentUpdate(nextProps: IOrderParametersProps) {
     return hasChanged(this.props, nextProps, ["cmrStatusOk", "environment", "orderParameters"]);
   }
@@ -29,6 +25,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   public render() {
     return (
       <div id="order-params">
+        {collectionDropdown}
         <TemporalFilter
           fromDate={this.props.orderParameters.temporalFilterLowerBound}
           onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>
@@ -37,9 +34,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
             this.props.onChange({temporalFilterUpperBound})} />
         <Globe
-          spatialSelection={this.props.orderParameters.spatialSelection}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon) =>
             this.props.onChange({spatialSelection})}
+          spatialSelection={this.props.orderParameters.spatialSelection}
           resetSpatialSelection={this.props.resetSpatialSelection} />
       </div>
     );

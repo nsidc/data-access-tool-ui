@@ -4,17 +4,16 @@ import * as React from "react";
 
 import { SubmitButton } from "../src/components/SubmitButton";
 import { OrderTypes } from "../src/types/orderTypes";
-import setupEnvironment from "../src/utils/environment";
 
 const setup = () => {
   const props = {
     buttonText: "Order List of Links",
     disabled: false,
-    environment: setupEnvironment(false),
     collectionId: "abcd123",
     hoverText: "Once the order is processed, go to the Order page for a list of links to your files.",
+    loggedOut: false,
     onGranuleResponse: jest.fn(),
-    onSubmitOrderResponse: jest.fn(),
+    onSubmitOrder: jest.fn(),
     orderType: OrderTypes.listOfLinks,
     spatialSelection: {
       bbox: [0, 0, 0, 0],

@@ -5,6 +5,30 @@ body {
   margin: 20px;
 }
 
+.modal-content {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: auto;
+  outline: none;
+  padding: 20px;
+  position: absolute;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  -webkit-overflow-scrolling: touch;
+}
+
+.loading-spinner-container {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
 #everest-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -267,7 +291,7 @@ tbody tr:hover {
 /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
 div.tooltip {outline:none;}
 div.tooltip:hover {text-decoration:none;}
-div.tooltip span {
+div.tooltip > span {
   z-index:10;
   display:none;
   padding:14px 20px;
@@ -278,24 +302,47 @@ div.tooltip span {
   border-radius:4px;
   box-shadow: 5px 5px 8px #CCC;
 }
-div.tooltip:hover span{
+div.tooltip:hover > span {
   display:inline;
   position:absolute;
   color:#111;
   border:1px solid #DCA;
   background:#fffAF0;}
 .callout {
-  z-index:20;
+  z-index:10;
   position:absolute;
   border:0;
   top: 12px;
   left:-12px;
 }
 
+#order-buttons .callout {
+  bottom: -17px;
+  left: 24px;
+  position: absolute;
+  top: unset;
+  transform: rotate(270deg);
+}
+
 #order-buttons .inline {
   display: inline;
 }
 
-#order-buttons span {
-  margin-left: 0;
+#order-buttons .tooltip > span {
+  bottom: 100px;
+  display: none;
+  margin-left: 0px;
+}
+
+#order-buttons .tooltip:hover > span {
+  display: inline-block;
+}
+
+#order-buttons div.tooltip span.must-be-logged-in {
+  color: green;
+  font-style: italic;
+}
+
+.ReactModal__Overlay {
+    z-index: 11;
 }

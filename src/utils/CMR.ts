@@ -11,8 +11,9 @@ const __DEV__ = false;  // set to true to test CMR failure case in development
 // Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
+const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 
 const cmrHeaders = [
   ["Client-Id", `nsidc-everest-${getEnvironment()}`],
@@ -34,7 +35,23 @@ const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
     return "";
   }
 
-  return `&${param}=${value}`;
+  return `${param}=${value}`;
+};
+
+// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
+export const versionParameters = (versionId: number): string => {
+  const desiredPadLength = 3;
+  const versionLength = String(versionId).length;
+  let extraVersionsNeeded = desiredPadLength - versionLength;
+  let queryParams = `version=${versionId}`;
+
+  while (extraVersionsNeeded--) {
+    const targetLength = desiredPadLength - extraVersionsNeeded;
+    const paddedVersionId = String(versionId).padStart(targetLength, "0");
+    queryParams += `&version=${paddedVersionId}`;
+  }
+
+  return queryParams;
 };
 
 // make a request with cmrHeaders
@@ -78,17 +95,25 @@ export const cmrStatusRequest = () => {
 };
 
 export const collectionsRequest = () => {
-  return cmrFetch(CMR_COLLECTION_URL);
+  return cmrFetch(CMR_COLLECTIONS_URL);
 };
 
-export const cmrGranuleRequest = (collectionId: string,
+export const cmrCollectionRequest = (shortName: string, version: number) => {
+  const collectionUrl = CMR_COLLECTION_URL + `short_name=${shortName}`
+    + `&${versionParameters(version)}`;
+  return cmrFetch(collectionUrl);
+};
+
+export const cmrGranuleRequest = (collectionAuthId: string,
+                                  collectionVersionId: number,
                                   spatialSelection: IGeoJsonPolygon,
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL
-    + `&concept_id=${collectionId}`
+    + `&short_name=${collectionAuthId}`
+    + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + spatialParameter(spatialSelection);
+    + `&${spatialParameter(spatialSelection)}`;
 
   return cmrFetch(URL);
 };

@@ -1,9 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as ReactModal from "react-modal";
 
 import "./css/index.css";
 
 import { EverestUI } from "./components/EverestUI";
+
+// http://reactcommunity.org/react-modal/accessibility/#app-element
+ReactModal.setAppElement("#everest-ui");
 
 export const renderApp = (environment: any) => {
   ReactDOM.render(

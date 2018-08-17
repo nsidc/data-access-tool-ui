@@ -1,32 +1,22 @@
 import * as React from "react";
 
 import * as callout from "../img/callout.png";
-import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
-import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   buttonText: string;
   disabled: boolean;
-  environment: IEnvironment;
   hoverText: string;
-  onSubmitOrderResponse: any;
-  orderSubmissionParameters?: OrderSubmissionParameters;
+  loggedOut: boolean;
+  onSubmitOrder: any;
   orderType: OrderTypes;
 }
 
-interface ISubmitButtonState {
-  orderSubmissionResponse?: {[index: string]: any};
-}
-
-export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitButtonState> {
+export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   public constructor(props: ISubmitButtonProps) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
-    this.state = {
-      orderSubmissionResponse: undefined,
-    };
   }
 
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
@@ -34,37 +24,31 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, ISubmitBut
   }
 
   public render() {
+    const loggedOutSpan = this.props.loggedOut ? (
+      <span>
+        <br/>
+        <span className="must-be-logged-in">You must be logged in.</span>
+      </span>
+    ) : null;
+
     return (
       <div className="tooltip inline">
+        <span className="hover-text">
+          {this.props.hoverText}
+          {loggedOutSpan}
+          <img className="img-no-border-left callout" src={callout} />
+        </span>
         <button
           className="submit-button eui-btn--green"
           disabled={this.props.disabled}
           onClick={this.handleClick}>
           {this.props.buttonText}
         </button>
-        <span>
-          <img className="img-no-border-left callout" src={callout} />
-          {this.props.hoverText}
-        </span>
       </div>
     );
   }
 
   public handleClick() {
-    if (this.props.orderSubmissionParameters) {
-      this.props.environment.hermesAPI.submitOrder(
-        this.props.environment.user,
-        this.props.orderSubmissionParameters.granuleURs,
-        this.props.orderSubmissionParameters.collectionInfo,
-        this.props.orderType,
-      )
-      .then((json: any) => this.handleOrderSubmissionResponse(json))
-      .catch((err: any) => console.log("Order submission failed: " + err));
-    }
-  }
-
-  private handleOrderSubmissionResponse(orderSubmissionResponseJSON: object) {
-    this.setState({orderSubmissionResponse: orderSubmissionResponseJSON});
-    this.props.onSubmitOrderResponse(this.state.orderSubmissionResponse);
+    this.props.onSubmitOrder(this.props.orderType);
   }
 }
