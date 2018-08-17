@@ -17,6 +17,9 @@ body {
 #right-side {
   grid-column: 2;
   padding-left: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #collection-list .dropdown {
@@ -138,9 +141,17 @@ div.react-datepicker-wrapper input {
   padding: 3px;
 }
 
+div#granule-list {
+  flex: 9 0;
+}
+
+div#order-buttons {
+  flex: 1 0;
+}
+
 table.granuleList {
   display: block;
-  height: 600px;
+  height: 700px;
   border-collapse: collapse;
   table-layout: fixed;
   overflow: scroll;
