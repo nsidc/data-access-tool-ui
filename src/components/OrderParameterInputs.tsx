@@ -12,7 +12,6 @@ interface IOrderParametersProps {
   cmrStatusOk: boolean;
   environment: IEnvironment;
   onChange: any;
-  onCmrRequestFailure: (response: any) => any;
   orderParameters: OrderParameters;
   resetSpatialSelection: any;
 }
@@ -25,7 +24,6 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   public render() {
     return (
       <div id="order-params">
-        {collectionDropdown}
         <TemporalFilter
           fromDate={this.props.orderParameters.temporalFilterLowerBound}
           onFromDateChange={(temporalFilterLowerBound: moment.Moment) =>

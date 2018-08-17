@@ -88,8 +88,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       if (!this.props.environment.inDrupal) {
         collectionDropdown = (
           <CollectionDropdown
-            onCmrRequestFailure={this.props.onCmrRequestFailure}
-            cmrStatusOk={this.props.cmrStatusOk}
+            onCmrRequestFailure={this.onCmrRequestFailure}
+            cmrStatusOk={this.state.cmrStatusOk}
             onCollectionChange={this.handleCollectionChange} />
         );
       }
@@ -109,7 +109,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrStatusOk={this.state.cmrStatusOk}
               environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
-              onCmrRequestFailure={this.onCmrRequestFailure}
               orderParameters={this.state.orderParameters}
               resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
           </div>
