@@ -94,6 +94,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         );
       }
       return (
+        // TODO: Still need to figure out the CSS to enable the granule list
+        // table to expand vertically to fill the available space (as compared
+        // to the Cesium widget on the left), but not extend lower than left
+        // side content.
         <div id="everest-container">
           <div id="cmr-status">
             <CmrDownBanner

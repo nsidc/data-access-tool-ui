@@ -35,6 +35,8 @@ export class Globe extends React.Component<IGlobeProps, {}> {
   }
 
   public render() {
+    // Is there a better way of managing the icons and help text, besides simply
+    // embedding them here?
     return (
       <div id="spatial-selection">
         <div className="help-text">
