@@ -33,6 +33,7 @@ nsidc_jenkins::jobs:
       Build the app and deploy to the selected environment, then clear the
       Drupal css-js cache so the new build is picked up.
     command: |
+      #!/bin/bash
       set -ex
 
       git checkout $ref
