@@ -21,6 +21,15 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   public render() {
+
+    return (
+      <div id="granule-list-container">
+        {this.renderContent()}
+      </div>
+    );
+  }
+
+  private renderContent = () => {
     const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => (
       <tr key={i}>
         <td>{granule.producer_granule_id}</td>
@@ -35,21 +44,20 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     }
 
     return (
-      <div id="granule-list">
-        <table className="granuleList">
-          <thead>
-            <tr>
-              <th className="granule-id-col">Granule ID</th>
-              <th className="size-col">Size (MB)</th>
-              <th className="start-time-col">Start Time</th>
-              <th className="end-time-col">End Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {granuleList}
-          </tbody>
-        </table>
-      </div>
+      <table id="granule-table">
+        <thead>
+          <tr>
+            <th className="granule-id-col">Granule ID</th>
+            <th className="size-col">Size (MB)</th>
+            <th className="start-time-col">Start Time</th>
+            <th className="end-time-col">End Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {granuleList}
+        </tbody>
+      </table>
     );
+
   }
 }

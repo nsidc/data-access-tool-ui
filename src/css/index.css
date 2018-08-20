@@ -98,22 +98,25 @@ body {
   display: inline-block;
 }
 
-table.granuleList {
-  display: block;
+#granule-list-container{
   height: 600px;
+  overflow: scroll;
+}
+
+#granule-table {
+  display: block;
   border-collapse: collapse;
   table-layout: fixed;
-  overflow: scroll;
   padding: 0;
   font-size: 90%;
 }
 
-table.granuleList thead th {
+#granule-table th {
   color: white;
   background: #7ab5da; /* EUI Sky Blue */
 }
 
-table.granuleList td, th {
+#granule-table td, th {
   border: 1px solid #999;
   padding: 0.5rem;
   text-align: left;
