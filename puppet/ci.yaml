@@ -1,0 +1,47 @@
+# Puppet CI Resources
+
+classes:
+  - nsidc_jenkins
+
+nsidc_jenkins::plugins:
+  simple-theme-plugin: {}
+
+# Jenkins Jobs
+nsidc_jenkins::jobs:
+
+  "%{hiera('project')}_Deploy":
+    git:
+      repo: "%{hiera('gitrepo')}"
+      poll_scm: true
+    parameters:
+      - type: string
+        name: ref
+        description: >
+          everest ui project's git ref (branch, tag, commit SHA) to check out
+          and deploy
+        default: master
+      - type: choice
+        name: environment
+        choices:
+        - integration
+        - qa
+        - staging
+    wrappers:
+      - name: build name
+        template: "#${BUILD_NUMBER} ${ref}"
+    workspace: "%{hiera('workspace')}"
+    description: >
+      Build the app and deploy to the selected environment, then clear the
+      Drupal css-js cache so the new build is picked up.
+    command: |
+      set -ex
+
+      git checkout $ref
+
+      npm run build-drupal
+      npm run deploy-drupal -- $environment
+
+      VM_FLAGS="--env=$environment --project=nsidc.org.drupal"
+
+      vagrant nsidc hijack --force $VM_FLAGS
+      vagrant nsidc ssh $VM_FLAGS -c "drush cache-clear css-js"
