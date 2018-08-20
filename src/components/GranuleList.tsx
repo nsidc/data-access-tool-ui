@@ -1,6 +1,7 @@
 import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
+import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { LoadingIcon } from "./LoadingIcon";
@@ -44,19 +45,24 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     }
 
     return (
-      <table id="granule-table">
-        <thead>
-          <tr>
-            <th className="granule-id-col">Granule ID</th>
-            <th className="size-col">Size (MB)</th>
-            <th className="start-time-col">Start Time</th>
-            <th className="end-time-col">End Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {granuleList}
-        </tbody>
-      </table>
+      <CSSTransition in
+                     appear
+                     classNames="fade"
+                     timeout={500}>
+        <table id="granule-table">
+          <thead>
+            <tr>
+              <th className="granule-id-col">Granule ID</th>
+              <th className="size-col">Size (MB)</th>
+              <th className="start-time-col">Start Time</th>
+              <th className="end-time-col">End Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {granuleList}
+          </tbody>
+        </table>
+      </CSSTransition>
     );
 
   }
