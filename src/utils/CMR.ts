@@ -7,9 +7,10 @@ import { getEnvironment } from "./environment";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
-// Note!
-// Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
-const CMR_URL = "https://cmr.earthdata.nasa.gov";
+const CMR_URL = ["dev", "integration", "qa"].includes(getEnvironment()) ?
+  "https://cmr.uat.earthdata.nasa.gov" :
+  "https://cmr.earthdata.nasa.gov";
+
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
