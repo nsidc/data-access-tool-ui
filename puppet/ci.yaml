@@ -38,6 +38,7 @@ nsidc_jenkins::jobs:
 
       git checkout $ref
 
+      npm install
       npm run build-drupal
       npm run deploy-drupal -- $environment
 
