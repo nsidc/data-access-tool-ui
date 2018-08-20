@@ -41,7 +41,7 @@ body {
 
 #everest-container {
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 #left-side {
@@ -51,11 +51,18 @@ body {
 #right-side {
   grid-column: 2;
   padding-left: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.dropdown {
+#collection-list .dropdown {
   margin: 0.5em 0em;
   width: 100%;
+}
+
+#order-params h3 {
+  font-size: 100%;
 }
 
 #temporal-selection {
@@ -63,19 +70,66 @@ body {
   padding: 0em;
 }
 
-#temporal-selection > div {
+#temporal-selection h3 {
   display: inline;
-  margin: 0em 2em 0em 0.75em;
 }
 
-.react-datepicker-wrapper input {
+#temporal-selection > div {
+  display: inline;
+  font-size: 90%;
+}
+
+#temporal-selection label.from {
+  margin-left: 0.5em;
+}
+
+div.react-datepicker-wrapper {
+  margin: 0em 1.5em 0em 0.5em;
+}
+
+div.react-datepicker-wrapper input {
   width: 8em;
 }
 
-#spatial-selection {
+#spatial-selection:first-child {
   border: 2px solid;
   margin: 0em;
   padding: 0em;
+}
+
+.help-text {
+  display: inline;
+  line-height: 1.2em;
+}
+
+.help-text span, section {
+  font-size: 90%;
+  padding-left: 1.5em;
+}
+
+.help-text section {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-left: 1.5em;
+}
+
+.help-text section img {
+  display: inline-block;
+  vertical-align: middle;
+  height: 29px;
+}
+
+.help-text #left-column {
+  grid-column: 1;
+}
+
+.help-text #right-column {
+  grid-column: 2;
+}
+
+.help-text ul {
+  margin: 0 0 1.5em 0;
+  padding: 0;
 }
 
 .script-button {
@@ -97,19 +151,40 @@ body {
 #toolbar {
   position: absolute;
   right: 0;
-  width: 36px;
+  width: 40px;
   margin: 0px;
   background: white;
   height: auto;
+  line-height: 1em;
+  border: solid 2px black;
   z-index: 2;
 }
 
-#toolbar .button {
+#toolbar > .button {
   display: inline-block;
+  margin: 2px 2px 0px 2px;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
+
+#toolbar > .button:hover {
+  background: #eee;
+}
+
+#toolbar .tooltip.button img {
+  padding: 3px;
+}
+
+div#granule-list {
+  flex: 9 0;
+}
+
+div#order-buttons {
+  flex: 1 0;
 }
 
 #granule-list-container{
-  height: 600px;
+  height: 700px;
   overflow: scroll;
 }
 
@@ -219,7 +294,7 @@ tbody tr:hover {
   font-size: 8px;
 }
 
-#cmr-down {
+#cmr-status {
   background: red;
   color: white;
   position: absolute;
