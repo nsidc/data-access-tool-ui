@@ -5,11 +5,15 @@ A "data orders" user interface that can be embedded into dataset landing pages.
 **tl;dr:** See the end of this document for the sequence of steps involved in
 deploying the application to QA.
 
-## Requirements
+## Prerequisites
 
-NodeJS 8.x (and npm!)
+[Node Version Manager (nvm)](https://github.com/creationix/nvm)
 
 ## Development as a standalone application (not integrated into a Drupal page)
+
+### Use the version of NodeJS set in the project's .nvmrc file:
+
+        $ nvm use
 
 ### Install dependencies:
 
