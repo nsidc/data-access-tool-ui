@@ -175,17 +175,15 @@ div.react-datepicker-wrapper input {
   padding: 3px;
 }
 
-div#granule-list {
-  flex: 9 0;
-}
-
-div#order-buttons {
+#order-buttons {
   flex: 1 0;
 }
 
 #granule-list-container{
+  flex: 9 0;
   height: 700px;
   overflow: scroll;
+  width: 100%;
 }
 
 #granule-table {
