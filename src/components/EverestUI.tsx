@@ -11,6 +11,7 @@ import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { CmrDownBanner } from "./CmrDownBanner";
+import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
@@ -83,21 +84,37 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     public render() {
+      let collectionDropdown = null;
+      if (!this.props.environment.inDrupal) {
+        collectionDropdown = (
+          <CollectionDropdown
+            onCmrRequestFailure={this.onCmrRequestFailure}
+            cmrStatusOk={this.state.cmrStatusOk}
+            onCollectionChange={this.handleCollectionChange} />
+        );
+      }
       return (
+        // TODO: Still need to figure out the CSS to enable the granule list
+        // table to expand vertically to fill the available space (as compared
+        // to the Cesium widget on the left), but not extend lower than left
+        // side content.
         <div id="everest-container">
-          <div id="cmr-down">
+          <div id="cmr-status">
             <CmrDownBanner
               cmrStatusChecked={this.state.cmrStatusChecked}
               cmrStatusOk={this.state.cmrStatusOk}
             />
+          </div>
+          <div id="collection-list">
+            {collectionDropdown}
           </div>
           <div id="left-side">
             <OrderParameterInputs
               cmrStatusOk={this.state.cmrStatusOk}
               environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
-              onCmrRequestFailure={this.onCmrRequestFailure}
-              orderParameters={this.state.orderParameters} />
+              orderParameters={this.state.orderParameters}
+              resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
           </div>
           <div id="right-side">
             <GranuleList
@@ -185,6 +202,21 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     private onCmrRequestFailure = (response: any) => {
       this.setState({cmrStatusChecked: true, cmrStatusOk: false});
+    }
+
+    private handleCollectionChange = (collection: any) => {
+      this.handleOrderParameterChange({
+        collection,
+        temporalFilterLowerBound: moment(collection.time_start),
+        temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
+      }, this.setSpatialSelectionToCollectionDefault);
+    }
+
+    private setSpatialSelectionToCollectionDefault = () => {
+      const boundingBoxes = this.state.orderParameters.collection.boxes;
+      const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
+      // @ts-ignore
+      this.handleOrderParameterChange({spatialSelection});
     }
 
     private handleCmrCollectionResponse = (response: any) => {

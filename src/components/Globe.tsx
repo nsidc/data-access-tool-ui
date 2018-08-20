@@ -1,9 +1,9 @@
 import * as React from "react";
-
 import "../css/index.css";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { hasChanged } from "../utils/hasChanged";
+import { HelpText } from "./HelpText";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
@@ -36,6 +36,7 @@ export class Globe extends React.Component<IGlobeProps, {}> {
   public render() {
     return (
       <div id="spatial-selection">
+        <HelpText />
         <div id={this.elementId}>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
