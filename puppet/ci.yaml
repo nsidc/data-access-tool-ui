@@ -3,9 +3,6 @@
 classes:
   - nsidc_jenkins
 
-nsidc_jenkins::plugins:
-  simple-theme-plugin: {}
-
 # Jenkins Jobs
 nsidc_jenkins::jobs:
 
