@@ -8,6 +8,18 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision :shell do |s|
+    s.name = 'install nvm'
+    s.inline = 'curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash'
+    s.privileged = false
+  end
+
+  config.vm.provision :shell do |s|
+    s.name = 'install node'
+    s.inline = 'source /home/vagrant/.nvm/nvm.sh && cd /vagrant && nvm install'
+    s.privileged = false
+  end
+
+  config.vm.provision :shell do |s|
     s.name = 'librarian-puppet install'
     s.inline = 'cd /vagrant/puppet && librarian-puppet install --path=./modules'
   end
