@@ -34,11 +34,12 @@ nsidc_jenkins::jobs:
       Drupal css-js cache so the new build is picked up.
     command: |
       #!/bin/bash
+
+      source ~/.nvm/nvm.sh
+
       set -ex
 
       git checkout $ref
-
-      source ~/.nvm/nvm.sh
 
       npm install
       npm run build-drupal
