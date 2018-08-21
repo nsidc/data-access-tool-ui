@@ -82,6 +82,7 @@ export class PolygonMode {
   // To reorder, convert points to 2D, compute the angle between each point
   // and the center of the bounding box for all the points. Then sort
   // the angles into ascending order.
+  // For algorithm see https://stackoverflow.com/questions/19713092/
   private reorderPolygonPoints(points: any[]) {
 
     const bounds = {maxLat: -999, maxLon: -999.0, minLat: 999, minLon: 999.0};
