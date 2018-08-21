@@ -1,6 +1,7 @@
 import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
+import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { LoadingIcon } from "./LoadingIcon";
@@ -21,6 +22,15 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   public render() {
+
+    return (
+      <div id="granule-list-container">
+        {this.renderContent()}
+      </div>
+    );
+  }
+
+  private renderContent = () => {
     const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => (
       <tr key={i}>
         <td>{granule.producer_granule_id}</td>
@@ -35,8 +45,11 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     }
 
     return (
-      <div id="granule-list">
-        <table className="granuleList">
+      <CSSTransition in
+                     appear
+                     classNames="fade"
+                     timeout={500}>
+        <table id="granule-table">
           <thead>
             <tr>
               <th className="granule-id-col">Granule ID</th>
@@ -49,7 +62,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
             {granuleList}
           </tbody>
         </table>
-      </div>
+      </CSSTransition>
     );
+
   }
 }
