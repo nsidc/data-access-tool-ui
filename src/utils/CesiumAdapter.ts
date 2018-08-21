@@ -56,24 +56,6 @@ export class CesiumAdapter {
     this.renderInitialBoundingBox(spatialSelection);
   }
 
-  // cartesianXYZ: 3D coordinates for position on earth's surface
-  // https://en.wikipedia.org/wiki/ECEF
-  public cartesianPositionToLonLatDegrees(cartesianXYZ: any): ILonLat {
-    // this means the position is not on the globe
-    if (cartesianXYZ === undefined) {
-      return {lat: NaN, lon: NaN};
-    }
-
-    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianXYZ);
-
-    const lonLatDegrees = {
-      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
-      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
-    };
-
-    return lonLatDegrees;
-  }
-
   public clearSpatialSelection() {
     this.polygonMode.reset();
 
@@ -118,7 +100,7 @@ export class CesiumAdapter {
       const cartesians = points.map((p: any) => p.cartesianXYZ);
 
       const lonLatsArray = cartesians.map((cartesian: any) => {
-        const lonLat = this.cartesianPositionToLonLatDegrees(cartesian);
+        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(cartesian);
         return [lonLat.lon, lonLat.lat];
       }, this);
 
@@ -162,11 +144,6 @@ export class CesiumAdapter {
 
     return sum > 0;
   }
-}
-
-interface ILonLat {
-  readonly lat: number;
-  readonly lon: number;
 }
 
 /* The code to use NASA GIBS imagery was based on and adapted from

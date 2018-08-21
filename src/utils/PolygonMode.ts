@@ -4,6 +4,11 @@ import * as dragImg from "../img/dragIcon.png";
 const Cesium = require("cesium/Cesium");
 /* tslint:enable:no-var-requires */
 
+interface ILonLat {
+  readonly lat: number;
+  readonly lon: number;
+}
+
 export class PolygonMode {
 
   private billboards: any[] = [];
@@ -53,17 +58,92 @@ export class PolygonMode {
     this.endMode();
   }
 
+  // cartesianXYZ: 3D coordinates for position on earth's surface
+  // https://en.wikipedia.org/wiki/ECEF
+  public cartesianPositionToLonLatDegrees(cartesianXYZ: any): ILonLat {
+    // this means the position is not on the globe
+    if (cartesianXYZ === undefined) {
+      return {lat: NaN, lon: NaN};
+    }
+
+    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianXYZ);
+
+    const lonLatDegrees = {
+      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
+      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
+    };
+
+    return lonLatDegrees;
+  }
+
+  // To avoid bow-ties if the user draws the points in a strange order,
+  // reorder the points to ensure that they form a counterclockwise
+  // non-overlapping polygon.
+  // To reorder, convert points to 2D, compute the angle between each point
+  // and the center of the bounding box for all the points. Then sort
+  // the angles into ascending order.
+  private reorderPolygonPoints(points: any[]) {
+
+    const bounds = {maxLat: -999, maxLon: -999.0, minLat: 999, minLon: 999.0};
+
+    // Convert all points from 3D to 2D, save the original points.
+    // Compute the bounding box for all the points.
+    const lonLatsArray = points.map((p: any) => {
+      const ll = this.cartesianPositionToLonLatDegrees(p.cartesianXYZ);
+      bounds.maxLat = Math.max(bounds.maxLat, ll.lat);
+      bounds.maxLon = Math.max(bounds.maxLon, ll.lon);
+      bounds.minLat = Math.min(bounds.minLat, ll.lat);
+      bounds.minLon = Math.min(bounds.minLon, ll.lon);
+      return {point: p, lat: ll.lat, lon: ll.lon, angle: 0.0};
+    });
+
+    const center = {lat: 0.5 * (bounds.minLat + bounds.maxLat),
+      lon: 0.5 * (bounds.minLon + bounds.maxLon)};
+    const last = lonLatsArray[lonLatsArray.length - 1];
+    const angleLast = Math.atan2(last.lat - center.lat, last.lon - center.lon);
+
+    lonLatsArray.map((lonlat) => {
+      let angle = Math.atan2(lonlat.lat - center.lat, lonlat.lon - center.lon);
+      // Rotate (shift) all of the points that come before the last point
+      // to the end of the array. The <= ensures that the last point comes
+      // at the very end, since that is the mousePoint and will need to be
+      // stripped off the end before storing.
+      if (angle <= angleLast) {
+        angle += 2 * Math.PI;
+      }
+      lonlat.angle = angle;
+      return lonlat;
+    });
+
+    // Sort the points in counter-clockwise order using the 2D angles
+    lonLatsArray.sort((a: any, b: any) => (a.angle - b.angle));
+
+    // Strip out just our original points, now in sorted order
+    points = lonLatsArray.map((lonlat) => lonlat.point);
+    return points;
+  }
+
   private render = () => {
     // gather all the points; rendering doesn't care about the distinction
     // between clicked points and the point following the cursor
-    let points = this.points;
-    if (this.mousePoint !== null) {
-      points = points.concat([this.mousePoint]);
-    }
-    points = points.map((p) => p.cartesianXYZ);
+    let points = (this.mousePoint !== null) ?
+      this.points.concat([this.mousePoint]) : this.points.slice();
 
     // if we meet the minimum points requirement, render the polygon
     if (points.length >= this.minPoints) {
+
+      // Ensure that the points are in counterclockwise non-overlapping order.
+      points = this.reorderPolygonPoints(points);
+
+      // Stash a copy of our reordered points. Needs to be a copy because
+      // we muck with the points below when we render the polygon.
+      this.points = points.slice();
+      if (this.mousePoint !== null) {
+        this.points.pop();
+      }
+
+      points = points.map((p) => p.cartesianXYZ);
+
       // remove previously rendered polygon
       if (this.polygon) {
         this.scene.primitives.remove(this.polygon);
