@@ -1,0 +1,11 @@
+lookup_options:
+  '^.*':
+    merge: deep
+
+classes:
+  - nsidc_nfs
+
+nsidc_nfs::sharemounts:
+  /share/apps/everest-ui-all:
+    project: apps
+    share: everest-ui

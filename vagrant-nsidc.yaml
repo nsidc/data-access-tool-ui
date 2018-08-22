@@ -1,0 +1,6 @@
+project: everest-ui
+gitrepo: git@bitbucket.org:nsidc/everest-ui.git
+vsphere:
+  template:
+    default: xenial64-docker-puppet4
+    ci: xenial64-docker-puppet4-jenkins1
