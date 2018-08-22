@@ -40,7 +40,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
     return (
       <form action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={urls.toJS()}/>
-        <div className="tooltip inline">
+        <div className="tooltip">
           <span className="hover-text">
             Download a command line script that will retrieve all the files.
             {loggedOutSpan}

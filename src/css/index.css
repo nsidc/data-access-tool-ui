@@ -345,10 +345,17 @@ div.tooltip:hover > span {
   display: inline;
 }
 
+#order-buttons div.tooltip {
+  display: inline;
+  position: relative;
+}
+
 #order-buttons .tooltip > span {
-  bottom: 100px;
+  bottom: 42px;
   display: none;
   margin-left: 0px;
+  position: absolute;
+  text-align: left;
 }
 
 #order-buttons .tooltip:hover > span {
