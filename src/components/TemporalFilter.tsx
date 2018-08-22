@@ -29,11 +29,13 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
         <label className="from">From</label>
         <DatePicker
           id="from"
+          maxDate={this.props.toDate}
           selected={this.props.fromDate}
           onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
         <label>To</label>
         <DatePicker
           id="to"
+          minDate={this.props.fromDate}
           selected={this.props.toDate}
           onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
       </div>
