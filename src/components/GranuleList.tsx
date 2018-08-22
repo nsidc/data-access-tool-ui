@@ -22,7 +22,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   public render() {
-
     return (
       <div id="granule-list-container">
         {this.renderContent()}
@@ -31,14 +30,17 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderContent = () => {
-    const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => (
-      <tr key={i}>
-        <td>{granule.producer_granule_id}</td>
-        <td>{parseFloat(granule.granule_size).toFixed(1)}</td>
-        <td>{moment(granule.time_start).format(GranuleList.timeFormat)}</td>
-        <td>{moment(granule.time_end).format(GranuleList.timeFormat)}</td>
-      </tr>
-    ));
+    const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
+      const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
+      return (
+        <tr key={i}>
+          <td>{granule.producer_granule_id}</td>
+          <td>{granuleSize}</td>
+          <td>{moment(granule.time_start).format(GranuleList.timeFormat)}</td>
+          <td>{moment(granule.time_end).format(GranuleList.timeFormat)}</td>
+        </tr>
+      );
+    });
 
     if (this.props.loading) {
       return (<LoadingIcon />);
@@ -64,6 +66,5 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </table>
       </CSSTransition>
     );
-
   }
 }
