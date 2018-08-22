@@ -26,6 +26,7 @@ export class PolygonMode {
   private points: IPoint[] = [];
   private polygon: any;
   private scene: any;
+  private finishedDrawing = false;
 
   public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
@@ -51,8 +52,9 @@ export class PolygonMode {
 
   public endMode = () => {
     this.clearMousePoint();
+    this.finishedDrawing = true;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
-      this.mouseHandler.destroy();
+//      this.mouseHandler.destroy();
     }
     this.finishedDrawingCallback(this.points);
   }
@@ -61,6 +63,7 @@ export class PolygonMode {
     this.points = [];
     this.clearAllBillboards();
     this.endMode();
+    this.finishedDrawing = false;
   }
 
   // cartesianXYZ: 3D coordinates for position on earth's surface
@@ -235,12 +238,27 @@ export class PolygonMode {
   }
 
   private onLeftClick = ({position}: any) => {
+    if (this.finishedDrawing) {
+      if (this.points.length > 0) {
+        const pickedFeature = this.scene.pick(position);
+        if (pickedFeature === undefined) { return; }
+        const index = this.billboards.indexOf(pickedFeature.primitive);
+        if (index >= 0) {
+          const point = this.screenPositionToPoint(position);
+          if (point === null) { return; }
+        }
+      }
+      return;
+    }
     this.addPoint(position);
     this.clearMousePoint();
     this.render();
   }
 
   private onLeftDoubleClick = ({position}: any) => {
+    if (this.finishedDrawing) {
+      return;
+    }
     // two individual left click events fire before the double click does; this
     // results in a duplicate of the final position at the end of
     // `this.points` that can (and should) be safely removed
@@ -254,6 +272,9 @@ export class PolygonMode {
   }
 
   private onMouseMove = ({endPosition}: any) => {
+    if (this.finishedDrawing) {
+      return;
+    }
     this.updateMousePoint(endPosition);
     this.render();
   }
