@@ -93,6 +93,10 @@ div.react-datepicker-wrapper input {
   text-align: center;
 }
 
+#everest-container div.react-datepicker-popper {
+  z-index: 10;
+}
+
 #everest-container #spatial-selection:first-child {
   border: 2px solid;
   margin: 0em;
