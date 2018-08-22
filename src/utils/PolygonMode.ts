@@ -9,6 +9,11 @@ interface ILonLat {
   readonly lon: number;
 }
 
+interface IPoint {
+  cartesianXYZ: any;
+  screenPosition: any;
+}
+
 export class PolygonMode {
 
   private billboards: any[] = [];
@@ -17,8 +22,8 @@ export class PolygonMode {
   private finishedDrawingCallback: any;
   private minPoints = 3;
   private mouseHandler: any;
-  private mousePoint: any = null;
-  private points: any[] = [];
+  private mousePoint: IPoint | null = null;
+  private points: IPoint[] = [];
   private polygon: any;
   private scene: any;
 
@@ -68,12 +73,12 @@ export class PolygonMode {
 
     const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianXYZ);
 
-    const lonLatDegrees = {
+    const latLonDegrees = {
       lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
       lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
     };
 
-    return lonLatDegrees;
+    return latLonDegrees;
   }
 
   // To avoid bow-ties if the user draws the points in a strange order,
@@ -83,27 +88,26 @@ export class PolygonMode {
   // and the center of the bounding box for all the points. Then sort
   // the angles into ascending order.
   // For algorithm see https://stackoverflow.com/questions/19713092/
-  private reorderPolygonPoints(points: any[]) {
-
-    const bounds = {maxLat: -999, maxLon: -999.0, minLat: 999, minLon: 999.0};
+  private reorderPolygonPoints(points: IPoint[]): IPoint[] {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
-    const lonLatsArray = points.map((p: any) => {
-      const ll = this.cartesianPositionToLonLatDegrees(p.cartesianXYZ);
-      bounds.maxLat = Math.max(bounds.maxLat, ll.lat);
-      bounds.maxLon = Math.max(bounds.maxLon, ll.lon);
-      bounds.minLat = Math.min(bounds.minLat, ll.lat);
-      bounds.minLon = Math.min(bounds.minLon, ll.lon);
-      return {point: p, lat: ll.lat, lon: ll.lon, angle: 0.0};
+    let lonLatsArray = points.map((point: IPoint) => {
+      const latLon = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
+      return {point, ...latLon};
     });
 
-    const center = {lat: 0.5 * (bounds.minLat + bounds.maxLat),
-      lon: 0.5 * (bounds.minLon + bounds.maxLon)};
+    const minLat = Math.min.apply(null, lonLatsArray.map((p) => p.lat));
+    const maxLat = Math.max.apply(null, lonLatsArray.map((p) => p.lat));
+    const minLon = Math.min.apply(null, lonLatsArray.map((p) => p.lon));
+    const maxLon = Math.max.apply(null, lonLatsArray.map((p) => p.lon));
+
+    const center = {lat: 0.5 * (minLat + maxLat),
+      lon: 0.5 * (minLon + maxLon)};
     const last = lonLatsArray[lonLatsArray.length - 1];
     const angleLast = Math.atan2(last.lat - center.lat, last.lon - center.lon);
 
-    lonLatsArray.map((lonlat) => {
+    lonLatsArray = lonLatsArray.map((lonlat) => {
       let angle = Math.atan2(lonlat.lat - center.lat, lonlat.lon - center.lon);
       // Rotate (shift) all of the points that come before the last point
       // to the end of the array. The <= ensures that the last point comes
@@ -112,8 +116,7 @@ export class PolygonMode {
       if (angle <= angleLast) {
         angle += 2 * Math.PI;
       }
-      lonlat.angle = angle;
-      return lonlat;
+      return {...lonlat, angle};
     });
 
     // Sort the points in counter-clockwise order using the 2D angles
@@ -143,8 +146,6 @@ export class PolygonMode {
         this.points.pop();
       }
 
-      points = points.map((p) => p.cartesianXYZ);
-
       // remove previously rendered polygon
       if (this.polygon) {
         this.scene.primitives.remove(this.polygon);
@@ -156,7 +157,7 @@ export class PolygonMode {
       });
       const geometry = Cesium.PolygonGeometry.fromPositions({
         ellipsoid: this.ellipsoid,
-        positions: points,
+        positions: points.map((p) => p.cartesianXYZ),
       });
 
       const geometryInstances = new Cesium.GeometryInstance({
@@ -171,7 +172,7 @@ export class PolygonMode {
     }
   }
 
-  private screenPositionToPoint = (position: any) => {
+  private screenPositionToPoint = (position: any): IPoint | null => {
     if (position === null) { return null; }
 
     const cartesian = this.scene.camera.pickEllipsoid(position, this.ellipsoid);
@@ -198,7 +199,7 @@ export class PolygonMode {
     this.removeLastBillboard();
   }
 
-  private addBillboard = (point: any) => {
+  private addBillboard = (point: IPoint) => {
     const billboard = this.billboardCollection.add({
       image: dragImg,
       position: point.cartesianXYZ,
