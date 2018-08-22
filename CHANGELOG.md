@@ -20,3 +20,4 @@
 * Simplify the state and properties passed down the component hierarchy.
 * Workaround unknown CMR version length by padding, e.g.: `&version_id=6&version_id=06&version_id=006`
 * Extract the collection dropdown from the main part of the application and update CSS to add some basic responsiveness.
+* Animate the GranuleList when loading

@@ -39,8 +39,8 @@ for information about cloning the drupal project with its associated submodules.
 Assuming it builds successfully, you should now have a dev VM with
 `/share/apps/everest-ui` mounted from `/share/apps/everest-ui-all/dev/<your-login>`,
 and a symlink at `/var/www/drupal/apps/everest-ui` pointing to `/share/apps/everest-ui`.
-In other words, step 1 under "Custom module development" in the 
-[drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md) 
+In other words, step 1 under "Custom module development" in the
+[drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md)
 will be automatically handled when the VM is provisioned. The provisioning
 process will also clone the `everest-ui` project and install `npm`. You can then
 `ssh` to the VM, check out the desired branch or tag, and run the app in a
@@ -83,82 +83,32 @@ Because we display the version to the user, after release, the version should be
 incremented and `-dev` appended to the version string, so that subsequent builds
 indicate that it is a new version.
 
-## Building for deployment to a non-development location
-
-No CI machine exists for `everest-ui` (yet), so use a
-[drupal VM](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) (or
-another machine with `/share/apps/everest-ui` and/or
-`/share/apps/everest-ui-all` mounted appropriately) to
-build the application if you intend to deploy it somewhere besides your local
-working environment.  See "Development with Drupal integration," above, for
-notes regarding VM setup.
-
-The `production` deployment assumes eventual Drupal integration, and for this
-reason only a `build-drupal` "production" build option is configured for the
-application.  **This may change in the future.** The `build-drupal` target sets
-the value of `CESIUM_BASE_URL` to a Drupal-relative location where Cesium's
-assets can be found.  **NOTE: Until we add environment-specific configuration,
-before building the app for the staging or production environments, manually confirm that
-the value of `CMR_URL` in `src/utils/CMR.ts` is set to `https://cmr.earthdata.nasa.gov`.**
-
-To build the app (minified):
-
-    $ vagrant nsidc ssh --env=dev
-    $ cd ~vagrant/everest-ui
-    $ npm install
-    $ # Double-check CMR_URL value in src/utils/CMR.ts
-    $ npm run build-drupal
-
-Verify the build by opening the output `dist/index.html` in a browser.
-
 ## Deployment
 
-Deploy the application from the same VM that you used to build the application
-(e.g., your [drupal](https://bitbucket.org/nsidc/drupal/src/landing-page-module/) dev VM).
+The CI job
+[everest-ui_Deploy](http://ci.everest-ui.apps.int.nsidc.org:8080/job/everest-ui_Deploy/)
+can be used to build and deploy the app to integration, qa, or staging. It is
+configured to run automatically for integration for every new push on
+master. The app is built and deployed to the appropriate share, a git tag
+matching the chosen environment is updated, then the cache on the corresponding
+Drupal VM is cleared with `drush cache-clear css-js`.
 
-### Move the build content
+You can inspect the [everest-ui_Deploy job
+configuration](http://ci.everest-ui.apps.int.nsidc.org:8080/job/everest-ui_Deploy/configure)
+to see the specific commands used to build and deploy the app. Running those
+commands individually, you can deploy the app from a dev VM (assuming
+`/share/apps/everest-ui-all` is mounted) to any environment.
 
-If you're on a `dev` VM with `/share/apps/everest-ui-all` mounted (which should
-be the case, if the VM provisioned successfully), you can deploy to any
-environment by passing it as an argument. This command **will additionally
-update the git tag for the environment, and should be used to deploy to all
-non-dev environments until we configure a CI machine for this application.** For
-example:
 
-        $ vagrant nsidc ssh --env=dev
-        $ cd ~vagrant/everest-ui
-        $ npm run deploy-drupal -- integration
-
-You can also deploy to the current environment from a VM (e.g., if the VM was
-built for the `integration` environment, and you want to deploy to `integration`):
+While using the CI job is preferred, you can also deploy to the current
+environment from a VM (e.g., if the VM was built for the `integration`
+environment, and you want to deploy to `integration`):
 
         $ npm run deploy-drupal
 
-However, this option will not add a git tag.
+However, this option will not add a git tag, nor will it automatically refresh
+the Drupal cache.
 
-### Refresh Drupal!
-
-If you deployed to an environment that differs from the environment on which you
-built the app (e.g., you're working on your dev VM and deployed to integration),
-`ssh` to the target environment VM and do `drush cache-clear css-js`. If that
-doesn't work, you may also need to disable/re-enable the module: `cd /vagrant; ./reload_mods.sh`.
-
-## Example sequence of events for deploying to QA
-
-  * Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/),
-  including the submodules. `cd` to that working directory.
-  * Provision a `dev` VM: `vagrant nsidc up --env=dev`
-  * `ssh` to the VM and check out the desired version (tag)
-      * `$ vagrant nsidc ssh --env=dev`
-      * `$ cd ~vagrant/everest-ui`
-      * `$ git checkout branch-or-tag-to-deploy`
-  * Confirm that `CMR_URL` in `src/utils/CMR.ts` is set to
-    the desired value (choices are `https://cmr.earthdata.nasa.gov` or `https://cmr.uat.earthdata.nasa.gov/`)
-  * Install packages and build the app:
-      *  `$ npm install`
-      *  `$ npm run build-drupal`
-  * Move the app to the right place so the QA Drupal machine can find it:
-      *  `$ npm run deploy-drupal -- qa`
-  * But wait, there's more! Exit the VM and refer to the
-    [drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md) 
-    for the Drupal portion of the deployment.
+A full deployment of the app may include changes to Drupal modules not covered
+above. For details on that part of the project, see the [drupal project
+README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md).

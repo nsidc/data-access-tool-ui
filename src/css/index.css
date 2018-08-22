@@ -5,6 +5,16 @@ body {
   margin: 20px;
 }
 
+.fade-appear, .fade-enter {
+  opacity: 0;
+  transform: scale(0.97);
+}
+.fade-appear-active, .fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 500ms ease-in, transform 250ms ease-in-out;
+}
+
 .modal-content {
   background: #fff;
   border: 1px solid #ccc;
@@ -167,36 +177,37 @@ div.react-datepicker-wrapper input {
   padding: 3px;
 }
 
-#everest-container #granule-list {
-}
-
 #everest-container div#order-buttons {
   text-align: right;
 }
 
-table.granuleList {
-  display: block;
+#granule-list-container{
   height: 700px;
+  overflow: scroll;
+  width: 100%;
+}
+
+#granule-table {
+  display: block;
   border-collapse: collapse;
   table-layout: fixed;
-  overflow: scroll;
   padding: 0;
   font-size: 90%;
 }
 
-table.granuleList thead th {
+#granule-table th {
   color: white;
   background: #7ab5da; /* EUI Sky Blue */
 }
 
-table.granuleList td, th {
+#granule-table td, th {
   border: 1px solid #999;
   padding: 0.5rem;
   text-align: left;
   word-wrap: break-word;
 }
 
-table.granuleList tr:nth-child(odd) {
+#granule-table tr:nth-child(odd) {
   background: #ebebeb; /* EUI Light Gray */
 }
 
@@ -232,7 +243,7 @@ tbody tr:hover {
 }
 
 #globe .cesium-credit-logoContainer {
-  margin-right: 1em;
+  display: none;
 }
 
 .granule-id-col {
