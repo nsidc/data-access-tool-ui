@@ -8,6 +8,8 @@ import { hasChanged } from "../utils/hasChanged";
 import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
 
+declare var EVEREST_UI_VERSION: string;  // defined at compile time by webpack.DefinePlugin
+
 interface IOrderParametersProps {
   cmrStatusOk: boolean;
   environment: IEnvironment;
@@ -36,6 +38,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
             this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection}
           resetSpatialSelection={this.props.resetSpatialSelection} />
+        <div id="version">Download Data UI v{EVEREST_UI_VERSION}</div>
       </div>
     );
   }

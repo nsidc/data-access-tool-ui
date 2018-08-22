@@ -16,7 +16,6 @@ import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 
-declare var EVEREST_UI_VERSION: string;  // defined at compile time by webpack.DefinePlugin
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
 interface IEverestProps {
@@ -94,10 +93,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         );
       }
       return (
-        // TODO: Still need to figure out the CSS to enable the granule list
-        // table to expand vertically to fill the available space (as compared
-        // to the Cesium widget on the left), but not extend lower than left
-        // side content.
         <div id="everest-container">
           <div id="cmr-status">
             <CmrDownBanner
@@ -108,6 +103,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           <div id="collection-list">
             {collectionDropdown}
           </div>
+          <div id="columns">
           <div id="left-side">
             <OrderParameterInputs
               cmrStatusOk={this.state.cmrStatusOk}
@@ -117,6 +113,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
           </div>
           <div id="right-side">
+            <div className="help-text">
+              <h3>Files included:</h3>
+              <span>This list will filter automatically based on your choices at left.</span>
+            </div>
             <GranuleList
               cmrResponse={this.state.cmrResponse}
               loading={this.state.cmrLoading} />
@@ -125,7 +125,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               orderSubmissionParameters={this.state.orderSubmissionParameters}
               cmrResponse={this.state.cmrResponse} />
           </div>
-          <div id="version">Download Data UI v{EVEREST_UI_VERSION}</div>
+          </div>
         </div>
       );
     }

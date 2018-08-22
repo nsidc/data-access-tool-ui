@@ -39,21 +39,21 @@ body {
   width: 100%;
 }
 
-#everest-container {
+#everest-container > #columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
 
-#left-side {
+#everest-container > #columns #left-side {
   grid-column: 1;
+  border: none;
+  padding: 0;
 }
 
-#right-side {
+#everest-container > #columns #right-side {
   grid-column: 2;
-  padding-left: 1em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  overflow-x: auto;
+  padding: 0em 0em 0em 1em;
 }
 
 #collection-list .dropdown {
@@ -61,22 +61,21 @@ body {
   width: 100%;
 }
 
-#order-params h3 {
+#everest-container h3 {
   font-size: 100%;
 }
 
-#temporal-selection {
-  margin: 0.5em 0em;
+#everest-container #temporal-selection {
+  margin: 0em;
   padding: 0em;
 }
 
-#temporal-selection h3 {
+#everest-container #temporal-selection h3 {
   display: inline;
 }
 
 #temporal-selection > div {
   display: inline;
-  font-size: 90%;
 }
 
 #temporal-selection label.from {
@@ -88,46 +87,53 @@ div.react-datepicker-wrapper {
 }
 
 div.react-datepicker-wrapper input {
-  width: 8em;
+  margin: 0;
+  padding: 0.3em 0;
+  width: 7em;
+  text-align: center;
 }
 
-#spatial-selection:first-child {
+#everest-container div.react-datepicker-popper {
+  z-index: 10;
+}
+
+#everest-container #spatial-selection:first-child {
   border: 2px solid;
   margin: 0em;
   padding: 0em;
 }
 
-.help-text {
+#everest-container .help-text {
   display: inline;
   line-height: 1.2em;
 }
 
-.help-text span, section {
+#everest-container .help-text span, section {
   font-size: 90%;
   padding-left: 1.5em;
 }
 
-.help-text section {
+#everest-container .help-text section {
   display:grid;
   grid-template-columns: repeat(2, 1fr);
   margin-left: 1.5em;
 }
 
-.help-text section img {
+#everest-container .help-text section img {
   display: inline-block;
   vertical-align: middle;
   height: 29px;
 }
 
-.help-text #left-column {
+#everest-container .help-text #left-column {
   grid-column: 1;
 }
 
-.help-text #right-column {
+#everest-container .help-text #right-column {
   grid-column: 2;
 }
 
-.help-text ul {
+#everest-container .help-text ul {
   margin: 0 0 1.5em 0;
   padding: 0;
 }
@@ -175,12 +181,11 @@ div.react-datepicker-wrapper input {
   padding: 3px;
 }
 
-#order-buttons {
-  flex: 1 0;
+#everest-container div#order-buttons {
+  text-align: right;
 }
 
 #granule-list-container{
-  flex: 9 0;
   height: 700px;
   overflow: scroll;
   width: 100%;
@@ -206,7 +211,7 @@ div.react-datepicker-wrapper input {
   word-wrap: break-word;
 }
 
-tbody tr:nth-child(odd) {
+#granule-table tr:nth-child(odd) {
   background: #ebebeb; /* EUI Light Gray */
 }
 
@@ -242,11 +247,11 @@ tbody tr:hover {
 }
 
 #globe .cesium-credit-logoContainer {
-  margin-right: 1em;
+  display: none;
 }
 
 .granule-id-col {
-  width: 40%;
+  width: 50%;
 }
 
 .size-col {
@@ -254,11 +259,11 @@ tbody tr:hover {
 }
 
 .start-time-col {
-  width: 25%;
+  width: 20%;
 }
 
 .end-time-col {
-  width: 25%;
+  width: 20%;
 }
 
 #profile-container {
@@ -288,8 +293,9 @@ tbody tr:hover {
   cursor: crosshair;
 }
 
-#version {
-  font-size: 8px;
+#everest-container #version {
+  font-size: 60%;
+  padding: 0.5em 0;
 }
 
 #cmr-status {
