@@ -13,6 +13,7 @@ interface ICollectionDropdownProps {
 
 interface ICollectionDropdownState {
   collections: List<CmrCollection>;
+  selectedCollection: string | null;
   whitelistOnly: boolean;
 }
 
@@ -30,6 +31,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
     this.state = {
       collections: List<CmrCollection>(),
+      selectedCollection: null,
       whitelistOnly: true,
     };
   }
@@ -54,6 +56,8 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public render() {
+    let selectedCollectionAvailable = false;
+
     const collections = this.state.whitelistOnly ?
                         this.state.collections.filter((c: any) => WHITELIST.includes(c.short_name)) :
                         this.state.collections;
@@ -64,8 +68,16 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => {
       const label = `(${c.short_name} v${c.version_id.replace(/^0+/, "")}) ${c.dataset_id}`;
 
+      const value = JSON.stringify(c.toJS());
+
+      const selected = this.state.selectedCollection === value;
+
+      if (selected) {
+        selectedCollectionAvailable = true;
+      }
+
       return (
-        <option key={key} value={JSON.stringify(c.toJS())}>{label}</option>
+        <option key={key} value={value} selected={selected}>{label}</option>
       );
     });
 
@@ -96,7 +108,11 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
         </div>
 
         <select className="dropdown" name="collections" onChange={this.handleChange}>
-          <option>{"Select a collection."}</option>
+          <option value=""
+                  disabled={true}
+                  selected={(this.state.selectedCollection === null) || (selectedCollectionAvailable === false)}>
+            {"Select a collection."}
+          </option>
           {collectionOptions}
         </select>
       </div>
@@ -115,6 +131,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
   private handleChange = (e: any) => {
     const collection = new CmrCollection(JSON.parse(e.target.value));
+    this.setState({selectedCollection: e.target.value});
     this.props.onCollectionChange(collection);
   }
 
