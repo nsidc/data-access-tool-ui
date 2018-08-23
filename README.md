@@ -54,7 +54,12 @@ Do:
     $ npm install
     $ npm run build-dev-drupal
 
+See the app running at `<vm-url>/data/nsidc-0642?qt-data_set_tabs=1#`.
+
 To debug the app, use the files under `webpack://` in the Sources tab of the Developer Tools.
+
+This also starts the app in "standalone" mode; to see the app there, navigate to
+`<vm-url>:8080`.
 
 ## Testing
 
