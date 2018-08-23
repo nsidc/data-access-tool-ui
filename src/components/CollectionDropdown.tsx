@@ -58,10 +58,16 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
                         this.state.collections.filter((c: any) => WHITELIST.includes(c.short_name)) :
                         this.state.collections;
 
-    const sortedCollections = collections.sortBy((c: CmrCollection = new CmrCollection()) => c.short_name);
-    const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => (
-      <option key={key} value={JSON.stringify(c.toJS())}>({c.short_name}) {c.dataset_id}</option>
-    ));
+    const sortedCollections = collections.sortBy((c: CmrCollection = new CmrCollection()) => {
+      return `${c.short_name} ${c.version_id.replace(/^0+/, "")}`;
+    });
+    const collectionOptions = sortedCollections.map((c: CmrCollection = new CmrCollection(), key?: number) => {
+      const label = `(${c.short_name} v${c.version_id.replace(/^0+/, "")}) ${c.dataset_id}`;
+
+      return (
+        <option key={key} value={JSON.stringify(c.toJS())}>{label}</option>
+      );
+    });
 
     return (
       <div id="collection-dropdown">
