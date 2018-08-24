@@ -9,7 +9,7 @@
     "start": "webpack-dev-server --https",
     "build-dev": "webpack --watch",
     "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack -p",
-    "build-dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack --watch --progress",
+    "build-dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack-dev-server --https",
     "deploy-drupal": "./scripts/deploy.sh",
     "lint": "scripts/lint.sh",
     "test": "npx jest --config=jest.config.js"
@@ -59,7 +59,8 @@
     "typescript": "2.6.1",
     "url-loader": "^1.0.1",
     "webpack": "3.8.1",
-    "webpack-dev-server": "2.9.4"
+    "webpack-dev-server": "2.9.4",
+    "write-file-webpack-plugin": "^4.3.2"
   },
   "dependencies": {
     "@types/es6-promise": "^3.3.0",
