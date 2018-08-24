@@ -1,0 +1,389 @@
+@import url('https://cdn.earthdata.nasa.gov/eui/1.1.4/stylesheets/application.css');
+
+#everest-container {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+
+  .fade-appear,
+  .fade-enter {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  .fade-appear-active,
+  .fade-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 500ms ease-in, transform 250ms ease-in-out;
+  }
+
+  .modal-content {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: auto;
+    outline: none;
+    padding: 20px;
+    position: absolute;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .loading-spinner-container {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  > #columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    #left-side {
+      grid-column: 1;
+      border: none;
+      padding: 0;
+    }
+
+    #right-side {
+      grid-column: 2;
+      overflow-x: auto;
+      padding: 0 0 0 1em;
+    }
+  }
+
+  #collection-list .dropdown {
+    margin: 0.5em 0;
+    width: 100%;
+  }
+
+  h3 {
+    font-size: 100%;
+  }
+
+  #temporal-selection {
+    margin: 0;
+    padding: 0;
+
+    h3 {
+      display: inline;
+    }
+
+    > div {
+      display: inline;
+    }
+
+    label.from {
+      margin-left: 0.5em;
+    }
+  }
+
+  div.react-datepicker-wrapper {
+    margin: 0 1.5em 0 0.5em;
+
+    input {
+      margin: 0;
+      padding: 0.3em 0;
+      width: 7em;
+      text-align: center;
+    }
+  }
+
+  div.react-datepicker-popper {
+    z-index: 10;
+  }
+
+  #spatial-selection:first-child {
+    border: 2px solid;
+    margin: 0;
+    padding: 0;
+  }
+
+  .help-text {
+    display: inline;
+    line-height: 1.2em;
+
+    span,
+    section {
+      font-size: 90%;
+      padding-left: 1.5em;
+    }
+
+    section {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-left: 1.5em;
+
+      img {
+        display: inline-block;
+        vertical-align: middle;
+        height: 29px;
+      }
+    }
+
+    #left-column {
+      grid-column: 1;
+    }
+
+    #right-column {
+      grid-column: 2;
+    }
+
+    ul {
+      margin: 0 0 1.5em 0;
+      padding: 0;
+    }
+  }
+
+  .script-button {
+    margin: 0.5em 0.8em;
+
+    &:disabled {
+      background: silver;
+    }
+  }
+
+  .submit-button {
+    margin: 0.5em 0.8em;
+
+    &:disabled {
+      background: silver;
+    }
+  }
+
+  #toolbar {
+    position: absolute;
+    right: 0;
+    width: 40px;
+    margin: 0;
+    background: white;
+    height: auto;
+    line-height: 1em;
+    border: solid 2px black;
+    z-index: 2;
+
+    > .button {
+      display: inline-block;
+      margin: 2px 2px 0 2px;
+      border: 1px solid #eee;
+      cursor: pointer;
+
+      &:hover {
+        background: #eee;
+      }
+    }
+
+    .tooltip.button img {
+      padding: 3px;
+    }
+  }
+
+  #granule-list-container {
+    height: 700px;
+    overflow: scroll;
+    width: 100%;
+  }
+
+  #granule-table {
+    display: block;
+    border-collapse: collapse;
+    table-layout: fixed;
+    padding: 0;
+    font-size: 90%;
+
+    td,
+    th {
+      border: 1px solid #999;
+      padding: 0.5rem;
+      text-align: left;
+      word-wrap: break-word;
+    }
+
+    th {
+      color: white;
+      background: #7ab5da; /* EUI Sky Blue */
+    }
+
+    tr {
+      &:nth-child(odd) {
+        background: #ebebeb; /* EUI Light Gray */
+      }
+
+      &:hover {
+        background: #b5cede; /* EUI Medium Blue */
+      }
+    }
+  }
+
+  /* Should we be adding to this toolbar? */
+  .cesium-viewer-toolbar {
+    height: 5em;
+    width: 5em;
+  }
+
+  /* Get rid of annoying white gap at bottom of canvas */
+  #globe {
+    position: relative;
+
+    #credit {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .cesium-widget {
+      height: 600px;
+    }
+
+    .cesium-viewer-bottom {
+      padding: 0.5em;
+    }
+
+    .cesium-credit-logoContainer {
+      display: none;
+    }
+  }
+
+  .granule-id-col {
+    width: 50%;
+  }
+
+  .size-col {
+    width: 10%;
+  }
+
+  .start-time-col {
+    width: 20%;
+  }
+
+  .end-time-col {
+    width: 20%;
+  }
+
+  #profile-container {
+    display: flex;
+  }
+
+  #order-list {
+    background-color: #e9e9e9;
+    flex-shrink: 0;
+    width: 150px;
+
+    .order-list-item {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .order-list-item-selected {
+      background-color: silver;
+    }
+  }
+
+  #order-details {
+    padding-left: 40px;
+  }
+
+  .cursor-crosshair {
+    cursor: crosshair;
+  }
+
+  #version {
+    font-size: 60%;
+    padding: 0.5em 0;
+  }
+
+  #cmr-status {
+    background: red;
+    color: white;
+    position: absolute;
+    width: 100%;
+  }
+
+  /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
+  div.tooltip {
+    outline: none;
+
+    > span {
+      z-index: 10;
+      display: none;
+      padding: 14px 20px;
+      margin-top: -12px;
+      margin-left: 20px;
+      width: 170px;
+      line-height: 16px;
+      border-radius: 4px;
+      box-shadow: 5px 5px 8px #ccc;
+    }
+
+    &:hover {
+      text-decoration: none;
+
+      > span {
+        display: inline;
+        position: absolute;
+        color: #111;
+        border: 1px solid #dca;
+        background: #fffaf0;
+      }
+    }
+  }
+
+  .callout {
+    z-index: 10;
+    position: absolute;
+    border: 0;
+    top: 12px;
+    left: -12px;
+  }
+
+  #order-buttons {
+    padding-right: 12px;
+    text-align: right;
+
+    .callout {
+      bottom: -17px;
+      left: 24px;
+      position: absolute;
+      top: unset;
+      transform: rotate(270deg);
+    }
+
+    .inline {
+      display: inline;
+    }
+
+    div.tooltip {
+      display: inline;
+      position: relative;
+
+      > span {
+        bottom: 42px;
+        display: none;
+        margin-left: 0;
+        position: absolute;
+        text-align: left;
+      }
+
+      span.must-be-logged-in {
+        color: green;
+        font-style: italic;
+      }
+
+      &:hover > span {
+        display: inline-block;
+      }
+    }
+  }
+
+  .ReactModal__Overlay {
+    z-index: 11;
+  }
+}

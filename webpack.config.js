@@ -3,6 +3,7 @@ const webpack = require('webpack');
 
 const CopywebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const StyleLintPlugin = require('stylelint-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 
@@ -65,6 +66,20 @@ module.exports = {
                     'css-loader'
                 ]
             },
+            {
+                test: /\.less$/,
+                use: [{
+                  loader: 'style-loader'
+                }, {
+                  loader: 'css-loader', options: {
+                    sourceMap: true
+                  }
+                }, {
+                  loader: 'less-loader', options: {
+                    sourceMap: true
+                  }
+                }]
+            },
             { test: /\.tsx?$/, loader: 'ts-loader' },
             {
               test: /\.tsx?$/,
@@ -109,7 +124,12 @@ module.exports = {
             // Define relative base path in cesium for loading assets
             CESIUM_BASE_URL: JSON.stringify(process.env.CESIUM_BASE_URL || '')
         }),
-      new WriteFilePlugin()
+        new WriteFilePlugin(),
+        new StyleLintPlugin({
+          configFile: ".stylelintrc",
+          context: "src/styles",
+          files: "**/*.less",
+        })
     ]
 };
 
