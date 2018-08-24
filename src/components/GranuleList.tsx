@@ -4,11 +4,14 @@ import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
+import { OrderParameters } from "../types/OrderParameters";
+import { CmrGranuleCount } from "./CmrGranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
   cmrResponse: List<CmrGranule>;
   loading: boolean;
+  orderParameters: OrderParameters;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
@@ -23,8 +26,14 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   public render() {
     return (
-      <div id="granule-list-container">
-        {this.renderContent()}
+      <div>
+        <div>
+          You have selected <CmrGranuleCount orderParameters={this.props.orderParameters} />
+          {" "}granules.
+        </div>
+        <div id="granule-list-container">
+          {this.renderContent()}
+        </div>
       </div>
     );
   }

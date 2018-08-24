@@ -31,6 +31,10 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.loading-spinner-inline {
+  display: inline;
+}
+
 .loading-spinner-container {
   align-items: center;
   display: flex;
@@ -185,7 +189,11 @@ div.react-datepicker-wrapper input {
   text-align: right;
 }
 
-#granule-list-container{
+#granule-count-container {
+  display: inline;
+}
+
+#granule-list-container {
   height: 700px;
   overflow: scroll;
   width: 100%;
