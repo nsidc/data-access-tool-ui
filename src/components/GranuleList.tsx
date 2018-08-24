@@ -52,7 +52,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     });
 
     if (this.props.loading) {
-      return (<LoadingIcon />);
+      return (<LoadingIcon size="5x" />);
     }
 
     return (

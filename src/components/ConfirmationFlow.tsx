@@ -79,7 +79,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   private showLoadingIcon() {
-    this.setState({visibleUI: <LoadingIcon />});
+    this.setState({visibleUI: <LoadingIcon size="5x" />});
   }
 
   private resetUI = () => {
