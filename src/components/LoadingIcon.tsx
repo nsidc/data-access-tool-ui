@@ -11,10 +11,10 @@ interface ILoadingIconProps {
 
 export const LoadingIcon = (props: ILoadingIconProps) => {
   return (
-    <span className={props.className ? props.className : "loading-spinner-container"}>
+    <span className={props.className || "loading-spinner-container"}>
       <FontAwesomeIcon
         icon={faSpinner}
-        size={props.size ? props.size : "lg"}
+        size={props.size || "lg"}
         pulse />
     </span>
   );
