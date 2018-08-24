@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import "../css/index.css";
+import "../css/index.less";
 import * as callout from "../img/callout.png";
 import { hasChanged } from "../utils/hasChanged";
 
