@@ -1,9 +1,8 @@
 @import url('https://cdn.earthdata.nasa.gov/eui/1.1.4/stylesheets/application.css');
 
-body {
+#everest-container {
   font-family: 'Arial';
   margin: 20px;
-}
 
 .fade-appear, .fade-enter {
   opacity: 0;
@@ -39,18 +38,18 @@ body {
   width: 100%;
 }
 
-#everest-container > #columns {
+> #columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
 
-#everest-container > #columns #left-side {
+> #columns #left-side {
   grid-column: 1;
   border: none;
   padding: 0;
 }
 
-#everest-container > #columns #right-side {
+> #columns #right-side {
   grid-column: 2;
   overflow-x: auto;
   padding: 0em 0em 0em 1em;
@@ -61,16 +60,16 @@ body {
   width: 100%;
 }
 
-#everest-container h3 {
+h3 {
   font-size: 100%;
 }
 
-#everest-container #temporal-selection {
+#temporal-selection {
   margin: 0em;
   padding: 0em;
 }
 
-#everest-container #temporal-selection h3 {
+#temporal-selection h3 {
   display: inline;
 }
 
@@ -93,47 +92,47 @@ div.react-datepicker-wrapper input {
   text-align: center;
 }
 
-#everest-container div.react-datepicker-popper {
+div.react-datepicker-popper {
   z-index: 10;
 }
 
-#everest-container #spatial-selection:first-child {
+#spatial-selection:first-child {
   border: 2px solid;
   margin: 0em;
   padding: 0em;
 }
 
-#everest-container .help-text {
+.help-text {
   display: inline;
   line-height: 1.2em;
 }
 
-#everest-container .help-text span, section {
+.help-text span, section {
   font-size: 90%;
   padding-left: 1.5em;
 }
 
-#everest-container .help-text section {
+.help-text section {
   display:grid;
   grid-template-columns: repeat(2, 1fr);
   margin-left: 1.5em;
 }
 
-#everest-container .help-text section img {
+.help-text section img {
   display: inline-block;
   vertical-align: middle;
   height: 29px;
 }
 
-#everest-container .help-text #left-column {
+.help-text #left-column {
   grid-column: 1;
 }
 
-#everest-container .help-text #right-column {
+.help-text #right-column {
   grid-column: 2;
 }
 
-#everest-container .help-text ul {
+.help-text ul {
   margin: 0 0 1.5em 0;
   padding: 0;
 }
@@ -181,7 +180,7 @@ div.react-datepicker-wrapper input {
   padding: 3px;
 }
 
-#everest-container div#order-buttons {
+div#order-buttons {
   text-align: right;
 }
 
@@ -293,7 +292,7 @@ tbody tr:hover {
   cursor: crosshair;
 }
 
-#everest-container #version {
+#version {
   font-size: 60%;
   padding: 0.5em 0;
 }
@@ -362,4 +361,5 @@ div.tooltip:hover > span {
 
 .ReactModal__Overlay {
     z-index: 11;
+}
 }
