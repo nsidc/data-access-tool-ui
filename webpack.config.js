@@ -68,11 +68,17 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                use: [
-                    'style-loader',
-                    'css-loader',
-                    'less-loader'
-                ]
+                use: [{
+                  loader: 'style-loader'
+                }, {
+                  loader: 'css-loader', options: {
+                    sourceMap: true
+                  }
+                }, {
+                  loader: 'less-loader', options: {
+                    sourceMap: true
+                  }
+                }]
             },
             { test: /\.tsx?$/, loader: 'ts-loader' },
             {
