@@ -32,7 +32,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
     ) : null;
 
     return (
-      <div className="tooltip inline">
+      <div className="tooltip">
         <span className="hover-text">
           {this.props.hoverText}
           {loggedOutSpan}
