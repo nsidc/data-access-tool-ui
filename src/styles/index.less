@@ -4,362 +4,367 @@
   font-family: 'Arial';
   margin: 20px;
 
-.fade-appear, .fade-enter {
-  opacity: 0;
-  transform: scale(0.97);
-}
-.fade-appear-active, .fade-enter-active {
-  opacity: 1;
-  transform: scale(1);
-  transition: opacity 500ms ease-in, transform 250ms ease-in-out;
-}
+  .fade-appear, .fade-enter {
+    opacity: 0;
+    transform: scale(0.97);
+  }
 
-.modal-content {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  overflow: auto;
-  outline: none;
-  padding: 20px;
-  position: absolute;
-  bottom: auto;
-  left: 50%;
-  right: auto;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  -webkit-overflow-scrolling: touch;
-}
+  .fade-appear-active, .fade-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 500ms ease-in, transform 250ms ease-in-out;
+  }
 
-.loading-spinner-container {
-  align-items: center;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  width: 100%;
-}
+  .modal-content {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: auto;
+    outline: none;
+    padding: 20px;
+    position: absolute;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    -webkit-overflow-scrolling: touch;
+  }
 
-> #columns {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-}
+  .loading-spinner-container {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
 
-> #columns #left-side {
-  grid-column: 1;
-  border: none;
-  padding: 0;
-}
+  > #columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-> #columns #right-side {
-  grid-column: 2;
-  overflow-x: auto;
-  padding: 0em 0em 0em 1em;
-}
+  > #columns #left-side {
+    grid-column: 1;
+    border: none;
+    padding: 0;
+  }
 
-#collection-list .dropdown {
-  margin: 0.5em 0em;
-  width: 100%;
-}
+  > #columns #right-side {
+    grid-column: 2;
+    overflow-x: auto;
+    padding: 0 0 0 1em;
+  }
 
-h3 {
-  font-size: 100%;
-}
+  #collection-list .dropdown {
+    margin: 0.5em 0;
+    width: 100%;
+  }
 
-#temporal-selection {
-  margin: 0em;
-  padding: 0em;
-}
+  h3 {
+    font-size: 100%;
+  }
 
-#temporal-selection h3 {
-  display: inline;
-}
+  #temporal-selection {
+    margin: 0;
+    padding: 0;
+  }
 
-#temporal-selection > div {
-  display: inline;
-}
+  #temporal-selection h3 {
+    display: inline;
+  }
 
-#temporal-selection label.from {
-  margin-left: 0.5em;
-}
+  #temporal-selection > div {
+    display: inline;
+  }
 
-div.react-datepicker-wrapper {
-  margin: 0em 1.5em 0em 0.5em;
-}
+  #temporal-selection label.from {
+    margin-left: 0.5em;
+  }
 
-div.react-datepicker-wrapper input {
-  margin: 0;
-  padding: 0.3em 0;
-  width: 7em;
-  text-align: center;
-}
+  div.react-datepicker-wrapper {
+    margin: 0 1.5em 0 0.5em;
+  }
 
-div.react-datepicker-popper {
-  z-index: 10;
-}
+  div.react-datepicker-wrapper input {
+    margin: 0;
+    padding: 0.3em 0;
+    width: 7em;
+    text-align: center;
+  }
 
-#spatial-selection:first-child {
-  border: 2px solid;
-  margin: 0em;
-  padding: 0em;
-}
+  div.react-datepicker-popper {
+    z-index: 10;
+  }
 
-.help-text {
-  display: inline;
-  line-height: 1.2em;
-}
+  #spatial-selection:first-child {
+    border: 2px solid;
+    margin: 0;
+    padding: 0;
+  }
 
-.help-text span, section {
-  font-size: 90%;
-  padding-left: 1.5em;
-}
+  .help-text {
+    display: inline;
+    line-height: 1.2em;
+  }
 
-.help-text section {
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin-left: 1.5em;
-}
+  .help-text span, section {
+    font-size: 90%;
+    padding-left: 1.5em;
+  }
 
-.help-text section img {
-  display: inline-block;
-  vertical-align: middle;
-  height: 29px;
-}
+  .help-text section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin-left: 1.5em;
+  }
 
-.help-text #left-column {
-  grid-column: 1;
-}
+  .help-text section img {
+    display: inline-block;
+    vertical-align: middle;
+    height: 29px;
+  }
 
-.help-text #right-column {
-  grid-column: 2;
-}
+  .help-text #left-column {
+    grid-column: 1;
+  }
 
-.help-text ul {
-  margin: 0 0 1.5em 0;
-  padding: 0;
-}
+  .help-text #right-column {
+    grid-column: 2;
+  }
 
-.script-button {
-  margin: 0.5em 0.8em;
-}
+  .help-text ul {
+    margin: 0 0 1.5em 0;
+    padding: 0;
+  }
 
-.script-button:disabled {
-  background: silver;
-}
+  .script-button {
+    margin: 0.5em 0.8em;
+  }
 
-.submit-button {
-  margin: 0.5em 0.8em;
-}
+  .script-button:disabled {
+    background: silver;
+  }
 
-.submit-button:disabled {
-  background: silver;
-}
+  .submit-button {
+    margin: 0.5em 0.8em;
+  }
 
-#toolbar {
-  position: absolute;
-  right: 0;
-  width: 40px;
-  margin: 0px;
-  background: white;
-  height: auto;
-  line-height: 1em;
-  border: solid 2px black;
-  z-index: 2;
-}
+  .submit-button:disabled {
+    background: silver;
+  }
 
-#toolbar > .button {
-  display: inline-block;
-  margin: 2px 2px 0px 2px;
-  border: 1px solid #eee;
-  cursor: pointer;
-}
+  #toolbar {
+    position: absolute;
+    right: 0;
+    width: 40px;
+    margin: 0;
+    background: white;
+    height: auto;
+    line-height: 1em;
+    border: solid 2px black;
+    z-index: 2;
+  }
 
-#toolbar > .button:hover {
-  background: #eee;
-}
+  #toolbar > .button {
+    display: inline-block;
+    margin: 2px 2px 0 2px;
+    border: 1px solid #eee;
+    cursor: pointer;
+  }
 
-#toolbar .tooltip.button img {
-  padding: 3px;
-}
+  #toolbar > .button:hover {
+    background: #eee;
+  }
 
-div#order-buttons {
-  text-align: right;
-}
+  #toolbar .tooltip.button img {
+    padding: 3px;
+  }
 
-#granule-list-container{
-  height: 700px;
-  overflow: scroll;
-  width: 100%;
-}
+  div#order-buttons {
+    text-align: right;
+  }
 
-#granule-table {
-  display: block;
-  border-collapse: collapse;
-  table-layout: fixed;
-  padding: 0;
-  font-size: 90%;
-}
+  #granule-list-container {
+    height: 700px;
+    overflow: scroll;
+    width: 100%;
+  }
 
-#granule-table th {
-  color: white;
-  background: #7ab5da; /* EUI Sky Blue */
-}
+  #granule-table {
+    display: block;
+    border-collapse: collapse;
+    table-layout: fixed;
+    padding: 0;
+    font-size: 90%;
+  }
 
-#granule-table td, th {
-  border: 1px solid #999;
-  padding: 0.5rem;
-  text-align: left;
-  word-wrap: break-word;
-}
+  #granule-table th {
+    color: white;
+    background: #7ab5da; /* EUI Sky Blue */
+  }
 
-#granule-table tr:nth-child(odd) {
-  background: #ebebeb; /* EUI Light Gray */
-}
+  #granule-table td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    text-align: left;
+    word-wrap: break-word;
+  }
 
-tbody tr:hover {
-  background: #b5cede; /* EUI Medium Blue */
-}
+  #granule-table tr:nth-child(odd) {
+    background: #ebebeb; /* EUI Light Gray */
+  }
 
-/* Should we be adding to this toolbar? */
-.cesium-viewer-toolbar {
-  height: 5em;
-  width: 5em;
-}
+  tbody tr:hover {
+    background: #b5cede; /* EUI Medium Blue */
+  }
 
-/* Get rid of annoying white gap at bottom of canvas */
-#globe {
-  position: relative;
-}
+  /* Should we be adding to this toolbar? */
+  .cesium-viewer-toolbar {
+    height: 5em;
+    width: 5em;
+  }
 
-#globe #credit {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2;
-}
+  /* Get rid of annoying white gap at bottom of canvas */
+  #globe {
+    position: relative;
+  }
 
-#globe .cesium-widget {
-  height: 600px;
-}
+  #globe #credit {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+  }
 
-#globe .cesium-viewer-bottom {
-  padding: 0.5em;
-}
+  #globe .cesium-widget {
+    height: 600px;
+  }
 
-#globe .cesium-credit-logoContainer {
-  display: none;
-}
+  #globe .cesium-viewer-bottom {
+    padding: 0.5em;
+  }
 
-.granule-id-col {
-  width: 50%;
-}
+  #globe .cesium-credit-logoContainer {
+    display: none;
+  }
 
-.size-col {
-  width: 10%;
-}
+  .granule-id-col {
+    width: 50%;
+  }
 
-.start-time-col {
-  width: 20%;
-}
+  .size-col {
+    width: 10%;
+  }
 
-.end-time-col {
-  width: 20%;
-}
+  .start-time-col {
+    width: 20%;
+  }
 
-#profile-container {
-  display: flex;
-}
+  .end-time-col {
+    width: 20%;
+  }
 
-#order-list {
-  background-color: #e9e9e9;
-  flex-shrink: 0;
-  width: 150px;
-}
+  #profile-container {
+    display: flex;
+  }
 
-#order-list .order-list-item {
-  padding: 5px;
-  cursor: pointer;
-}
+  #order-list {
+    background-color: #e9e9e9;
+    flex-shrink: 0;
+    width: 150px;
+  }
 
-#order-list .order-list-item-selected {
-  background-color: silver;
-}
+  #order-list .order-list-item {
+    padding: 5px;
+    cursor: pointer;
+  }
 
-#order-details {
-  padding-left: 40px;
-}
+  #order-list .order-list-item-selected {
+    background-color: silver;
+  }
 
-.cursor-crosshair {
-  cursor: crosshair;
-}
+  #order-details {
+    padding-left: 40px;
+  }
 
-#version {
-  font-size: 60%;
-  padding: 0.5em 0;
-}
+  .cursor-crosshair {
+    cursor: crosshair;
+  }
 
-#cmr-status {
-  background: red;
-  color: white;
-  position: absolute;
-  width: 100%;
-}
+  #version {
+    font-size: 60%;
+    padding: 0.5em 0;
+  }
 
-/* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
-div.tooltip {outline:none;}
-div.tooltip:hover {text-decoration:none;}
-div.tooltip > span {
-  z-index:10;
-  display:none;
-  padding:14px 20px;
-  margin-top:-12px;
-  margin-left:20px;
-  width:170px;
-  line-height:16px;
-  border-radius:4px;
-  box-shadow: 5px 5px 8px #CCC;
-}
-div.tooltip:hover > span {
-  display:inline;
-  position:absolute;
-  color:#111;
-  border:1px solid #DCA;
-  background:#fffAF0;}
-.callout {
-  z-index:10;
-  position:absolute;
-  border:0;
-  top: 12px;
-  left:-12px;
-}
+  #cmr-status {
+    background: red;
+    color: white;
+    position: absolute;
+    width: 100%;
+  }
 
-#order-buttons .callout {
-  bottom: -17px;
-  left: 24px;
-  position: absolute;
-  top: unset;
-  transform: rotate(270deg);
-}
+  /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
+  div.tooltip { outline: none;}
+  div.tooltip:hover { text-decoration: none;}
 
-#order-buttons .inline {
-  display: inline;
-}
+  div.tooltip > span {
+    z-index: 10;
+    display: none;
+    padding: 14px 20px;
+    margin-top: -12px;
+    margin-left: 20px;
+    width: 170px;
+    line-height: 16px;
+    border-radius: 4px;
+    box-shadow: 5px 5px 8px #ccc;
+  }
 
-#order-buttons .tooltip > span {
-  bottom: 100px;
-  display: none;
-  margin-left: 0px;
-}
+  div.tooltip:hover > span {
+    display: inline;
+    position: absolute;
+    color: #111;
+    border: 1px solid #dca;
+    background: #fffaf0;
+  }
 
-#order-buttons .tooltip:hover > span {
-  display: inline-block;
-}
+  .callout {
+    z-index: 10;
+    position: absolute;
+    border: 0;
+    top: 12px;
+    left: -12px;
+  }
 
-#order-buttons div.tooltip span.must-be-logged-in {
-  color: green;
-  font-style: italic;
-}
+  #order-buttons .callout {
+    bottom: -17px;
+    left: 24px;
+    position: absolute;
+    top: unset;
+    transform: rotate(270deg);
+  }
 
-.ReactModal__Overlay {
+  #order-buttons .inline {
+    display: inline;
+  }
+
+  #order-buttons .tooltip > span {
+    bottom: 100px;
+    display: none;
+    margin-left: 0;
+  }
+
+  #order-buttons .tooltip:hover > span {
+    display: inline-block;
+  }
+
+  #order-buttons div.tooltip span.must-be-logged-in {
+    color: green;
+    font-style: italic;
+  }
+
+  .ReactModal__Overlay {
     z-index: 11;
-}
+  }
 }
