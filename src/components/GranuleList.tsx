@@ -27,7 +27,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   public render() {
     return (
       <div>
-        <div>
+        <div id="granule-list-count-header">
           You have selected <CmrGranuleCount orderParameters={this.props.orderParameters} />
           {" "}granules.
         </div>
