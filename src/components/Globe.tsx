@@ -1,5 +1,5 @@
 import * as React from "react";
-import "../css/index.css";
+import "../styles/index.less";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { hasChanged } from "../utils/hasChanged";

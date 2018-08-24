@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as ReactModal from "react-modal";
 
-import "./css/index.css";
+import "./styles/index.less";
 
 import { EverestUI } from "./components/EverestUI";
 
