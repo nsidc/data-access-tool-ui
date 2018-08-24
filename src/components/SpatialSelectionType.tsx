@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import "../css/index.less";
 import * as callout from "../img/callout.png";
+import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISpatialSelectionTypeProps {

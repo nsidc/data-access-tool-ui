@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import "./css/index.less";
+import "./styles/index.less";
 
 import { EverestProfile } from "./components/EverestProfile";
 
