@@ -119,7 +119,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
             </div>
             <GranuleList
               cmrResponse={this.state.cmrResponse}
-              loading={this.state.cmrLoading} />
+              loading={this.state.cmrLoading}
+              orderParameters={this.state.orderParameters} />
             <OrderButtons
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
