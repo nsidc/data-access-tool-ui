@@ -1,6 +1,6 @@
 @import url('https://cdn.earthdata.nasa.gov/eui/1.1.4/stylesheets/application.css');
 
-#everest-container {
+#everest-ui {
   font-family: Arial, sans-serif;
   margin: 20px;
 
@@ -45,7 +45,7 @@
     width: 100%;
   }
 
-  > #columns {
+  #columns {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
 
@@ -145,14 +145,7 @@
     }
   }
 
-  .script-button {
-    margin: 0.5em 0.8em;
-
-    &:disabled {
-      background: silver;
-    }
-  }
-
+  .script-button,
   .submit-button {
     margin: 0.5em 0.8em;
 
@@ -186,10 +179,6 @@
     .tooltip.button img {
       padding: 3px;
     }
-  }
-
-  div#order-buttons {
-    text-align: right;
   }
 
   #granule-count-container {
@@ -288,27 +277,29 @@
     width: 20%;
   }
 
-  #profile-container {
-    display: flex;
-  }
-
-  #order-list {
-    background-color: #e9e9e9;
-    flex-shrink: 0;
-    width: 150px;
-
-    .order-list-item {
-      padding: 5px;
-      cursor: pointer;
+  &-profile {
+    #profile-container {
+      display: flex;
     }
 
-    .order-list-item-selected {
-      background-color: silver;
-    }
-  }
+    #order-list {
+      background-color: #e9e9e9;
+      flex-shrink: 0;
+      width: 150px;
 
-  #order-details {
-    padding-left: 40px;
+      .order-list-item {
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      .order-list-item-selected {
+        background-color: silver;
+      }
+    }
+
+    #order-details {
+      padding-left: 40px;
+    }
   }
 
   .cursor-crosshair {
@@ -334,10 +325,10 @@
     > span {
       z-index: 10;
       display: none;
-      padding: 14px 20px;
+      padding: 10px 10px;
       margin-top: -12px;
       margin-left: 20px;
-      width: 170px;
+      width: 165px;
       line-height: 16px;
       border-radius: 4px;
       box-shadow: 5px 5px 8px #ccc;
@@ -361,12 +352,16 @@
     position: absolute;
     border: 0;
     top: 12px;
-    left: -12px;
+    left: -15px;
+    padding: 5px;
   }
 
   #order-buttons {
+    padding-right: 12px;
+    text-align: right;
+
     .callout {
-      bottom: -17px;
+      bottom: -22px;
       left: 24px;
       position: absolute;
       top: unset;
@@ -378,15 +373,20 @@
     }
 
     div.tooltip {
+      display: inline-block;
+      position: relative;
+
       > span {
-        bottom: 100px;
+        bottom: 64px;
         display: none;
         margin-left: 0;
-      }
+        position: absolute;
+        text-align: left;
 
-      span.must-be-logged-in {
-        color: green;
-        font-style: italic;
+        span.must-be-logged-in {
+          color: green;
+          font-style: italic;
+        }
       }
 
       &:hover > span {
