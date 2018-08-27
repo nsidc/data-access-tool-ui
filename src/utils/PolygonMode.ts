@@ -26,7 +26,8 @@ export class PolygonMode {
   private points: IPoint[] = [];
   private polygon: any;
   private scene: any;
-  private finishedDrawing = false;
+  private doneDrawing = false;
+  private editingPoint = false;
 
   public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
@@ -36,26 +37,26 @@ export class PolygonMode {
 
   public start = () => {
     this.reset();
-    this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+    if (!this.mouseHandler) {
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
 
-    this.mouseHandler.setInputAction(this.onLeftClick,
-                                     Cesium.ScreenSpaceEventType.LEFT_CLICK);
+      this.mouseHandler.setInputAction(this.onLeftClick,
+                                      Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    this.mouseHandler.setInputAction(this.onLeftDoubleClick,
-                                     Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
+                                      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    this.mouseHandler.setInputAction(this.onMouseMove,
-                                     Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      this.mouseHandler.setInputAction(this.onMouseMove,
+                                      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }
 
     this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
   public endMode = () => {
     this.clearMousePoint();
-    this.finishedDrawing = true;
-    if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
-//      this.mouseHandler.destroy();
-    }
+    this.doneDrawing = true;
+    this.editingPoint = false;
     this.finishedDrawingCallback(this.points);
   }
 
@@ -63,7 +64,12 @@ export class PolygonMode {
     this.points = [];
     this.clearAllBillboards();
     this.endMode();
-    this.finishedDrawing = false;
+    this.doneDrawing = false;
+    this.editingPoint = false;
+    if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
+      this.mouseHandler.destroy();
+      this.mouseHandler = null;
+    }
   }
 
   // cartesianXYZ: 3D coordinates for position on earth's surface
@@ -90,14 +96,15 @@ export class PolygonMode {
   // To reorder, convert points to 2D, compute the angle between each point
   // and the center of the bounding box for all the points. Then sort
   // the angles into ascending order.
+  // Returns an array of indices that sort points into correct order.
   // For algorithm see https://stackoverflow.com/questions/19713092/
-  private reorderPolygonPoints(points: IPoint[]): IPoint[] {
+  private reorderPolygonPoints(points: IPoint[]): number[] {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
-    let lonLatsArray = points.map((point: IPoint) => {
+    let lonLatsArray = points.map((point: IPoint, index) => {
       const latLon = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
-      return {point, ...latLon};
+      return {index, ...latLon};
     });
 
     const minLat = Math.min.apply(null, lonLatsArray.map((p) => p.lat));
@@ -125,9 +132,9 @@ export class PolygonMode {
     // Sort the points in counter-clockwise order using the 2D angles
     lonLatsArray.sort((a: any, b: any) => (a.angle - b.angle));
 
-    // Strip out just our original points, now in sorted order
-    points = lonLatsArray.map((lonlat) => lonlat.point);
-    return points;
+    // Strip out the indices that will sort the array
+    const indices = lonLatsArray.map((lonlat) => lonlat.index);
+    return indices;
   }
 
   private render = () => {
@@ -140,11 +147,20 @@ export class PolygonMode {
     if (points.length >= this.minPoints) {
 
       // Ensure that the points are in counterclockwise non-overlapping order.
-      points = this.reorderPolygonPoints(points);
+      const indices = this.reorderPolygonPoints(points);
 
-      // Stash a copy of our reordered points. Needs to be a copy because
-      // we muck with the points below when we render the polygon.
-      this.points = points.slice();
+      this.points = [];
+      const billboards: any[] = [];
+      indices.forEach((index) => {
+        this.points.push(points[index]);
+        billboards.push(this.billboards[index]);
+      });
+
+      this.billboards = billboards;
+
+      // For rendering, make a copy of our reordered points
+      points = this.points.slice();
+
       if (this.mousePoint !== null) {
         this.points.pop();
       }
@@ -237,42 +253,63 @@ export class PolygonMode {
     }
   }
 
-  private onLeftClick = ({position}: any) => {
-    if (this.finishedDrawing) {
-      if (this.points.length > 0) {
-        const pickedFeature = this.scene.pick(position);
-        if (pickedFeature === undefined) { return; }
-        const index = this.billboards.indexOf(pickedFeature.primitive);
-        if (index >= 0) {
-          const point = this.screenPositionToPoint(position);
-          if (point === null) { return; }
-        }
-      }
-      return;
-    }
+  private enterEditMode = (index: number) => {
+    this.doneDrawing = false;
+    this.editingPoint = true;
+    this.billboardCollection.remove(this.billboards[index]);
+    this.billboards.splice(index, 1);
+    this.points.splice(index, 1);
+  }
+
+  private exitEditMode = (position: any) => {
     this.addPoint(position);
     this.clearMousePoint();
-    this.render();
+    this.endMode();
+  }
+
+  private onLeftClick = ({position}: any) => {
+    if (this.doneDrawing) {
+      if (this.points.length > 0) {
+        const pickedFeature = this.scene.pick(position);
+        if (typeof(pickedFeature) !== "undefined") {
+          const index = this.billboards.indexOf(pickedFeature.primitive);
+          if (index >= 0) {
+            this.enterEditMode(index);
+            this.updateMousePoint(position);
+            this.render();
+          }
+        }
+      }
+    } else if (this.editingPoint) {
+      this.exitEditMode(position);
+    } else {
+      this.addPoint(position);
+      this.clearMousePoint();
+      this.render();
+    }
   }
 
   private onLeftDoubleClick = ({position}: any) => {
-    if (this.finishedDrawing) {
-      return;
-    }
-    // two individual left click events fire before the double click does; this
-    // results in a duplicate of the final position at the end of
-    // `this.points` that can (and should) be safely removed
-    this.popPoint();
+    if (this.editingPoint) {
+      // two individual left click events fire before the double click does;
+      // this puts us back into editing mode so exit back out of it.
+      this.exitEditMode(position);
+    } else if (!this.doneDrawing) {
+      // two individual left click events fire before the double click does; this
+      // results in a duplicate of the final position at the end of
+      // `this.points` that can (and should) be safely removed
+      this.popPoint();
 
-    if (this.points.length >= this.minPoints) {
-      this.clearMousePoint();
-      this.render();
-      this.endMode();
+      if (this.points.length >= this.minPoints) {
+        this.clearMousePoint();
+        this.render();
+        this.endMode();
+      }
     }
   }
 
   private onMouseMove = ({endPosition}: any) => {
-    if (this.finishedDrawing) {
+    if (this.doneDrawing) {
       return;
     }
     this.updateMousePoint(endPosition);

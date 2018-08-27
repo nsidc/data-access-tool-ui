@@ -45,7 +45,7 @@ export class Globe extends React.Component<IGlobeProps, {}> {
               this.setCursorCrosshair();
             }}
             onClickReset={() => {
-              this.cesiumAdapter.polygonMode.endMode();
+              this.cesiumAdapter.polygonMode.reset();
               this.cesiumAdapter.clearSpatialSelection();
               this.props.resetSpatialSelection();
             }} />
