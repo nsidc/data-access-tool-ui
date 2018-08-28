@@ -46,7 +46,7 @@ export class CmrGranuleCount extends React.Component<ICmrGranuleCountProps, ICmr
   }
 
   private renderContent = () => {
-    if (this.state.loading || !this.state.granuleCount) {
+    if (this.state.loading || this.state.granuleCount === undefined) {
       return (<LoadingIcon size="sm" className="loading-spinner-inline" />);
     }
 
