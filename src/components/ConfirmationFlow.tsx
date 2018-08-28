@@ -45,7 +45,8 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     return (
       <ReactModal className="modal-content"
                   isOpen={this.props.show}
-                  onRequestClose={this.props.onRequestClose}>
+                  onRequestClose={this.props.onRequestClose}
+                  parentSelector={() => document.getElementById("everest-ui") || document.body}>
         {this.state.visibleUI}
       </ReactModal>
     );
@@ -79,7 +80,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   private showLoadingIcon() {
-    this.setState({visibleUI: <LoadingIcon />});
+    this.setState({visibleUI: <LoadingIcon size="5x" />});
   }
 
   private resetUI = () => {

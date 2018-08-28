@@ -103,6 +103,22 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
     + `&short_name=${shortName}`
     + `&${versionParameters(version)}`;
   return cmrFetch(collectionUrl);
+
+};
+
+export const cmrGranuleCountRequest = (collectionShortName: string,
+                                       collectionVersion: number,
+                                       spatialSelection: IGeoJsonPolygon,
+                                       temporalLowerBound: moment.Moment,
+                                       temporalUpperBound: moment.Moment) => {
+  const URL = CMR_COLLECTION_URL
+    + "&include_granule_counts=true"
+    + `&short_name=${collectionShortName}`
+    + `&${versionParameters(collectionVersion)}`
+    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
+    + `&${spatialParameter(spatialSelection)}`;
+
+  return cmrFetch(URL);
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,

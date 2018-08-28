@@ -3,7 +3,9 @@ const webpack = require('webpack');
 
 const CopywebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const StyleLintPlugin = require('stylelint-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
@@ -40,7 +42,7 @@ module.exports = {
           disableDotRule: true,
           rewrites: [ { from: /^\/profile.html/, to: '/profile.html'} ],
         },
-        contentBase: './dist',
+        contentBase: ['./dist', '/share'],
         host: '0.0.0.0',
         disableHostCheck: true,
         hot: false,
@@ -63,6 +65,20 @@ module.exports = {
                     'style-loader',
                     'css-loader'
                 ]
+            },
+            {
+                test: /\.less$/,
+                use: [{
+                  loader: 'style-loader'
+                }, {
+                  loader: 'css-loader', options: {
+                    sourceMap: true
+                  }
+                }, {
+                  loader: 'less-loader', options: {
+                    sourceMap: true
+                  }
+                }]
             },
             { test: /\.tsx?$/, loader: 'ts-loader' },
             {
@@ -107,6 +123,12 @@ module.exports = {
             EVEREST_UI_VERSION: JSON.stringify(require("./package.json").version),
             // Define relative base path in cesium for loading assets
             CESIUM_BASE_URL: JSON.stringify(process.env.CESIUM_BASE_URL || '')
+        }),
+        new WriteFilePlugin(),
+        new StyleLintPlugin({
+          configFile: ".stylelintrc",
+          context: "src/styles",
+          files: "**/*.less",
         })
     ]
 };

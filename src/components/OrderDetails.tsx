@@ -36,7 +36,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   public render() {
     if (this.state.loading) {
       return (
-        <LoadingIcon />
+        <LoadingIcon size="5x" />
       );
     } else if (this.state.order) {
       const order: any = this.state.order;
