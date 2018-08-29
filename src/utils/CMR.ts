@@ -13,7 +13,7 @@ const CMR_URL = "https://cmr.earthdata.nasa.gov";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
-const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=50&provider=NSIDC_ECS&sort_key=short_name";
+const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=2000&provider=NSIDC_ECS&sort_key=short_name";
 
 const cmrHeaders = [
   ["Client-Id", `nsidc-everest-${getEnvironment()}`],
