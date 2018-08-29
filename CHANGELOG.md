@@ -7,7 +7,6 @@
   `nsidc-everest-$environment`
 * Display the UI version below the globe widget
 * Use `everest-ui` share instead of `hermes` share
-* Incorporate Earthdata UI CSS.
 * Do a CMR status check before making any other CMR requests. If it is down,
   display a banner and retry the status check every 60 seconds.
 * Deployment details are included in README.
@@ -21,3 +20,6 @@
 * Workaround unknown CMR version length by padding, e.g.: `&version_id=6&version_id=06&version_id=006`
 * Extract the collection dropdown from the main part of the application and update CSS to add some basic responsiveness.
 * Animate the GranuleList when loading
+* Help text now rearranges to a single column when browser is narrow.
+* Tooltips over order buttons now have a width that corresponds to the button's
+  width.
