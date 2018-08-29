@@ -2,6 +2,7 @@ import * as React from "react";
 import "../styles/index.less";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
+import { CesiumUtils } from "../utils/CesiumUtils";
 import { hasChanged } from "../utils/hasChanged";
 import { HelpText } from "./HelpText";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
@@ -14,7 +15,6 @@ interface IGlobeProps {
 
 export class Globe extends React.Component<IGlobeProps, {}> {
   private cesiumAdapter: CesiumAdapter;
-  private elementId = "globe";
 
   public constructor(props: IGlobeProps) {
     super(props);
@@ -22,7 +22,7 @@ export class Globe extends React.Component<IGlobeProps, {}> {
   }
 
   public componentDidMount() {
-    this.cesiumAdapter.createViewer(this.elementId, this.props.spatialSelection);
+    this.cesiumAdapter.createViewer(this.props.spatialSelection);
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps) {
@@ -37,12 +37,12 @@ export class Globe extends React.Component<IGlobeProps, {}> {
     return (
       <div id="spatial-selection">
         <HelpText />
-        <div id={this.elementId}>
+        <div id={CesiumUtils.viewerId}>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
               this.cesiumAdapter.polygonMode.start();
-              this.setCursorCrosshair();
+              CesiumUtils.setCursorCrosshair();
             }}
             onClickReset={() => {
               this.cesiumAdapter.polygonMode.reset();
@@ -55,24 +55,8 @@ export class Globe extends React.Component<IGlobeProps, {}> {
     );
   }
 
-  private setCursorCrosshair() {
-    const el = document.getElementById(this.elementId);
-
-    if (el && el.classList && el.classList.add) {
-      el.classList.add("cursor-crosshair");
-    }
-  }
-
-  private unsetCursorCrosshair() {
-    const el = document.getElementById(this.elementId);
-
-    if (el && el.classList && el.classList.remove) {
-      el.classList.remove("cursor-crosshair");
-    }
-  }
-
   private updateSpatialSelection = (spatialSelection: IGeoJsonPolygon) => {
     this.props.onSpatialSelectionChange(spatialSelection);
-    this.unsetCursorCrosshair();
+    CesiumUtils.unsetCursorCrosshair();
   }
 }

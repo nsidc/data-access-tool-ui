@@ -1,4 +1,5 @@
 import * as dragImg from "../img/dragIcon.png";
+import { CesiumUtils } from "./CesiumUtils";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -256,12 +257,16 @@ export class PolygonMode {
   private enterEditMode = (index: number) => {
     this.doneDrawing = false;
     this.editingPoint = true;
+    CesiumUtils.setCursorCrosshair();
+    // Remove the selected point from the stored list,
+    // we will instead treat it as the "mouse point".
     this.billboardCollection.remove(this.billboards[index]);
     this.billboards.splice(index, 1);
     this.points.splice(index, 1);
   }
 
   private exitEditMode = (position: any) => {
+    CesiumUtils.unsetCursorCrosshair();
     this.addPoint(position);
     this.clearMousePoint();
     this.endMode();
@@ -269,6 +274,8 @@ export class PolygonMode {
 
   private onLeftClick = ({position}: any) => {
     if (this.doneDrawing) {
+      // If we have an existing polygon and user clicked on a point (handle)
+      // then switch into edit mode.
       if (this.points.length > 0) {
         const pickedFeature = this.scene.pick(position);
         if (typeof(pickedFeature) !== "undefined") {
@@ -310,9 +317,19 @@ export class PolygonMode {
 
   private onMouseMove = ({endPosition}: any) => {
     if (this.doneDrawing) {
-      return;
-    }
+      if (!this.editingPoint) {
+        const pickedFeature = this.scene.pick(endPosition);
+        const index = (typeof(pickedFeature) !== "undefined") ?
+          this.billboards.indexOf(pickedFeature.primitive) : -1;
+        if (index >= 0) {
+          CesiumUtils.setCursorCrosshair();
+        } else {
+          CesiumUtils.unsetCursorCrosshair();
+        }
+      }
+    } else {
     this.updateMousePoint(endPosition);
     this.render();
+    }
   }
 }
