@@ -24,7 +24,7 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
     return (
       <div className="tooltip button" onClick={(e: any) => this.props.onClick(e.target.value)}>
         <img className={"img-no-border-left " + this.props.name} src={this.props.img} alt={this.props.alt}/>
-        <span>
+        <span className="maptool">
           <img className="img-no-border-left callout" src={callout} />
           {this.props.alt}
         </span>
