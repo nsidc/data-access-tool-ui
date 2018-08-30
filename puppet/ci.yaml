@@ -26,6 +26,7 @@ nsidc_jenkins::jobs:
         - integration
         - qa
         - staging
+        - production
     wrappers:
       - name: build name
         template: "#${BUILD_NUMBER} ${ref}"
