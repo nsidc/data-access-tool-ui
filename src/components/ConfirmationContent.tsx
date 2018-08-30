@@ -14,7 +14,7 @@ export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) 
       <h3>Confirm Your Download Order</h3>
       <p>
         Your download order is about to be submitted. You will be able to view
-        the status of your order on the <a href={props.environment.urls.profileUrl}>Orders page</a>.
+        the status of your order on the Orders page.
       </p>
       <button className="submit-button eui-btn--green"
               onClick={props.onOK}>
