@@ -113,10 +113,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
           </div>
           <div id="right-side">
-            <div className="help-text">
-              <h3>Files included:</h3>
-              <span>This list will filter automatically based on your choices at left.</span>
-            </div>
             <GranuleList
               cmrResponse={this.state.cmrResponse}
               loading={this.state.cmrLoading}
