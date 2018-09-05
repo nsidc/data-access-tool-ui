@@ -29,6 +29,7 @@ export class PolygonMode {
   private scene: any;
   private doneDrawing = false;
   private editingPoint = false;
+  private selectedPoint: number = -1;
 
   public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
@@ -254,6 +255,18 @@ export class PolygonMode {
     }
   }
 
+  private selectPoint = (index: number) => {
+    this.selectedPoint = index;
+    this.billboards.forEach((b) => {
+      b.color = Cesium.Color.WHITE;
+      b.scale = 1.0;
+    });
+    if (this.selectedPoint >= 0 && this.selectedPoint < this.billboards.length) {
+      this.billboards[this.selectedPoint].color = Cesium.Color.CHARTREUSE;
+      this.billboards[this.selectedPoint].scale = 1.5;
+    }
+  }
+
   private enterEditMode = (index: number) => {
     this.doneDrawing = false;
     this.editingPoint = true;
@@ -276,17 +289,24 @@ export class PolygonMode {
     if (this.doneDrawing) {
       // If we have an existing polygon and user clicked on a point (handle)
       // then switch into edit mode.
+      let selectIndex = -1;
       if (this.points.length > 0) {
         const pickedFeature = this.scene.pick(position);
         if (typeof(pickedFeature) !== "undefined") {
           const index = this.billboards.indexOf(pickedFeature.primitive);
           if (index >= 0) {
-            this.enterEditMode(index);
-            this.updateMousePoint(position);
-            this.render();
+            if (this.selectedPoint !== index) {
+              selectIndex = index;
+            } else {
+              this.enterEditMode(index);
+              this.updateMousePoint(position);
+              selectIndex = this.billboards.length - 1;
+              this.render();
+            }
           }
         }
       }
+      this.selectPoint(selectIndex);
     } else if (this.editingPoint) {
       this.exitEditMode(position);
     } else {
@@ -309,6 +329,7 @@ export class PolygonMode {
 
       if (this.points.length >= this.minPoints) {
         this.clearMousePoint();
+        this.selectPoint(-1);
         this.render();
         this.endMode();
       }
@@ -328,8 +349,9 @@ export class PolygonMode {
         }
       }
     } else {
-    this.updateMousePoint(endPosition);
-    this.render();
+      this.updateMousePoint(endPosition);
+      this.selectPoint(this.billboards.length - 1);
+      this.render();
     }
   }
 }
