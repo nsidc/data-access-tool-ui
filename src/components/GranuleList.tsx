@@ -24,10 +24,11 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     return cmrResponseChanged || loadingChanged;
   }
 
+  // "views-field" is a class defined in the Drupal/NSIDC site css
   public render() {
     return (
       <div>
-        <div id="granule-list-count-header">
+        <div id="granule-list-count-header" className="views-field">
           You have selected <CmrGranuleCount orderParameters={this.props.orderParameters} />
           {" "}granules.
         </div>
