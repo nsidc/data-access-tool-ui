@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import * as resetImg from "../img/glyphicons_067_cleaning.png";
-import * as polygonImg from "../img/glyphicons_096_vector_path_polygon.png";
+import * as resetImg from "../img/cleaning.png";
+import * as polygonImg from "../img/polygon.png";
 
 import "../styles/index.less";
 import { SpatialSelectionType } from "./SpatialSelectionType";

@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import * as callout from "../img/callout.png";
 import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -22,12 +21,8 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
 
   public render() {
     return (
-      <div className="tooltip button" onClick={(e: any) => this.props.onClick(e.target.value)}>
-        <img className={"img-no-border-left " + this.props.name} src={this.props.img} alt={this.props.alt}/>
-        <span className="maptool">
-          <img className="img-no-border-left callout" src={callout} />
-          {this.props.alt}
-        </span>
+      <div className="cesium-button cesium-toolbar-button" onClick={(e: any) => this.props.onClick(e.target.value)}>
+        <img src={this.props.img} alt={this.props.alt}/>
       </div>
     );
   }
