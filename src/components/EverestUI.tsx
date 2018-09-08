@@ -29,6 +29,7 @@ interface IEverestState {
   cmrStatusOk: boolean;
   orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
+  stateCanBeFrozen: boolean;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -41,6 +42,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrStatusOk: false,
       orderParameters: new OrderParameters(),
       orderSubmissionParameters: undefined,
+      stateCanBeFrozen: false,
     };
   }
 
@@ -62,9 +64,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     cmrStatusRequest().then(onSuccess, onFailure);
 
     if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
-      cmrCollectionRequest(this.props.environment.drupalDataset.id,
-        Number(this.props.environment.drupalDataset.version))
-        .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure);
+      const datasetId: string = this.props.environment.drupalDataset.id;
+      const datasetVersion: number = Number(this.props.environment.drupalDataset.version);
+      cmrCollectionRequest(datasetId, datasetVersion)
+        .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure)
+        .then(this.hydrateState);
     }
   }
 
@@ -175,6 +179,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     const modifiedCallback = (): void => {
+      if (this.state.stateCanBeFrozen) {
+        this.freezeState();
+      }
       this.updateGranulesFromCmr();
       if (callback) {
         callback();
@@ -233,5 +240,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
     }, () => null);
+  }
+
+  private freezeState = () => {
+    return localStorage.setItem("nsidcDataOrderParams", JSON.stringify(this.state.orderParameters));
+  }
+
+  private hydrateState = () => {
+    this.setState({stateCanBeFrozen: true});
+    const localStorageOrderParams: string | null = localStorage.getItem("nsidcDataOrderParams");
+    if (localStorageOrderParams) {
+      const orderParams: any = JSON.parse(localStorageOrderParams);
+      orderParams.temporalFilterLowerBound = moment(orderParams.temporalFilterLowerBound);
+      orderParams.temporalFilterUpperBound = moment(orderParams.temporalFilterUpperBound);
+      const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+
+      if (this.state.orderParameters.collection.short_name === orderParameters.collection.short_name ) {
+        return this.setState({orderParameters});
+      }
+    }
   }
 }
