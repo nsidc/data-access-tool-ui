@@ -15,6 +15,19 @@ interface IPoint {
   screenPosition: any;
 }
 
+enum PolygonState {
+  drawingPolygon,
+  donePolygon,
+  pointSelected,
+  movePoint,
+}
+
+enum PolygonEvent {
+  leftClick,
+  doubleClick,
+  moveMouse,
+}
+
 export class PolygonMode {
 
   private billboards: any[] = [];
@@ -27,9 +40,8 @@ export class PolygonMode {
   private points: IPoint[] = [];
   private polygon: any;
   private scene: any;
-  private doneDrawing = false;
-  private editingPoint = false;
   private selectedPoint: number = -1;
+  private state: PolygonState = PolygonState.drawingPolygon;
 
   public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
@@ -55,19 +67,13 @@ export class PolygonMode {
     this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
-  public endMode = () => {
-    this.clearMousePoint();
-    this.doneDrawing = true;
-    this.editingPoint = false;
-    this.finishedDrawingCallback(this.points);
-  }
-
   public reset = () => {
+    this.selectedPoint = -1;
     this.points = [];
     this.clearAllBillboards();
-    this.endMode();
-    this.doneDrawing = false;
-    this.editingPoint = false;
+    this.clearMousePoint();
+    this.finishedDrawingCallback(this.points);
+    this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();
       this.mouseHandler = null;
@@ -100,7 +106,7 @@ export class PolygonMode {
   // the angles into ascending order.
   // Returns an array of indices that sort points into correct order.
   // For algorithm see https://stackoverflow.com/questions/19713092/
-  private reorderPolygonPoints(points: IPoint[]): number[] {
+  private sortedPolygonPointIndices(points: IPoint[]): number[] {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
@@ -142,26 +148,26 @@ export class PolygonMode {
   private render = () => {
     // gather all the points; rendering doesn't care about the distinction
     // between clicked points and the point following the cursor
-    let points = (this.mousePoint !== null) ?
+    const origPoints = (this.mousePoint !== null) ?
       this.points.concat([this.mousePoint]) : this.points.slice();
 
     // if we meet the minimum points requirement, render the polygon
-    if (points.length >= this.minPoints) {
+    if (origPoints.length >= this.minPoints) {
 
       // Ensure that the points are in counterclockwise non-overlapping order.
-      const indices = this.reorderPolygonPoints(points);
+      const indices = this.sortedPolygonPointIndices(origPoints);
 
       this.points = [];
       const billboards: any[] = [];
       indices.forEach((index) => {
-        this.points.push(points[index]);
+        this.points.push(origPoints[index]);
         billboards.push(this.billboards[index]);
       });
 
       this.billboards = billboards;
 
       // For rendering, make a copy of our reordered points
-      points = this.points.slice();
+      const points = this.points.slice();
 
       if (this.mousePoint !== null) {
         this.points.pop();
@@ -191,6 +197,8 @@ export class PolygonMode {
       });
       this.scene.primitives.add(this.polygon);
     }
+
+    this.drawSelectedPoint();
   }
 
   private screenPositionToPoint = (position: any): IPoint | null => {
@@ -245,6 +253,9 @@ export class PolygonMode {
     this.clearMousePoint();
     this.mousePoint = point;
     this.addBillboard(point);
+
+    // Our selected point will now be at the end of the list
+    this.selectedPoint = this.billboards.length - 1;
   }
 
   private clearMousePoint = () => {
@@ -255,8 +266,7 @@ export class PolygonMode {
     }
   }
 
-  private selectPoint = (index: number) => {
-    this.selectedPoint = index;
+  private drawSelectedPoint = () => {
     this.billboards.forEach((b) => {
       b.color = Cesium.Color.WHITE;
       b.scale = 1.0;
@@ -267,91 +277,165 @@ export class PolygonMode {
     }
   }
 
-  private enterEditMode = (index: number) => {
-    this.doneDrawing = false;
-    this.editingPoint = true;
-    CesiumUtils.setCursorCrosshair();
-    // Remove the selected point from the stored list,
-    // we will instead treat it as the "mouse point".
-    this.billboardCollection.remove(this.billboards[index]);
-    this.billboards.splice(index, 1);
-    this.points.splice(index, 1);
+  private handleMouseCursor(position: any) {
+    const mouseoverFeature = this.scene.pick(position);
+    const mouseoverIndex = (mouseoverFeature !== undefined) ?
+      this.billboards.indexOf(mouseoverFeature.primitive) : -1;
+    if (mouseoverIndex >= 0) {
+      CesiumUtils.setCursorCrosshair();
+    } else {
+      CesiumUtils.unsetCursorCrosshair();
+    }
   }
 
-  private exitEditMode = (position: any) => {
-    CesiumUtils.unsetCursorCrosshair();
-    this.addPoint(position);
-    this.clearMousePoint();
-    this.endMode();
+  // States
+  // DrawingPolygon
+  //   leftClick: Add new point (transfer mouse point)
+  //   moveMouse: Move current mouse point
+  //   doubleClick: End polygon, CALLBACK, --> DonePolygon
+  // DonePolygon
+  //   leftClick: If on point, select point --> PointSelected
+  //   moveMouse: Check mouse cursor
+  //   doubleClick: nop
+  // PointSelected
+  //   leftClick: If not on point, deselect point --> DonePolygon
+  //              If different point, select it
+  //              If on point, transfer to mouse point --> MovePoint
+  //   moveMouse: Check mouse cursor
+  //   doubleClick: nop
+  // MovePoint
+  //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointSelected
+  //   moveMouse: Move current mouse point
+  //   doubleClick: nop
+
+  private stateTransition = (event: PolygonEvent, position: any) => {
+//    if (event !== PolygonEvent.moveMouse) {
+//      console.log("state=" + this.state + " event=" + event);
+//    }
+    switch (this.state) {
+      case PolygonState.drawingPolygon:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            // Add a new point to the polygon, keep drawing
+            this.addPoint(position);
+            this.clearMousePoint();
+            this.render();
+            break;
+          case PolygonEvent.moveMouse:
+            this.updateMousePoint(position);
+            this.render();
+            break;
+          case PolygonEvent.doubleClick:
+            this.state = PolygonState.donePolygon;
+            // two individual left click events fire before the double click does; this
+            // results in a duplicate of the final position at the end of
+            // `this.points` that can (and should) be safely removed
+            this.popPoint();
+            if (this.points.length >= this.minPoints) {
+              this.clearMousePoint();
+              this.selectedPoint = -1;
+              this.render();
+              this.finishedDrawingCallback(this.points);
+            }
+            break;
+        }
+        break;
+
+      case PolygonState.donePolygon:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            if (this.points.length === 0) { break; }
+            const pickedFeature = this.scene.pick(position);
+            const index = (pickedFeature !== undefined) ?
+              this.billboards.indexOf(pickedFeature.primitive) : -1;
+            if (index >= 0) {
+              // We clicked on one of the polygon points
+              this.state = PolygonState.pointSelected;
+              this.selectedPoint = index;
+              this.render();
+            }
+            break;
+          case PolygonEvent.moveMouse:
+            this.handleMouseCursor(position);
+            break;
+          case PolygonEvent.doubleClick:
+            // nop
+            break;
+        }
+        break;
+
+      case PolygonState.pointSelected:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            if (this.points.length === 0) { break; }
+            const pickedFeature = this.scene.pick(position);
+            const index = (pickedFeature !== undefined) ?
+              this.billboards.indexOf(pickedFeature.primitive) : -1;
+            if (index < 0) {
+              // We clicked somewhere else, not on a point
+              this.state = PolygonState.donePolygon;
+              this.selectedPoint = -1;
+              this.render();
+              break;
+            }
+            if (this.selectedPoint !== index) {
+              // We clicked on a new point, so select it instead
+              this.selectedPoint = index;
+              this.render();
+              break;
+            }
+            // We clicked on the selected point
+            this.state = PolygonState.movePoint;
+            CesiumUtils.setCursorCrosshair();
+            // Remove the selected point from the stored list,
+            // we will instead treat it as the "mouse point".
+            this.billboardCollection.remove(this.billboards[index]);
+            this.billboards.splice(index, 1);
+            this.points.splice(index, 1);
+            this.updateMousePoint(position);
+            this.render();
+            break;
+          case PolygonEvent.moveMouse:
+            this.handleMouseCursor(position);
+            break;
+          case PolygonEvent.doubleClick:
+            // nop
+            break;
+        }
+        break;
+
+      case PolygonState.movePoint:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            // We're done moving the point
+            this.state = PolygonState.pointSelected;
+            CesiumUtils.unsetCursorCrosshair();
+            this.addPoint(position);
+            this.clearMousePoint();
+            this.finishedDrawingCallback(this.points);
+            break;
+          case PolygonEvent.moveMouse:
+            this.updateMousePoint(position);
+            this.render();
+            break;
+          case PolygonEvent.doubleClick:
+            // nop - this allows doubleClick to immediately select and start moving a point
+            break;
+        }
+        break;
+    }
   }
 
   private onLeftClick = ({position}: any) => {
-    if (this.doneDrawing) {
-      // If we have an existing polygon and user clicked on a point (handle)
-      // then switch into edit mode.
-      let selectIndex = -1;
-      if (this.points.length > 0) {
-        const pickedFeature = this.scene.pick(position);
-        if (typeof(pickedFeature) !== "undefined") {
-          const index = this.billboards.indexOf(pickedFeature.primitive);
-          if (index >= 0) {
-            if (this.selectedPoint !== index) {
-              selectIndex = index;
-            } else {
-              this.enterEditMode(index);
-              this.updateMousePoint(position);
-              selectIndex = this.billboards.length - 1;
-              this.render();
-            }
-          }
-        }
-      }
-      this.selectPoint(selectIndex);
-    } else if (this.editingPoint) {
-      this.exitEditMode(position);
-    } else {
-      this.addPoint(position);
-      this.clearMousePoint();
-      this.render();
-    }
+    this.stateTransition(PolygonEvent.leftClick, position);
   }
 
   private onLeftDoubleClick = ({position}: any) => {
-    if (this.editingPoint) {
-      // two individual left click events fire before the double click does;
-      // this puts us back into editing mode so exit back out of it.
-      this.exitEditMode(position);
-    } else if (!this.doneDrawing) {
-      // two individual left click events fire before the double click does; this
-      // results in a duplicate of the final position at the end of
-      // `this.points` that can (and should) be safely removed
-      this.popPoint();
-
-      if (this.points.length >= this.minPoints) {
-        this.clearMousePoint();
-        this.selectPoint(-1);
-        this.render();
-        this.endMode();
-      }
-    }
+    this.stateTransition(PolygonEvent.doubleClick, position);
   }
 
   private onMouseMove = ({endPosition}: any) => {
-    if (this.doneDrawing) {
-      if (!this.editingPoint) {
-        const pickedFeature = this.scene.pick(endPosition);
-        const index = (typeof(pickedFeature) !== "undefined") ?
-          this.billboards.indexOf(pickedFeature.primitive) : -1;
-        if (index >= 0) {
-          CesiumUtils.setCursorCrosshair();
-        } else {
-          CesiumUtils.unsetCursorCrosshair();
-        }
-      }
-    } else {
-      this.updateMousePoint(endPosition);
-      this.selectPoint(this.billboards.length - 1);
-      this.render();
-    }
+    this.stateTransition(PolygonEvent.moveMouse, endPosition);
   }
+
 }
