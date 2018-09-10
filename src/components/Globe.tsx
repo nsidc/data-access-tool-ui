@@ -52,7 +52,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         <div id={CesiumUtils.viewerId}>
           <div>
             <input id="latLon" type="text" disabled={!this.state.latLonEnable}
-              value={this.state.latLonLabel} onChange={this.handleLatLon}></input>
+              value={this.state.latLonLabel} onChange={this.handleLatLon} onKeyDown={this.latLonOnKeydown}>
+              </input>
           </div>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
@@ -76,19 +77,29 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     CesiumUtils.unsetCursorCrosshair();
   }
 
+  // Called by external code to update our label
   private updateLatLon = (latLonLabel: string) => {
     this.setState({ latLonLabel });
     this.forceUpdate();
   }
 
+  // Called by external code to enable our label
   private enableLatLon = (latLonEnable: boolean) => {
     this.setState({ latLonEnable });
     this.forceUpdate();
   }
 
   private handleLatLon = (e: any) => {
+//    this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
     this.setState({ latLonLabel: e.target.value });
-    this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
+    this.forceUpdate();
+  }
+
+  private latLonOnKeydown = (e: any) => {
+    if (e.key === "Enter") {
+      this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
+      this.forceUpdate();
+    }
   }
 
 }

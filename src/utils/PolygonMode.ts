@@ -5,14 +5,15 @@ import { CesiumUtils } from "./CesiumUtils";
 const Cesium = require("cesium/Cesium");
 /* tslint:enable:no-var-requires */
 
-interface ILonLat {
+interface ILatLon {
   readonly lat: number;
   readonly lon: number;
 }
 
-interface IPoint {
-  cartesianXYZ: any;
-  screenPosition: any;
+interface ICartesian3 {
+  x: number;
+  y: number;
+  z: number;
 }
 
 enum PolygonState {
@@ -26,6 +27,7 @@ enum PolygonEvent {
   leftClick,
   doubleClick,
   moveMouse,
+  editPoint,
 }
 
 export class PolygonMode {
@@ -38,8 +40,8 @@ export class PolygonMode {
   private latLonLabelCallback: (s: string) => void;
   private minPoints = 3;
   private mouseHandler: any;
-  private mousePoint: IPoint | null = null;
-  private points: IPoint[] = [];
+  private mousePoint: ICartesian3 | null = null;
+  private points: ICartesian3[] = [];
   private polygon: any;
   private scene: any;
   private selectedPoint: number = -1;
@@ -86,15 +88,15 @@ export class PolygonMode {
     }
   }
 
-  // cartesianXYZ: 3D coordinates for position on earth's surface
+  // point: 3D coordinates for position on earth's surface
   // https://en.wikipedia.org/wiki/ECEF
-  public cartesianPositionToLonLatDegrees(cartesianXYZ: any): ILonLat {
+  public cartesianPositionToLatLonDegrees(point: ICartesian3): ILatLon {
     // this means the position is not on the globe
-    if (cartesianXYZ === undefined) {
+    if (point === undefined) {
       return {lat: NaN, lon: NaN};
     }
 
-    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesianXYZ);
+    const cartographicRadians = Cesium.Cartographic.fromCartesian(point);
 
     const latLonDegrees = {
       lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
@@ -104,8 +106,41 @@ export class PolygonMode {
     return latLonDegrees;
   }
 
-  public changeLatLon(latLon: string) {
-    console.log(latLon);
+  // Called by the CesiumAdapter when the lat lon text box gets changed
+  public changeLatLon(sLatLon: string) {
+    const latLon = this.parseLatLon(sLatLon);
+    if (isNaN(latLon.lat) || isNaN(latLon.lon)) {
+      return;
+    }
+    const position = this.latLonToCartesianPosition(latLon);
+    this.updateLatLonLabel(position);
+    this.stateTransition(PolygonEvent.editPoint, position);
+  }
+
+  private parseLatLon(sLatLon: string): ILatLon {
+    let s = sLatLon.split(",");
+    if (s.length < 2) {
+      s = sLatLon.split(" ");
+    }
+    if (s.length < 2) {
+      return { lat: NaN, lon: NaN };
+    }
+    s = s.map((s1) => s1.trim().toUpperCase());
+    let lat = parseFloat(s[0]);
+    if (s[0].endsWith("S")) {
+      lat = -lat;
+    }
+    let lon = parseFloat(s[1]);
+    if (s[1].endsWith("W")) {
+      lon = -lon;
+    }
+    return {lat, lon};
+  }
+
+  private latLonToCartesianPosition(latLon: ILatLon): ICartesian3 {
+    const cart = Cesium.Cartographic.fromDegrees(latLon.lon, latLon.lat);
+    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
+    return point;
   }
 
   // To avoid bow-ties if the user draws the points in a strange order,
@@ -116,27 +151,27 @@ export class PolygonMode {
   // the angles into ascending order.
   // Returns an array of indices that sort points into correct order.
   // For algorithm see https://stackoverflow.com/questions/19713092/
-  private sortedPolygonPointIndices(points: IPoint[]): number[] {
+  private sortedPolygonPointIndices(points: ICartesian3[]): number[] {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
-    let lonLatsArray = points.map((point: IPoint, index) => {
-      const latLon = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
+    let latLonsArray = points.map((point: ICartesian3, index) => {
+      const latLon = this.cartesianPositionToLatLonDegrees(point);
       return {index, ...latLon};
     });
 
-    const minLat = Math.min.apply(null, lonLatsArray.map((p) => p.lat));
-    const maxLat = Math.max.apply(null, lonLatsArray.map((p) => p.lat));
-    const minLon = Math.min.apply(null, lonLatsArray.map((p) => p.lon));
-    const maxLon = Math.max.apply(null, lonLatsArray.map((p) => p.lon));
+    const minLat = Math.min.apply(null, latLonsArray.map((p) => p.lat));
+    const maxLat = Math.max.apply(null, latLonsArray.map((p) => p.lat));
+    const minLon = Math.min.apply(null, latLonsArray.map((p) => p.lon));
+    const maxLon = Math.max.apply(null, latLonsArray.map((p) => p.lon));
 
     const center = {lat: 0.5 * (minLat + maxLat),
       lon: 0.5 * (minLon + maxLon)};
-    const last = lonLatsArray[lonLatsArray.length - 1];
+    const last = latLonsArray[latLonsArray.length - 1];
     const angleLast = Math.atan2(last.lat - center.lat, last.lon - center.lon);
 
-    lonLatsArray = lonLatsArray.map((lonlat) => {
-      let angle = Math.atan2(lonlat.lat - center.lat, lonlat.lon - center.lon);
+    latLonsArray = latLonsArray.map((latLon) => {
+      let angle = Math.atan2(latLon.lat - center.lat, latLon.lon - center.lon);
       // Rotate (shift) all of the points that come before the last point
       // to the end of the array. The <= ensures that the last point comes
       // at the very end, since that is the mousePoint and will need to be
@@ -144,14 +179,14 @@ export class PolygonMode {
       if (angle <= angleLast) {
         angle += 2 * Math.PI;
       }
-      return {...lonlat, angle};
+      return {...latLon, angle};
     });
 
     // Sort the points in counter-clockwise order using the 2D angles
-    lonLatsArray.sort((a: any, b: any) => (a.angle - b.angle));
+    latLonsArray.sort((a: any, b: any) => (a.angle - b.angle));
 
     // Strip out the indices that will sort the array
-    const indices = lonLatsArray.map((lonlat) => lonlat.index);
+    const indices = latLonsArray.map((latLon) => latLon.index);
     return indices;
   }
 
@@ -194,7 +229,7 @@ export class PolygonMode {
       });
       const geometry = Cesium.PolygonGeometry.fromPositions({
         ellipsoid: this.ellipsoid,
-        positions: points.map((p) => p.cartesianXYZ),
+        positions: points,
       });
 
       const geometryInstances = new Cesium.GeometryInstance({
@@ -211,18 +246,12 @@ export class PolygonMode {
     this.drawSelectedPoint();
   }
 
-  private screenPositionToPoint = (position: any): IPoint | null => {
+  private screenPositionToPoint = (position: any): ICartesian3 | null => {
     if (position === null) { return null; }
 
     const cartesian = this.scene.camera.pickEllipsoid(position, this.ellipsoid);
     if (!cartesian) { return null; }
-
-    const point = {
-      cartesianXYZ: cartesian,
-      screenPosition: position.clone(),
-    };
-
-    return point;
+    return cartesian;
   }
 
   private addPoint = (position: any) => {
@@ -238,10 +267,10 @@ export class PolygonMode {
     this.removeLastBillboard();
   }
 
-  private addBillboard = (point: IPoint) => {
+  private addBillboard = (point: ICartesian3) => {
     const billboard = this.billboardCollection.add({
       image: dragImg,
-      position: point.cartesianXYZ,
+      position: point,
     });
     this.billboards.push(billboard);
   }
@@ -298,10 +327,10 @@ export class PolygonMode {
     }
   }
 
-  private updateLatLonLabel(point: IPoint | null) {
+  private updateLatLonLabel(point: ICartesian3 | null) {
     try {
       if (point) {
-        const ll = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
+        const ll = this.cartesianPositionToLatLonDegrees(point);
         const lat1 = Math.round(ll.lat * 100) / 100;
         const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
         const lon1 = Math.round(ll.lon * 100) / 100;
@@ -320,20 +349,24 @@ export class PolygonMode {
   //   leftClick: Add new point (transfer mouse point)
   //   moveMouse: Move current mouse point
   //   doubleClick: End polygon, CALLBACK, --> DonePolygon
+  //   editPoint: nop
   // DonePolygon
   //   leftClick: If on point, select point --> PointSelected
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
+  //   editPoint: nop
   // PointSelected
   //   leftClick: If not on point, deselect point --> DonePolygon
   //              If different point, select it
   //              If on point, transfer to mouse point --> MovePoint
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
+  //   editPoint: Move point to new position, CALLBACK
   // MovePoint
   //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointSelected
   //   moveMouse: Move current mouse point
   //   doubleClick: nop
+  //   editPoint: nop
 
   private stateTransition = (event: PolygonEvent, position: any) => {
 //    if (event !== PolygonEvent.moveMouse) {
@@ -366,6 +399,9 @@ export class PolygonMode {
               this.finishedDrawingCallback(this.points);
             }
             break;
+          case PolygonEvent.editPoint:
+            // nop
+            break;
         }
         break;
 
@@ -391,6 +427,9 @@ export class PolygonMode {
             this.updateLatLonLabel(point);
             break;
           case PolygonEvent.doubleClick:
+            // nop
+            break;
+          case PolygonEvent.editPoint:
             // nop
             break;
         }
@@ -436,6 +475,19 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop
             break;
+          case PolygonEvent.editPoint:
+            // We used the edit box to change the coordinates.
+            // Note: The "position" here is actually the cartesian3 point.
+            this.billboardCollection.remove(this.billboards[this.selectedPoint]);
+            this.billboards.splice(this.selectedPoint, 1);
+            this.points.splice(this.selectedPoint, 1);
+            this.points.push(position);
+            this.addBillboard(position);
+            // Our selected point will now be at the end of the list
+            this.selectedPoint = this.billboards.length - 1;
+            this.render();
+            this.finishedDrawingCallback(this.points);
+            break;
         }
         break;
 
@@ -458,6 +510,9 @@ export class PolygonMode {
             break;
           case PolygonEvent.doubleClick:
             // nop - this allows doubleClick to immediately select and start moving a point
+            break;
+          case PolygonEvent.editPoint:
+            // nop
             break;
         }
         break;
