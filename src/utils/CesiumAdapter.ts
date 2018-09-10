@@ -133,7 +133,18 @@ export class CesiumAdapter {
       this.updateSpatialSelection(geo);
     };
 
-    const mode = new PolygonMode(this.viewer.scene, CesiumAdapter.ellipsoid, finishedDrawingCallback);
+    const label = document.createElement("input");
+    label.type = "text";
+    this.viewer.container.appendChild(label);
+
+    // Position overlay with CSS styling
+    label.style.height = "28px";
+    label.style.width = "150px";
+    label.style.position = "absolute";
+    label.style.top = "calc(100% - " + label.style.height + " - 6px)";
+    label.style.left = "calc(100% - " + label.style.width + ")";
+
+    const mode = new PolygonMode(this.viewer.scene, label, CesiumAdapter.ellipsoid, finishedDrawingCallback);
     return mode;
   }
 

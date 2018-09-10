@@ -34,6 +34,7 @@ export class PolygonMode {
   private billboardCollection: any;
   private ellipsoid: any;
   private finishedDrawingCallback: any;
+  private label: any;
   private minPoints = 3;
   private mouseHandler: any;
   private mousePoint: IPoint | null = null;
@@ -43,8 +44,9 @@ export class PolygonMode {
   private selectedPoint: number = -1;
   private state: PolygonState = PolygonState.drawingPolygon;
 
-  public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
+  public constructor(scene: any, label: any, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
+    this.label = label;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
   }
@@ -288,6 +290,23 @@ export class PolygonMode {
     }
   }
 
+  private updateLatLonLabel(point: IPoint | null) {
+    try {
+      if (point) {
+      const ll = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
+      const lat1 = Math.round(ll.lat * 100) / 100;
+      const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
+      const lon1 = Math.round(ll.lon * 100) / 100;
+      const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
+      this.label.value = lat + "," + lon;
+      } else {
+        this.label.value = "";
+      }
+    } catch (error) {
+      this.label.value = "";
+    }
+  }
+
   // States
   // DrawingPolygon
   //   leftClick: Add new point (transfer mouse point)
@@ -323,6 +342,7 @@ export class PolygonMode {
             break;
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
+            this.updateLatLonLabel(this.mousePoint);
             this.render();
             break;
           case PolygonEvent.doubleClick:
@@ -352,11 +372,14 @@ export class PolygonMode {
               // We clicked on one of the polygon points
               this.state = PolygonState.pointSelected;
               this.selectedPoint = index;
+              this.updateLatLonLabel(this.points[this.selectedPoint]);
               this.render();
             }
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(position);
+            const point = this.screenPositionToPoint(position);
+            this.updateLatLonLabel(point);
             break;
           case PolygonEvent.doubleClick:
             // nop
@@ -381,6 +404,7 @@ export class PolygonMode {
             if (this.selectedPoint !== index) {
               // We clicked on a new point, so select it instead
               this.selectedPoint = index;
+              this.updateLatLonLabel(this.points[this.selectedPoint]);
               this.render();
               break;
             }
@@ -412,10 +436,12 @@ export class PolygonMode {
             CesiumUtils.unsetCursorCrosshair();
             this.addPoint(position);
             this.clearMousePoint();
+            this.updateLatLonLabel(this.points[this.selectedPoint]);
             this.finishedDrawingCallback(this.points);
             break;
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
+            this.updateLatLonLabel(this.mousePoint);
             this.render();
             break;
           case PolygonEvent.doubleClick:
