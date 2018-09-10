@@ -19,7 +19,7 @@ ReactModal.setAppElement("#everest-container");
 
 export const renderApp = (environment: any) => {
   ReactDOM.render(
-      <EverestUI environment={environment} />,
-      document.getElementById("everest-ui"),
+    <EverestUI environment={environment} />,
+    document.getElementById("everest-ui"),
   );
 };
