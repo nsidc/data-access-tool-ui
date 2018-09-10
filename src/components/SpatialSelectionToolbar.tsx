@@ -7,23 +7,23 @@ import "../styles/index.less";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface ISpatialSelectionToolbarProps {
-    onClickReset: () => void;
-    onClickPolygon: () => void;
+  onClickReset: () => void;
+  onClickPolygon: () => void;
 }
 
 export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionToolbarProps, {}> {
-    public render() {
-      return (
-        <div id="toolbar">
-            <SpatialSelectionType name="polygon"
-                                  onClick={() => this.props.onClickPolygon()}
-                                  img={polygonImg}
-                                  alt="Click to draw a polygon"/>
-            <SpatialSelectionType name="reset"
-                                  onClick={() => this.props.onClickReset()}
-                                  img={resetImg}
-                                  alt="Click to reset polygon"/>
-        </div>
-      );
-    }
+  public render() {
+    return (
+      <div id="toolbar">
+        <SpatialSelectionType name="polygon"
+                              onClick={() => this.props.onClickPolygon()}
+                              img={polygonImg}
+                              alt="Click to draw a polygon"/>
+        <SpatialSelectionType name="reset"
+                              onClick={() => this.props.onClickReset()}
+                              img={resetImg}
+                              alt="Click to reset polygon"/>
+      </div>
+    );
+  }
 }
