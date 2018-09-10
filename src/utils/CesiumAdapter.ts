@@ -1,6 +1,6 @@
 import * as GeoJSON from "geojson";
-
 import { IGeoJsonPolygon } from "../types/GeoJson";
+import { CesiumUtils } from "../utils/CesiumUtils";
 import { PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
@@ -21,7 +21,7 @@ export class CesiumAdapter {
     this.updateSpatialSelection = updateSpatialSelection;
   }
 
-  public createViewer(elementId: string, spatialSelection: IGeoJsonPolygon) {
+  public createViewer(spatialSelection: IGeoJsonPolygon) {
     const gibsProvider = new Cesium.WebMapTileServiceImageryProvider({
       format: "image/jpeg",
       layer: "BlueMarble_ShadedRelief_Bathymetry",
@@ -35,7 +35,7 @@ export class CesiumAdapter {
       url: "//gibs.earthdata.nasa.gov/wmts/epsg4326/best/wmts.cgi",
     });
 
-    this.viewer = new Cesium.Viewer(elementId, {
+    this.viewer = new Cesium.Viewer(CesiumUtils.viewerId, {
       animation: false,
       baseLayerPicker: false,
       creditContainer: "credit",

@@ -1,4 +1,5 @@
 import * as dragImg from "../img/dragIcon.png";
+import { CesiumUtils } from "./CesiumUtils";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -14,6 +15,19 @@ interface IPoint {
   screenPosition: any;
 }
 
+enum PolygonState {
+  drawingPolygon,
+  donePolygon,
+  pointSelected,
+  movePoint,
+}
+
+enum PolygonEvent {
+  leftClick,
+  doubleClick,
+  moveMouse,
+}
+
 export class PolygonMode {
 
   private billboards: any[] = [];
@@ -26,6 +40,8 @@ export class PolygonMode {
   private points: IPoint[] = [];
   private polygon: any;
   private scene: any;
+  private selectedPoint: number = -1;
+  private state: PolygonState = PolygonState.drawingPolygon;
 
   public constructor(scene: any, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
@@ -35,32 +51,33 @@ export class PolygonMode {
 
   public start = () => {
     this.reset();
-    this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+    if (!this.mouseHandler) {
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
 
-    this.mouseHandler.setInputAction(this.onLeftClick,
-                                     Cesium.ScreenSpaceEventType.LEFT_CLICK);
+      this.mouseHandler.setInputAction(this.onLeftClick,
+                                      Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    this.mouseHandler.setInputAction(this.onLeftDoubleClick,
-                                     Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
+                                      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    this.mouseHandler.setInputAction(this.onMouseMove,
-                                     Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      this.mouseHandler.setInputAction(this.onMouseMove,
+                                      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }
 
     this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
-  public endMode = () => {
-    this.clearMousePoint();
-    if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
-      this.mouseHandler.destroy();
-    }
-    this.finishedDrawingCallback(this.points);
-  }
-
   public reset = () => {
+    this.selectedPoint = -1;
     this.points = [];
     this.clearAllBillboards();
-    this.endMode();
+    this.clearMousePoint();
+    this.finishedDrawingCallback(this.points);
+    this.state = PolygonState.drawingPolygon;
+    if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
+      this.mouseHandler.destroy();
+      this.mouseHandler = null;
+    }
   }
 
   // cartesianXYZ: 3D coordinates for position on earth's surface
@@ -87,14 +104,15 @@ export class PolygonMode {
   // To reorder, convert points to 2D, compute the angle between each point
   // and the center of the bounding box for all the points. Then sort
   // the angles into ascending order.
+  // Returns an array of indices that sort points into correct order.
   // For algorithm see https://stackoverflow.com/questions/19713092/
-  private reorderPolygonPoints(points: IPoint[]): IPoint[] {
+  private sortedPolygonPointIndices(points: IPoint[]): number[] {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
-    let lonLatsArray = points.map((point: IPoint) => {
+    let lonLatsArray = points.map((point: IPoint, index) => {
       const latLon = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
-      return {point, ...latLon};
+      return {index, ...latLon};
     });
 
     const minLat = Math.min.apply(null, lonLatsArray.map((p) => p.lat));
@@ -122,26 +140,35 @@ export class PolygonMode {
     // Sort the points in counter-clockwise order using the 2D angles
     lonLatsArray.sort((a: any, b: any) => (a.angle - b.angle));
 
-    // Strip out just our original points, now in sorted order
-    points = lonLatsArray.map((lonlat) => lonlat.point);
-    return points;
+    // Strip out the indices that will sort the array
+    const indices = lonLatsArray.map((lonlat) => lonlat.index);
+    return indices;
   }
 
   private render = () => {
     // gather all the points; rendering doesn't care about the distinction
     // between clicked points and the point following the cursor
-    let points = (this.mousePoint !== null) ?
+    const origPoints = (this.mousePoint !== null) ?
       this.points.concat([this.mousePoint]) : this.points.slice();
 
     // if we meet the minimum points requirement, render the polygon
-    if (points.length >= this.minPoints) {
+    if (origPoints.length >= this.minPoints) {
 
       // Ensure that the points are in counterclockwise non-overlapping order.
-      points = this.reorderPolygonPoints(points);
+      const indices = this.sortedPolygonPointIndices(origPoints);
 
-      // Stash a copy of our reordered points. Needs to be a copy because
-      // we muck with the points below when we render the polygon.
-      this.points = points.slice();
+      this.points = [];
+      const billboards: any[] = [];
+      indices.forEach((index) => {
+        this.points.push(origPoints[index]);
+        billboards.push(this.billboards[index]);
+      });
+
+      this.billboards = billboards;
+
+      // For rendering, make a copy of our reordered points
+      const points = this.points.slice();
+
       if (this.mousePoint !== null) {
         this.points.pop();
       }
@@ -170,6 +197,8 @@ export class PolygonMode {
       });
       this.scene.primitives.add(this.polygon);
     }
+
+    this.drawSelectedPoint();
   }
 
   private screenPositionToPoint = (position: any): IPoint | null => {
@@ -224,6 +253,9 @@ export class PolygonMode {
     this.clearMousePoint();
     this.mousePoint = point;
     this.addBillboard(point);
+
+    // Our selected point will now be at the end of the list
+    this.selectedPoint = this.billboards.length - 1;
   }
 
   private clearMousePoint = () => {
@@ -234,27 +266,176 @@ export class PolygonMode {
     }
   }
 
-  private onLeftClick = ({position}: any) => {
-    this.addPoint(position);
-    this.clearMousePoint();
-    this.render();
-  }
-
-  private onLeftDoubleClick = ({position}: any) => {
-    // two individual left click events fire before the double click does; this
-    // results in a duplicate of the final position at the end of
-    // `this.points` that can (and should) be safely removed
-    this.popPoint();
-
-    if (this.points.length >= this.minPoints) {
-      this.clearMousePoint();
-      this.render();
-      this.endMode();
+  private drawSelectedPoint = () => {
+    this.billboards.forEach((b) => {
+      b.color = Cesium.Color.WHITE;
+      b.scale = 1.0;
+    });
+    if (this.selectedPoint >= 0 && this.selectedPoint < this.billboards.length) {
+      this.billboards[this.selectedPoint].color = Cesium.Color.CHARTREUSE;
+      this.billboards[this.selectedPoint].scale = 1.5;
     }
   }
 
-  private onMouseMove = ({endPosition}: any) => {
-    this.updateMousePoint(endPosition);
-    this.render();
+  private handleMouseCursor(position: any) {
+    const mouseoverFeature = this.scene.pick(position);
+    const mouseoverIndex = (mouseoverFeature !== undefined) ?
+      this.billboards.indexOf(mouseoverFeature.primitive) : -1;
+    if (mouseoverIndex >= 0) {
+      CesiumUtils.setCursorCrosshair();
+    } else {
+      CesiumUtils.unsetCursorCrosshair();
+    }
   }
+
+  // States
+  // DrawingPolygon
+  //   leftClick: Add new point (transfer mouse point)
+  //   moveMouse: Move current mouse point
+  //   doubleClick: End polygon, CALLBACK, --> DonePolygon
+  // DonePolygon
+  //   leftClick: If on point, select point --> PointSelected
+  //   moveMouse: Check mouse cursor
+  //   doubleClick: nop
+  // PointSelected
+  //   leftClick: If not on point, deselect point --> DonePolygon
+  //              If different point, select it
+  //              If on point, transfer to mouse point --> MovePoint
+  //   moveMouse: Check mouse cursor
+  //   doubleClick: nop
+  // MovePoint
+  //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointSelected
+  //   moveMouse: Move current mouse point
+  //   doubleClick: nop
+
+  private stateTransition = (event: PolygonEvent, position: any) => {
+//    if (event !== PolygonEvent.moveMouse) {
+//      console.log("state=" + this.state + " event=" + event);
+//    }
+    switch (this.state) {
+      case PolygonState.drawingPolygon:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            // Add a new point to the polygon, keep drawing
+            this.addPoint(position);
+            this.clearMousePoint();
+            this.render();
+            break;
+          case PolygonEvent.moveMouse:
+            this.updateMousePoint(position);
+            this.render();
+            break;
+          case PolygonEvent.doubleClick:
+            this.state = PolygonState.donePolygon;
+            // two individual left click events fire before the double click does; this
+            // results in a duplicate of the final position at the end of
+            // `this.points` that can (and should) be safely removed
+            this.popPoint();
+            if (this.points.length >= this.minPoints) {
+              this.clearMousePoint();
+              this.selectedPoint = -1;
+              this.render();
+              this.finishedDrawingCallback(this.points);
+            }
+            break;
+        }
+        break;
+
+      case PolygonState.donePolygon:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            if (this.points.length === 0) { break; }
+            const pickedFeature = this.scene.pick(position);
+            const index = (pickedFeature !== undefined) ?
+              this.billboards.indexOf(pickedFeature.primitive) : -1;
+            if (index >= 0) {
+              // We clicked on one of the polygon points
+              this.state = PolygonState.pointSelected;
+              this.selectedPoint = index;
+              this.render();
+            }
+            break;
+          case PolygonEvent.moveMouse:
+            this.handleMouseCursor(position);
+            break;
+          case PolygonEvent.doubleClick:
+            // nop
+            break;
+        }
+        break;
+
+      case PolygonState.pointSelected:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            if (this.points.length === 0) { break; }
+            const pickedFeature = this.scene.pick(position);
+            const index = (pickedFeature !== undefined) ?
+              this.billboards.indexOf(pickedFeature.primitive) : -1;
+            if (index < 0) {
+              // We clicked somewhere else, not on a point
+              this.state = PolygonState.donePolygon;
+              this.selectedPoint = -1;
+              this.render();
+              break;
+            }
+            if (this.selectedPoint !== index) {
+              // We clicked on a new point, so select it instead
+              this.selectedPoint = index;
+              this.render();
+              break;
+            }
+            // We clicked on the selected point
+            this.state = PolygonState.movePoint;
+            CesiumUtils.setCursorCrosshair();
+            // Remove the selected point from the stored list,
+            // we will instead treat it as the "mouse point".
+            this.billboardCollection.remove(this.billboards[index]);
+            this.billboards.splice(index, 1);
+            this.points.splice(index, 1);
+            this.updateMousePoint(position);
+            this.render();
+            break;
+          case PolygonEvent.moveMouse:
+            this.handleMouseCursor(position);
+            break;
+          case PolygonEvent.doubleClick:
+            // nop
+            break;
+        }
+        break;
+
+      case PolygonState.movePoint:
+        switch (event) {
+          case PolygonEvent.leftClick:
+            // We're done moving the point
+            this.state = PolygonState.pointSelected;
+            CesiumUtils.unsetCursorCrosshair();
+            this.addPoint(position);
+            this.clearMousePoint();
+            this.finishedDrawingCallback(this.points);
+            break;
+          case PolygonEvent.moveMouse:
+            this.updateMousePoint(position);
+            this.render();
+            break;
+          case PolygonEvent.doubleClick:
+            // nop - this allows doubleClick to immediately select and start moving a point
+            break;
+        }
+        break;
+    }
+  }
+
+  private onLeftClick = ({position}: any) => {
+    this.stateTransition(PolygonEvent.leftClick, position);
+  }
+
+  private onLeftDoubleClick = ({position}: any) => {
+    this.stateTransition(PolygonEvent.doubleClick, position);
+  }
+
+  private onMouseMove = ({endPosition}: any) => {
+    this.stateTransition(PolygonEvent.moveMouse, endPosition);
+  }
+
 }
