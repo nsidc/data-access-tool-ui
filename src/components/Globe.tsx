@@ -25,7 +25,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     this.state = {
       latLon: "",
     };
-    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection);
+    this.handleLatLon = this.handleLatLon.bind(this);
+    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.updateLatLon);
   }
 
   public componentDidMount() {
@@ -34,8 +35,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
     const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection"]);
-    const stateChanged = hasChanged(this.state, nextState, ["latLon"]);
-    return propsChanged || stateChanged;
+//    const stateChanged = hasChanged(this.state, nextState, ["latLon"]);
+    return propsChanged;
   }
 
   public componentDidUpdate() {
@@ -48,7 +49,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         <HelpText />
         <div id={CesiumUtils.viewerId}>
           <div>
-            <input type="text" value="{this.state.latLon}" onChange={this.handleLatLon}></input>
+            <input id="latLon" type="text" value={this.state.latLon} onChange={this.handleLatLon}></input>
           </div>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
@@ -72,10 +73,14 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     CesiumUtils.unsetCursorCrosshair();
   }
 
+  private updateLatLon = (latLon: string) => {
+    this.setState({ latLon });
+    this.forceUpdate();
+  }
+
   private handleLatLon = (e: any) => {
-    const latLon = e.target.value;
-    this.setState({ selectedCollection: e.target.value });
-    this.props.onCollectionChange(collection);
+    this.setState({ latLon: e.target.value });
+    this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
   }
 
 }

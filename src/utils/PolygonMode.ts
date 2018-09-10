@@ -34,7 +34,6 @@ export class PolygonMode {
   private billboardCollection: any;
   private ellipsoid: any;
   private finishedDrawingCallback: any;
-  private label: any;
   private minPoints = 3;
   private mouseHandler: any;
   private mousePoint: IPoint | null = null;
@@ -43,10 +42,11 @@ export class PolygonMode {
   private scene: any;
   private selectedPoint: number = -1;
   private state: PolygonState = PolygonState.drawingPolygon;
+  private updateLatLon: (s: string) => void;
 
-  public constructor(scene: any, label: any, ellipsoid: any, finishedDrawingCallback: any) {
+  public constructor(scene: any, updateLatLon: (s: string) => void, ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
-    this.label = label;
+    this.updateLatLon = updateLatLon;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
   }
@@ -98,6 +98,10 @@ export class PolygonMode {
     };
 
     return latLonDegrees;
+  }
+
+  public changeLatLon(latLon: string) {
+    console.log(latLon);
   }
 
   // To avoid bow-ties if the user draws the points in a strange order,
@@ -293,17 +297,17 @@ export class PolygonMode {
   private updateLatLonLabel(point: IPoint | null) {
     try {
       if (point) {
-      const ll = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
-      const lat1 = Math.round(ll.lat * 100) / 100;
-      const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
-      const lon1 = Math.round(ll.lon * 100) / 100;
-      const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
-      this.label.value = lat + "," + lon;
+        const ll = this.cartesianPositionToLonLatDegrees(point.cartesianXYZ);
+        const lat1 = Math.round(ll.lat * 100) / 100;
+        const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
+        const lon1 = Math.round(ll.lon * 100) / 100;
+        const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
+        this.updateLatLon(lat + "," + lon);
       } else {
-        this.label.value = "";
+        this.updateLatLon("");
       }
     } catch (error) {
-      this.label.value = "";
+      this.updateLatLon("---");
     }
   }
 
