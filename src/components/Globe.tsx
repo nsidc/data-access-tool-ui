@@ -14,7 +14,8 @@ interface IGlobeProps {
 }
 
 interface IGlobeState {
-  latLon: string;
+  latLonEnable: boolean;
+  latLonLabel: string;
 }
 
 export class Globe extends React.Component<IGlobeProps, IGlobeState> {
@@ -23,10 +24,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   public constructor(props: IGlobeProps) {
     super(props);
     this.state = {
-      latLon: "",
+      latLonEnable: false,
+      latLonLabel: "",
     };
     this.handleLatLon = this.handleLatLon.bind(this);
-    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.updateLatLon);
+    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.enableLatLon, this.updateLatLon);
   }
 
   public componentDidMount() {
@@ -49,7 +51,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         <HelpText />
         <div id={CesiumUtils.viewerId}>
           <div>
-            <input id="latLon" type="text" value={this.state.latLon} onChange={this.handleLatLon}></input>
+            <input id="latLon" type="text" disabled={!this.state.latLonEnable}
+              value={this.state.latLonLabel} onChange={this.handleLatLon}></input>
           </div>
           <SpatialSelectionToolbar
             onClickPolygon={() => {
@@ -73,13 +76,18 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     CesiumUtils.unsetCursorCrosshair();
   }
 
-  private updateLatLon = (latLon: string) => {
-    this.setState({ latLon });
+  private updateLatLon = (latLonLabel: string) => {
+    this.setState({ latLonLabel });
+    this.forceUpdate();
+  }
+
+  private enableLatLon = (latLonEnable: boolean) => {
+    this.setState({ latLonEnable });
     this.forceUpdate();
   }
 
   private handleLatLon = (e: any) => {
-    this.setState({ latLon: e.target.value });
+    this.setState({ latLonLabel: e.target.value });
     this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
   }
 

@@ -16,11 +16,15 @@ export class CesiumAdapter {
 
   private viewer: any;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
-  private updateLatLon: (s: string) => void;
+  private latLonEnableCallback: (s: boolean) => void;
+  private latLonLabelCallback: (s: string) => void;
 
-  public constructor(updateSpatialSelection: (s: IGeoJsonPolygon) => void, updateLatLon: (s: string) => void) {
+  public constructor(updateSpatialSelection: (s: IGeoJsonPolygon) => void,
+                     latLonEnableCallback: (s: boolean) => void,
+                     latLonLabelCallback: (s: string) => void) {
     this.updateSpatialSelection = updateSpatialSelection;
-    this.updateLatLon = updateLatLon;
+    this.latLonLabelCallback = latLonLabelCallback;
+    this.latLonEnableCallback = latLonEnableCallback;
   }
 
   public createViewer(spatialSelection: IGeoJsonPolygon) {
@@ -135,8 +139,8 @@ export class CesiumAdapter {
       this.updateSpatialSelection(geo);
     };
 
-    const mode = new PolygonMode(this.viewer.scene, this.updateLatLon,
-      CesiumAdapter.ellipsoid, finishedDrawingCallback);
+    const mode = new PolygonMode(this.viewer.scene, this.latLonEnableCallback,
+      this.latLonLabelCallback, CesiumAdapter.ellipsoid, finishedDrawingCallback);
     return mode;
   }
 
