@@ -18,11 +18,11 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
         <SpatialSelectionType name="polygon"
                               onClick={() => this.props.onClickPolygon()}
                               img={polygonImg}
-                              alt="Click to draw a polygon"/>
+                              title="Click to draw a polygon"/>
         <SpatialSelectionType name="reset"
                               onClick={() => this.props.onClickReset()}
                               img={resetImg}
-                              alt="Click to reset polygon"/>
+                              title="Click to reset polygon"/>
       </div>
     );
   }

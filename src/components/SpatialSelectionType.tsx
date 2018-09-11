@@ -4,7 +4,7 @@ import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISpatialSelectionTypeProps {
-  alt: string;
+  title: string;
   img: any;
   name: string;
   onClick: any;
@@ -16,13 +16,13 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
   }
 
   public shouldComponentUpdate(nextProps: ISpatialSelectionTypeProps) {
-    return hasChanged(this.props, nextProps, ["alt", "img", "name"]);
+    return hasChanged(this.props, nextProps, ["title", "img", "name"]);
   }
 
   public render() {
     return (
       <div className="cesium-button cesium-toolbar-button" onClick={(e: any) => this.props.onClick(e.target.value)}>
-        <img src={this.props.img} alt={this.props.alt} title={this.props.alt}/>
+        <img src={this.props.img} alt={this.props.title} title={this.props.title}/>
       </div>
     );
   }
