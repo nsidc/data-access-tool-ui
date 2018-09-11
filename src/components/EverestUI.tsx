@@ -158,7 +158,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
      .finally(() => this.setState({cmrLoading: false}));
   }
 
-  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback: () => void) => {
+  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback?: () => void) => {
     // Immutable's typing for Record is incorrect; Record#merge returns a
     // Record with the same attributes, but the type definition says it
     // returns a Map (OrderParameters is a subclass of Record)
@@ -219,7 +219,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   private setSpatialSelectionToCollectionDefault = () => {
     const boundingBoxes = this.state.orderParameters.collection.boxes;
     const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
-    // @ts-ignore
     this.handleOrderParameterChange({spatialSelection});
   }
 
@@ -239,7 +238,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       spatialSelection,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    }, () => null);
+    });
   }
 
   private freezeState = () => {
@@ -256,7 +255,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       const orderParameters: OrderParameters = new OrderParameters(...orderParams);
 
       if (this.state.orderParameters.collection.short_name === orderParameters.collection.short_name ) {
-        return this.setState({orderParameters});
+        return this.handleOrderParameterChange(orderParameters);
       }
     }
   }
