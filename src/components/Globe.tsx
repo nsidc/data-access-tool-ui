@@ -36,9 +36,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection"]);
-//    const stateChanged = hasChanged(this.state, nextState, ["latLon"]);
-    return propsChanged;
+    return hasChanged(this.props, nextProps, ["spatialSelection"]);
   }
 
   public componentDidUpdate() {
@@ -77,20 +75,17 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     CesiumUtils.unsetCursorCrosshair();
   }
 
-  // Called by external code to update our label
   private updateLatLon = (latLonLabel: string) => {
     this.setState({ latLonLabel });
     this.forceUpdate();
   }
 
-  // Called by external code to enable our label
   private enableLatLon = (latLonEnable: boolean) => {
     this.setState({ latLonEnable });
     this.forceUpdate();
   }
 
   private handleLatLon = (e: any) => {
-//    this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
     this.setState({ latLonLabel: e.target.value });
     this.forceUpdate();
   }

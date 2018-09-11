@@ -124,22 +124,6 @@ export class CesiumAdapter {
     return mode;
   }
 
-  // // https://stackoverflow.com/a/1165943
-  // // http://en.wikipedia.org/wiki/Shoelace_formula
-  // private polygonIsClockwise(coords: number[][]) {
-  //   const sum = coords.reduce((acc: number, coord: number[], index: number, arr: number[][]) => {
-  //     const [x, y] = coord;
-
-  //     const nextIndex = (index + 1) % arr.length;
-  //     const [nextX, nextY] = arr[nextIndex];
-
-  //     const edge = (nextX - x) * (nextY + y);
-
-  //     return acc + edge;
-  //   }, 0);
-
-  //   return sum > 0;
-  // }
 }
 
 /* The code to use NASA GIBS imagery was based on and adapted from

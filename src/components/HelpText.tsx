@@ -21,7 +21,7 @@ export class HelpText extends React.Component {
           </ul>
           <ul>
             <li>Edit: Click on a point</li>
-            <li>Move: Click again or type</li>
+            <li>Move: Click and move or type</li>
             <li>Finish: Click or press <kbd>Enter</kbd></li>
           </ul>
         </section>
