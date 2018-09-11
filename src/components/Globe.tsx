@@ -31,15 +31,20 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public componentDidMount() {
-    this.cesiumAdapter.createViewer(this.props.spatialSelection);
+    this.cesiumAdapter.createViewer();
+    this.cesiumAdapter.renderCollectionCoverage(this.props.spatialSelection.bbox);
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
-    return hasChanged(this.props, nextProps, ["spatialSelection"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection"]);
+    const stateChanged = hasChanged(this.state, nextState, ["lonLatEnable", "lonLatLabel"]);
+    return propsChanged || stateChanged;
   }
 
   public componentDidUpdate() {
-    this.cesiumAdapter.renderInitialBoundingBox(this.props.spatialSelection);
+    if (this.props.spatialSelection.bbox) {
+      this.cesiumAdapter.renderCollectionCoverage(this.props.spatialSelection.bbox);
+    }
   }
 
   public render() {
@@ -76,28 +81,23 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   private updateLonLat = (lonLatLabel: string) => {
     this.setState({ lonLatLabel });
-    this.forceUpdate();
   }
 
   private enableLonLat = (lonLatEnable: boolean) => {
     this.setState({ lonLatEnable });
-    this.forceUpdate();
   }
 
   private handleLonLat = (e: any) => {
     this.setState({ lonLatLabel: e.target.value });
-    this.forceUpdate();
   }
 
   private lonLatOnKeydown = (e: any) => {
     switch (e.key) {
       case "Enter":
         this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
-        this.forceUpdate();
         break;
       case "Escape":
         this.cesiumAdapter.polygonMode.resetLonLat();
-        this.forceUpdate();
         break;
       case "Tab":
         this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
@@ -106,7 +106,6 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         } else {
           this.cesiumAdapter.polygonMode.nextPoint();
         }
-        this.forceUpdate();
         e.preventDefault();
         break;
       default:

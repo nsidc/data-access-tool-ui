@@ -27,7 +27,7 @@ export class CesiumAdapter {
     this.lonLatEnableCallback = lonLatEnableCallback;
   }
 
-  public createViewer(spatialSelection: IGeoJsonPolygon) {
+  public createViewer() {
     const gibsProvider = new Cesium.WebMapTileServiceImageryProvider({
       format: "image/jpeg",
       layer: "BlueMarble_ShadedRelief_Bathymetry",
@@ -59,7 +59,6 @@ export class CesiumAdapter {
     });
 
     this.polygonMode = this.createPolygonMode();
-    this.renderInitialBoundingBox(spatialSelection);
   }
 
   public clearSpatialSelection() {
@@ -67,10 +66,7 @@ export class CesiumAdapter {
     this.viewer.scene.primitives.removeAll();
   }
 
-  public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
-    const bbox = spatialSelection.bbox;
-    if (!bbox) { return; }
-
+  public renderCollectionCoverage(bbox: number[]) {
     const globalBbox = [-180, -90, 180, 90];
 
     if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
