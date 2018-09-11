@@ -27,7 +27,6 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       latLonEnable: false,
       latLonLabel: "",
     };
-    this.handleLatLon = this.handleLatLon.bind(this);
     this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.enableLatLon, this.updateLatLon);
   }
 
