@@ -23,3 +23,6 @@
 * Help text now rearranges to a single column when browser is narrow.
 * Tooltips over order buttons now have a width that corresponds to the button's
   width.
+* Allow editing polygon selection points by click-and-drag
+* Allow editing polygon selection points by lon/lat input
+* Show selected collection's coverage at the same time as the polygon

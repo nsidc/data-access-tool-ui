@@ -16,12 +16,18 @@ export class CesiumAdapter {
 
   private viewer: any;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
+  private lonLatEnableCallback: (s: boolean) => void;
+  private lonLatLabelCallback: (s: string) => void;
 
-  public constructor(updateSpatialSelection: (s: IGeoJsonPolygon) => void) {
+  public constructor(updateSpatialSelection: (s: IGeoJsonPolygon) => void,
+                     lonLatEnableCallback: (s: boolean) => void,
+                     lonLatLabelCallback: (s: string) => void) {
     this.updateSpatialSelection = updateSpatialSelection;
+    this.lonLatLabelCallback = lonLatLabelCallback;
+    this.lonLatEnableCallback = lonLatEnableCallback;
   }
 
-  public createViewer(spatialSelection: IGeoJsonPolygon) {
+  public createViewer() {
     const gibsProvider = new Cesium.WebMapTileServiceImageryProvider({
       format: "image/jpeg",
       layer: "BlueMarble_ShadedRelief_Bathymetry",
@@ -53,7 +59,6 @@ export class CesiumAdapter {
     });
 
     this.polygonMode = this.createPolygonMode();
-    this.renderInitialBoundingBox(spatialSelection);
   }
 
   public clearSpatialSelection() {
@@ -61,10 +66,7 @@ export class CesiumAdapter {
     this.viewer.scene.primitives.removeAll();
   }
 
-  public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
-    const bbox = spatialSelection.bbox;
-    if (!bbox) { return; }
-
+  public renderCollectionCoverage(bbox: number[]) {
     const globalBbox = [-180, -90, 180, 90];
 
     if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
@@ -99,32 +101,12 @@ export class CesiumAdapter {
   private createPolygonMode() {
 
     // when drawing is finished (by double-clicking), this function is called
-    // with an array of points; each point has the cartesianXYZ--describing the
-    // location on the globe--and screenPosition--the XY point on the screen
-    // that was clicked when that point was added. Note that the screenPosition
-    // may no longer match the screenPosition corresponding to that spot on the
-    // globe, since the globe could have been rotated since the time that point
-    // was added by a click.
+    // with an array of points.
     const finishedDrawingCallback = (points: any) => {
-      const cartesians = points.map((p: any) => p.cartesianXYZ);
-
-      const lonLatsArray = cartesians.map((cartesian: any) => {
-        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(cartesian);
+      const lonLatsArray = points.map((point: any) => {
+        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(point);
         return [lonLat.lon, lonLat.lat];
       }, this);
-
-      // use the screen positions to determine clockwise/counterclockwise
-      //
-      // with the cesium widget, (0, 0) is at the top left, with x increasing to
-      // the right and y increasing down; the shoelace formula works with a
-      // standard cartesian system where y increases up, so inverse the y value
-      // before applying the shoelace formula
-      const pointsDrawnOnScreen = points.map((p: any) => [p.screenPosition.x, -p.screenPosition.y]);
-
-      // CMR requires polygons to be in counterclockwise order
-      if (this.polygonIsClockwise(pointsDrawnOnScreen)) {
-        lonLatsArray.reverse();
-      }
 
       // the last point in a polygon needs to be the first again to close it
       lonLatsArray.push(lonLatsArray[0]);
@@ -133,26 +115,11 @@ export class CesiumAdapter {
       this.updateSpatialSelection(geo);
     };
 
-    const mode = new PolygonMode(this.viewer.scene, CesiumAdapter.ellipsoid, finishedDrawingCallback);
+    const mode = new PolygonMode(this.viewer.scene, this.lonLatEnableCallback,
+      this.lonLatLabelCallback, CesiumAdapter.ellipsoid, finishedDrawingCallback);
     return mode;
   }
 
-  // https://stackoverflow.com/a/1165943
-  // http://en.wikipedia.org/wiki/Shoelace_formula
-  private polygonIsClockwise(coords: number[][]) {
-    const sum = coords.reduce((acc: number, coord: number[], index: number, arr: number[][]) => {
-      const [x, y] = coord;
-
-      const nextIndex = (index + 1) % arr.length;
-      const [nextX, nextY] = arr[nextIndex];
-
-      const edge = (nextX - x) * (nextY + y);
-
-      return acc + edge;
-    }, 0);
-
-    return sum > 0;
-  }
 }
 
 /* The code to use NASA GIBS imagery was based on and adapted from

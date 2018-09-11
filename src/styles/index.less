@@ -114,7 +114,7 @@
 
     span,
     section {
-      font-size: 90%;
+      font-size: 80%;
       padding: 0 0 1em 1.2em;
     }
 
@@ -125,8 +125,8 @@
       img {
         display: inline-block;
         vertical-align: middle;
-        height: 25px;
-        padding: 3px;
+        height: 20px;
+        padding: 2px;
         margin: 0 2px;
       }
     }
@@ -134,6 +134,12 @@
     ul {
       margin: 0 0 0 1.2em;
       padding: 0;
+    }
+
+    kbd {
+      border-radius: 3px;
+      padding: 0 2px 0;
+      border: 1px solid black;
     }
   }
 
@@ -245,6 +251,31 @@
 
     .cesium-credit-logoContainer * {
       display: none;
+    }
+
+    input {
+      position: absolute;
+      left: 0;
+      width: 120px;
+      margin: 5px;
+      height: auto;
+      padding: 3px;
+      line-height: 1em;
+      font-size: 90%;
+      z-index: 2;
+      border-width: 1;
+      border-radius: 4px;
+      background-color: white;
+      border-color: chartreuse;
+    }
+
+    input:focus {
+      outline-color: chartreuse;
+    }
+
+    input:disabled {
+      background-color: lightgray;
+      border-color: black;
     }
   }
 
