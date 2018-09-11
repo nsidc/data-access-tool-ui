@@ -9,7 +9,7 @@ require("cesium/Widgets/widgets.css");
 /* tslint:enable:no-var-requires */
 
 export class CesiumAdapter {
-  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
+  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public polygonMode: PolygonMode;
@@ -41,7 +41,7 @@ export class CesiumAdapter {
       creditContainer: "credit",
       fullscreenButton: false,
       geocoder: false,
-      homeButton: false,
+      homeButton: true,
       imageryProvider: gibsProvider,
       infoBox: false,
       navigationHelpButton: false,
@@ -58,9 +58,7 @@ export class CesiumAdapter {
 
   public clearSpatialSelection() {
     this.polygonMode.reset();
-
     this.viewer.scene.primitives.removeAll();
-    this.viewer.entities.removeById("rectangle");
   }
 
   public renderInitialBoundingBox(spatialSelection: IGeoJsonPolygon) {
@@ -71,12 +69,18 @@ export class CesiumAdapter {
 
     if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
       this.clearSpatialSelection();
+      this.viewer.entities.removeById("rectangle");
+      // Boulder, Colorado
+      Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
+      Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(-135, 10, -75, 70);
+      this.viewer.camera.flyHome();
       return;
     }
 
     const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
 
     this.clearSpatialSelection();
+    this.viewer.entities.removeById("rectangle");
     this.viewer.entities.add({
       id: "rectangle",
       name: "rectangle",
@@ -85,6 +89,11 @@ export class CesiumAdapter {
         material: CesiumAdapter.extentColor,
       },
     });
+
+    // Fly to a position with a top-down view
+    Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...bbox);
+    this.viewer.camera.flyHome();
   }
 
   private createPolygonMode() {
