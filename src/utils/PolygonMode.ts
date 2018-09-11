@@ -424,8 +424,7 @@ export class PolygonMode {
               this.finishedDrawingCallback(this.points);
             }
             break;
-          case PolygonEvent.lonLatTextChange
-      :
+          case PolygonEvent.lonLatTextChange:
             // nop
             break;
         }
@@ -455,8 +454,7 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop
             break;
-          case PolygonEvent.lonLatTextChange
-      :
+          case PolygonEvent.lonLatTextChange:
             // nop
             break;
         }
@@ -502,8 +500,7 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop
             break;
-          case PolygonEvent.lonLatTextChange
-      :
+          case PolygonEvent.lonLatTextChange:
             // We used the edit box to change the coordinates.
             // Note: The "position" here is actually the cartesian3 point.
             this.billboardCollection.remove(this.billboards[this.selectedPoint]);
@@ -539,8 +536,7 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop - this allows doubleClick to immediately select and start moving a point
             break;
-          case PolygonEvent.lonLatTextChange
-      :
+          case PolygonEvent.lonLatTextChange:
             // nop
             break;
         }
