@@ -5,7 +5,7 @@ import { CesiumUtils } from "./CesiumUtils";
 const Cesium = require("cesium/Cesium");
 /* tslint:enable:no-var-requires */
 
-interface ILatLon {
+interface ILonLat {
   readonly lat: number;
   readonly lon: number;
 }
@@ -27,7 +27,7 @@ enum PolygonEvent {
   leftClick,
   doubleClick,
   moveMouse,
-  latLonTextChange,
+  lonLatTextChange,
 }
 
 export class PolygonMode {
@@ -36,8 +36,8 @@ export class PolygonMode {
   private billboardCollection: any;
   private ellipsoid: any;
   private finishedDrawingCallback: any;
-  private latLonEnableCallback: (s: boolean) => void;
-  private latLonLabelCallback: (s: string) => void;
+  private lonLatEnableCallback: (s: boolean) => void;
+  private lonLatLabelCallback: (s: string) => void;
   private minPoints = 3;
   private mouseHandler: any;
   private mousePoint: ICartesian3 | null = null;
@@ -47,12 +47,12 @@ export class PolygonMode {
   private selectedPoint: number = -1;
   private state: PolygonState = PolygonState.drawingPolygon;
 
-  public constructor(scene: any, latLonEnableCallback: (s: boolean) => void,
-                     latLonLabelCallback: (s: string) => void,
+  public constructor(scene: any, lonLatEnableCallback: (s: boolean) => void,
+                     lonLatLabelCallback: (s: string) => void,
                      ellipsoid: any, finishedDrawingCallback: any) {
     this.scene = scene;
-    this.latLonEnableCallback = latLonEnableCallback;
-    this.latLonLabelCallback = latLonLabelCallback;
+    this.lonLatEnableCallback = lonLatEnableCallback;
+    this.lonLatLabelCallback = lonLatLabelCallback;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
   }
@@ -80,7 +80,7 @@ export class PolygonMode {
     this.points = [];
     this.clearAllBillboards();
     this.clearMousePoint();
-    this.latLonEnableCallback(false);
+    this.lonLatEnableCallback(false);
     this.finishedDrawingCallback(this.points);
     this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
@@ -91,7 +91,7 @@ export class PolygonMode {
 
   // point: 3D coordinates for position on earth's surface
   // https://en.wikipedia.org/wiki/ECEF
-  public cartesianPositionToLatLonDegrees(point: ICartesian3): ILatLon {
+  public cartesianPositionToLonLatDegrees(point: ICartesian3): ILonLat {
     // this means the position is not on the globe
     if (point === undefined) {
       return {lat: NaN, lon: NaN};
@@ -99,35 +99,36 @@ export class PolygonMode {
 
     const cartographicRadians = Cesium.Cartographic.fromCartesian(point);
 
-    const latLonDegrees = {
+    const lonLatDegrees = {
       lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
       lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
     };
 
-    return latLonDegrees;
+    return lonLatDegrees;
   }
 
-  public changeLatLon(sLatLon: string) {
-    const latLon = this.parseLatLon(sLatLon);
-    if (isNaN(latLon.lat) || isNaN(latLon.lon)) {
+  public changeLonLat(sLonLat: string) {
+    const lonLat = this.parseLonLat(sLonLat);
+    if (isNaN(lonLat.lat) || isNaN(lonLat.lon)) {
       return;
     }
-    const position = this.latLonToCartesianPosition(latLon);
-    this.updateLatLonLabel(position);
-    this.stateTransition(PolygonEvent.latLonTextChange, position);
+    const position = this.lonLatToCartesianPosition(lonLat);
+    this.updateLonLatLabel(position);
+    this.stateTransition(PolygonEvent.lonLatTextChange
+  , position);
   }
 
-  public resetLatLon() {
+  public resetLonLat() {
     if (this.selectedPoint >= 0) {
       const position = this.points[this.selectedPoint];
-      this.updateLatLonLabel(position);
+      this.updateLonLatLabel(position);
     }
   }
 
   public nextPoint() {
     if (this.selectedPoint >= 0) {
       this.selectedPoint = (this.selectedPoint + 1) % this.points.length;
-      this.updateLatLonLabel(this.points[this.selectedPoint]);
+      this.updateLonLatLabel(this.points[this.selectedPoint]);
       this.render();
     }
   }
@@ -136,15 +137,15 @@ export class PolygonMode {
     if (this.selectedPoint >= 0) {
       this.selectedPoint = (this.selectedPoint > 0) ?
         (this.selectedPoint - 1) : (this.points.length - 1);
-      this.updateLatLonLabel(this.points[this.selectedPoint]);
+      this.updateLonLatLabel(this.points[this.selectedPoint]);
       this.render();
     }
   }
 
-  private parseLatLon(sLatLon: string): ILatLon {
-    let s = sLatLon.split(",");
+  private parseLonLat(sLonLat: string): ILonLat {
+    let s = sLonLat.split(",");
     if (s.length < 2) {
-      s = sLatLon.split(" ");
+      s = sLonLat.split(" ");
     }
     if (s.length < 2) {
       return { lat: NaN, lon: NaN };
@@ -161,8 +162,8 @@ export class PolygonMode {
     return {lat, lon};
   }
 
-  private latLonToCartesianPosition(latLon: ILatLon): ICartesian3 {
-    const cart = Cesium.Cartographic.fromDegrees(latLon.lon, latLon.lat);
+  private lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
+    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
     const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
     return point;
   }
@@ -179,23 +180,23 @@ export class PolygonMode {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
-    let latLonsArray = points.map((point: ICartesian3, index) => {
-      const latLon = this.cartesianPositionToLatLonDegrees(point);
-      return {index, ...latLon};
+    let lonLatsArray = points.map((point: ICartesian3, index) => {
+      const lonLat = this.cartesianPositionToLonLatDegrees(point);
+      return {index, ...lonLat};
     });
 
-    const minLat = Math.min.apply(null, latLonsArray.map((p) => p.lat));
-    const maxLat = Math.max.apply(null, latLonsArray.map((p) => p.lat));
-    const minLon = Math.min.apply(null, latLonsArray.map((p) => p.lon));
-    const maxLon = Math.max.apply(null, latLonsArray.map((p) => p.lon));
+    const minLat = Math.min.apply(null, lonLatsArray.map((p) => p.lat));
+    const maxLat = Math.max.apply(null, lonLatsArray.map((p) => p.lat));
+    const minLon = Math.min.apply(null, lonLatsArray.map((p) => p.lon));
+    const maxLon = Math.max.apply(null, lonLatsArray.map((p) => p.lon));
 
     const center = {lat: 0.5 * (minLat + maxLat),
       lon: 0.5 * (minLon + maxLon)};
-    const last = latLonsArray[latLonsArray.length - 1];
+    const last = lonLatsArray[lonLatsArray.length - 1];
     const angleLast = Math.atan2(last.lat - center.lat, last.lon - center.lon);
 
-    latLonsArray = latLonsArray.map((latLon) => {
-      let angle = Math.atan2(latLon.lat - center.lat, latLon.lon - center.lon);
+    lonLatsArray = lonLatsArray.map((lonLat) => {
+      let angle = Math.atan2(lonLat.lat - center.lat, lonLat.lon - center.lon);
       // Rotate (shift) all of the points that come before the last point
       // to the end of the array. The <= ensures that the last point comes
       // at the very end, since that is the mousePoint and will need to be
@@ -203,14 +204,14 @@ export class PolygonMode {
       if (angle <= angleLast) {
         angle += 2 * Math.PI;
       }
-      return {...latLon, angle};
+      return {...lonLat, angle};
     });
 
     // Sort the points in counter-clockwise order using the 2D angles
-    latLonsArray.sort((a: any, b: any) => (a.angle - b.angle));
+    lonLatsArray.sort((a: any, b: any) => (a.angle - b.angle));
 
     // Strip out the indices that will sort the array
-    const indices = latLonsArray.map((latLon) => latLon.index);
+    const indices = lonLatsArray.map((lonLat) => lonLat.index);
     return indices;
   }
 
@@ -351,20 +352,20 @@ export class PolygonMode {
     }
   }
 
-  private updateLatLonLabel(point: ICartesian3 | null) {
+  private updateLonLatLabel(point: ICartesian3 | null) {
     try {
       if (point) {
-        const ll = this.cartesianPositionToLatLonDegrees(point);
+        const ll = this.cartesianPositionToLonLatDegrees(point);
         const lat1 = Math.round(ll.lat * 100) / 100;
         const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
         const lon1 = Math.round(ll.lon * 100) / 100;
         const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
-        this.latLonLabelCallback(lat + ", " + lon);
+        this.lonLatLabelCallback(lat + ", " + lon);
       } else {
-        this.latLonLabelCallback("");
+        this.lonLatLabelCallback("");
       }
     } catch (error) {
-      this.latLonLabelCallback("---");
+      this.lonLatLabelCallback("---");
     }
   }
 
@@ -373,24 +374,24 @@ export class PolygonMode {
   //   leftClick: Add new point (transfer mouse point)
   //   moveMouse: Move current mouse point
   //   doubleClick: End polygon, CALLBACK, --> DonePolygon
-  //   latLonTextChange: nop
+  //   lonLatTextChange: nop
   // DonePolygon
   //   leftClick: If on point, select point --> PointSelected
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
-  //   latLonTextChange: nop
+  //   lonLatTextChange: nop
   // PointSelected
   //   leftClick: If not on point, deselect point --> DonePolygon
   //              If different point, select it
   //              If on point, transfer to mouse point --> MovePoint
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
-  //   latLonTextChange: Move point to new position, CALLBACK
+  //   lonLatTextChange: Move point to new position, CALLBACK
   // MovePoint
   //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointSelected
   //   moveMouse: Move current mouse point
   //   doubleClick: nop
-  //   latLonTextChange: nop
+  //   lonLatTextChange: nop
 
   private stateTransition = (event: PolygonEvent, position: any) => {
 //    if (event !== PolygonEvent.moveMouse) {
@@ -407,7 +408,7 @@ export class PolygonMode {
             break;
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
-            this.updateLatLonLabel(this.mousePoint);
+            this.updateLonLatLabel(this.mousePoint);
             this.render();
             break;
           case PolygonEvent.doubleClick:
@@ -423,7 +424,8 @@ export class PolygonMode {
               this.finishedDrawingCallback(this.points);
             }
             break;
-          case PolygonEvent.latLonTextChange:
+          case PolygonEvent.lonLatTextChange
+      :
             // nop
             break;
         }
@@ -440,20 +442,21 @@ export class PolygonMode {
               // We clicked on one of the polygon points
               this.state = PolygonState.pointSelected;
               this.selectedPoint = index;
-              this.updateLatLonLabel(this.points[this.selectedPoint]);
-              this.latLonEnableCallback(true);
+              this.updateLonLatLabel(this.points[this.selectedPoint]);
+              this.lonLatEnableCallback(true);
               this.render();
             }
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(position);
             const point = this.screenPositionToPoint(position);
-            this.updateLatLonLabel(point);
+            this.updateLonLatLabel(point);
             break;
           case PolygonEvent.doubleClick:
             // nop
             break;
-          case PolygonEvent.latLonTextChange:
+          case PolygonEvent.lonLatTextChange
+      :
             // nop
             break;
         }
@@ -469,7 +472,7 @@ export class PolygonMode {
             if (index < 0) {
               // We clicked somewhere else, not on a point
               this.state = PolygonState.donePolygon;
-              this.latLonEnableCallback(false);
+              this.lonLatEnableCallback(false);
               this.selectedPoint = -1;
               this.render();
               break;
@@ -477,13 +480,13 @@ export class PolygonMode {
             if (this.selectedPoint !== index) {
               // We clicked on a new point, so select it instead
               this.selectedPoint = index;
-              this.updateLatLonLabel(this.points[this.selectedPoint]);
+              this.updateLonLatLabel(this.points[this.selectedPoint]);
               this.render();
               break;
             }
             // We clicked on the selected point
             this.state = PolygonState.movePoint;
-            this.latLonEnableCallback(false);
+            this.lonLatEnableCallback(false);
             CesiumUtils.setCursorCrosshair();
             // Remove the selected point from the stored list,
             // we will instead treat it as the "mouse point".
@@ -499,7 +502,8 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop
             break;
-          case PolygonEvent.latLonTextChange:
+          case PolygonEvent.lonLatTextChange
+      :
             // We used the edit box to change the coordinates.
             // Note: The "position" here is actually the cartesian3 point.
             this.billboardCollection.remove(this.billboards[this.selectedPoint]);
@@ -523,19 +527,20 @@ export class PolygonMode {
             CesiumUtils.unsetCursorCrosshair();
             this.addPoint(position);
             this.clearMousePoint();
-            this.updateLatLonLabel(this.points[this.selectedPoint]);
-            this.latLonEnableCallback(true);
+            this.updateLonLatLabel(this.points[this.selectedPoint]);
+            this.lonLatEnableCallback(true);
             this.finishedDrawingCallback(this.points);
             break;
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
-            this.updateLatLonLabel(this.mousePoint);
+            this.updateLonLatLabel(this.mousePoint);
             this.render();
             break;
           case PolygonEvent.doubleClick:
             // nop - this allows doubleClick to immediately select and start moving a point
             break;
-          case PolygonEvent.latLonTextChange:
+          case PolygonEvent.lonLatTextChange
+      :
             // nop
             break;
         }

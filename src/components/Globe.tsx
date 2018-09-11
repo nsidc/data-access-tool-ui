@@ -14,8 +14,8 @@ interface IGlobeProps {
 }
 
 interface IGlobeState {
-  latLonEnable: boolean;
-  latLonLabel: string;
+  lonLatEnable: boolean;
+  lonLatLabel: string;
 }
 
 export class Globe extends React.Component<IGlobeProps, IGlobeState> {
@@ -24,10 +24,10 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   public constructor(props: IGlobeProps) {
     super(props);
     this.state = {
-      latLonEnable: false,
-      latLonLabel: "",
+      lonLatEnable: false,
+      lonLatLabel: "",
     };
-    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.enableLatLon, this.updateLatLon);
+    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.enableLonLat, this.updateLonLat);
   }
 
   public componentDidMount() {
@@ -48,8 +48,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         <HelpText />
         <div id={CesiumUtils.viewerId}>
           <div>
-            <input id="latLon" type="text" disabled={!this.state.latLonEnable}
-              value={this.state.latLonLabel} onChange={this.handleLatLon} onKeyDown={this.latLonOnKeydown}>
+            <input id="lonLat" type="text" disabled={!this.state.lonLatEnable}
+              value={this.state.lonLatLabel} onChange={this.handleLonLat} onKeyDown={this.lonLatOnKeydown}>
               </input>
           </div>
           <SpatialSelectionToolbar
@@ -74,33 +74,33 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     CesiumUtils.unsetCursorCrosshair();
   }
 
-  private updateLatLon = (latLonLabel: string) => {
-    this.setState({ latLonLabel });
+  private updateLonLat = (lonLatLabel: string) => {
+    this.setState({ lonLatLabel });
     this.forceUpdate();
   }
 
-  private enableLatLon = (latLonEnable: boolean) => {
-    this.setState({ latLonEnable });
+  private enableLonLat = (lonLatEnable: boolean) => {
+    this.setState({ lonLatEnable });
     this.forceUpdate();
   }
 
-  private handleLatLon = (e: any) => {
-    this.setState({ latLonLabel: e.target.value });
+  private handleLonLat = (e: any) => {
+    this.setState({ lonLatLabel: e.target.value });
     this.forceUpdate();
   }
 
-  private latLonOnKeydown = (e: any) => {
+  private lonLatOnKeydown = (e: any) => {
     switch (e.key) {
       case "Enter":
-        this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
+        this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
         this.forceUpdate();
         break;
       case "Escape":
-        this.cesiumAdapter.polygonMode.resetLatLon();
+        this.cesiumAdapter.polygonMode.resetLonLat();
         this.forceUpdate();
         break;
       case "Tab":
-        this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
+        this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
         if (e.shiftKey) {
           this.cesiumAdapter.polygonMode.previousPoint();
         } else {
