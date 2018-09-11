@@ -27,7 +27,7 @@ enum PolygonEvent {
   leftClick,
   doubleClick,
   moveMouse,
-  editPoint,
+  latLonTextChange,
 }
 
 export class PolygonMode {
@@ -107,7 +107,6 @@ export class PolygonMode {
     return latLonDegrees;
   }
 
-  // Called by CesiumAdapter when the lat lon text box gets changed
   public changeLatLon(sLatLon: string) {
     const latLon = this.parseLatLon(sLatLon);
     if (isNaN(latLon.lat) || isNaN(latLon.lon)) {
@@ -115,10 +114,9 @@ export class PolygonMode {
     }
     const position = this.latLonToCartesianPosition(latLon);
     this.updateLatLonLabel(position);
-    this.stateTransition(PolygonEvent.editPoint, position);
+    this.stateTransition(PolygonEvent.latLonTextChange, position);
   }
 
-  // Called by CesiumAdapter when the user cancels the lat lon text box change
   public resetLatLon() {
     if (this.selectedPoint >= 0) {
       const position = this.points[this.selectedPoint];
@@ -126,7 +124,6 @@ export class PolygonMode {
     }
   }
 
-  // Called by CesiumAdapter when the user tabs to the next lat lon point
   public nextPoint() {
     if (this.selectedPoint >= 0) {
       this.selectedPoint = (this.selectedPoint + 1) % this.points.length;
@@ -135,7 +132,6 @@ export class PolygonMode {
     }
   }
 
-  // Called by CesiumAdapter when the user tabs to the next lat lon point
   public previousPoint() {
     if (this.selectedPoint >= 0) {
       this.selectedPoint = (this.selectedPoint > 0) ?
@@ -377,24 +373,24 @@ export class PolygonMode {
   //   leftClick: Add new point (transfer mouse point)
   //   moveMouse: Move current mouse point
   //   doubleClick: End polygon, CALLBACK, --> DonePolygon
-  //   editPoint: nop
+  //   latLonTextChange: nop
   // DonePolygon
   //   leftClick: If on point, select point --> PointSelected
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
-  //   editPoint: nop
+  //   latLonTextChange: nop
   // PointSelected
   //   leftClick: If not on point, deselect point --> DonePolygon
   //              If different point, select it
   //              If on point, transfer to mouse point --> MovePoint
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
-  //   editPoint: Move point to new position, CALLBACK
+  //   latLonTextChange: Move point to new position, CALLBACK
   // MovePoint
   //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointSelected
   //   moveMouse: Move current mouse point
   //   doubleClick: nop
-  //   editPoint: nop
+  //   latLonTextChange: nop
 
   private stateTransition = (event: PolygonEvent, position: any) => {
 //    if (event !== PolygonEvent.moveMouse) {
@@ -427,7 +423,7 @@ export class PolygonMode {
               this.finishedDrawingCallback(this.points);
             }
             break;
-          case PolygonEvent.editPoint:
+          case PolygonEvent.latLonTextChange:
             // nop
             break;
         }
@@ -457,7 +453,7 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop
             break;
-          case PolygonEvent.editPoint:
+          case PolygonEvent.latLonTextChange:
             // nop
             break;
         }
@@ -503,7 +499,7 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop
             break;
-          case PolygonEvent.editPoint:
+          case PolygonEvent.latLonTextChange:
             // We used the edit box to change the coordinates.
             // Note: The "position" here is actually the cartesian3 point.
             this.billboardCollection.remove(this.billboards[this.selectedPoint]);
@@ -539,7 +535,7 @@ export class PolygonMode {
           case PolygonEvent.doubleClick:
             // nop - this allows doubleClick to immediately select and start moving a point
             break;
-          case PolygonEvent.editPoint:
+          case PolygonEvent.latLonTextChange:
             // nop
             break;
         }
