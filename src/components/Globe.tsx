@@ -96,9 +96,27 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   private latLonOnKeydown = (e: any) => {
-    if (e.key === "Enter") {
-      this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
-      this.forceUpdate();
+    switch (e.key) {
+      case "Enter":
+        this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
+        this.forceUpdate();
+        break;
+      case "Escape":
+        this.cesiumAdapter.polygonMode.resetLatLon();
+        this.forceUpdate();
+        break;
+      case "Tab":
+        this.cesiumAdapter.polygonMode.changeLatLon(e.target.value);
+        if (e.shiftKey) {
+          this.cesiumAdapter.polygonMode.previousPoint();
+        } else {
+          this.cesiumAdapter.polygonMode.nextPoint();
+        }
+        this.forceUpdate();
+        e.preventDefault();
+        break;
+      default:
+        break;
     }
   }
 

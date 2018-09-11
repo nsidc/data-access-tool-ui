@@ -80,6 +80,7 @@ export class PolygonMode {
     this.points = [];
     this.clearAllBillboards();
     this.clearMousePoint();
+    this.latLonEnableCallback(false);
     this.finishedDrawingCallback(this.points);
     this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
@@ -106,7 +107,7 @@ export class PolygonMode {
     return latLonDegrees;
   }
 
-  // Called by the CesiumAdapter when the lat lon text box gets changed
+  // Called by CesiumAdapter when the lat lon text box gets changed
   public changeLatLon(sLatLon: string) {
     const latLon = this.parseLatLon(sLatLon);
     if (isNaN(latLon.lat) || isNaN(latLon.lon)) {
@@ -115,6 +116,33 @@ export class PolygonMode {
     const position = this.latLonToCartesianPosition(latLon);
     this.updateLatLonLabel(position);
     this.stateTransition(PolygonEvent.editPoint, position);
+  }
+
+  // Called by CesiumAdapter when the user cancels the lat lon text box change
+  public resetLatLon() {
+    if (this.selectedPoint >= 0) {
+      const position = this.points[this.selectedPoint];
+      this.updateLatLonLabel(position);
+    }
+  }
+
+  // Called by CesiumAdapter when the user tabs to the next lat lon point
+  public nextPoint() {
+    if (this.selectedPoint >= 0) {
+      this.selectedPoint = (this.selectedPoint + 1) % this.points.length;
+      this.updateLatLonLabel(this.points[this.selectedPoint]);
+      this.render();
+    }
+  }
+
+  // Called by CesiumAdapter when the user tabs to the next lat lon point
+  public previousPoint() {
+    if (this.selectedPoint >= 0) {
+      this.selectedPoint = (this.selectedPoint > 0) ?
+        (this.selectedPoint - 1) : (this.points.length - 1);
+      this.updateLatLonLabel(this.points[this.selectedPoint]);
+      this.render();
+    }
   }
 
   private parseLatLon(sLatLon: string): ILatLon {
