@@ -39,7 +39,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection", "collectionSpatialCoverage"]);
     const stateChanged = hasChanged(this.state, nextState, ["lonLatEnable", "lonLatLabel"]);
     return propsChanged || stateChanged;
   }
@@ -115,5 +115,4 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         break;
     }
   }
-
 }

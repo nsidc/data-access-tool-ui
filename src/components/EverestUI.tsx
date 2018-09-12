@@ -111,7 +111,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
             environment={this.props.environment}
             onChange={this.handleOrderParameterChange}
             orderParameters={this.state.orderParameters}
-            resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
+            resetSpatialSelection={this.resetSpatialSelection} />
         </div>
         <div id="right-side">
           <GranuleList
@@ -134,7 +134,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
     if (this.state.orderParameters.collection
         && this.state.orderParameters.collection.id
-        && this.state.orderParameters.spatialSelection
         && this.state.orderParameters.temporalFilterLowerBound
         && this.state.orderParameters.temporalFilterUpperBound) {
       this.handleCmrGranuleRequest();
@@ -164,13 +163,18 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     // @ts-ignore 2322
     let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
 
-    // really dumb way to get around issue where if spatialSelection is part
-    // of the new parameters, it gets turned into a Map in the merge above; we
-    // always want it to be a POJO
-    if (newOrderParameters.spatialSelection) {
+    // really dumb way to get around issue where if spatialSelection or
+    // collectionSpatialCoverage are part of the new parameters, they get turned
+    // into a Map in the merge above; we always want them to be POJOs
+    const newCollectionSpatialCoverage = newOrderParameters.collectionSpatialCoverage ||
+                                         orderParameters.collectionSpatialCoverage;
+    const newSpatialSelection = newOrderParameters.spatialSelection ||
+                                orderParameters.spatialSelection;
+    if (newOrderParameters.spatialSelection || newOrderParameters.collectionSpatialCoverage) {
       orderParameters = new OrderParameters({
         collection: orderParameters.collection,
-        spatialSelection: newOrderParameters.spatialSelection,
+        collectionSpatialCoverage: newCollectionSpatialCoverage,
+        spatialSelection: newSpatialSelection,
         temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
         temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
       });
@@ -211,13 +215,21 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       collection,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    }, this.setSpatialSelectionToCollectionDefault);
+    }, this.resetCollectionSpatialCoverage);
   }
 
-  private setSpatialSelectionToCollectionDefault = () => {
+  private resetCollectionSpatialCoverage = () => {
     const boundingBoxes = this.state.orderParameters.collection.boxes;
-    const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
-    this.handleOrderParameterChange({spatialSelection});
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
+    this.handleOrderParameterChange({
+      collectionSpatialCoverage,
+    });
+  }
+
+  private resetSpatialSelection = () => {
+    this.handleOrderParameterChange({
+      spatialSelection: null,
+    });
   }
 
   private handleCmrCollectionResponse = (response: any) => {
@@ -230,10 +242,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     const collection = cmrCollections.first();
-    const spatialSelection = cmrBoxArrToSpatialSelection(collection.boxes);
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(collection.boxes);
     this.handleOrderParameterChange({
       collection,
-      spatialSelection,
+      collectionSpatialCoverage,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
     });
