@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
+import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
@@ -64,11 +65,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     cmrStatusRequest().then(onSuccess, onFailure);
 
     if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
-      const datasetId: string = this.props.environment.drupalDataset.id;
-      const datasetVersion: number = Number(this.props.environment.drupalDataset.version);
-      cmrCollectionRequest(datasetId, datasetVersion)
-        .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure)
-        .then(this.hydrateState);
+      this.initializeState(this.props.environment.drupalDataset);
     }
   }
 
@@ -241,12 +238,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     });
   }
 
-  private freezeState = () => {
-    return localStorage.setItem("nsidcDataOrderParams", JSON.stringify(this.state.orderParameters));
-  }
-
-  private hydrateState = () => {
-    this.setState({stateCanBeFrozen: true});
+  private initializeState = (selectedCollection: IDrupalDataset) => {
     const localStorageOrderParams: string | null = localStorage.getItem("nsidcDataOrderParams");
     if (localStorageOrderParams) {
       const orderParams: any = JSON.parse(localStorageOrderParams);
@@ -254,9 +246,28 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       orderParams.temporalFilterUpperBound = moment(orderParams.temporalFilterUpperBound);
       const orderParameters: OrderParameters = new OrderParameters(...orderParams);
 
-      if (this.state.orderParameters.collection.short_name === orderParameters.collection.short_name ) {
-        return this.handleOrderParameterChange(orderParameters);
+      if (selectedCollection.id === orderParameters.collection.short_name) {
+        this.hydrateState(orderParameters);
+        return;
       }
     }
+    this.initStateFromCollectionDefaults(selectedCollection);
+  }
+
+  private initStateFromCollectionDefaults = (selectedCollection: IDrupalDataset) => {
+    const datasetId: string = selectedCollection.id;
+    const datasetVersion: number = Number(selectedCollection.version);
+    cmrCollectionRequest(datasetId, datasetVersion)
+      .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure)
+      .then(() => this.setState({stateCanBeFrozen: true}));
+  }
+
+  private freezeState = () => {
+    return localStorage.setItem("nsidcDataOrderParams", JSON.stringify(this.state.orderParameters));
+  }
+
+  private hydrateState = (orderParameters: OrderParameters) => {
+    this.handleOrderParameterChange(orderParameters);
+    this.setState({stateCanBeFrozen: true});
   }
 }
