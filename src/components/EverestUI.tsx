@@ -163,18 +163,27 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     // @ts-ignore 2322
     let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
 
-    // really dumb way to get around issue where if spatialSelection or
-    // collectionSpatialCoverage are part of the new parameters, they get turned
-    // into a Map in the merge above; we always want them to be POJOs
-    const newCollectionSpatialCoverage = newOrderParameters.collectionSpatialCoverage ||
-                                         orderParameters.collectionSpatialCoverage;
-    const newSpatialSelection = newOrderParameters.spatialSelection ||
-                                orderParameters.spatialSelection;
-    if (newOrderParameters.spatialSelection || newOrderParameters.collectionSpatialCoverage) {
+    // stupid thing to make sure spatialSelection and collectionSpatialCoverage
+    // are POJOs
+    let thing: boolean = false;
+
+    let spatialSelection = orderParameters.spatialSelection;
+    if (newOrderParameters.spatialSelection) {
+      thing = true;
+      spatialSelection = newOrderParameters.spatialSelection;
+    }
+
+    let collectionSpatialCoverage = orderParameters.collectionSpatialCoverage;
+    if (newOrderParameters.collectionSpatialCoverage) {
+      thing = true;
+      collectionSpatialCoverage = newOrderParameters.collectionSpatialCoverage;
+    }
+
+    if (thing) {
       orderParameters = new OrderParameters({
         collection: orderParameters.collection,
-        collectionSpatialCoverage: newCollectionSpatialCoverage,
-        spatialSelection: newSpatialSelection,
+        collectionSpatialCoverage,
+        spatialSelection,
         temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
         temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
       });

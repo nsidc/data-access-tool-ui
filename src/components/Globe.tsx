@@ -44,9 +44,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     return propsChanged || stateChanged;
   }
 
-  public componentDidUpdate() {
-    if (this.props.collectionSpatialCoverage) {
-      this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+  public componentDidUpdate(prevProps: IGlobeProps) {
+    if (hasChanged(prevProps, this.props, ["collectionSpatialCoverage"])) {
+      if (this.props.collectionSpatialCoverage) {
+        this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+      }
     }
   }
 
