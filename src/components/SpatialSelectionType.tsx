@@ -1,11 +1,10 @@
 import * as React from "react";
 
-import * as callout from "../img/callout.png";
 import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISpatialSelectionTypeProps {
-  alt: string;
+  title: string;
   img: any;
   name: string;
   onClick: any;
@@ -17,17 +16,13 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
   }
 
   public shouldComponentUpdate(nextProps: ISpatialSelectionTypeProps) {
-    return hasChanged(this.props, nextProps, ["alt", "img", "name"]);
+    return hasChanged(this.props, nextProps, ["title", "img", "name"]);
   }
 
   public render() {
     return (
-      <div className="tooltip button" onClick={(e: any) => this.props.onClick(e.target.value)}>
-        <img className={"img-no-border-left " + this.props.name} src={this.props.img} alt={this.props.alt}/>
-        <span className="maptool">
-          <img className="img-no-border-left callout" src={callout} />
-          {this.props.alt}
-        </span>
+      <div className="cesium-button cesium-toolbar-button" onClick={(e: any) => this.props.onClick(e.target.value)}>
+        <img className="button" src={this.props.img} alt={this.props.title} title={this.props.title}/>
       </div>
     );
   }
