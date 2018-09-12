@@ -19,7 +19,11 @@ const cmrHeaders = [
   ["Client-Id", `nsidc-everest-${getEnvironment()}`],
 ];
 
-const spatialParameter = (geoJSON: IGeoJsonPolygon): string => {
+const spatialParameter = (geoJSON: IGeoJsonPolygon | null): string => {
+  if (geoJSON === null) {
+    return spatialParameter(globalSpatialSelection);
+  }
+
   let param: string;
   let value: string;
 
@@ -108,7 +112,8 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
 
 export const cmrGranuleCountRequest = (collectionShortName: string,
                                        collectionVersion: number,
-                                       spatialSelection: IGeoJsonPolygon,
+                                       spatialSelection: IGeoJsonPolygon | null,
+                                       collectionSpatialCoverage: IGeoJsonPolygon | null,
                                        temporalLowerBound: moment.Moment,
                                        temporalUpperBound: moment.Moment) => {
   const URL = CMR_COLLECTION_URL
@@ -123,7 +128,8 @@ export const cmrGranuleCountRequest = (collectionShortName: string,
 
 export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionVersionId: number,
-                                  spatialSelection: IGeoJsonPolygon,
+                                  spatialSelection: IGeoJsonPolygon | null,
+                                  collectionSpatialCoverage: IGeoJsonPolygon | null,
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment) => {
   const URL = CMR_GRANULE_URL

@@ -8,9 +8,10 @@ import { HelpText } from "./HelpText";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
-  spatialSelection: IGeoJsonPolygon;
+  collectionSpatialCoverage: IGeoJsonPolygon | null;
+  spatialSelection: IGeoJsonPolygon | null;
   resetSpatialSelection: () => void;
-  onSpatialSelectionChange: (s: IGeoJsonPolygon) => void;
+  onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
 }
 
 interface IGlobeState {
@@ -32,7 +33,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public componentDidMount() {
     this.cesiumAdapter.createViewer();
-    this.cesiumAdapter.renderCollectionCoverage(this.props.spatialSelection.bbox);
+    if (this.props.collectionSpatialCoverage) {
+      this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+    }
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
@@ -42,8 +45,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public componentDidUpdate() {
-    if (this.props.spatialSelection.bbox) {
-      this.cesiumAdapter.renderCollectionCoverage(this.props.spatialSelection.bbox);
+    if (this.props.collectionSpatialCoverage) {
+      this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
     }
   }
 

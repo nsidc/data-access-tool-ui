@@ -34,7 +34,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
             this.props.onChange({temporalFilterUpperBound})} />
         <Globe
-          onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon) =>
+          collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
+          onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection}
           resetSpatialSelection={this.props.resetSpatialSelection} />

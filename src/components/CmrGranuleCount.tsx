@@ -59,6 +59,7 @@ export class CmrGranuleCount extends React.Component<ICmrGranuleCountProps, ICmr
     cmrGranuleCountRequest(this.props.orderParameters.collection.short_name,
                            Number(this.props.orderParameters.collection.version_id),
                            this.props.orderParameters.spatialSelection,
+                           this.props.orderParameters.collectionSpatialCoverage,
                            this.props.orderParameters.temporalFilterLowerBound,
                            this.props.orderParameters.temporalFilterUpperBound)
     .then((json: any) => this.setState({
