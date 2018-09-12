@@ -280,16 +280,16 @@ export class PolygonMode {
   }
 
   // Check if the given point already exists in our array
-  private verifyPoint = (point: ICartesian3): boolean => {
+  private isDuplicatePoint = (point: ICartesian3): boolean => {
     const eps = 1e-6;
     for (const p of this.points) {
       if (Math.abs(p.x - point.x) < eps &&
         Math.abs(p.y - point.y) < eps &&
         Math.abs(p.z - point.z) < eps) {
-        return false;
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   private addPoint = (position: any) => {
@@ -298,7 +298,7 @@ export class PolygonMode {
 
     // Filter out duplicate points caused by the user clicking twice on the
     // same position, or clicking and then double-clicking.
-    if (!this.verifyPoint(point)) { return; }
+    if (this.isDuplicatePoint(point)) { return; }
 
     this.points.push(point);
     this.addBillboard(point);
@@ -512,7 +512,7 @@ export class PolygonMode {
             // We used the edit box to change the coordinates.
             // Note: The "position" here is actually the cartesian3 point.
             // If point already exists, refuse to change the position.
-            if (!this.verifyPoint(position)) {
+            if (this.isDuplicatePoint(position)) {
               this.updateLonLatLabel(this.points[this.selectedPoint]);
               break;
             }
