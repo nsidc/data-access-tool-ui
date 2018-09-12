@@ -19,10 +19,14 @@ const cmrHeaders = [
   ["Client-Id", `nsidc-everest-${getEnvironment()}`],
 ];
 
-const spatialParameter = (geoJSON: IGeoJsonPolygon | null): string => {
-  if (geoJSON === null) {
-    return spatialParameter(globalSpatialSelection);
-  }
+// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
+export const spatialParameter = (spatialSelection: IGeoJsonPolygon | null,
+                                 collectionSpatialCoverage: IGeoJsonPolygon | null): string => {
+  const geoJSON = List([
+    spatialSelection,
+    collectionSpatialCoverage,
+    globalSpatialSelection,
+  ]).find((geoJsonPoly) => geoJsonPoly !== null);
 
   let param: string;
   let value: string;
@@ -121,7 +125,7 @@ export const cmrGranuleCountRequest = (collectionShortName: string,
     + `&short_name=${collectionShortName}`
     + `&${versionParameters(collectionVersion)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection)}`;
+    + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
 
   return cmrFetch(URL);
 };
@@ -136,7 +140,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection)}`;
+    + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
 
   return cmrFetch(URL);
 };
