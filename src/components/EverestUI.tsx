@@ -267,6 +267,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private hydrateState = (orderParameters: OrderParameters) => {
+    console.warn("Order parameters loaded from previous state.");
     this.handleOrderParameterChange(orderParameters);
     this.setState({stateCanBeFrozen: true});
   }
