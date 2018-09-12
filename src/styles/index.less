@@ -164,13 +164,33 @@
     .button {
       display: inline-block;
       cursor: pointer;
-      padding: 2px;
+      padding: 0;
       border-radius: 4px;
-      background: inherit;
-      border: inherit;
+      background: #303336;
+      border-width: 0;
+      color: #edffff;
+      fill: #edffff;
 
       &:hover {
-        background: #303336;
+        color: #fff;
+        fill: #fff;
+        background: #48b;
+        border-color: #aef;
+        box-shadow: 0 0 8px #fff;
+      }
+    }
+
+    img {
+      padding: 0;
+      background: #303336;
+      border: 0;
+
+      &:hover {
+        color: #fff;
+        fill: #fff;
+        background: #48b;
+        border-color: #aef;
+        box-shadow: 0 0 8px #fff;
       }
     }
 
