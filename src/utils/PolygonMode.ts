@@ -81,6 +81,7 @@ export class PolygonMode {
     this.clearAllBillboards();
     this.clearMousePoint();
     this.lonLatEnableCallback(false);
+    this.lonLatLabelCallback("");
     this.finishedDrawingCallback(this.points);
     this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
@@ -279,17 +280,28 @@ export class PolygonMode {
     return cartesian;
   }
 
+  private isDuplicatePoint = (point: ICartesian3): boolean => {
+    const tolerance = 1e-6;
+    for (const p of this.points) {
+      if (Math.abs(p.x - point.x) < tolerance &&
+        Math.abs(p.y - point.y) < tolerance &&
+        Math.abs(p.z - point.z) < tolerance) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private addPoint = (position: any) => {
     const point = this.screenPositionToPoint(position);
     if (point === null) { return; }
 
+    // Filter out duplicate points caused by the user clicking twice on the
+    // same position, or clicking and then double-clicking.
+    if (this.isDuplicatePoint(point)) { return; }
+
     this.points.push(point);
     this.addBillboard(point);
-  }
-
-  private popPoint = () => {
-    this.points.pop();
-    this.removeLastBillboard();
   }
 
   private addBillboard = (point: ICartesian3) => {
@@ -365,7 +377,7 @@ export class PolygonMode {
         this.lonLatLabelCallback("");
       }
     } catch (error) {
-      this.lonLatLabelCallback("---");
+      this.lonLatLabelCallback("");
     }
   }
 
@@ -413,10 +425,6 @@ export class PolygonMode {
             break;
           case PolygonEvent.doubleClick:
             this.state = PolygonState.donePolygon;
-            // two individual left click events fire before the double click does; this
-            // results in a duplicate of the final position at the end of
-            // `this.points` that can (and should) be safely removed
-            this.popPoint();
             if (this.points.length >= this.minPoints) {
               this.clearMousePoint();
               this.selectedPoint = -1;
@@ -503,6 +511,11 @@ export class PolygonMode {
           case PolygonEvent.lonLatTextChange:
             // We used the edit box to change the coordinates.
             // Note: The "position" here is actually the cartesian3 point.
+            // If point already exists, refuse to change the position.
+            if (this.isDuplicatePoint(position)) {
+              this.updateLonLatLabel(this.points[this.selectedPoint]);
+              break;
+            }
             this.billboardCollection.remove(this.billboards[this.selectedPoint]);
             this.billboards.splice(this.selectedPoint, 1);
             this.points.splice(this.selectedPoint, 1);
