@@ -81,6 +81,7 @@ export class PolygonMode {
     this.clearAllBillboards();
     this.clearMousePoint();
     this.lonLatEnableCallback(false);
+    this.lonLatLabelCallback("");
     this.finishedDrawingCallback(this.points);
     this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
@@ -377,7 +378,7 @@ export class PolygonMode {
         this.lonLatLabelCallback("");
       }
     } catch (error) {
-      this.lonLatLabelCallback("---");
+      this.lonLatLabelCallback("");
     }
   }
 
