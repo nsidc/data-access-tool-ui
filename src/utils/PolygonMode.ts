@@ -279,17 +279,29 @@ export class PolygonMode {
     return cartesian;
   }
 
+  // Check if the given point already exists in our array
+  private verifyPoint = (point: ICartesian3): boolean => {
+    const eps = 1e-6;
+    for (const p of this.points) {
+      if (Math.abs(p.x - point.x) < eps &&
+        Math.abs(p.y - point.y) < eps &&
+        Math.abs(p.z - point.z) < eps) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private addPoint = (position: any) => {
     const point = this.screenPositionToPoint(position);
     if (point === null) { return; }
 
+    // Filter out duplicate points caused by the user clicking twice on the
+    // same position, or clicking and then double-clicking.
+    if (!this.verifyPoint(point)) { return; }
+
     this.points.push(point);
     this.addBillboard(point);
-  }
-
-  private popPoint = () => {
-    this.points.pop();
-    this.removeLastBillboard();
   }
 
   private addBillboard = (point: ICartesian3) => {
@@ -413,10 +425,6 @@ export class PolygonMode {
             break;
           case PolygonEvent.doubleClick:
             this.state = PolygonState.donePolygon;
-            // two individual left click events fire before the double click does; this
-            // results in a duplicate of the final position at the end of
-            // `this.points` that can (and should) be safely removed
-            this.popPoint();
             if (this.points.length >= this.minPoints) {
               this.clearMousePoint();
               this.selectedPoint = -1;
@@ -503,6 +511,11 @@ export class PolygonMode {
           case PolygonEvent.lonLatTextChange:
             // We used the edit box to change the coordinates.
             // Note: The "position" here is actually the cartesian3 point.
+            // If point already exists, refuse to change the position.
+            if (!this.verifyPoint(position)) {
+              this.updateLonLatLabel(this.points[this.selectedPoint]);
+              break;
+            }
             this.billboardCollection.remove(this.billboards[this.selectedPoint]);
             this.billboards.splice(this.selectedPoint, 1);
             this.points.splice(this.selectedPoint, 1);
