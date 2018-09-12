@@ -46,7 +46,7 @@ function getEnvironmentDependentURLs() {
     return {
       hermesBaseUrl: `${window.location.hostname}/apps/orders`,
       orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/order/notification/",
+      orderNotificationPath: "/apps/orders/notification/",
     };
   }
 }
