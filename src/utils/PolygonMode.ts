@@ -280,13 +280,12 @@ export class PolygonMode {
     return cartesian;
   }
 
-  // Check if the given point already exists in our array
   private isDuplicatePoint = (point: ICartesian3): boolean => {
-    const eps = 1e-6;
+    const tolerance = 1e-6;
     for (const p of this.points) {
-      if (Math.abs(p.x - point.x) < eps &&
-        Math.abs(p.y - point.y) < eps &&
-        Math.abs(p.z - point.z) < eps) {
+      if (Math.abs(p.x - point.x) < tolerance &&
+        Math.abs(p.y - point.y) < tolerance &&
+        Math.abs(p.z - point.z) < tolerance) {
         return true;
       }
     }
