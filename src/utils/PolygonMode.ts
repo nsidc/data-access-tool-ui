@@ -312,6 +312,11 @@ export class PolygonMode {
     this.billboards.push(billboard);
   }
 
+  private removeBillboard = (index: number) => {
+    this.billboardCollection.remove(this.billboards[index]);
+    this.billboards.splice(index, 1);
+  }
+
   private removeLastBillboard = () => {
     const billboard = this.billboards.pop();
     this.billboardCollection.remove(billboard);
@@ -496,8 +501,7 @@ export class PolygonMode {
             CesiumUtils.setCursorCrosshair();
             // Remove the selected point from the stored list,
             // we will instead treat it as the "mouse point".
-            this.billboardCollection.remove(this.billboards[index]);
-            this.billboards.splice(index, 1);
+            this.removeBillboard(index);
             this.points.splice(index, 1);
             this.updateMousePoint(position);
             this.render();
@@ -516,8 +520,7 @@ export class PolygonMode {
               this.updateLonLatLabel(this.points[this.selectedPoint]);
               break;
             }
-            this.billboardCollection.remove(this.billboards[this.selectedPoint]);
-            this.billboards.splice(this.selectedPoint, 1);
+            this.removeBillboard(this.selectedPoint);
             this.points.splice(this.selectedPoint, 1);
             this.points.push(position);
             this.addBillboard(position);
