@@ -24,3 +24,5 @@ export const GranuleCount = (props: IGranuleCountProps) => {
     </span>
   );
 };
+
+(GranuleCount as React.SFC).displayName = "GranuleCount";
