@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "experimentalDecorators": true,
-        "jsx": "React",
+        "jsx": "react",
         "lib": ["es5", "dom.iterable", "es6", "es2017"],
         "module": "commonjs",
         "noImplicitReturns": true,
