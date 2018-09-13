@@ -66,36 +66,45 @@ export class CesiumAdapter {
     this.viewer.scene.primitives.removeAll();
   }
 
-  public renderCollectionCoverage(bbox: number[]) {
-    const globalBbox = [-180, -90, 180, 90];
+  public renderCollectionCoverage(bbox: number[]): void {
+    this.cameraFlyToCollectionCoverage(bbox);
 
-    if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
-      this.clearSpatialSelection();
-      this.viewer.entities.removeById("rectangle");
-      // Boulder, Colorado
-      Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
-      Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(-135, 10, -75, 70);
-      this.viewer.camera.flyHome();
-      return;
-    }
+    const ENTITY_ID = "rectangle";
 
-    const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+    // remove any already-existing collection coverage (this *should* only exist
+    // if in stand-alone app--i.e., not in Drupal--and switching the selected
+    // dataset)
+    this.viewer.entities.removeById(ENTITY_ID);
 
     this.clearSpatialSelection();
-    this.viewer.entities.removeById("rectangle");
-    this.viewer.entities.add({
-      id: "rectangle",
-      name: "rectangle",
-      rectangle: {
-        coordinates: rectangleRadians,
-        material: CesiumAdapter.extentColor,
-      },
-    });
 
-    // Fly to a position with a top-down view
+    if (!this.collectionCoverageIsGlobal(bbox)) {
+      // draw rectangle showing collection's coverage
+      const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+      this.viewer.entities.add({
+        id: ENTITY_ID,
+        name: ENTITY_ID,
+        rectangle: {
+          coordinates: rectangleRadians,
+          material: CesiumAdapter.extentColor,
+        },
+      });
+    }
+  }
+
+  private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {
+    const boulderCO = [-135, 10, -75, 70];
+    const flyToRectangle = this.collectionCoverageIsGlobal(collectionBbox) ? boulderCO : collectionBbox;
+
+    // Fly to the chosen position (collection's coverage *or* Boulder, CO) with a top-down view
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
-    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...bbox);
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...flyToRectangle);
     this.viewer.camera.flyHome();
+  }
+
+  private collectionCoverageIsGlobal(bbox: number[]): boolean {
+    const globalBbox = [-180, -90, 180, 90];
+    return bbox.every((val: number, i: number) => val === globalBbox[i]);
   }
 
   private createPolygonMode() {
