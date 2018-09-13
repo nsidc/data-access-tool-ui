@@ -76,8 +76,6 @@ export class CesiumAdapter {
     // dataset)
     this.viewer.entities.removeById(ENTITY_ID);
 
-    this.clearSpatialSelection();
-
     if (!this.collectionCoverageIsGlobal(bbox)) {
       // draw rectangle showing collection's coverage
       const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
