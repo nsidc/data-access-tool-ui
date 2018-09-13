@@ -23,6 +23,7 @@ interface IEverestProps {
 }
 
 interface IEverestState {
+  cmrGranuleCount?: number;
   cmrGranuleResponse: List<CmrGranule>;
   cmrLoading: boolean;
   cmrStatusChecked: boolean;
@@ -35,6 +36,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   public constructor(props: any) {
     super(props);
     this.state = {
+      cmrGranuleCount: undefined,
       cmrGranuleResponse: List<CmrGranule>(),
       cmrLoading: false,
       cmrStatusChecked: false,
@@ -114,6 +116,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         </div>
         <div id="right-side">
           <GranuleList
+            cmrGranuleCount={this.state.cmrGranuleCount}
             cmrGranuleResponse={this.state.cmrGranuleResponse}
             loading={this.state.cmrLoading}
             orderParameters={this.state.orderParameters} />
@@ -151,6 +154,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
+     .then(this.handleCmrGranuleResponseJSON)
      .finally(() => this.setState({cmrLoading: false}));
   }
 
@@ -183,15 +187,19 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.setState({orderParameters}, modifiedCallback);
   }
 
-  private handleCmrGranuleResponse = (response: any) => {
-    const cmrGranuleResponse = fromJS(response.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
+  private handleCmrGranuleResponse = (response: Response) => {
+    const cmrGranuleCount: number = Number(response.headers.get("CMR-Hits"));
+    this.setState({cmrGranuleCount});
+    return response.json();
+  }
+
+  private handleCmrGranuleResponseJSON = (json: any) => {
+    const cmrGranuleResponse = fromJS(json.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
 
     const granuleURs = cmrGranuleResponse.map((g: CmrGranule) => g.title);
-
     const collectionIDs = cmrGranuleResponse.map((g: CmrGranule) => g.dataset_id);
     const collectionLinks = cmrGranuleResponse.map((g: CmrGranule) => g.links.last().get("href"));
     const collectionInfo = collectionIDs.map((id: string, key: number) => List([id, collectionLinks.get(key)]));
-
     const orderSubmissionParameters = new OrderSubmissionParameters({collectionInfo, granuleURs});
 
     this.setState({cmrGranuleResponse, orderSubmissionParameters});

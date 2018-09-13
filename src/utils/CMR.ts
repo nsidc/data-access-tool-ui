@@ -63,7 +63,7 @@ const cmrFetch = (url: string) => {
 
   const onFulfilled = (response: Response) => {
     if (response.ok) {
-      return response.json();
+      return Promise.resolve(response);
     } else {
       return Promise.reject(new Error(`CMR responded with status code ${response.status}; request URL: ${url}`));
     }
@@ -82,7 +82,7 @@ if (__DEV__) {
 }
 
 export const cmrStatusRequest = () => {
-  const fetchResult = cmrFetch(CMR_STATUS_URL);
+  const fetchResult = cmrFetch(CMR_STATUS_URL).then((response: Response) => response.json());
 
   // stop mocking the CMR call and start making real calls
   if (__DEV__) {
@@ -95,30 +95,15 @@ export const cmrStatusRequest = () => {
 };
 
 export const collectionsRequest = () => {
-  return cmrFetch(CMR_COLLECTIONS_URL);
+  return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
 };
 
 export const cmrCollectionRequest = (shortName: string, version: number) => {
   const collectionUrl = CMR_COLLECTION_URL
     + `&short_name=${shortName}`
     + `&${versionParameters(version)}`;
-  return cmrFetch(collectionUrl);
+  return cmrFetch(collectionUrl).then((response: Response) => response.json());
 
-};
-
-export const cmrGranuleCountRequest = (collectionShortName: string,
-                                       collectionVersion: number,
-                                       spatialSelection: IGeoJsonPolygon,
-                                       temporalLowerBound: moment.Moment,
-                                       temporalUpperBound: moment.Moment) => {
-  const URL = CMR_COLLECTION_URL
-    + "&include_granule_counts=true"
-    + `&short_name=${collectionShortName}`
-    + `&${versionParameters(collectionVersion)}`
-    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection)}`;
-
-  return cmrFetch(URL);
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,

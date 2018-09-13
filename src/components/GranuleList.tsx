@@ -9,6 +9,7 @@ import { CmrGranuleCount } from "./CmrGranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
+  cmrGranuleCount?: number;
   cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
   orderParameters: OrderParameters;
@@ -29,8 +30,9 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     return (
       <div>
         <div id="granule-list-count-header" className="views-field">
-          You have selected <CmrGranuleCount orderParameters={this.props.orderParameters} />
-          {" "}granules.
+          You have selected
+          {" "}<CmrGranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
+          granules.
         </div>
         <div id="granule-list-container">
           {this.renderContent()}
