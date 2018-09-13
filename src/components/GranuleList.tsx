@@ -5,7 +5,7 @@ import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderParameters } from "../types/OrderParameters";
-import { CmrGranuleCount } from "./CmrGranuleCount";
+import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
@@ -31,7 +31,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       <div>
         <div id="granule-list-count-header" className="views-field">
           You have selected
-          {" "}<CmrGranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
+          {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
           granules.
         </div>
         <div id="granule-list-container">
