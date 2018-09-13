@@ -1,7 +1,8 @@
 import * as GeoJSON from "geojson";
+
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils } from "../utils/CesiumUtils";
-import { PolygonMode } from "./PolygonMode";
+import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -69,6 +70,7 @@ export class CesiumAdapter {
   public renderCollectionCoverage(bbox: number[]): void {
     this.cameraFlyToCollectionCoverage(bbox);
 
+    // TODO: "rectangle" is a dumb name
     const ENTITY_ID = "rectangle";
 
     // remove any already-existing collection coverage (this *should* only exist
@@ -88,6 +90,18 @@ export class CesiumAdapter {
         },
       });
     }
+  }
+
+  public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
+    if (spatialSelection === null) { return; }
+
+    const points = spatialSelection.geometry.coordinates[0].map((coord: number[]) => {
+      const [lon, lat] = coord;
+      return this.polygonMode.lonLatToCartesianPosition({lon, lat});
+    });
+
+    this.polygonMode.billboardCollectionFromPoints(points);
+    this.polygonMode.renderPolygonFromPoints(points);
   }
 
   private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {
@@ -115,10 +129,15 @@ export class CesiumAdapter {
         return [lonLat.lon, lonLat.lat];
       }, this);
 
-      // the last point in a polygon needs to be the first again to close it
-      lonLatsArray.push(lonLatsArray[0]);
+      let geo;
 
-      const geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
+      if (lonLatsArray.length >= MIN_VERTICES) {
+        // the last point in a polygon needs to be the first again to close it
+        lonLatsArray.push(lonLatsArray[0]);
+        geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
+      } else {
+        geo = null;
+      }
       this.updateSpatialSelection(geo);
     };
 

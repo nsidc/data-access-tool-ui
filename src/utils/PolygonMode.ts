@@ -10,7 +10,7 @@ interface ILonLat {
   readonly lon: number;
 }
 
-interface ICartesian3 {
+export interface ICartesian3 {
   x: number;
   y: number;
   z: number;
@@ -30,6 +30,8 @@ enum PolygonEvent {
   lonLatTextChange,
 }
 
+export const MIN_VERTICES = 3;
+
 export class PolygonMode {
 
   private billboards: any[] = [];
@@ -38,7 +40,6 @@ export class PolygonMode {
   private finishedDrawingCallback: any;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
-  private minPoints = 3;
   private mouseHandler: any;
   private mousePoint: ICartesian3 | null = null;
   private points: ICartesian3[] = [];
@@ -55,6 +56,7 @@ export class PolygonMode {
     this.lonLatLabelCallback = lonLatLabelCallback;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
+    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
   public start = () => {
@@ -71,8 +73,6 @@ export class PolygonMode {
       this.mouseHandler.setInputAction(this.onMouseMove,
                                       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     }
-
-    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
   public reset = () => {
@@ -130,7 +130,7 @@ export class PolygonMode {
     if (this.selectedPoint >= 0) {
       this.selectedPoint = (this.selectedPoint + 1) % this.points.length;
       this.updateLonLatLabel(this.points[this.selectedPoint]);
-      this.render();
+      this.interactionRender();
     }
   }
 
@@ -139,8 +139,66 @@ export class PolygonMode {
       this.selectedPoint = (this.selectedPoint > 0) ?
         (this.selectedPoint - 1) : (this.points.length - 1);
       this.updateLonLatLabel(this.points[this.selectedPoint]);
-      this.render();
+      this.interactionRender();
     }
+  }
+
+  public billboardCollectionFromPoints = (points: ICartesian3[]): void => {
+    this.clearAllBillboards();
+    points.forEach((point) => {
+      this.addBillboard(point);
+    });
+  }
+
+  public renderPolygonFromPoints = (points: ICartesian3[]): void => {
+    // Ensure that the points are in counterclockwise non-overlapping order.
+    const indices = this.sortedPolygonPointIndices(points);
+
+    this.points = [];
+    const billboards: any[] = [];
+    indices.forEach((index) => {
+      this.points.push(points[index]);
+      billboards.push(this.billboards[index]);
+    });
+
+    this.billboards = billboards;
+
+    // For rendering, make a copy of our reordered points
+    const pointsCopy = this.points.slice();
+
+    if (this.mousePoint !== null) {
+      this.points.pop();
+    }
+
+    // remove previously rendered polygon
+    if (this.polygon) {
+      this.scene.primitives.remove(this.polygon);
+      Cesium.destroyObject(this.polygon);
+    }
+
+    const appearance = new Cesium.EllipsoidSurfaceAppearance({
+      aboveGround: false,
+    });
+    const geometry = Cesium.PolygonGeometry.fromPositions({
+      ellipsoid: this.ellipsoid,
+      positions: pointsCopy,
+    });
+
+    const geometryInstances = new Cesium.GeometryInstance({
+      geometry,
+    });
+    this.polygon = new Cesium.Primitive({
+      appearance,
+      asynchronous: false,
+      geometryInstances,
+    });
+    this.scene.primitives.add(this.polygon);
+  }
+
+  public lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
+    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
+    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
+    return point;
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
@@ -161,12 +219,6 @@ export class PolygonMode {
       lon = -lon;
     }
     return {lat, lon};
-  }
-
-  private lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
-    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
-    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
-    return point;
   }
 
   // To avoid bow-ties if the user draws the points in a strange order,
@@ -216,57 +268,15 @@ export class PolygonMode {
     return indices;
   }
 
-  private render = () => {
+  private interactionRender = () => {
     // gather all the points; rendering doesn't care about the distinction
     // between clicked points and the point following the cursor
-    const origPoints = (this.mousePoint !== null) ?
+    const points = (this.mousePoint !== null) ?
       this.points.concat([this.mousePoint]) : this.points.slice();
 
     // if we meet the minimum points requirement, render the polygon
-    if (origPoints.length >= this.minPoints) {
-
-      // Ensure that the points are in counterclockwise non-overlapping order.
-      const indices = this.sortedPolygonPointIndices(origPoints);
-
-      this.points = [];
-      const billboards: any[] = [];
-      indices.forEach((index) => {
-        this.points.push(origPoints[index]);
-        billboards.push(this.billboards[index]);
-      });
-
-      this.billboards = billboards;
-
-      // For rendering, make a copy of our reordered points
-      const points = this.points.slice();
-
-      if (this.mousePoint !== null) {
-        this.points.pop();
-      }
-
-      // remove previously rendered polygon
-      if (this.polygon) {
-        this.scene.primitives.remove(this.polygon);
-        Cesium.destroyObject(this.polygon);
-      }
-
-      const appearance = new Cesium.EllipsoidSurfaceAppearance({
-        aboveGround: false,
-      });
-      const geometry = Cesium.PolygonGeometry.fromPositions({
-        ellipsoid: this.ellipsoid,
-        positions: points,
-      });
-
-      const geometryInstances = new Cesium.GeometryInstance({
-        geometry,
-      });
-      this.polygon = new Cesium.Primitive({
-        appearance,
-        asynchronous: false,
-        geometryInstances,
-      });
-      this.scene.primitives.add(this.polygon);
+    if (points.length >= MIN_VERTICES) {
+      this.renderPolygonFromPoints(points);
     }
 
     this.drawSelectedPoint();
@@ -421,19 +431,19 @@ export class PolygonMode {
             // Add a new point to the polygon, keep drawing
             this.addPoint(position);
             this.clearMousePoint();
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
             this.updateLonLatLabel(this.mousePoint);
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.doubleClick:
             this.state = PolygonState.donePolygon;
-            if (this.points.length >= this.minPoints) {
+            if (this.points.length >= MIN_VERTICES) {
               this.clearMousePoint();
               this.selectedPoint = -1;
-              this.render();
+              this.interactionRender();
               this.finishedDrawingCallback(this.points);
             }
             break;
@@ -456,7 +466,7 @@ export class PolygonMode {
               this.selectedPoint = index;
               this.updateLonLatLabel(this.points[this.selectedPoint]);
               this.lonLatEnableCallback(true);
-              this.render();
+              this.interactionRender();
             }
             break;
           case PolygonEvent.moveMouse:
@@ -485,14 +495,14 @@ export class PolygonMode {
               this.state = PolygonState.donePolygon;
               this.lonLatEnableCallback(false);
               this.selectedPoint = -1;
-              this.render();
+              this.interactionRender();
               break;
             }
             if (this.selectedPoint !== index) {
               // We clicked on a new point, so select it instead
               this.selectedPoint = index;
               this.updateLonLatLabel(this.points[this.selectedPoint]);
-              this.render();
+              this.interactionRender();
               break;
             }
             // We clicked on the selected point
@@ -504,7 +514,7 @@ export class PolygonMode {
             this.removeBillboard(index);
             this.points.splice(index, 1);
             this.updateMousePoint(position);
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(position);
@@ -526,7 +536,7 @@ export class PolygonMode {
             this.addBillboard(position);
             // Our selected point will now be at the end of the list
             this.selectedPoint = this.billboards.length - 1;
-            this.render();
+            this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
         }
@@ -547,7 +557,7 @@ export class PolygonMode {
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
             this.updateLonLatLabel(this.mousePoint);
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.doubleClick:
             // nop - this allows doubleClick to immediately select and start moving a point

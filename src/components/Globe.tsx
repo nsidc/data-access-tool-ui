@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import "../styles/index.less";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
@@ -33,7 +34,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public componentDidMount() {
     this.cesiumAdapter.createViewer();
-    if (this.props.collectionSpatialCoverage) {
+    if (this.props.collectionSpatialCoverage !== null) {
       this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
     }
   }
@@ -46,9 +47,13 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public componentDidUpdate(prevProps: IGlobeProps) {
     if (hasChanged(prevProps, this.props, ["collectionSpatialCoverage"])) {
-      if (this.props.collectionSpatialCoverage) {
+      if (this.props.collectionSpatialCoverage !== null) {
         this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
       }
+    }
+
+    if (hasChanged(prevProps, this.props, ["spatialSelection"])) {
+      this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
     }
   }
 
