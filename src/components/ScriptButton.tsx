@@ -8,7 +8,7 @@ import { hasChanged } from "../utils/hasChanged";
 
 interface IScriptButtonProps {
   disabled: boolean;
-  cmrResponse?: List<CmrGranule>;
+  cmrGranuleResponse?: List<CmrGranule>;
   environment: IEnvironment;
   loggedOut: boolean;
 }
@@ -19,13 +19,13 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
   }
 
   public shouldComponentUpdate(nextProps: IScriptButtonProps) {
-    return hasChanged(this.props, nextProps, ["cmrResponse", "disabled"]);
+    return hasChanged(this.props, nextProps, ["cmrGranuleResponse", "disabled"]);
   }
 
   public render() {
     let urls: List<string> = List<string>();
-    if (this.props.cmrResponse) {
-      urls = this.props.cmrResponse
+    if (this.props.cmrGranuleResponse) {
+      urls = this.props.cmrGranuleResponse
                .flatMap((granule: CmrGranule = new CmrGranule()) =>
                  granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
     }

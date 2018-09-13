@@ -9,7 +9,7 @@ import { CmrGranuleCount } from "./CmrGranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
-  cmrResponse: List<CmrGranule>;
+  cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
   orderParameters: OrderParameters;
 }
@@ -18,10 +18,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
-    const cmrResponseChanged = !this.props.cmrResponse.equals(nextProps.cmrResponse);
+    const cmrGranuleResponseChanged = !this.props.cmrGranuleResponse.equals(nextProps.cmrGranuleResponse);
     const loadingChanged = this.props.loading !== nextProps.loading;
 
-    return cmrResponseChanged || loadingChanged;
+    return cmrGranuleResponseChanged || loadingChanged;
   }
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
@@ -40,7 +40,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderContent = () => {
-    const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
+    const granuleList = this.props.cmrGranuleResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
       const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
       return (
         <tr key={i}>
