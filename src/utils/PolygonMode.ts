@@ -60,18 +60,7 @@ export class PolygonMode {
 
   public start = () => {
     this.reset();
-    if (!this.mouseHandler) {
-      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
-
-      this.mouseHandler.setInputAction(this.onLeftClick,
-                                      Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
-                                      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-      this.mouseHandler.setInputAction(this.onMouseMove,
-                                      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    }
+    this.initializeMouseHandler();
     this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
@@ -199,6 +188,21 @@ export class PolygonMode {
     const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
     const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
     return point;
+  }
+
+  public initializeMouseHandler = () => {
+    if (!this.mouseHandler) {
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+
+      this.mouseHandler.setInputAction(this.onLeftClick,
+                                       Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
+                                       Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+      this.mouseHandler.setInputAction(this.onMouseMove,
+                                       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
@@ -581,5 +585,4 @@ export class PolygonMode {
   private onMouseMove = ({endPosition}: any) => {
     this.stateTransition(PolygonEvent.moveMouse, endPosition);
   }
-
 }
