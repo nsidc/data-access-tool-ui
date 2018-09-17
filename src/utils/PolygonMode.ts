@@ -56,7 +56,6 @@ export class PolygonMode {
     this.lonLatLabelCallback = lonLatLabelCallback;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
-    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
   public start = () => {
@@ -73,6 +72,7 @@ export class PolygonMode {
       this.mouseHandler.setInputAction(this.onMouseMove,
                                       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     }
+    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 
   public reset = () => {
