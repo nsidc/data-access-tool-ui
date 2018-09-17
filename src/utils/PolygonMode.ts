@@ -133,6 +133,7 @@ export class PolygonMode {
   }
 
   public billboardCollectionFromPoints = (points: ICartesian3[]): void => {
+    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
     this.clearAllBillboards();
     points.forEach((point) => {
       this.addBillboard(point);
@@ -203,6 +204,10 @@ export class PolygonMode {
       this.mouseHandler.setInputAction(this.onMouseMove,
                                        Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     }
+  }
+
+  public setStateDoneDrawing() {
+    this.state = PolygonState.donePolygon;
   }
 
   private parseLonLat(sLonLat: string): ILonLat {

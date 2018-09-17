@@ -102,6 +102,8 @@ export class CesiumAdapter {
 
     this.polygonMode.billboardCollectionFromPoints(points);
     this.polygonMode.renderPolygonFromPoints(points);
+    this.polygonMode.initializeMouseHandler();
+    this.polygonMode.setStateDoneDrawing();
   }
 
   private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {
