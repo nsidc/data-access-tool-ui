@@ -58,7 +58,6 @@ export class PolygonMode {
   }
 
   public start = () => {
-    this.reset();
     if (!this.mouseHandler) {
       this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
 
@@ -80,6 +79,7 @@ export class PolygonMode {
     this.points = [];
     this.clearAllBillboards();
     this.clearMousePoint();
+    this.scene.primitives.removeAll();
     this.lonLatEnableCallback(false);
     this.lonLatLabelCallback("");
     this.finishedDrawingCallback(this.points);
