@@ -67,7 +67,7 @@ export class PolygonMode {
   public start = () => {
     this.reset();
     this.initializeMouseHandler();
-    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
+    this.initializeBillboardCollection();
   }
 
   public reset = () => {
@@ -139,8 +139,10 @@ export class PolygonMode {
   }
 
   public billboardCollectionFromPoints = (points: ICartesian3[]): void => {
-    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
     this.clearAllBillboards();
+
+    this.initializeBillboardCollection();
+
     points.forEach((point) => {
       this.addBillboard(point);
     });
@@ -346,7 +348,9 @@ export class PolygonMode {
   }
 
   private clearAllBillboards = () => {
-    this.billboards.forEach((b) => this.billboardCollection.remove(b));
+    if (this.billboardCollection) {
+      this.billboards.forEach((b) => this.billboardCollection.remove(b));
+    }
     this.billboards = [];
   }
 
@@ -593,5 +597,9 @@ export class PolygonMode {
 
   private onMouseMove = ({endPosition}: any) => {
     this.stateTransition(PolygonEvent.moveMouse, endPosition);
+  }
+
+  private initializeBillboardCollection = () => {
+    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 }
