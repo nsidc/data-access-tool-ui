@@ -143,12 +143,19 @@ export class PolygonMode {
 
     this.initializeBillboardCollection();
 
+    if (cartesiansEqual(points[0], points[points.length - 1])) {
+      points.pop();
+    }
     points.forEach((point) => {
       this.addBillboard(point);
     });
   }
 
   public renderPolygonFromPoints = (points: ICartesian3[]): void => {
+    if (cartesiansEqual(points[0], points[points.length - 1])) {
+      points.pop();
+    }
+
     // Ensure that the points are in counterclockwise non-overlapping order.
     const indices = this.sortedPolygonPointIndices(points);
 
