@@ -30,6 +30,12 @@ enum PolygonEvent {
   lonLatTextChange,
 }
 
+const cartesiansEqual = (p1: ICartesian3, p2: ICartesian3, tolerance: number = 0): boolean => {
+  return (Math.abs(p1.x - p2.x) <= tolerance
+          && Math.abs(p1.y - p2.y) <= tolerance
+          && Math.abs(p1.z - p2.z) <= tolerance);
+};
+
 export const MIN_VERTICES = 3;
 
 export class PolygonMode {
@@ -302,9 +308,7 @@ export class PolygonMode {
   private isDuplicatePoint = (point: ICartesian3): boolean => {
     const tolerance = 1e-6;
     for (const p of this.points) {
-      if (Math.abs(p.x - point.x) < tolerance &&
-        Math.abs(p.y - point.y) < tolerance &&
-        Math.abs(p.z - point.z) < tolerance) {
+      if (cartesiansEqual(point, p, tolerance)) {
         return true;
       }
     }
