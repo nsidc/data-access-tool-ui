@@ -220,18 +220,14 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCollectionChange = (collection: any) => {
+    const boundingBoxes = collection.boxes;
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
+
     this.handleOrderParameterChange({
       collection,
+      collectionSpatialCoverage,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    }, this.resetCollectionSpatialCoverage);
-  }
-
-  private resetCollectionSpatialCoverage = () => {
-    const boundingBoxes = this.state.orderParameters.collection.boxes;
-    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
-    this.handleOrderParameterChange({
-      collectionSpatialCoverage,
     });
   }
 
