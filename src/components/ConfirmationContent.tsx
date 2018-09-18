@@ -73,3 +73,7 @@ export const OrderSuccessContent = (props: IOrderSuccessContentProps) => {
     </div>
   );
 };
+
+(OrderConfirmationContent as React.SFC).displayName = "OrderConfirmationContent";
+(OrderErrorContent as React.SFC).displayName = "OrderErrorContent";
+(OrderSuccessContent as React.SFC).displayName = "OrderSuccessContent";
