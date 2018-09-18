@@ -39,7 +39,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
           <img className="img-no-border-left callout" src={callout} />
         </span>
         <button
-          className="submit-button eui-btn--green"
+          className="submit-button eui-btn--blue"
           disabled={this.props.disabled}
           onClick={this.handleClick}>
           {this.props.buttonText}
