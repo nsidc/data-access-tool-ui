@@ -7,6 +7,20 @@ import { Globe } from "../src/components/Globe";
 const setup = () => {
   const props = {
     onSpatialSelectionChange: jest.fn(),
+    collectionSpatialCoverage: {
+      bbox: [0, 0, 0, 0],
+      geometry: {
+        coordinates: [[
+          [0, 0],
+          [0, 0],
+          [0, 0],
+          [0, 0],
+          [0, 0],
+        ]],
+        type: "Polygon",
+      },
+      type: "Feature",
+    },
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {

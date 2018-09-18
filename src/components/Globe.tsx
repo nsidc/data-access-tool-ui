@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import "../styles/index.less";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
@@ -8,8 +9,9 @@ import { HelpText } from "./HelpText";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
-  spatialSelection: IGeoJsonPolygon;
-  onSpatialSelectionChange: (s: IGeoJsonPolygon) => void;
+  collectionSpatialCoverage: IGeoJsonPolygon | null;
+  spatialSelection: IGeoJsonPolygon | null;
+  onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
 }
 
 interface IGlobeState {
@@ -31,18 +33,26 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public componentDidMount() {
     this.cesiumAdapter.createViewer();
-    this.cesiumAdapter.renderCollectionCoverage(this.props.spatialSelection.bbox);
+    if (this.props.collectionSpatialCoverage !== null) {
+      this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+    }
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection", "collectionSpatialCoverage"]);
     const stateChanged = hasChanged(this.state, nextState, ["lonLatEnable", "lonLatLabel"]);
     return propsChanged || stateChanged;
   }
 
-  public componentDidUpdate() {
-    if (this.props.spatialSelection.bbox) {
-      this.cesiumAdapter.renderCollectionCoverage(this.props.spatialSelection.bbox);
+  public componentDidUpdate(prevProps: IGlobeProps) {
+    if (hasChanged(prevProps, this.props, ["collectionSpatialCoverage"])) {
+      if (this.props.collectionSpatialCoverage !== null) {
+        this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+      }
+    }
+
+    if (hasChanged(prevProps, this.props, ["spatialSelection"])) {
+      this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
     }
   }
 
@@ -109,5 +119,4 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         break;
     }
   }
-
 }

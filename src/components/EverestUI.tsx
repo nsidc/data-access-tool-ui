@@ -136,7 +136,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
     if (this.state.orderParameters.collection
         && this.state.orderParameters.collection.id
-        && this.state.orderParameters.spatialSelection
         && this.state.orderParameters.temporalFilterLowerBound
         && this.state.orderParameters.temporalFilterUpperBound) {
       this.handleCmrGranuleRequest();
@@ -151,6 +150,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.collection.short_name,
       Number(this.state.orderParameters.collection.version_id),
       this.state.orderParameters.spatialSelection,
+      this.state.orderParameters.collectionSpatialCoverage,
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
@@ -166,13 +166,27 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     // @ts-ignore 2322
     let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
 
-    // really dumb way to get around issue where if spatialSelection is part
-    // of the new parameters, it gets turned into a Map in the merge above; we
-    // always want it to be a POJO
+    let aGeoJsonPolygonWasUpdated: boolean = false;
+
+    let spatialSelection = orderParameters.spatialSelection;
     if (newOrderParameters.spatialSelection) {
+      aGeoJsonPolygonWasUpdated = true;
+      spatialSelection = newOrderParameters.spatialSelection;
+    }
+
+    let collectionSpatialCoverage = orderParameters.collectionSpatialCoverage;
+    if (newOrderParameters.collectionSpatialCoverage) {
+      aGeoJsonPolygonWasUpdated = true;
+      collectionSpatialCoverage = newOrderParameters.collectionSpatialCoverage;
+    }
+
+    // ensure the GeoJSON polygons are POJOS; with the .merge() call above,
+    // they are converted to Immutable Maps
+    if (aGeoJsonPolygonWasUpdated) {
       orderParameters = new OrderParameters({
         collection: orderParameters.collection,
-        spatialSelection: newOrderParameters.spatialSelection,
+        collectionSpatialCoverage,
+        spatialSelection,
         temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
         temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
       });
@@ -213,17 +227,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCollectionChange = (collection: any) => {
+    const boundingBoxes = collection.boxes;
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
+
     this.handleOrderParameterChange({
       collection,
+      collectionSpatialCoverage,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    }, this.setSpatialSelectionToCollectionDefault);
-  }
-
-  private setSpatialSelectionToCollectionDefault = () => {
-    const boundingBoxes = this.state.orderParameters.collection.boxes;
-    const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
-    this.handleOrderParameterChange({spatialSelection});
+    });
   }
 
   private handleCmrCollectionResponse = (response: any) => {
@@ -236,10 +248,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     const collection = cmrCollections.first();
-    const spatialSelection = cmrBoxArrToSpatialSelection(collection.boxes);
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(collection.boxes);
     this.handleOrderParameterChange({
       collection,
-      spatialSelection,
+      collectionSpatialCoverage,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
     });
