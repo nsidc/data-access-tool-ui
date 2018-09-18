@@ -163,23 +163,23 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     // @ts-ignore 2322
     let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
 
-    // stupid thing to make sure spatialSelection and collectionSpatialCoverage
-    // are POJOs
-    let thing: boolean = false;
+    let aGeoJsonPolygonWasUpdated: boolean = false;
 
     let spatialSelection = orderParameters.spatialSelection;
     if (newOrderParameters.spatialSelection) {
-      thing = true;
+      aGeoJsonPolygonWasUpdated = true;
       spatialSelection = newOrderParameters.spatialSelection;
     }
 
     let collectionSpatialCoverage = orderParameters.collectionSpatialCoverage;
     if (newOrderParameters.collectionSpatialCoverage) {
-      thing = true;
+      aGeoJsonPolygonWasUpdated = true;
       collectionSpatialCoverage = newOrderParameters.collectionSpatialCoverage;
     }
 
-    if (thing) {
+    // ensure the GeoJSON polygons are POJOS; with the .merge() call above,
+    // they are converted to Immutable Maps
+    if (aGeoJsonPolygonWasUpdated) {
       orderParameters = new OrderParameters({
         collection: orderParameters.collection,
         collectionSpatialCoverage,
