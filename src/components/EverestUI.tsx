@@ -7,7 +7,7 @@ import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
-import { cmrBoxArrToSpatialSelection } from "../utils/CMR";
+import { CMR_COUNT_HEADER_NAME, cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { CmrDownBanner } from "./CmrDownBanner";
@@ -188,7 +188,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
-    const cmrGranuleCount: number = Number(response.headers.get("CMR-Hits"));
+    const cmrGranuleCount: number = Number(response.headers.get(CMR_COUNT_HEADER_NAME));
     this.setState({cmrGranuleCount});
     return response.json();
   }
