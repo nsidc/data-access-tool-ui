@@ -445,9 +445,9 @@ export class PolygonMode {
   //   lonLatTextChange: nop
 
   private stateTransition = (event: PolygonEvent, position: any) => {
-//    if (event !== PolygonEvent.moveMouse) {
-//      console.log("state=" + this.state + " event=" + event);
-//    }
+    // if (event !== PolygonEvent.moveMouse) {
+    // console.log("state=" + this.state + " event=" + event);
+    // }
     switch (this.state) {
       case PolygonState.drawingPolygon:
         switch (event) {
