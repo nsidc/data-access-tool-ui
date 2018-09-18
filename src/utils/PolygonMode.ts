@@ -65,7 +65,6 @@ export class PolygonMode {
   }
 
   public start = () => {
-    this.reset();
     this.initializeMouseHandler();
     this.initializeBillboardCollection();
   }
@@ -75,6 +74,7 @@ export class PolygonMode {
     this.points = [];
     this.clearAllBillboards();
     this.clearMousePoint();
+    this.scene.primitives.removeAll();
     this.lonLatEnableCallback(false);
     this.lonLatLabelCallback("");
     this.finishedDrawingCallback(this.points);

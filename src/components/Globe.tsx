@@ -11,7 +11,6 @@ import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 interface IGlobeProps {
   collectionSpatialCoverage: IGeoJsonPolygon | null;
   spatialSelection: IGeoJsonPolygon | null;
-  resetSpatialSelection: () => void;
   onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
 }
 
@@ -70,13 +69,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
           <SpatialSelectionToolbar
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
-              this.cesiumAdapter.polygonMode.start();
+              this.cesiumAdapter.startSpatialSelection();
               CesiumUtils.setCursorCrosshair();
             }}
             onClickReset={() => {
-              this.cesiumAdapter.polygonMode.reset();
               this.cesiumAdapter.clearSpatialSelection();
-              this.props.resetSpatialSelection();
             }} />
           <div id="credit" />
         </div>

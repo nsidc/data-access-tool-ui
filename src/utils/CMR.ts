@@ -10,10 +10,12 @@ const __DEV__ = false;  // set to true to test CMR failure case in development
 // Note!
 // Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
-export const CMR_STATUS_URL = CMR_URL + "/search/health";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=2000&provider=NSIDC_ECS&sort_key=short_name";
+
+export const CMR_COUNT_HEADER_NAME = "CMR-Hits";
+export const CMR_STATUS_URL = CMR_URL + "/search/health";
 
 const cmrHeaders = [
   ["Client-Id", `nsidc-everest-${getEnvironment()}`],
@@ -71,7 +73,7 @@ const cmrFetch = (url: string) => {
 
   const onFulfilled = (response: Response) => {
     if (response.ok) {
-      return response.json();
+      return Promise.resolve(response);
     } else {
       return Promise.reject(new Error(`CMR responded with status code ${response.status}; request URL: ${url}`));
     }
@@ -90,7 +92,7 @@ if (__DEV__) {
 }
 
 export const cmrStatusRequest = () => {
-  const fetchResult = cmrFetch(CMR_STATUS_URL);
+  const fetchResult = cmrFetch(CMR_STATUS_URL).then((response: Response) => response.json());
 
   // stop mocking the CMR call and start making real calls
   if (__DEV__) {
@@ -103,31 +105,14 @@ export const cmrStatusRequest = () => {
 };
 
 export const collectionsRequest = () => {
-  return cmrFetch(CMR_COLLECTIONS_URL);
+  return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
 };
 
 export const cmrCollectionRequest = (shortName: string, version: number) => {
   const collectionUrl = CMR_COLLECTION_URL
     + `&short_name=${shortName}`
     + `&${versionParameters(version)}`;
-  return cmrFetch(collectionUrl);
-
-};
-
-export const cmrGranuleCountRequest = (collectionShortName: string,
-                                       collectionVersion: number,
-                                       spatialSelection: IGeoJsonPolygon | null,
-                                       collectionSpatialCoverage: IGeoJsonPolygon | null,
-                                       temporalLowerBound: moment.Moment,
-                                       temporalUpperBound: moment.Moment) => {
-  const URL = CMR_COLLECTION_URL
-    + "&include_granule_counts=true"
-    + `&short_name=${collectionShortName}`
-    + `&${versionParameters(collectionVersion)}`
-    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
-
-  return cmrFetch(URL);
+  return cmrFetch(collectionUrl).then((response: Response) => response.json());
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,

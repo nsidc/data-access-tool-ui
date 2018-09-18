@@ -15,7 +15,6 @@ interface IOrderParametersProps {
   environment: IEnvironment;
   onChange: any;
   orderParameters: OrderParameters;
-  resetSpatialSelection: any;
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
@@ -37,8 +36,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
-          spatialSelection={this.props.orderParameters.spatialSelection}
-          resetSpatialSelection={this.props.resetSpatialSelection} />
+          spatialSelection={this.props.orderParameters.spatialSelection} />
         <div id="version">Download Data UI v{EVEREST_UI_VERSION}</div>
       </div>
     );

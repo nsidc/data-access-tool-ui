@@ -5,11 +5,12 @@ import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderParameters } from "../types/OrderParameters";
-import { CmrGranuleCount } from "./CmrGranuleCount";
+import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
-  cmrResponse: List<CmrGranule>;
+  cmrGranuleCount?: number;
+  cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
   orderParameters: OrderParameters;
 }
@@ -18,10 +19,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
-    const cmrResponseChanged = !this.props.cmrResponse.equals(nextProps.cmrResponse);
+    const cmrGranuleResponseChanged = !this.props.cmrGranuleResponse.equals(nextProps.cmrGranuleResponse);
     const loadingChanged = this.props.loading !== nextProps.loading;
 
-    return cmrResponseChanged || loadingChanged;
+    return cmrGranuleResponseChanged || loadingChanged;
   }
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
@@ -29,8 +30,9 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     return (
       <div>
         <div id="granule-list-count-header" className="views-field">
-          You have selected <CmrGranuleCount orderParameters={this.props.orderParameters} />
-          {" "}granules.
+          You have selected
+          {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
+          granules.
         </div>
         <div id="granule-list-container">
           {this.renderContent()}
@@ -40,7 +42,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderContent = () => {
-    const granuleList = this.props.cmrResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
+    const granuleList = this.props.cmrGranuleResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
       const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
       return (
         <tr key={i}>
