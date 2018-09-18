@@ -63,7 +63,10 @@ export class CesiumAdapter {
 
   public clearSpatialSelection() {
     this.polygonMode.reset();
-    this.viewer.scene.primitives.removeAll();
+  }
+
+  public startSpatialSelection() {
+    this.polygonMode.start();
   }
 
   public renderCollectionCoverage(bbox: number[]) {
