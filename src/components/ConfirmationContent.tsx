@@ -16,7 +16,7 @@ export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) 
         Your download order is about to be submitted. You will be able to view
         the status of your order on the Orders page.
       </p>
-      <button className="submit-button eui-btn--green"
+      <button className="submit-button eui-btn--blue"
               onClick={props.onOK}>
         OK
       </button>
@@ -66,10 +66,14 @@ export const OrderSuccessContent = (props: IOrderSuccessContentProps) => {
         Your download order has been submitted. You may view the status of your
         order ({orderId}) on the <a href={props.environment.urls.profileUrl}>Orders page</a>.
       </p>
-      <button className="submit-button eui-btn--green"
+      <button className="submit-button eui-btn--blue"
               onClick={props.onOK}>
         OK
       </button>
     </div>
   );
 };
+
+(OrderConfirmationContent as React.SFC).displayName = "OrderConfirmationContent";
+(OrderErrorContent as React.SFC).displayName = "OrderErrorContent";
+(OrderSuccessContent as React.SFC).displayName = "OrderSuccessContent";
