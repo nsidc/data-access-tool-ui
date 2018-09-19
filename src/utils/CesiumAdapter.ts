@@ -97,15 +97,7 @@ export class CesiumAdapter {
   public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
     if (spatialSelection === null) { return; }
 
-    const points = spatialSelection.geometry.coordinates[0].map((coord: number[]) => {
-      const [lon, lat] = coord;
-      return this.polygonMode.lonLatToCartesianPosition({lon, lat});
-    });
-
-    this.polygonMode.billboardCollectionFromPoints(points);
-    this.polygonMode.renderPolygonFromPoints(points);
-    this.polygonMode.initializeMouseHandler();
-    this.polygonMode.setStateDoneDrawing();
+    this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
   }
 
   private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {

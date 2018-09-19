@@ -137,7 +137,25 @@ export class PolygonMode {
     }
   }
 
-  public billboardCollectionFromPoints = (points: ICartesian3[]): void => {
+  public lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
+    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
+    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
+    return point;
+  }
+
+  public polygonFromLonLats(lonLatsArray: number[][]) {
+    const cartesianPoints = lonLatsArray.map((coord: number[]) => {
+      const [lon, lat] = coord;
+      return this.lonLatToCartesianPosition({lon, lat});
+    });
+
+    this.billboardCollectionFromPoints(cartesianPoints);
+    this.renderPolygonFromPoints(cartesianPoints);
+    this.initializeMouseHandler();
+    this.state = PolygonState.donePolygon;
+  }
+
+  private billboardCollectionFromPoints = (points: ICartesian3[]): void => {
     this.clearAllBillboards();
     this.initializeBillboardCollection();
 
@@ -148,7 +166,22 @@ export class PolygonMode {
     });
   }
 
-  public renderPolygonFromPoints = (points: ICartesian3[]): void => {
+  private initializeMouseHandler = () => {
+    if (!this.mouseHandler) {
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+
+      this.mouseHandler.setInputAction(this.onLeftClick,
+                                       Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
+                                       Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+      this.mouseHandler.setInputAction(this.onMouseMove,
+                                       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }
+  }
+
+  private renderPolygonFromPoints = (points: ICartesian3[]): void => {
     points = this.uncloseClosedPolygonPoints(points);
 
     // Ensure that the points are in counterclockwise non-overlapping order.
@@ -187,31 +220,6 @@ export class PolygonMode {
       geometryInstances,
     });
     this.scene.primitives.add(this.polygon);
-  }
-
-  public lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
-    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
-    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
-    return point;
-  }
-
-  public initializeMouseHandler = () => {
-    if (!this.mouseHandler) {
-      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
-
-      this.mouseHandler.setInputAction(this.onLeftClick,
-                                       Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
-                                       Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-      this.mouseHandler.setInputAction(this.onMouseMove,
-                                       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    }
-  }
-
-  public setStateDoneDrawing() {
-    this.state = PolygonState.donePolygon;
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
