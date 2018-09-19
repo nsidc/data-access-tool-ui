@@ -139,7 +139,6 @@ export class PolygonMode {
 
   public billboardCollectionFromPoints = (points: ICartesian3[]): void => {
     this.clearAllBillboards();
-
     this.initializeBillboardCollection();
 
     if (cartesiansEqual(points[0], points[points.length - 1])) {
