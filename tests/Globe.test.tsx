@@ -1,7 +1,7 @@
 import { shallow } from "enzyme";
 import * as React from "react";
-jest.mock("../src/utils/CesiumAdapter");
 
+jest.mock("../src/utils/CesiumAdapter");
 import { Globe } from "../src/components/Globe";
 
 const setup = () => {
