@@ -40,7 +40,6 @@ export const MIN_VERTICES = 3;
 
 export class PolygonMode {
 
-  private billboards: any[] = [];
   private billboardCollection: any;
   private ellipsoid: any;
   private finishedDrawingCallback: any;
@@ -160,13 +159,9 @@ export class PolygonMode {
     const indices = this.sortedPolygonPointIndices(points);
 
     this.points = [];
-    const billboards: any[] = [];
     indices.forEach((index) => {
       this.points.push(points[index]);
-      billboards.push(this.billboards[index]);
     });
-
-    this.billboards = billboards;
 
     // For rendering, make a copy of our reordered points
     const pointsCopy = this.points.slice();
@@ -336,29 +331,50 @@ export class PolygonMode {
     this.addBillboard(point);
   }
 
+  private initializeBillboardCollection = () => {
+    this.billboardCollection = new Cesium.BillboardCollection();
+    this.scene.primitives.add(this.billboardCollection);
+  }
+
   private addBillboard = (point: ICartesian3) => {
-    const billboard = this.billboardCollection.add({
+    this.billboardCollection.add({
       image: dragImg,
       position: point,
     });
-    this.billboards.push(billboard);
   }
 
   private removeBillboard = (index: number) => {
-    this.billboardCollection.remove(this.billboards[index]);
-    this.billboards.splice(index, 1);
+    this.billboardCollection.remove(this.billboardCollection.get(index));
   }
 
   private removeLastBillboard = () => {
-    const billboard = this.billboards.pop();
-    this.billboardCollection.remove(billboard);
+    const lastIndex = this.billboardCollectionLength() - 1;
+    this.removeBillboard(lastIndex);
   }
 
   private clearAllBillboards = () => {
-    if (this.billboardCollection) {
-      this.billboards.forEach((b) => this.billboardCollection.remove(b));
+    if (this.billboardCollection && (this.billboardCollection.length > 0)) {
+      this.billboardCollection.removeAll();
     }
-    this.billboards = [];
+  }
+
+  private indexOfBillboard = (billboard: any): number => {
+    if (!this.billboardCollection.contains(billboard)) { return -1; }
+
+    for (let index = 0; index < this.billboardCollectionLength(); index++) {
+      if (billboard === this.billboardCollection.get(index)) {
+        return index;
+      }
+    }
+
+    // this point should never be reached; either -1 is returned immediately or
+    // the right billboard is found in the for loop
+    console.warn("PolygonMode.indexOfBillboard returning -1 after iteration");
+    return -1;
+  }
+
+  private billboardCollectionLength = (): number => {
+    return this.billboardCollection ? this.billboardCollection.length : 0;
   }
 
   private updateMousePoint = (position: any) => {
@@ -370,32 +386,35 @@ export class PolygonMode {
     this.addBillboard(point);
 
     // Our selected point will now be at the end of the list
-    this.selectedPoint = this.billboards.length - 1;
+    this.selectedPoint = this.billboardCollectionLength() - 1;
   }
 
   private clearMousePoint = () => {
     this.mousePoint = null;
 
-    if (this.billboards.length === (this.points.length + 1)) {
+    if (this.billboardCollectionLength() === (this.points.length + 1)) {
       this.removeLastBillboard();
     }
   }
 
   private drawSelectedPoint = () => {
-    this.billboards.forEach((b) => {
-      b.color = Cesium.Color.WHITE;
-      b.scale = 1.0;
-    });
-    if (this.selectedPoint >= 0 && this.selectedPoint < this.billboards.length) {
-      this.billboards[this.selectedPoint].color = Cesium.Color.CHARTREUSE;
-      this.billboards[this.selectedPoint].scale = 1.5;
+    for (let index = 0; index < this.billboardCollectionLength(); index++) {
+      const billboard = this.billboardCollection.get(index);
+
+      if (index === this.selectedPoint) {
+        billboard.color = Cesium.Color.CHARTREUSE;
+        billboard.scale = 1.5;
+      } else {
+        billboard.color = Cesium.Color.WHITE;
+        billboard.scale = 1.0;
+      }
     }
   }
 
   private handleMouseCursor(position: any) {
     const mouseoverFeature = this.scene.pick(position);
     const mouseoverIndex = (mouseoverFeature !== undefined) ?
-      this.billboards.indexOf(mouseoverFeature.primitive) : -1;
+      this.indexOfBillboard(mouseoverFeature.primitive) : -1;
     if (mouseoverIndex >= 0) {
       CesiumUtils.setCursorCrosshair();
     } else {
@@ -483,7 +502,7 @@ export class PolygonMode {
             if (this.points.length === 0) { break; }
             const pickedFeature = this.scene.pick(position);
             const index = (pickedFeature !== undefined) ?
-              this.billboards.indexOf(pickedFeature.primitive) : -1;
+              this.indexOfBillboard(pickedFeature.primitive) : -1;
             if (index >= 0) {
               // We clicked on one of the polygon points
               this.state = PolygonState.pointSelected;
@@ -513,7 +532,7 @@ export class PolygonMode {
             if (this.points.length === 0) { break; }
             const pickedFeature = this.scene.pick(position);
             const index = (pickedFeature !== undefined) ?
-              this.billboards.indexOf(pickedFeature.primitive) : -1;
+              this.indexOfBillboard(pickedFeature.primitive) : -1;
             if (index < 0) {
               // We clicked somewhere else, not on a point
               this.state = PolygonState.donePolygon;
@@ -559,7 +578,7 @@ export class PolygonMode {
             this.points.push(position);
             this.addBillboard(position);
             // Our selected point will now be at the end of the list
-            this.selectedPoint = this.billboards.length - 1;
+            this.selectedPoint = this.billboardCollectionLength() - 1;
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
@@ -604,9 +623,5 @@ export class PolygonMode {
 
   private onMouseMove = ({endPosition}: any) => {
     this.stateTransition(PolygonEvent.moveMouse, endPosition);
-  }
-
-  private initializeBillboardCollection = () => {
-    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
   }
 }
