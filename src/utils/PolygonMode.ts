@@ -141,18 +141,15 @@ export class PolygonMode {
     this.clearAllBillboards();
     this.initializeBillboardCollection();
 
-    if (cartesiansEqual(points[0], points[points.length - 1])) {
-      points.pop();
-    }
+    points = this.uncloseClosedPolygonPoints(points);
+
     points.forEach((point) => {
       this.addBillboard(point);
     });
   }
 
   public renderPolygonFromPoints = (points: ICartesian3[]): void => {
-    if (cartesiansEqual(points[0], points[points.length - 1])) {
-      points.pop();
-    }
+    points = this.uncloseClosedPolygonPoints(points);
 
     // Ensure that the points are in counterclockwise non-overlapping order.
     const indices = this.sortedPolygonPointIndices(points);
@@ -622,5 +619,22 @@ export class PolygonMode {
 
   private onMouseMove = ({endPosition}: any) => {
     this.stateTransition(PolygonEvent.moveMouse, endPosition);
+  }
+
+  // `points` needs to be a "closed" polygon (first point === last point) for
+  // CMR requests, but Cesium doesn't like that, so in some cases we need to
+  // "unclose" the polygon by removing the last point if it equals the first
+  // point
+  private uncloseClosedPolygonPoints = (points: ICartesian3[]): ICartesian3[] => {
+    const pointsCopy = points.slice();
+
+    const firstPoint = pointsCopy[0];
+    const lastPoint = pointsCopy[pointsCopy.length - 1];
+
+    if (cartesiansEqual(firstPoint, lastPoint)) {
+      pointsCopy.pop();
+    }
+
+    return pointsCopy;
   }
 }
