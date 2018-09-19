@@ -284,7 +284,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const datasetVersion: number = Number(selectedCollection.version);
     cmrCollectionRequest(datasetId, datasetVersion)
       .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure)
-      .then(() => this.setState({stateCanBeFrozen: true}));
+      .then(this.enableStateFreezing);
   }
 
   private freezeState = () => {
@@ -293,7 +293,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private hydrateState = (orderParameters: OrderParameters) => {
     console.warn("Order parameters loaded from previous state.");
-    this.handleOrderParameterChange(orderParameters);
+    this.handleOrderParameterChange(orderParameters, this.enableStateFreezing);
+  }
+
+  private enableStateFreezing = () => {
     this.setState({stateCanBeFrozen: true});
   }
 }
