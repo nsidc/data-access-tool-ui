@@ -47,7 +47,7 @@ export class CesiumAdapter {
       creditContainer: "credit",
       fullscreenButton: false,
       geocoder: false,
-      homeButton: true,
+      homeButton: false,
       imageryProvider: gibsProvider,
       infoBox: false,
       navigationHelpButton: false,
@@ -67,6 +67,10 @@ export class CesiumAdapter {
 
   public startSpatialSelection() {
     this.polygonMode.start();
+  }
+
+  public flyHome() {
+    this.viewer.camera.flyHome();
   }
 
   public renderCollectionCoverage(bbox: number[]) {
