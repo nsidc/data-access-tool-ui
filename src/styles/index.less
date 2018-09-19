@@ -1,5 +1,5 @@
 #everest-ui {
-  font-family: Arial, sans-serif;
+  font-family: 'Open Sans', Segoe UI, Arial, Helvetica, sans-serif;
   margin: 0;
 
   .fade-appear,
@@ -68,6 +68,7 @@
   h3 {
     font-size: 100%;
     margin: 0.5em 0;
+    color: #027AC6;
   }
 
   #temporal-selection {
@@ -212,16 +213,16 @@
 
   #granule-list-container {
     height: 700px;
-    overflow: scroll;
+    overflow: auto;
     width: 100%;
   }
 
   #granule-table {
-    display: block;
+    display: table;
     border-collapse: collapse;
     table-layout: fixed;
     padding: 0;
-    font-size: 90%;
+    font-size: 95%;
 
     td,
     th {
@@ -233,6 +234,10 @@
 
     th {
       color: white;
+      position: sticky;
+      position: -webkit-sticky;
+      top: 0;
+      z-index: 100;
       background: #7ab5da; /* EUI Sky Blue */
     }
 
