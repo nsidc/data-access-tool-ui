@@ -159,25 +159,40 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback?: () => void) => {
+    const orderParameters = this.mergeOrderParameters(this.state.orderParameters, newOrderParameters);
+
+    const modifiedCallback = (): void => {
+      if (this.state.stateCanBeFrozen) {
+        this.freezeState();
+      }
+      this.updateGranulesFromCmr();
+      if (callback) {
+        callback();
+      }
+    };
+    this.setState({orderParameters}, modifiedCallback);
+  }
+
+  private mergeOrderParameters = (orderParamsA: Partial<IOrderParameters>, orderParamsB: Partial<IOrderParameters>) => {
     // Immutable's typing for Record is incorrect; Record#merge returns a
     // Record with the same attributes, but the type definition says it
     // returns a Map (OrderParameters is a subclass of Record)
     //
     // @ts-ignore 2322
-    let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
+    let orderParameters: OrderParameters = orderParamsA.merge(orderParamsB);
 
     let aGeoJsonPolygonWasUpdated: boolean = false;
 
     let spatialSelection = orderParameters.spatialSelection;
-    if (newOrderParameters.spatialSelection) {
+    if (orderParamsB.spatialSelection) {
       aGeoJsonPolygonWasUpdated = true;
-      spatialSelection = newOrderParameters.spatialSelection;
+      spatialSelection = orderParamsB.spatialSelection;
     }
 
     let collectionSpatialCoverage = orderParameters.collectionSpatialCoverage;
-    if (newOrderParameters.collectionSpatialCoverage) {
+    if (orderParamsB.collectionSpatialCoverage) {
       aGeoJsonPolygonWasUpdated = true;
-      collectionSpatialCoverage = newOrderParameters.collectionSpatialCoverage;
+      collectionSpatialCoverage = orderParamsB.collectionSpatialCoverage;
     }
 
     // ensure the GeoJSON polygons are POJOS; with the .merge() call above,
@@ -192,16 +207,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       });
     }
 
-    const modifiedCallback = (): void => {
-      if (this.state.stateCanBeFrozen) {
-        this.freezeState();
-      }
-      this.updateGranulesFromCmr();
-      if (callback) {
-        callback();
-      }
-    };
-    this.setState({orderParameters}, modifiedCallback);
+    return orderParameters;
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
