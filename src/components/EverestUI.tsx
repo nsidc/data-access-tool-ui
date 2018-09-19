@@ -11,6 +11,7 @@ import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../ut
 import { CMR_COUNT_HEADER_NAME, cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { mergeOrderParameters } from "../utils/orderParameters";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
@@ -107,24 +108,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           {collectionDropdown}
         </div>
         <div id="columns">
-        <div id="left-side">
-          <OrderParameterInputs
-            cmrStatusOk={this.state.cmrStatusOk}
-            environment={this.props.environment}
-            onChange={this.handleOrderParameterChange}
-            orderParameters={this.state.orderParameters} />
-        </div>
-        <div id="right-side">
-          <GranuleList
-            cmrGranuleCount={this.state.cmrGranuleCount}
-            cmrGranuleResponse={this.state.cmrGranuleResponse}
-            loading={this.state.cmrLoading}
-            orderParameters={this.state.orderParameters} />
-          <OrderButtons
-            environment={this.props.environment}
-            orderSubmissionParameters={this.state.orderSubmissionParameters}
-            cmrGranuleResponse={this.state.cmrGranuleResponse} />
-        </div>
+          <div id="left-side">
+            <OrderParameterInputs
+              cmrStatusOk={this.state.cmrStatusOk}
+              environment={this.props.environment}
+              onChange={this.handleOrderParameterChange}
+              orderParameters={this.state.orderParameters} />
+          </div>
+          <div id="right-side">
+            <GranuleList
+              cmrGranuleCount={this.state.cmrGranuleCount}
+              cmrGranuleResponse={this.state.cmrGranuleResponse}
+              loading={this.state.cmrLoading}
+              orderParameters={this.state.orderParameters} />
+            <OrderButtons
+              environment={this.props.environment}
+              orderSubmissionParameters={this.state.orderSubmissionParameters}
+              cmrGranuleResponse={this.state.cmrGranuleResponse} />
+          </div>
         </div>
       </div>
     );
@@ -159,7 +160,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback?: () => void) => {
-    const orderParameters = this.mergeOrderParameters(this.state.orderParameters, newOrderParameters);
+    const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
     const modifiedCallback = (): void => {
       if (this.state.stateCanBeFrozen) {
@@ -171,43 +172,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     };
     this.setState({orderParameters}, modifiedCallback);
-  }
-
-  private mergeOrderParameters = (orderParamsA: Partial<IOrderParameters>, orderParamsB: Partial<IOrderParameters>) => {
-    // Immutable's typing for Record is incorrect; Record#merge returns a
-    // Record with the same attributes, but the type definition says it
-    // returns a Map (OrderParameters is a subclass of Record)
-    //
-    // @ts-ignore 2322
-    let orderParameters: OrderParameters = orderParamsA.merge(orderParamsB);
-
-    let aGeoJsonPolygonWasUpdated: boolean = false;
-
-    let spatialSelection = orderParameters.spatialSelection;
-    if (orderParamsB.spatialSelection) {
-      aGeoJsonPolygonWasUpdated = true;
-      spatialSelection = orderParamsB.spatialSelection;
-    }
-
-    let collectionSpatialCoverage = orderParameters.collectionSpatialCoverage;
-    if (orderParamsB.collectionSpatialCoverage) {
-      aGeoJsonPolygonWasUpdated = true;
-      collectionSpatialCoverage = orderParamsB.collectionSpatialCoverage;
-    }
-
-    // ensure the GeoJSON polygons are POJOS; with the .merge() call above,
-    // they are converted to Immutable Maps
-    if (aGeoJsonPolygonWasUpdated) {
-      orderParameters = new OrderParameters({
-        collection: orderParameters.collection,
-        collectionSpatialCoverage,
-        spatialSelection,
-        temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
-        temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
-      });
-    }
-
-    return orderParameters;
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
