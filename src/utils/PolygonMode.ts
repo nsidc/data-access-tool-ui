@@ -30,7 +30,8 @@ enum PolygonEvent {
   lonLatTextChange,
 }
 
-const cartesiansEqual = (p1: ICartesian3, p2: ICartesian3, tolerance: number = 0): boolean => {
+// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
+export const cartesiansEqual = (p1: ICartesian3, p2: ICartesian3, tolerance: number = 0): boolean => {
   return (Math.abs(p1.x - p2.x) <= tolerance
           && Math.abs(p1.y - p2.y) <= tolerance
           && Math.abs(p1.z - p2.z) <= tolerance);
