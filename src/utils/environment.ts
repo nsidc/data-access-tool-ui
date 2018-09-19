@@ -67,9 +67,10 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       user: Drupal.settings.data_downloads.user,  // TODO: Use the Earthdata Login module function?
     };
   } else {
-    const hermesBaseUrl = `${window.location.hostname}`;
+    const environmentDependentURLs = getEnvironmentDependentURLs();
+    const hermesBaseUrl = environmentDependentURLs.hermesBaseUrl;
     const urls = {
-      ...getEnvironmentDependentURLs(),
+      ...environmentDependentURLs,
       hermesOrderUrl: `https://${hermesBaseUrl}/api/orders/`,
       hermesScriptUrl: `https://${hermesBaseUrl}/api/downloader-script/`,
       profileUrl: "/profile.html",
