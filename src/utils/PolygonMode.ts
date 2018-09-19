@@ -152,11 +152,9 @@ export class PolygonMode {
     points = this.uncloseClosedPolygonPoints(points);
 
     // Ensure that the points are in counterclockwise non-overlapping order.
-    const indices = this.sortedPolygonPointIndices(points);
-
-    this.points = [];
-    indices.forEach((index) => {
-      this.points.push(points[index]);
+    const sortedIndices = this.sortedPolygonPointIndices(points);
+    this.points = sortedIndices.map((sortedIndex) => {
+      return points[sortedIndex];
     });
 
     // For rendering, make a copy of our reordered points
