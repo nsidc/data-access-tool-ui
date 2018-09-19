@@ -133,14 +133,11 @@ export class CesiumAdapter {
         return [lonLat.lon, lonLat.lat];
       }, this);
 
-      let geo;
-
+      let geo = null;
       if (lonLatsArray.length >= MIN_VERTICES) {
         // the last point in a polygon needs to be the first again to close it
         lonLatsArray.push(lonLatsArray[0]);
         geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
-      } else {
-        geo = null;
       }
       this.updateSpatialSelection(geo);
     };
