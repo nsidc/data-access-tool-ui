@@ -73,8 +73,7 @@ export class CesiumAdapter {
   public renderCollectionCoverage(bbox: number[]): void {
     this.cameraFlyToCollectionCoverage(bbox);
 
-    // TODO: "rectangle" is a dumb name
-    const ENTITY_ID = "rectangle";
+    const ENTITY_ID = "collectionCoverage";
 
     // remove any already-existing collection coverage (this *should* only exist
     // if in stand-alone app--i.e., not in Drupal--and switching the selected
