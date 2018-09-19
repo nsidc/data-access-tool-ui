@@ -109,8 +109,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
             cmrStatusOk={this.state.cmrStatusOk}
             environment={this.props.environment}
             onChange={this.handleOrderParameterChange}
-            orderParameters={this.state.orderParameters}
-            resetSpatialSelection={this.setSpatialSelectionToCollectionDefault} />
+            orderParameters={this.state.orderParameters} />
         </div>
         <div id="right-side">
           <GranuleList
