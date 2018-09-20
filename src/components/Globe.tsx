@@ -67,6 +67,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               </input>
           </div>
           <SpatialSelectionToolbar
+            onClickHome={() => {
+              this.cesiumAdapter.flyHome();
+            }}
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
               this.cesiumAdapter.startSpatialSelection();

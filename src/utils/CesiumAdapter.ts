@@ -48,7 +48,7 @@ export class CesiumAdapter {
       creditContainer: "credit",
       fullscreenButton: false,
       geocoder: false,
-      homeButton: true,
+      homeButton: false,
       imageryProvider: gibsProvider,
       infoBox: false,
       navigationHelpButton: false,
@@ -68,6 +68,10 @@ export class CesiumAdapter {
 
   public startSpatialSelection() {
     this.polygonMode.start();
+  }
+
+  public flyHome() {
+    this.viewer.camera.flyHome();
   }
 
   public renderCollectionCoverage(bbox: number[]): void {
@@ -107,7 +111,7 @@ export class CesiumAdapter {
     // Fly to the chosen position (collection's coverage *or* Boulder, CO) with a top-down view
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...flyToRectangle);
-    this.viewer.camera.flyHome();
+    this.flyHome();
   }
 
   private collectionCoverageIsGlobal(bbox: number[]): boolean {
