@@ -241,7 +241,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         this.hydrateState(orderParameters);
         return;
       } else {
-        console.warn("Found order parameters for a different dataset; clearing previous state from localStorage.");
+        console.warn(`Found order parameters for ${orderParameters.collection.short_name} `
+                     + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
         this.clearLocalStorage();
       }
     }
