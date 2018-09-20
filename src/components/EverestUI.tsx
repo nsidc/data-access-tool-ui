@@ -4,12 +4,14 @@ import * as React from "react";
 
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
+import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
 import { CMR_COUNT_HEADER_NAME, cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { mergeOrderParameters } from "../utils/orderParameters";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
@@ -17,6 +19,8 @@ import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
+
+const LOCAL_STORAGE_KEY = "nsidcDataOrderParams";
 
 interface IEverestProps {
   environment: IEnvironment;
@@ -30,6 +34,7 @@ interface IEverestState {
   cmrStatusOk: boolean;
   orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
+  stateCanBeFrozen: boolean;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -43,6 +48,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrStatusOk: false,
       orderParameters: new OrderParameters(),
       orderSubmissionParameters: undefined,
+      stateCanBeFrozen: false,
     };
   }
 
@@ -64,9 +70,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     cmrStatusRequest().then(onSuccess, onFailure);
 
     if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
-      cmrCollectionRequest(this.props.environment.drupalDataset.id,
-        Number(this.props.environment.drupalDataset.version))
-        .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure);
+      this.initializeState(this.props.environment.drupalDataset);
     }
   }
 
@@ -106,24 +110,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           {collectionDropdown}
         </div>
         <div id="columns">
-        <div id="left-side">
-          <OrderParameterInputs
-            cmrStatusOk={this.state.cmrStatusOk}
-            environment={this.props.environment}
-            onChange={this.handleOrderParameterChange}
-            orderParameters={this.state.orderParameters} />
-        </div>
-        <div id="right-side">
-          <GranuleList
-            cmrGranuleCount={this.state.cmrGranuleCount}
-            cmrGranuleResponse={this.state.cmrGranuleResponse}
-            loading={this.state.cmrLoading}
-            orderParameters={this.state.orderParameters} />
-          <OrderButtons
-            environment={this.props.environment}
-            orderSubmissionParameters={this.state.orderSubmissionParameters}
-            cmrGranuleResponse={this.state.cmrGranuleResponse} />
-        </div>
+          <div id="left-side">
+            <OrderParameterInputs
+              cmrStatusOk={this.state.cmrStatusOk}
+              environment={this.props.environment}
+              onChange={this.handleOrderParameterChange}
+              orderParameters={this.state.orderParameters} />
+          </div>
+          <div id="right-side">
+            <GranuleList
+              cmrGranuleCount={this.state.cmrGranuleCount}
+              cmrGranuleResponse={this.state.cmrGranuleResponse}
+              loading={this.state.cmrLoading}
+              orderParameters={this.state.orderParameters} />
+            <OrderButtons
+              environment={this.props.environment}
+              orderSubmissionParameters={this.state.orderSubmissionParameters}
+              cmrGranuleResponse={this.state.cmrGranuleResponse} />
+          </div>
         </div>
       </div>
     );
@@ -135,7 +139,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
     if (this.state.orderParameters.collection
         && this.state.orderParameters.collection.id
-        && this.state.orderParameters.spatialSelection
         && this.state.orderParameters.temporalFilterLowerBound
         && this.state.orderParameters.temporalFilterUpperBound) {
       this.handleCmrGranuleRequest();
@@ -150,6 +153,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.collection.short_name,
       Number(this.state.orderParameters.collection.version_id),
       this.state.orderParameters.spatialSelection,
+      this.state.orderParameters.collectionSpatialCoverage,
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
@@ -157,27 +161,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
      .finally(() => this.setState({cmrLoading: false}));
   }
 
-  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback: () => void) => {
-    // Immutable's typing for Record is incorrect; Record#merge returns a
-    // Record with the same attributes, but the type definition says it
-    // returns a Map (OrderParameters is a subclass of Record)
-    //
-    // @ts-ignore 2322
-    let orderParameters: OrderParameters = this.state.orderParameters.merge(newOrderParameters);
-
-    // really dumb way to get around issue where if spatialSelection is part
-    // of the new parameters, it gets turned into a Map in the merge above; we
-    // always want it to be a POJO
-    if (newOrderParameters.spatialSelection) {
-      orderParameters = new OrderParameters({
-        collection: orderParameters.collection,
-        spatialSelection: newOrderParameters.spatialSelection,
-        temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
-        temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
-      });
-    }
+  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback?: () => void) => {
+    const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
     const modifiedCallback = (): void => {
+      if (this.state.stateCanBeFrozen) {
+        this.freezeState();
+      }
       this.updateGranulesFromCmr();
       if (callback) {
         callback();
@@ -209,18 +199,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCollectionChange = (collection: any) => {
+    const boundingBoxes = collection.boxes;
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
+
     this.handleOrderParameterChange({
       collection,
+      collectionSpatialCoverage,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    }, this.setSpatialSelectionToCollectionDefault);
-  }
-
-  private setSpatialSelectionToCollectionDefault = () => {
-    const boundingBoxes = this.state.orderParameters.collection.boxes;
-    const spatialSelection = cmrBoxArrToSpatialSelection(boundingBoxes);
-    // @ts-ignore
-    this.handleOrderParameterChange({spatialSelection});
+    });
   }
 
   private handleCmrCollectionResponse = (response: any) => {
@@ -233,12 +220,57 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     const collection = cmrCollections.first();
-    const spatialSelection = cmrBoxArrToSpatialSelection(collection.boxes);
+    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(collection.boxes);
     this.handleOrderParameterChange({
       collection,
-      spatialSelection,
+      collectionSpatialCoverage,
       temporalFilterLowerBound: moment(collection.time_start),
       temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    }, () => null);
+    });
+  }
+
+  private initializeState = (selectedCollection: IDrupalDataset) => {
+    const localStorageOrderParams: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (localStorageOrderParams) {
+      const orderParams: any = JSON.parse(localStorageOrderParams);
+      orderParams.temporalFilterLowerBound = moment(orderParams.temporalFilterLowerBound);
+      orderParams.temporalFilterUpperBound = moment(orderParams.temporalFilterUpperBound);
+      const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+
+      if (selectedCollection.id === orderParameters.collection.short_name) {
+        this.hydrateState(orderParameters);
+        return;
+      } else {
+        console.warn(`Found order parameters for ${orderParameters.collection.short_name} `
+                     + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
+        this.clearLocalStorage();
+      }
+    }
+    this.initStateFromCollectionDefaults(selectedCollection);
+  }
+
+  private initStateFromCollectionDefaults = (selectedCollection: IDrupalDataset) => {
+    const datasetId: string = selectedCollection.id;
+    const datasetVersion: number = Number(selectedCollection.version);
+    cmrCollectionRequest(datasetId, datasetVersion)
+      .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure)
+      .then(this.enableStateFreezing);
+  }
+
+  private freezeState = () => {
+    return localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.state.orderParameters));
+  }
+
+  private hydrateState = (orderParameters: OrderParameters) => {
+    console.warn("Order parameters loaded from previous state.");
+    this.handleOrderParameterChange(orderParameters, this.enableStateFreezing);
+  }
+
+  private enableStateFreezing = () => {
+    this.setState({stateCanBeFrozen: true});
+  }
+
+  private clearLocalStorage = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
   }
 }

@@ -10,7 +10,7 @@ interface ILonLat {
   readonly lon: number;
 }
 
-interface ICartesian3 {
+export interface ICartesian3 {
   x: number;
   y: number;
   z: number;
@@ -30,15 +30,22 @@ enum PolygonEvent {
   lonLatTextChange,
 }
 
+// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
+export const cartesiansEqual = (p1: ICartesian3, p2: ICartesian3, tolerance: number = 0): boolean => {
+  return (Math.abs(p1.x - p2.x) <= tolerance
+          && Math.abs(p1.y - p2.y) <= tolerance
+          && Math.abs(p1.z - p2.z) <= tolerance);
+};
+
+export const MIN_VERTICES = 3;
+
 export class PolygonMode {
 
-  private billboards: any[] = [];
   private billboardCollection: any;
   private ellipsoid: any;
   private finishedDrawingCallback: any;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
-  private minPoints = 3;
   private mouseHandler: any;
   private mousePoint: ICartesian3 | null = null;
   private points: ICartesian3[] = [];
@@ -58,20 +65,8 @@ export class PolygonMode {
   }
 
   public start = () => {
-    if (!this.mouseHandler) {
-      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
-
-      this.mouseHandler.setInputAction(this.onLeftClick,
-                                      Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
-                                      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-      this.mouseHandler.setInputAction(this.onMouseMove,
-                                      Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    }
-
-    this.billboardCollection = this.scene.primitives.add(new Cesium.BillboardCollection());
+    this.initializeMouseHandler();
+    this.initializeBillboardCollection();
   }
 
   public reset = () => {
@@ -130,7 +125,7 @@ export class PolygonMode {
     if (this.selectedPoint >= 0) {
       this.selectedPoint = (this.selectedPoint + 1) % this.points.length;
       this.updateLonLatLabel(this.points[this.selectedPoint]);
-      this.render();
+      this.interactionRender();
     }
   }
 
@@ -139,8 +134,93 @@ export class PolygonMode {
       this.selectedPoint = (this.selectedPoint > 0) ?
         (this.selectedPoint - 1) : (this.points.length - 1);
       this.updateLonLatLabel(this.points[this.selectedPoint]);
-      this.render();
+      this.interactionRender();
     }
+  }
+
+  public lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
+    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
+    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
+    return point;
+  }
+
+  public polygonFromLonLats(lonLatsArray: number[][]) {
+    const cartesianPoints = lonLatsArray.map((coord: number[]) => {
+      const [lon, lat] = coord;
+      return this.lonLatToCartesianPosition({lon, lat});
+    });
+
+    this.billboardCollectionFromPoints(cartesianPoints);
+    this.renderPolygonFromPoints(cartesianPoints);
+    this.initializeMouseHandler();
+    this.state = PolygonState.donePolygon;
+  }
+
+  private billboardCollectionFromPoints = (points: ICartesian3[]): void => {
+    this.clearAllBillboards();
+    this.initializeBillboardCollection();
+
+    points = this.reopenPolygonPoints(points);
+
+    points.forEach((point) => {
+      this.addBillboard(point);
+    });
+  }
+
+  private initializeMouseHandler = () => {
+    if (!this.mouseHandler) {
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+
+      this.mouseHandler.setInputAction(this.onLeftClick,
+                                       Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
+                                       Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+      this.mouseHandler.setInputAction(this.onMouseMove,
+                                       Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }
+  }
+
+  private renderPolygonFromPoints = (points: ICartesian3[]): void => {
+    points = this.reopenPolygonPoints(points);
+
+    // Ensure that the points are in counterclockwise non-overlapping order.
+    const sortedIndices = this.sortedPolygonPointIndices(points);
+    this.points = sortedIndices.map((sortedIndex) => {
+      return points[sortedIndex];
+    });
+
+    // For rendering, make a copy of our reordered points
+    const pointsCopy = this.points.slice();
+
+    if (this.mousePoint !== null) {
+      this.points.pop();
+    }
+
+    // remove previously rendered polygon
+    if (this.polygon) {
+      this.scene.primitives.remove(this.polygon);
+      Cesium.destroyObject(this.polygon);
+    }
+
+    const appearance = new Cesium.EllipsoidSurfaceAppearance({
+      aboveGround: false,
+    });
+    const geometry = Cesium.PolygonGeometry.fromPositions({
+      ellipsoid: this.ellipsoid,
+      positions: pointsCopy,
+    });
+
+    const geometryInstances = new Cesium.GeometryInstance({
+      geometry,
+    });
+    this.polygon = new Cesium.Primitive({
+      appearance,
+      asynchronous: false,
+      geometryInstances,
+    });
+    this.scene.primitives.add(this.polygon);
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
@@ -161,12 +241,6 @@ export class PolygonMode {
       lon = -lon;
     }
     return {lat, lon};
-  }
-
-  private lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
-    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
-    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
-    return point;
   }
 
   // To avoid bow-ties if the user draws the points in a strange order,
@@ -216,57 +290,15 @@ export class PolygonMode {
     return indices;
   }
 
-  private render = () => {
+  private interactionRender = () => {
     // gather all the points; rendering doesn't care about the distinction
     // between clicked points and the point following the cursor
-    const origPoints = (this.mousePoint !== null) ?
+    const points = (this.mousePoint !== null) ?
       this.points.concat([this.mousePoint]) : this.points.slice();
 
     // if we meet the minimum points requirement, render the polygon
-    if (origPoints.length >= this.minPoints) {
-
-      // Ensure that the points are in counterclockwise non-overlapping order.
-      const indices = this.sortedPolygonPointIndices(origPoints);
-
-      this.points = [];
-      const billboards: any[] = [];
-      indices.forEach((index) => {
-        this.points.push(origPoints[index]);
-        billboards.push(this.billboards[index]);
-      });
-
-      this.billboards = billboards;
-
-      // For rendering, make a copy of our reordered points
-      const points = this.points.slice();
-
-      if (this.mousePoint !== null) {
-        this.points.pop();
-      }
-
-      // remove previously rendered polygon
-      if (this.polygon) {
-        this.scene.primitives.remove(this.polygon);
-        Cesium.destroyObject(this.polygon);
-      }
-
-      const appearance = new Cesium.EllipsoidSurfaceAppearance({
-        aboveGround: false,
-      });
-      const geometry = Cesium.PolygonGeometry.fromPositions({
-        ellipsoid: this.ellipsoid,
-        positions: points,
-      });
-
-      const geometryInstances = new Cesium.GeometryInstance({
-        geometry,
-      });
-      this.polygon = new Cesium.Primitive({
-        appearance,
-        asynchronous: false,
-        geometryInstances,
-      });
-      this.scene.primitives.add(this.polygon);
+    if (points.length >= MIN_VERTICES) {
+      this.renderPolygonFromPoints(points);
     }
 
     this.drawSelectedPoint();
@@ -283,9 +315,7 @@ export class PolygonMode {
   private isDuplicatePoint = (point: ICartesian3): boolean => {
     const tolerance = 1e-6;
     for (const p of this.points) {
-      if (Math.abs(p.x - point.x) < tolerance &&
-        Math.abs(p.y - point.y) < tolerance &&
-        Math.abs(p.z - point.z) < tolerance) {
+      if (cartesiansEqual(point, p, tolerance)) {
         return true;
       }
     }
@@ -304,22 +334,50 @@ export class PolygonMode {
     this.addBillboard(point);
   }
 
+  private initializeBillboardCollection = () => {
+    this.billboardCollection = new Cesium.BillboardCollection();
+    this.scene.primitives.add(this.billboardCollection);
+  }
+
   private addBillboard = (point: ICartesian3) => {
-    const billboard = this.billboardCollection.add({
+    this.billboardCollection.add({
       image: dragImg,
       position: point,
     });
-    this.billboards.push(billboard);
+  }
+
+  private removeBillboard = (index: number) => {
+    this.billboardCollection.remove(this.billboardCollection.get(index));
   }
 
   private removeLastBillboard = () => {
-    const billboard = this.billboards.pop();
-    this.billboardCollection.remove(billboard);
+    const lastIndex = this.billboardCollectionLength() - 1;
+    this.removeBillboard(lastIndex);
   }
 
   private clearAllBillboards = () => {
-    this.billboards.forEach((b) => this.billboardCollection.remove(b));
-    this.billboards = [];
+    if (this.billboardCollection && (this.billboardCollection.length > 0)) {
+      this.billboardCollection.removeAll();
+    }
+  }
+
+  private indexOfBillboard = (billboard: any): number => {
+    if (!this.billboardCollection.contains(billboard)) { return -1; }
+
+    for (let index = 0; index < this.billboardCollectionLength(); index++) {
+      if (billboard === this.billboardCollection.get(index)) {
+        return index;
+      }
+    }
+
+    // this point should never be reached; either -1 is returned immediately or
+    // the right billboard is found in the for loop
+    console.warn("PolygonMode.indexOfBillboard returning -1 after iteration");
+    return -1;
+  }
+
+  private billboardCollectionLength = (): number => {
+    return this.billboardCollection ? this.billboardCollection.length : 0;
   }
 
   private updateMousePoint = (position: any) => {
@@ -331,32 +389,35 @@ export class PolygonMode {
     this.addBillboard(point);
 
     // Our selected point will now be at the end of the list
-    this.selectedPoint = this.billboards.length - 1;
+    this.selectedPoint = this.billboardCollectionLength() - 1;
   }
 
   private clearMousePoint = () => {
     this.mousePoint = null;
 
-    if (this.billboards.length === (this.points.length + 1)) {
+    if (this.billboardCollectionLength() === (this.points.length + 1)) {
       this.removeLastBillboard();
     }
   }
 
   private drawSelectedPoint = () => {
-    this.billboards.forEach((b) => {
-      b.color = Cesium.Color.WHITE;
-      b.scale = 1.0;
-    });
-    if (this.selectedPoint >= 0 && this.selectedPoint < this.billboards.length) {
-      this.billboards[this.selectedPoint].color = Cesium.Color.CHARTREUSE;
-      this.billboards[this.selectedPoint].scale = 1.5;
+    for (let index = 0; index < this.billboardCollectionLength(); index++) {
+      const billboard = this.billboardCollection.get(index);
+
+      if (index === this.selectedPoint) {
+        billboard.color = Cesium.Color.CHARTREUSE;
+        billboard.scale = 1.5;
+      } else {
+        billboard.color = Cesium.Color.WHITE;
+        billboard.scale = 1.0;
+      }
     }
   }
 
   private handleMouseCursor(position: any) {
     const mouseoverFeature = this.scene.pick(position);
     const mouseoverIndex = (mouseoverFeature !== undefined) ?
-      this.billboards.indexOf(mouseoverFeature.primitive) : -1;
+      this.indexOfBillboard(mouseoverFeature.primitive) : -1;
     if (mouseoverIndex >= 0) {
       CesiumUtils.setCursorCrosshair();
     } else {
@@ -406,9 +467,6 @@ export class PolygonMode {
   //   lonLatTextChange: nop
 
   private stateTransition = (event: PolygonEvent, position: any) => {
-//    if (event !== PolygonEvent.moveMouse) {
-//      console.log("state=" + this.state + " event=" + event);
-//    }
     switch (this.state) {
       case PolygonState.drawingPolygon:
         switch (event) {
@@ -416,19 +474,19 @@ export class PolygonMode {
             // Add a new point to the polygon, keep drawing
             this.addPoint(position);
             this.clearMousePoint();
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
             this.updateLonLatLabel(this.mousePoint);
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.doubleClick:
             this.state = PolygonState.donePolygon;
-            if (this.points.length >= this.minPoints) {
+            if (this.points.length >= MIN_VERTICES) {
               this.clearMousePoint();
               this.selectedPoint = -1;
-              this.render();
+              this.interactionRender();
               this.finishedDrawingCallback(this.points);
             }
             break;
@@ -444,14 +502,14 @@ export class PolygonMode {
             if (this.points.length === 0) { break; }
             const pickedFeature = this.scene.pick(position);
             const index = (pickedFeature !== undefined) ?
-              this.billboards.indexOf(pickedFeature.primitive) : -1;
+              this.indexOfBillboard(pickedFeature.primitive) : -1;
             if (index >= 0) {
               // We clicked on one of the polygon points
               this.state = PolygonState.pointSelected;
               this.selectedPoint = index;
               this.updateLonLatLabel(this.points[this.selectedPoint]);
               this.lonLatEnableCallback(true);
-              this.render();
+              this.interactionRender();
             }
             break;
           case PolygonEvent.moveMouse:
@@ -474,20 +532,20 @@ export class PolygonMode {
             if (this.points.length === 0) { break; }
             const pickedFeature = this.scene.pick(position);
             const index = (pickedFeature !== undefined) ?
-              this.billboards.indexOf(pickedFeature.primitive) : -1;
+              this.indexOfBillboard(pickedFeature.primitive) : -1;
             if (index < 0) {
               // We clicked somewhere else, not on a point
               this.state = PolygonState.donePolygon;
               this.lonLatEnableCallback(false);
               this.selectedPoint = -1;
-              this.render();
+              this.interactionRender();
               break;
             }
             if (this.selectedPoint !== index) {
               // We clicked on a new point, so select it instead
               this.selectedPoint = index;
               this.updateLonLatLabel(this.points[this.selectedPoint]);
-              this.render();
+              this.interactionRender();
               break;
             }
             // We clicked on the selected point
@@ -496,11 +554,10 @@ export class PolygonMode {
             CesiumUtils.setCursorCrosshair();
             // Remove the selected point from the stored list,
             // we will instead treat it as the "mouse point".
-            this.billboardCollection.remove(this.billboards[index]);
-            this.billboards.splice(index, 1);
+            this.removeBillboard(index);
             this.points.splice(index, 1);
             this.updateMousePoint(position);
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(position);
@@ -516,14 +573,13 @@ export class PolygonMode {
               this.updateLonLatLabel(this.points[this.selectedPoint]);
               break;
             }
-            this.billboardCollection.remove(this.billboards[this.selectedPoint]);
-            this.billboards.splice(this.selectedPoint, 1);
+            this.removeBillboard(this.selectedPoint);
             this.points.splice(this.selectedPoint, 1);
             this.points.push(position);
             this.addBillboard(position);
             // Our selected point will now be at the end of the list
-            this.selectedPoint = this.billboards.length - 1;
-            this.render();
+            this.selectedPoint = this.billboardCollectionLength() - 1;
+            this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
         }
@@ -544,7 +600,7 @@ export class PolygonMode {
           case PolygonEvent.moveMouse:
             this.updateMousePoint(position);
             this.updateLonLatLabel(this.mousePoint);
-            this.render();
+            this.interactionRender();
             break;
           case PolygonEvent.doubleClick:
             // nop - this allows doubleClick to immediately select and start moving a point
@@ -569,4 +625,20 @@ export class PolygonMode {
     this.stateTransition(PolygonEvent.moveMouse, endPosition);
   }
 
+  // `points` needs to be a "closed" polygon (first point === last point) for
+  // CMR requests, but Cesium doesn't like that, so in some cases we need to
+  // "unclose" the polygon by removing the last point if it equals the first
+  // point
+  private reopenPolygonPoints = (points: ICartesian3[]): ICartesian3[] => {
+    const pointsCopy = points.slice();
+
+    const firstPoint = pointsCopy[0];
+    const lastPoint = pointsCopy[pointsCopy.length - 1];
+
+    if (cartesiansEqual(firstPoint, lastPoint)) {
+      pointsCopy.pop();
+    }
+
+    return pointsCopy;
+  }
 }

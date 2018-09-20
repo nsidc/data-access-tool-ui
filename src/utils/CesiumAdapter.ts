@@ -1,7 +1,8 @@
 import * as GeoJSON from "geojson";
+
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils } from "../utils/CesiumUtils";
-import { PolygonMode } from "./PolygonMode";
+import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
@@ -69,36 +70,49 @@ export class CesiumAdapter {
     this.polygonMode.start();
   }
 
-  public renderCollectionCoverage(bbox: number[]) {
-    const globalBbox = [-180, -90, 180, 90];
+  public renderCollectionCoverage(bbox: number[]): void {
+    this.cameraFlyToCollectionCoverage(bbox);
 
-    if (bbox.every((val: number, i: number) => val === globalBbox[i])) {
-      this.clearSpatialSelection();
-      this.viewer.entities.removeById("rectangle");
-      // Boulder, Colorado
-      Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
-      Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(-135, 10, -75, 70);
-      this.viewer.camera.flyHome();
-      return;
+    const ENTITY_ID = "collectionCoverage";
+
+    // remove any already-existing collection coverage (this *should* only exist
+    // if in stand-alone app--i.e., not in Drupal--and switching the selected
+    // dataset)
+    this.viewer.entities.removeById(ENTITY_ID);
+
+    if (!this.collectionCoverageIsGlobal(bbox)) {
+      // draw rectangle showing collection's coverage
+      const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+      this.viewer.entities.add({
+        id: ENTITY_ID,
+        name: ENTITY_ID,
+        rectangle: {
+          coordinates: rectangleRadians,
+          material: CesiumAdapter.extentColor,
+        },
+      });
     }
+  }
 
-    const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+  public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
+    if (spatialSelection === null) { return; }
 
-    this.clearSpatialSelection();
-    this.viewer.entities.removeById("rectangle");
-    this.viewer.entities.add({
-      id: "rectangle",
-      name: "rectangle",
-      rectangle: {
-        coordinates: rectangleRadians,
-        material: CesiumAdapter.extentColor,
-      },
-    });
+    this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
+  }
 
-    // Fly to a position with a top-down view
+  private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {
+    const boulderCO = [-135, 10, -75, 70];
+    const flyToRectangle = this.collectionCoverageIsGlobal(collectionBbox) ? boulderCO : collectionBbox;
+
+    // Fly to the chosen position (collection's coverage *or* Boulder, CO) with a top-down view
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
-    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...bbox);
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...flyToRectangle);
     this.viewer.camera.flyHome();
+  }
+
+  private collectionCoverageIsGlobal(bbox: number[]): boolean {
+    const globalBbox = [-180, -90, 180, 90];
+    return bbox.every((val: number, i: number) => val === globalBbox[i]);
   }
 
   private createPolygonMode() {
@@ -111,10 +125,12 @@ export class CesiumAdapter {
         return [lonLat.lon, lonLat.lat];
       }, this);
 
-      // the last point in a polygon needs to be the first again to close it
-      lonLatsArray.push(lonLatsArray[0]);
-
-      const geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
+      let geo = null;
+      if (lonLatsArray.length >= MIN_VERTICES) {
+        // the last point in a polygon needs to be the first again to close it
+        lonLatsArray.push(lonLatsArray[0]);
+        geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
+      }
       this.updateSpatialSelection(geo);
     };
 

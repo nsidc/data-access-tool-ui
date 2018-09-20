@@ -1,3 +1,4 @@
+import { IDrupalDataset } from "../types/DrupalDataset";
 import { IUser } from "../types/User";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
@@ -10,12 +11,6 @@ interface IUrls {
   hermesOrderUrl: string;
   profileUrl: string;
   hermesScriptUrl: string;
-}
-
-export interface IDrupalDataset {
-  title: string;
-  id: string;
-  version: string;
 }
 
 export interface IEnvironment {
