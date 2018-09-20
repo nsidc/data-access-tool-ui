@@ -26,3 +26,7 @@
 * Allow editing polygon selection points by click-and-drag
 * Allow editing polygon selection points by lon/lat input
 * Show selected collection's coverage at the same time as the polygon
+* Save the user's temporal and spatial parameters to `localStorage`, reloading
+  and applying those filters when the user returns. Only the parameters for a
+  single dataset are saved; if another dataset's page is visited, the saved
+  filters are cleared.

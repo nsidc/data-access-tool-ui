@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import { Moment } from "moment";
 import * as React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -6,10 +6,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ITemporalFilterProps {
-  fromDate: any;
-  onFromDateChange: any;
-  toDate: any;
-  onToDateChange: any;
+  fromDate: Moment;
+  onFromDateChange: (date: Moment) => void;
+  toDate: Moment;
+  onToDateChange: (date: Moment) => void;
 }
 
 export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
@@ -30,14 +30,14 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
         <DatePicker
           id="from"
           maxDate={this.props.toDate}
-          selected={this.props.fromDate}
-          onChange={(d: moment.Moment) => this.props.onFromDateChange(d)} />
+          selected={this.props.fromDate.utc()}
+          onChange={(d: Moment) => this.props.onFromDateChange(d.utc())} />
         <label>To</label>
         <DatePicker
           id="to"
           minDate={this.props.fromDate}
-          selected={this.props.toDate}
-          onChange={(d: moment.Moment) => this.props.onToDateChange(d)} />
+          selected={this.props.toDate.utc()}
+          onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
       </div>
     );
   }
