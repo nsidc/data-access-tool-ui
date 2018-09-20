@@ -11,8 +11,8 @@ run_cmd () {
     echo ""
 }
 
-run_cmd "tsc --noEmit --project tsconfig.json"
-run_cmd "tslint --config tslint.json 'src/**/*.{ts,tsx}'"
+run_cmd "npx tsc --noEmit --project tsconfig.json"
+run_cmd "npx tslint --config tslint.json 'src/**/*.{ts,tsx}'"
 run_cmd "npx stylelint --config .stylelintrc src/styles/"
 
 exit $status
