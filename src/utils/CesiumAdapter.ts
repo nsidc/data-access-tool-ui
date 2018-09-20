@@ -13,7 +13,7 @@ export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
   private static ellipsoid = Cesium.Ellipsoid.WGS84;
 
-  public polygonMode: PolygonMode;
+  public polygonMode!: PolygonMode;
 
   private viewer: any;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
