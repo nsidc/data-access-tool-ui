@@ -111,7 +111,7 @@ export class CesiumAdapter {
     // Fly to the chosen position (collection's coverage *or* Boulder, CO) with a top-down view
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...flyToRectangle);
-    this.viewer.camera.flyHome();
+    this.flyHome();
   }
 
   private collectionCoverageIsGlobal(bbox: number[]): boolean {
