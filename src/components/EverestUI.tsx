@@ -20,6 +20,8 @@ import { OrderParameterInputs } from "./OrderParameterInputs";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
+const LOCAL_STORAGE_KEY = "nsidcDataOrderParams";
+
 interface IEverestProps {
   environment: IEnvironment;
 }
@@ -228,7 +230,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private initializeState = (selectedCollection: IDrupalDataset) => {
-    const localStorageOrderParams: string | null = localStorage.getItem("nsidcDataOrderParams");
+    const localStorageOrderParams: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (localStorageOrderParams) {
       const orderParams: any = JSON.parse(localStorageOrderParams);
       orderParams.temporalFilterLowerBound = moment(orderParams.temporalFilterLowerBound);
@@ -238,6 +240,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       if (selectedCollection.id === orderParameters.collection.short_name) {
         this.hydrateState(orderParameters);
         return;
+      } else {
+        console.warn("Found order parameters for a different dataset; clearing previous state from localStorage.");
+        this.clearLocalStorage();
       }
     }
     this.initStateFromCollectionDefaults(selectedCollection);
@@ -252,7 +257,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private freezeState = () => {
-    return localStorage.setItem("nsidcDataOrderParams", JSON.stringify(this.state.orderParameters));
+    return localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.state.orderParameters));
   }
 
   private hydrateState = (orderParameters: OrderParameters) => {
@@ -262,5 +267,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private enableStateFreezing = () => {
     this.setState({stateCanBeFrozen: true});
+  }
+
+  private clearLocalStorage = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
   }
 }
