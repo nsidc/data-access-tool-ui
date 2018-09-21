@@ -137,7 +137,7 @@ module.exports = {
 // picked up
 if (process.env.DRUSH_CACHE_CLEAR_ON_BUILD) {
   module.exports.plugins.push(new WebpackShellPlugin({
-    onBuildEnd: ['drush cache-clear css-js'],
+    onBuildEnd: ['./scripts/clear-drush-cache.sh'],
     dev: false  // without this, the command only runs on the first build with --watch
   }));
 }
