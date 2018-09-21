@@ -3,7 +3,7 @@
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
         "jsx": "react",
-        "lib": ["es5", "dom", "dom.iterable", "es6", "es2017"],
+        "lib": ["dom", "dom.iterable", "es5", "es6", "es2017"],
         "module": "commonjs",
         "noImplicitReturns": true,
         "noUnusedLocals": true,
