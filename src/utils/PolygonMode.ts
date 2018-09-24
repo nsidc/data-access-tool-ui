@@ -151,8 +151,9 @@ export class PolygonMode {
     });
 
     this.billboardCollectionFromPoints(cartesianPoints);
-    this.interactionRender();
+    this.renderPolygonFromPoints(cartesianPoints);
     this.initializeMouseHandler();
+    this.state = PolygonState.donePolygon;
   }
 
   private billboardCollectionFromPoints = (points: ICartesian3[]): void => {
