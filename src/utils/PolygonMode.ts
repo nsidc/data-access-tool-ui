@@ -185,11 +185,7 @@ export class PolygonMode {
   private renderPolygonFromPoints = (points: ICartesian3[]): void => {
     points = this.reopenPolygonPoints(points);
 
-    // Ensure that the points are in counterclockwise non-overlapping order.
-    const sortedIndices = this.sortedPolygonPointIndices(points);
-    this.points = sortedIndices.map((sortedIndex) => {
-      return points[sortedIndex];
-    });
+    this.points = this.sortedPoints(points);
 
     // For rendering, make a copy of our reordered points
     const pointsCopy = this.points.slice();
@@ -221,6 +217,16 @@ export class PolygonMode {
       geometryInstances,
     });
     this.scene.primitives.add(this.polygon);
+  }
+
+  private sortedPoints = (points: ICartesian3[]): ICartesian3[] => {
+    // Ensure that the points are in counterclockwise non-overlapping order.
+    const sortedIndices = this.sortedPolygonPointIndices(points);
+    const pointsInSortedOrder = sortedIndices.map((sortedIndex) => {
+      return points[sortedIndex];
+    });
+
+    return pointsInSortedOrder;
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
