@@ -52,7 +52,7 @@ export class PolygonMode {
   private polygon: any;
   private scene: any;
   private selectedPoint: number = -1;
-  private state: PolygonState = PolygonState.drawingPolygon;
+  private state: PolygonState = PolygonState.donePolygon;
 
   public constructor(scene: any, lonLatEnableCallback: (s: boolean) => void,
                      lonLatLabelCallback: (s: string) => void,
