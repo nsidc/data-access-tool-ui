@@ -187,6 +187,14 @@ export class PolygonMode {
 
     this.points = this.sortedPoints(points);
 
+    // the billboards must remain in a consistent order with the points
+    const sortOrderChanged = points.some((point: ICartesian3, index: number) => {
+      return !cartesiansEqual(point, this.points[index]);
+    });
+    if (sortOrderChanged) {
+      this.billboardCollectionFromPoints(this.points);
+    }
+
     // For rendering, make a copy of our reordered points
     const pointsCopy = this.points.slice();
 
