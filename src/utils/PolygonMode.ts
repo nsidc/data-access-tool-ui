@@ -162,8 +162,6 @@ export class PolygonMode {
     this.clearAllBillboards();
     this.initializeBillboardCollection();
 
-    points = this.reopenPolygonPoints(points);
-
     points.forEach((point) => {
       this.addBillboard(point);
     });
