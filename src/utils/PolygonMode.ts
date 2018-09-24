@@ -145,10 +145,12 @@ export class PolygonMode {
   }
 
   public polygonFromLonLats(lonLatsArray: number[][]) {
-    const cartesianPoints = lonLatsArray.map((coord: number[]) => {
+    if (this.state !== PolygonState.donePolygon) { return; }
+
+    const cartesianPoints = this.sortedPoints(this.reopenPolygonPoints(lonLatsArray.map((coord: number[]) => {
       const [lon, lat] = coord;
       return this.lonLatToCartesianPosition({lon, lat});
-    });
+    })));
 
     this.billboardCollectionFromPoints(cartesianPoints);
     this.renderPolygonFromPoints(cartesianPoints);
