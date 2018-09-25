@@ -46,7 +46,7 @@ export class PolygonMode {
   private points: ICartesian3[] = [];
   private polygon: any;
   private scene: any;
-  private selectedPoint: number = -1;
+  private selectedPointIndex: number = -1;
   private state: PolygonState = PolygonState.donePolygon;
 
   public constructor(scene: any, lonLatEnableCallback: (s: boolean) => void,
@@ -66,7 +66,7 @@ export class PolygonMode {
   }
 
   public reset = () => {
-    this.selectedPoint = -1;
+    this.selectedPointIndex = -1;
     this.points = [];
     this.billboards.removeAll();
     this.clearMousePoint();
@@ -111,25 +111,25 @@ export class PolygonMode {
   }
 
   public resetLonLat() {
-    if (this.selectedPoint >= 0) {
-      const position = this.points[this.selectedPoint];
+    if (this.selectedPointIndex >= 0) {
+      const position = this.points[this.selectedPointIndex];
       this.updateLonLatLabel(position);
     }
   }
 
   public nextPoint() {
-    if (this.selectedPoint >= 0) {
-      this.selectedPoint = (this.selectedPoint + 1) % this.points.length;
-      this.updateLonLatLabel(this.points[this.selectedPoint]);
+    if (this.selectedPointIndex >= 0) {
+      this.selectedPointIndex = (this.selectedPointIndex + 1) % this.points.length;
+      this.updateLonLatLabel(this.points[this.selectedPointIndex]);
       this.interactionRender();
     }
   }
 
   public previousPoint() {
-    if (this.selectedPoint >= 0) {
-      this.selectedPoint = (this.selectedPoint > 0) ?
-        (this.selectedPoint - 1) : (this.points.length - 1);
-      this.updateLonLatLabel(this.points[this.selectedPoint]);
+    if (this.selectedPointIndex >= 0) {
+      this.selectedPointIndex = (this.selectedPointIndex > 0) ?
+        (this.selectedPointIndex - 1) : (this.points.length - 1);
+      this.updateLonLatLabel(this.points[this.selectedPointIndex]);
       this.interactionRender();
     }
   }
@@ -364,7 +364,7 @@ export class PolygonMode {
     this.addBillboard(point);
 
     // Our selected point will now be at the end of the list
-    this.selectedPoint = this.billboards.length - 1;
+    this.selectedPointIndex = this.billboards.length - 1;
   }
 
   private clearMousePoint = () => {
@@ -379,7 +379,7 @@ export class PolygonMode {
     for (let index = 0; index < this.billboards.length; index++) {
       const billboard = this.billboards.get(index);
 
-      if (index === this.selectedPoint) {
+      if (index === this.selectedPointIndex) {
         billboard.color = Cesium.Color.CHARTREUSE;
         billboard.scale = 1.5;
       } else {
@@ -460,7 +460,7 @@ export class PolygonMode {
             this.state = PolygonState.donePolygon;
             if (this.points.length >= MIN_VERTICES) {
               this.clearMousePoint();
-              this.selectedPoint = -1;
+              this.selectedPointIndex = -1;
               this.interactionRender();
               this.finishedDrawingCallback(this.points);
             }
@@ -481,8 +481,8 @@ export class PolygonMode {
             if (index >= 0) {
               // We clicked on one of the polygon points
               this.state = PolygonState.pointSelected;
-              this.selectedPoint = index;
-              this.updateLonLatLabel(this.points[this.selectedPoint]);
+              this.selectedPointIndex = index;
+              this.updateLonLatLabel(this.points[this.selectedPointIndex]);
               this.lonLatEnableCallback(true);
               this.interactionRender();
             }
@@ -512,14 +512,14 @@ export class PolygonMode {
               // We clicked somewhere else, not on a point
               this.state = PolygonState.donePolygon;
               this.lonLatEnableCallback(false);
-              this.selectedPoint = -1;
+              this.selectedPointIndex = -1;
               this.interactionRender();
               break;
             }
-            if (this.selectedPoint !== index) {
+            if (this.selectedPointIndex !== index) {
               // We clicked on a new point, so select it instead
-              this.selectedPoint = index;
-              this.updateLonLatLabel(this.points[this.selectedPoint]);
+              this.selectedPointIndex = index;
+              this.updateLonLatLabel(this.points[this.selectedPointIndex]);
               this.interactionRender();
               break;
             }
@@ -545,15 +545,15 @@ export class PolygonMode {
             // Note: The "position" here is actually the cartesian3 point.
             // If point already exists, refuse to change the position.
             if (this.isDuplicatePoint(position)) {
-              this.updateLonLatLabel(this.points[this.selectedPoint]);
+              this.updateLonLatLabel(this.points[this.selectedPointIndex]);
               break;
             }
-            this.billboards.removeByIndex(this.selectedPoint);
-            this.points.splice(this.selectedPoint, 1);
+            this.billboards.removeByIndex(this.selectedPointIndex);
+            this.points.splice(this.selectedPointIndex, 1);
             this.points.push(position);
             this.addBillboard(position);
             // Our selected point will now be at the end of the list
-            this.selectedPoint = this.billboards.length - 1;
+            this.selectedPointIndex = this.billboards.length - 1;
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
@@ -568,7 +568,7 @@ export class PolygonMode {
             CesiumUtils.unsetCursorCrosshair();
             this.addPoint(position);
             this.clearMousePoint();
-            this.updateLonLatLabel(this.points[this.selectedPoint]);
+            this.updateLonLatLabel(this.points[this.selectedPointIndex]);
             this.lonLatEnableCallback(true);
             this.finishedDrawingCallback(this.points);
             break;
