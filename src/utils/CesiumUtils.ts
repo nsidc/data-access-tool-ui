@@ -1,3 +1,8 @@
+export interface ICartesian3 {
+  x: number;
+  y: number;
+  z: number;
+}
 
 export class CesiumUtils {
 
