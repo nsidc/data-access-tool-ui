@@ -193,7 +193,7 @@ export class PolygonMode {
     // Ensure that the points are in counterclockwise non-overlapping order.
     const sortedIndices = this.sortedPolygonPointIndices(cartesians);
     const pointsInSortedOrder = sortedIndices.map((sortedIndex: number | undefined) => {
-      if (sortedIndex === undefined) { throw new Error("wat"); }
+      if (sortedIndex === undefined) { throw new Error("index not found"); }
 
       return points.get(sortedIndex);
     }).toList();
@@ -234,7 +234,7 @@ export class PolygonMode {
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
     let lonLats = cartesians.map((cartesian, index): ILonLat => {
-      if (!cartesian) { throw new Error("wat"); }
+      if (!cartesian) { throw new Error("cartesian not found"); }
 
       const lonLat = CesiumUtils.cartesianToLonLat(cartesian);
       return {index, ...lonLat};
@@ -267,7 +267,7 @@ export class PolygonMode {
 
     // Strip out the indices that will sort the array
     const indices = lonLats.map((lonLat): number => {
-      if ((lonLat === undefined) || (lonLat.index === undefined)) { throw new Error("wat"); }
+      if ((lonLat === undefined) || (lonLat.index === undefined)) { throw new Error("lonLat not found"); }
 
       return lonLat.index;
     }).toList();
@@ -290,7 +290,7 @@ export class PolygonMode {
   private isDuplicateCartesian = (cartesian: ICartesian3): boolean => {
     const tolerance = 1e-6;
     return this.points.some((point: Point | undefined) => {
-      if (point === undefined) { throw new Error("wat"); }
+      if (point === undefined) { throw new Error("point not found"); }
       return cartesiansEqual(cartesian, point.cartesian, tolerance);
     });
   }
@@ -311,7 +311,7 @@ export class PolygonMode {
   }
 
   private addPoint = (point: Point | undefined): void => {
-    if (point === undefined) { throw new Error("wat"); }
+    if (point === undefined) { throw new Error("point not found"); }
 
     point.addBillboard(this.billboards);
     this.points = this.points.push(point);
