@@ -1,7 +1,9 @@
 import * as GeoJSON from "geojson";
+import { List } from "immutable";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils } from "../utils/CesiumUtils";
+import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
 /* tslint:disable:no-var-requires */
@@ -123,11 +125,13 @@ export class CesiumAdapter {
 
     // when drawing is finished (by double-clicking), this function is called
     // with an array of points.
-    const finishedDrawingCallback = (points: any) => {
-      const lonLatsArray = points.map((point: any) => {
-        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(point);
+    const finishedDrawingCallback = (points: List<Point>) => {
+      const lonLatsArray = points.map((point: Point | undefined) => {
+        if (!point) { return []; }
+
+        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(point.cartesian);
         return [lonLat.lon, lonLat.lat];
-      }, this);
+      }, this).toJS();
 
       let geo = null;
       if (lonLatsArray.length >= MIN_VERTICES) {

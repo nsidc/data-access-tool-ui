@@ -113,9 +113,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       case "Tab":
         this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
         if (e.shiftKey) {
-          this.cesiumAdapter.polygonMode.previousPoint();
+          this.cesiumAdapter.polygonMode.selectPreviousPoint();
         } else {
-          this.cesiumAdapter.polygonMode.nextPoint();
+          this.cesiumAdapter.polygonMode.selectNextPoint();
         }
         e.preventDefault();
         break;
