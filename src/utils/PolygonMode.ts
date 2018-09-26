@@ -1,17 +1,11 @@
 import { List } from "immutable";
 
-import { CesiumUtils, IBillboard, IBillboardCollection, ICartesian3, IScreenPosition } from "./CesiumUtils";
+import { CesiumUtils, IBillboard, IBillboardCollection, ICartesian3, ILonLat, IScreenPosition } from "./CesiumUtils";
 import { Point } from "./Point";
 
 /* tslint:disable:no-var-requires */
 const Cesium = require("cesium/Cesium");
 /* tslint:enable:no-var-requires */
-
-interface ILonLat {
-  readonly lat: number;
-  readonly lon: number;
-  readonly index?: number;
-}
 
 enum PolygonState {
   drawingPolygon,
@@ -80,30 +74,12 @@ export class PolygonMode {
     }
   }
 
-  // cartesian: 3D coordinates for position on earth's surface
-  // https://en.wikipedia.org/wiki/ECEF
-  public cartesianPositionToLonLatDegrees(cartesian: ICartesian3): ILonLat {
-    // this means the position is not on the globe
-    if (cartesian === undefined) {
-      return {lat: NaN, lon: NaN};
-    }
-
-    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesian);
-
-    const lonLatDegrees = {
-      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
-      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
-    };
-
-    return lonLatDegrees;
-  }
-
   public changeLonLat(sLonLat: string) {
     const lonLat = this.parseLonLat(sLonLat);
     if (isNaN(lonLat.lat) || isNaN(lonLat.lon)) {
       return;
     }
-    const cartesian = this.lonLatToCartesianPosition(lonLat);
+    const cartesian = this.lonLatToCartesian(lonLat);
     this.updateLonLatLabel(cartesian);
     this.stateTransition(PolygonEvent.lonLatTextChange, cartesian);
   }
@@ -123,14 +99,12 @@ export class PolygonMode {
 
       this.activatePoint(nextIndex);
       this.updateLonLatLabel(this.activePointCartesian());
-      this.interactionRender();
+      this.updateBillboardsAppearanceForActivePoint();
     }
   }
 
-  public lonLatToCartesianPosition(lonLat: ILonLat): ICartesian3 {
-    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
-    const point = Cesium.Cartographic.toCartesian(cart, this.ellipsoid);
-    return point;
+  public lonLatToCartesian(lonLat: ILonLat): ICartesian3 {
+    return CesiumUtils.lonLatToCartesian(lonLat, this.ellipsoid);
   }
 
   // should only be called when initially rendering a spatial selection that was
@@ -143,7 +117,7 @@ export class PolygonMode {
 
     const cartesians = lonLatsArray.map((coord: number[]) => {
       const [lon, lat] = coord;
-      return this.lonLatToCartesianPosition({lon, lat});
+      return this.lonLatToCartesian({lon, lat});
     });
 
     let points: List<Point> = List(cartesians).map((cartesian?: ICartesian3) => {
@@ -179,13 +153,14 @@ export class PolygonMode {
     }
   }
 
+  // render the given List of points; this also updates this.points to the given
+  // list of points, but sorted clockwiseness
   private renderPolygonFromPoints = (points: List<Point>): void => {
     const sortedPoints = this.sortedPoints(this.reopenPolygonPoints(points));
-    const pointsToRender = sortedPoints;
 
     this.points = sortedPoints;
 
-    const cartesiansArray = pointsToRender.map((p) => p && p.cartesian).toJS();
+    const cartesiansArray = sortedPoints.map((p) => p && p.cartesian).toJS();
 
     // remove previously rendered polygon
     if (this.polygon) {
@@ -261,7 +236,7 @@ export class PolygonMode {
     let lonLats = cartesians.map((cartesian, index): ILonLat => {
       if (!cartesian) { throw new Error("wat"); }
 
-      const lonLat = this.cartesianPositionToLonLatDegrees(cartesian);
+      const lonLat = CesiumUtils.cartesianToLonLat(cartesian);
       return {index, ...lonLat};
     });
 
@@ -309,11 +284,7 @@ export class PolygonMode {
   }
 
   private screenPositionToCartesian = (screenPosition: IScreenPosition): ICartesian3 | null => {
-    if (screenPosition === null) { return null; }
-
-    const cartesian = this.scene.camera.pickEllipsoid(screenPosition, this.ellipsoid);
-    if (!cartesian) { return null; }
-    return cartesian;
+    return CesiumUtils.screenPositionToCartesian(screenPosition, this.scene.camera, this.ellipsoid);
   }
 
   private isDuplicateCartesian = (cartesian: ICartesian3): boolean => {
@@ -419,7 +390,7 @@ export class PolygonMode {
   private updateLonLatLabel(cartesian: ICartesian3 | null) {
     try {
       if (cartesian) {
-        const ll = this.cartesianPositionToLonLatDegrees(cartesian);
+        const ll = CesiumUtils.cartesianToLonLat(cartesian);
         const lat1 = Math.round(ll.lat * 100) / 100;
         const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
         const lon1 = Math.round(ll.lon * 100) / 100;
@@ -509,8 +480,7 @@ export class PolygonMode {
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(screenPosition);
-            const point = this.screenPositionToCartesian(screenPosition);
-            this.updateLonLatLabel(point);
+            this.updateLonLatLabel(this.screenPositionToCartesian(screenPosition));
             break;
           case PolygonEvent.doubleClick:
             // nop

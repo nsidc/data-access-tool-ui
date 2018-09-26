@@ -129,7 +129,7 @@ export class CesiumAdapter {
       const lonLatsArray = points.map((point: Point | undefined) => {
         if (!point) { return []; }
 
-        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(point.cartesian);
+        const lonLat = CesiumUtils.cartesianToLonLat(point.cartesian);
         return [lonLat.lon, lonLat.lat];
       }, this).toJS();
 
