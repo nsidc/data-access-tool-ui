@@ -16,7 +16,7 @@ interface ILonLat {
 enum PolygonState {
   drawingPolygon,
   donePolygon,
-  pointSelected,
+  pointActive,
   movePoint,
 }
 
@@ -38,13 +38,13 @@ export const MIN_VERTICES = 3;
 
 export class PolygonMode {
 
+  private activePointIndex: number = -1;
   private billboards: IBillboardCollection;
   private ellipsoid: any;
   private finishedDrawingCallback: any;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
   private mouseHandler: any;
-  private mousePointIndex: number = -1;
   private points: List<Point> = List<Point>();
   private polygon: any;
   private scene: any;
@@ -68,7 +68,7 @@ export class PolygonMode {
 
   public reset = () => {
     this.clearAllPoints();
-    this.clearMousePoint();
+    this.deactivateActivePoint();
     this.scene.primitives.removeAll();
     this.lonLatEnableCallback(false);
     this.lonLatLabelCallback("");
@@ -109,25 +109,20 @@ export class PolygonMode {
   }
 
   public resetLonLat() {
-    if (this.mousePointIndex >= 0) {
-      const point = this.mousePoint();
+    if (this.activePointIndex >= 0) {
+      const point = this.activePoint();
       this.updateLonLatLabel(point.cartesian);
     }
   }
 
-  public selectNextPoint() {
-    if (this.mousePointIndex >= 0) {
-      this.mousePointIndex = (this.mousePointIndex + 1) % this.points.size;
-      this.updateLonLatLabel(this.mouseCartesian());
-      this.interactionRender();
-    }
-  }
+  public activateRelativePoint(delta: number) {
+    if (this.activePointIndex >= 0) {
+      // Add this.points.size so that this function works with a positive or
+      // negative delta. Note that (this.points.size % this.points.size === 0)
+      const nextIndex = (this.activePointIndex + delta + this.points.size) % this.points.size;
 
-  public selectPreviousPoint() {
-    if (this.mousePointIndex >= 0) {
-      this.mousePointIndex = (this.mousePointIndex > 0) ?
-        (this.mousePointIndex - 1) : (this.points.size - 1);
-      this.updateLonLatLabel(this.mouseCartesian());
+      this.activatePoint(nextIndex);
+      this.updateLonLatLabel(this.activePointCartesian());
       this.interactionRender();
     }
   }
@@ -284,8 +279,8 @@ export class PolygonMode {
       let angle = Math.atan2(lonLat!.lat - center.lat, lonLat!.lon - center.lon);
       // Rotate (shift) all of the points that come before the last point
       // to the end of the array. The <= ensures that the last point comes
-      // at the very end, since that is the mousePoint and will need to be
-      // stripped off the end before storing.
+      // at the very end, since that is the activePoint and may be stripped
+      // off the end before storing.
       if (angle <= angleLast) {
         angle += 2 * Math.PI;
       }
@@ -310,7 +305,7 @@ export class PolygonMode {
       this.renderPolygonFromPoints(this.points);
     }
 
-    this.updateBillboardsAppearanceForMousePoint();
+    this.updateBillboardsAppearanceForActivePoint();
   }
 
   private screenPositionToCartesian = (screenPosition: IScreenPosition): ICartesian3 | null => {
@@ -351,52 +346,56 @@ export class PolygonMode {
     this.points = this.points.push(point);
   }
 
-  private removePoint = (index: number): void => {
-    if ((index < 0) || (index > this.points.size)) {
-      console.warn(`removePoint called with index = ${index}; this.points.size == ${this.points.size}`);
-    }
-
-    this.points.get(index).removeBillboard(this.billboards);
-    this.points = this.points.remove(index);
-  }
-
   private initializeBillboards = () => {
     this.billboards = new Cesium.BillboardCollection();
     this.scene.primitives.add(this.billboards);
   }
 
-  private updateMousePoint = (screenPosition: IScreenPosition) => {
+  private updateActivePoint = (screenPosition: IScreenPosition) => {
     const cartesian = this.screenPositionToCartesian(screenPosition);
     if (cartesian === null) { return; }
 
-    this.clearMousePoint();
+    this.removeActivePoint();
 
     this.addPointFromCartesian(cartesian);
-    this.mousePointIndex = this.points.size - 1;
+    this.activePointIndex = this.points.size - 1;
   }
 
-  private clearMousePoint = () => {
-    if (this.mousePointIndex !== -1) {
-      this.removePoint(this.mousePointIndex);
+  private removeActivePoint = () => {
+    if (this.activePointIndex !== -1) {
+      this.points.get(this.activePointIndex).removeBillboard(this.billboards);
+      this.points = this.points.remove(this.activePointIndex);
     }
-    this.mousePointIndex = -1;
+    this.deactivateActivePoint();
   }
 
-  private mousePoint = (): Point => {
-    return this.points.get(this.mousePointIndex);
+  private deactivateActivePoint = () => {
+    this.activePointIndex = -1;
   }
 
-  private mouseCartesian = (): ICartesian3 | null => {
-    if (this.mousePointIndex === -1) { return null; }
-
-    return this.mousePoint().cartesian;
+  private activePoint = (): Point => {
+    return this.points.get(this.activePointIndex);
   }
 
-  private updateBillboardsAppearanceForMousePoint = () => {
+  private activatePoint = (index: number) => {
+    this.activePointIndex = index;
+  }
+
+  private activateLastPoint = () => {
+    this.activatePoint(this.points.size - 1);
+  }
+
+  private activePointCartesian = (): ICartesian3 | null => {
+    if (this.activePointIndex === -1) { return null; }
+
+    return this.activePoint().cartesian;
+  }
+
+  private updateBillboardsAppearanceForActivePoint = () => {
     this.points.forEach((point, index) => {
       const billboard = point!.getBillboard();
 
-      if (index === this.mousePointIndex) {
+      if (index === this.activePointIndex) {
         billboard.color = Cesium.Color.CHARTREUSE;
         billboard.scale = 1.5;
       } else {
@@ -441,19 +440,19 @@ export class PolygonMode {
   //   doubleClick: End polygon, CALLBACK, --> DonePolygon
   //   lonLatTextChange: nop
   // DonePolygon
-  //   leftClick: If on point, select point --> PointSelected
+  //   leftClick: If on point, activate point --> PointActive
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
   //   lonLatTextChange: nop
-  // PointSelected
-  //   leftClick: If not on point, deselect point --> DonePolygon
-  //              If different point, select it
+  // PointActive
+  //   leftClick: If not on point, deactivate point --> DonePolygon
+  //              If different point, activate it (deactivating the other)
   //              If on point, transfer to mouse point --> MovePoint
   //   moveMouse: Check mouse cursor
   //   doubleClick: nop
   //   lonLatTextChange: Move point to new position, CALLBACK
   // MovePoint
-  //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointSelected
+  //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointActive
   //   moveMouse: Move current mouse point
   //   doubleClick: nop
   //   lonLatTextChange: nop
@@ -469,19 +468,19 @@ export class PolygonMode {
         switch (event) {
           case PolygonEvent.leftClick:
             // Add a new point to the polygon, keep drawing
-            this.clearMousePoint();
+            this.removeActivePoint();
             this.addPointFromScreenPosition(screenPosition);
             this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
-            this.updateMousePoint(screenPosition);
-            this.updateLonLatLabel(this.mouseCartesian());
+            this.updateActivePoint(screenPosition);
+            this.updateLonLatLabel(this.activePointCartesian());
             this.interactionRender();
             break;
           case PolygonEvent.doubleClick:
             this.state = PolygonState.donePolygon;
             if (this.points.size >= MIN_VERTICES) {
-              this.clearMousePoint();
+              this.removeActivePoint();
               this.interactionRender();
               this.finishedDrawingCallback(this.points);
             }
@@ -501,9 +500,9 @@ export class PolygonMode {
               this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
             if (index >= 0) {
               // We clicked on one of the polygon points
-              this.state = PolygonState.pointSelected;
-              this.mousePointIndex = index;
-              this.updateLonLatLabel(this.mouseCartesian());
+              this.state = PolygonState.pointActive;
+              this.activatePoint(index);
+              this.updateLonLatLabel(this.activePointCartesian());
               this.lonLatEnableCallback(true);
               this.interactionRender();
             }
@@ -522,7 +521,7 @@ export class PolygonMode {
         }
         break;
 
-      case PolygonState.pointSelected:
+      case PolygonState.pointActive:
         switch (event) {
           case PolygonEvent.leftClick:
             if (this.points.size === 0) { break; }
@@ -533,22 +532,21 @@ export class PolygonMode {
               // We clicked somewhere else, not on a point
               this.state = PolygonState.donePolygon;
               this.lonLatEnableCallback(false);
-              this.mousePointIndex = -1;
+              this.deactivateActivePoint();
               this.interactionRender();
               break;
             }
-            if (this.mousePointIndex !== index) {
-              // We clicked on a new point, so select it instead
-              this.mousePointIndex = index;
-              this.updateLonLatLabel(this.mouseCartesian());
+            if (this.activePointIndex !== index) {
+              // We clicked on a new point, so activate it instead
+              this.activatePoint(index);
+              this.updateLonLatLabel(this.activePointCartesian());
               this.interactionRender();
               break;
             }
-            // We clicked on the selected point
+            // We clicked on the active point
             this.state = PolygonState.movePoint;
             this.lonLatEnableCallback(false);
             CesiumUtils.setCursorCrosshair();
-            this.mousePointIndex = index;
             this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
@@ -561,13 +559,13 @@ export class PolygonMode {
             // We used the edit box to change the coordinates.
             // If point already exists, refuse to change the screenPosition.
             if (this.isDuplicateCartesian(cartesian)) {
-              this.updateLonLatLabel(this.mouseCartesian());
+              this.updateLonLatLabel(this.activePointCartesian());
               break;
             }
-            this.clearMousePoint();
+            this.removeActivePoint();
             this.addPointFromCartesian(cartesian);
-            // Our selected point will now be at the end of the list
-            this.mousePointIndex = this.points.size - 1;
+            // Our active point will now be at the end of the list
+            this.activateLastPoint();
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
@@ -578,20 +576,19 @@ export class PolygonMode {
         switch (event) {
           case PolygonEvent.leftClick:
             // We're done moving the point
-            this.state = PolygonState.pointSelected;
+            this.state = PolygonState.pointActive;
             CesiumUtils.unsetCursorCrosshair();
-            this.mousePointIndex = this.points.size - 1;
-            this.updateLonLatLabel(this.mouseCartesian());
+            this.updateLonLatLabel(this.activePointCartesian());
             this.lonLatEnableCallback(true);
             this.finishedDrawingCallback(this.points);
             break;
           case PolygonEvent.moveMouse:
-            this.updateMousePoint(screenPosition);
-            this.updateLonLatLabel(this.mouseCartesian());
+            this.updateActivePoint(screenPosition);
+            this.updateLonLatLabel(this.activePointCartesian());
             this.interactionRender();
             break;
           case PolygonEvent.doubleClick:
-            // nop - this allows doubleClick to immediately select and start moving a point
+            // nop - this allows doubleClick to immediately activate and start moving a point
             break;
           case PolygonEvent.lonLatTextChange:
             // nop
