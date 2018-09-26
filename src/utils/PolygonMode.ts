@@ -580,8 +580,7 @@ export class PolygonMode {
             // We're done moving the point
             this.state = PolygonState.pointSelected;
             CesiumUtils.unsetCursorCrosshair();
-            this.clearMousePoint();
-            this.addPointFromScreenPosition(screenPosition);
+            this.mousePointIndex = this.points.size - 1;
             this.updateLonLatLabel(this.mouseCartesian());
             this.lonLatEnableCallback(true);
             this.finishedDrawingCallback(this.points);
