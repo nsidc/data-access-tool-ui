@@ -242,7 +242,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         return;
       } else {
         console.warn(`Found order parameters for ${orderParameters.collection.short_name} `
-                    + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
+                     + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
         this.clearLocalStorage();
       }
     }
