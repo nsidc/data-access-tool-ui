@@ -142,10 +142,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         && this.state.orderParameters.temporalFilterLowerBound
         && this.state.orderParameters.temporalFilterUpperBound) {
       this.handleCmrGranuleRequest();
+    } else {
+      console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
     }
-    // else {
-    //   console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
-    // }
   }
 
   private handleCmrGranuleRequest = () => {
@@ -214,11 +213,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   private handleCmrCollectionResponse = (response: any) => {
     const cmrCollections = fromJS(response.feed.entry).map((c: ICmrCollection) => new CmrCollection(c));
 
-    // if (cmrCollections.size > 1) {
-    //   console.warn("Multiple collections matched, using first: " + cmrCollections.toJS());
-    // } else if (cmrCollections.size === 0) {
-    //   console.warn("No collections matched: " + this.props.environment.drupalDataset);
-    // }
+    if (cmrCollections.size > 1) {
+      console.warn("Multiple collections matched, using first: " + cmrCollections.toJS());
+    } else if (cmrCollections.size === 0) {
+      console.warn("No collections matched: " + this.props.environment.drupalDataset);
+    }
 
     const collection = cmrCollections.first();
     const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(collection.boxes);
@@ -242,8 +241,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         this.hydrateState(orderParameters);
         return;
       } else {
-        // console.warn(`Found order parameters for ${orderParameters.collection.short_name} `
-        //             + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
+        console.warn(`Found order parameters for ${orderParameters.collection.short_name} `
+                    + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
         this.clearLocalStorage();
       }
     }
@@ -263,7 +262,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private hydrateState = (orderParameters: OrderParameters) => {
-    // console.warn("Order parameters loaded from previous state.");
+    console.warn("Order parameters loaded from previous state.");
     this.handleOrderParameterChange(orderParameters, this.enableStateFreezing);
   }
 

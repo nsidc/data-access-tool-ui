@@ -34,7 +34,7 @@ interface IOrderErrorContentProps {
 }
 
 export const OrderErrorContent = (props: IOrderErrorContentProps) => {
-  // console.error(props.error);
+  console.error(props.error);
 
   const msg = "We're sorry, but there was an error processing your request. " +
               "Please contact User Services (nsidc@nsidc.org) for further information and assistance. " +
