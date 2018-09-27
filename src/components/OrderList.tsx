@@ -55,7 +55,7 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
 
   public componentDidMount() {
     this.props.environment.hermesAPI.getUserOrders(this.props.environment.user)
-      .then((orders: any) => Object.values(orders).sort((a, b) => b.date - a.date))
+      .then((orders: any) => Object.values(orders).sort((a: any, b: any) => b.date - a.date))
       .then((orderList: any) => this.setState({orderList}));
   }
 }
