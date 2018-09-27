@@ -372,6 +372,7 @@ export class PolygonMode {
 
     // this point should never be reached; either -1 is returned immediately or
     // the right billboard is found in the for loop
+    console.warn("PolygonMode.indexOfBillboard returning -1 after iteration");
     return -1;
   }
 
