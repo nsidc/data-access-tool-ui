@@ -26,13 +26,13 @@ const CmrGranuleRecord = Record(defaultCmrGranule);
 // matching the names to how they appear in the CMR JSON response is easier than
 // mapping them all to their camelCase equivalents
 export class CmrGranule extends CmrGranuleRecord implements ICmrGranule, Object {
-  public dataset_id!: string;
-  public granule_size!: string;
-  public links!: List<Map<string, string>>;
-  public producer_granule_id!: string;
-  public time_end!: moment.Moment;
-  public time_start!: moment.Moment;
-  public title!: string;
+  public dataset_id: string;
+  public granule_size: string;
+  public links: List<Map<string, string>>;
+  public producer_granule_id: string;
+  public time_end: moment.Moment;
+  public time_start: moment.Moment;
+  public title: string;
 
   constructor(props: ICmrGranule = defaultCmrGranule) {
     super(props);

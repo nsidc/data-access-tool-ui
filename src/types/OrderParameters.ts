@@ -22,11 +22,11 @@ const defaultOrderParameters: IOrderParameters = {
 const OrderParametersRecord = Record(defaultOrderParameters);
 
 export class OrderParameters extends OrderParametersRecord implements IOrderParameters {
-  public collection!: CmrCollection;
-  public collectionSpatialCoverage!: IGeoJsonPolygon | null;
-  public spatialSelection!: IGeoJsonPolygon | null;
-  public temporalFilterLowerBound!: moment.Moment;
-  public temporalFilterUpperBound!: moment.Moment;
+  public collection: CmrCollection;
+  public collectionSpatialCoverage: IGeoJsonPolygon | null;
+  public spatialSelection: IGeoJsonPolygon | null;
+  public temporalFilterLowerBound: moment.Moment;
+  public temporalFilterUpperBound: moment.Moment;
 
   constructor(props: Partial<IOrderParameters> = defaultOrderParameters) {
     super(props);

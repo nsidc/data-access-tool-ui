@@ -25,13 +25,13 @@ const CmrCollectionRecord = Record(defaultCmrCollection);
 // matching the names to how they appear in the CMR JSON response is easier than
 // mapping them all to their camelCase equivalents
 export class CmrCollection extends CmrCollectionRecord implements ICmrCollection {
-  public boxes!: List<string>;
-  public dataset_id!: string;
-  public id!: string;
-  public short_name!: string;
-  public time_end!: string;
-  public time_start!: string;
-  public version_id!: string;
+  public boxes: List<string>;
+  public dataset_id: string;
+  public id: string;
+  public short_name: string;
+  public time_end: string;
+  public time_start: string;
+  public version_id: string;
 
   constructor(props: ICmrCollection = defaultCmrCollection) {
     if (props.boxes instanceof Array) {

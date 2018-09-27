@@ -12,8 +12,8 @@ const defaultOrderSubmissionParameters = {
 const OrderSubmissionParametersRecord = Record(defaultOrderSubmissionParameters);
 
 export class OrderSubmissionParameters extends OrderSubmissionParametersRecord implements IOrderSubmissionParameters {
-  public collectionInfo!: List<List<string>>;
-  public granuleURs!: List<string>;
+  public collectionInfo: List<List<string>>;
+  public granuleURs: List<string>;
 
   constructor(props: IOrderSubmissionParameters = defaultOrderSubmissionParameters) {
     super(props);
