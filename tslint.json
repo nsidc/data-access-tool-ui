@@ -1,13 +1,11 @@
-// TODO: remove exceptions:
-// * Globe.tsx: 1 tslint:disable, 1 @ts-ignore
 {
     "extends": "tslint:recommended",
     "rules": {
         "indent": [
             true,
             "spaces",
-            2  // "tslint:recommended" does not specify a number
+            2
         ],
-        "no-console": false  // TODO: remove console.log statements, enable rule
+        "no-console": [true, "log"]
     }
 }

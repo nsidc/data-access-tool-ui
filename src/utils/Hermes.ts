@@ -59,7 +59,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     });
     ws.emit("join", { userid: user.uid });
     ws.on("reconnect", (event: any) => {
-      console.log("Order notification: reconnected and rejoining");
+      // console.log("Order notification: reconnected and rejoining");
       ws.emit("join", { userid: user.uid });
     });
     ws.on("notification", callback);
