@@ -43,7 +43,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     super(props);
 
     let loadedParamsFromLocalStorage = false;
-    let orderParameters = this.initialOrderParametersFromLocalStorage();
+    let orderParameters = this.initializeOrderParametersFromLocalStorage();
 
     if (orderParameters === null) {
       orderParameters = new OrderParameters();
@@ -247,7 +247,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   // returns an OrderParameters object built using values saved in localStorage,
   // or null
-  private initialOrderParametersFromLocalStorage = (): OrderParameters | null => {
+  private initializeOrderParametersFromLocalStorage = (): OrderParameters | null => {
     if (!this.props.environment.inDrupal) { return null; }
     if (!this.props.environment.drupalDataset) { return null; }
 
