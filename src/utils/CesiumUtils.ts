@@ -1,58 +1,4 @@
-/* tslint:disable:no-var-requires */
-const Cesium = require("cesium/Cesium");
-/* tslint:enable:no-var-requires */
-
-export interface IScreenPosition {
-  x: number;
-  y: number;
-}
-
-export interface ICartesian3 {
-  x: number;
-  y: number;
-  z: number;
-}
-
-// https://cesiumjs.org/Cesium/Build/Documentation/Billboard.html
-export interface IBillboard {
-  alignedAxis: ICartesian3;
-  color: any;
-  disableDepthTestDistance: number;
-  distanceDsiplayCondition: any;
-  eyeOffset: ICartesian3;
-  height: number;
-  heightReference: any;
-  horizontalOrigin: any;
-  id: any;
-  image: string;
-  pixelOffset: any;
-  pixelOffsetScaleByDistance: any;
-  position: ICartesian3;
-  rotation: number;
-  scale: number;
-  scaleByDistance: any;
-  show: boolean;
-  sizeInMeters: boolean;
-  translucencyByDistance: any;
-  verticalOrigin: any;
-  width: number;
-}
-
-// https://cesiumjs.org/Cesium/Build/Documentation/BillboardCollection.html
-export interface IBillboardCollection {
-  blendOption: any;
-  debugShowBoundingVolume: any;
-  length: number;
-  modelMatrix: number;
-  add: (billboard: Partial<IBillboard>) => IBillboard;
-  contains: (billboard: IBillboard) => boolean;
-  destroy: () => void;
-  get: (index: number) => IBillboard;
-  isDestroyed: () => boolean;
-  remove: (billboard: IBillboard) => boolean;
-  removeAll: () => void;
-  update: () => void;
-}
+import * as Cesium from "cesium";
 
 export interface ILonLat {
   readonly lat: number;
@@ -82,7 +28,7 @@ export class CesiumUtils {
 
   // cartesian: 3D coordinates for position on earth's surface
   // https://en.wikipedia.org/wiki/ECEF
-  public static cartesianToLonLat(cartesian: ICartesian3): ILonLat {
+  public static cartesianToLonLat(cartesian: Cesium.Cartesian3): ILonLat {
     // this means the position is not on the globe
     if (cartesian === undefined) {
       return {lat: NaN, lon: NaN};
@@ -91,22 +37,22 @@ export class CesiumUtils {
     const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesian);
 
     const lonLatDegrees = {
-      lat: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.latitude)),
-      lon: Number.parseFloat(Cesium.Math.toDegrees(cartographicRadians.longitude)),
+      lat: Cesium.Math.toDegrees(cartographicRadians.latitude),
+      lon: Cesium.Math.toDegrees(cartographicRadians.longitude),
     };
 
     return lonLatDegrees;
   }
 
-  public static lonLatToCartesian(lonLat: ILonLat, ellipsoid: any): ICartesian3 {
+  public static lonLatToCartesian(lonLat: ILonLat, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 {
     const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
     const point = Cesium.Cartographic.toCartesian(cart, ellipsoid);
     return point;
   }
 
-  public static screenPositionToCartesian = (screenPosition: IScreenPosition,
+  public static screenPositionToCartesian = (screenPosition: Cesium.Cartesian2,
                                              camera: any,
-                                             ellipsoid: any): ICartesian3 | null => {
+                                             ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | null => {
     if (screenPosition === null) { return null; }
 
     const cartesian = camera.pickEllipsoid(screenPosition, ellipsoid);

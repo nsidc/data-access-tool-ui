@@ -1,11 +1,8 @@
+import * as Cesium from "cesium";
 import { List } from "immutable";
 
-import { CesiumUtils, IBillboard, IBillboardCollection, ICartesian3, ILonLat, IScreenPosition } from "./CesiumUtils";
+import { CesiumUtils, ILonLat } from "./CesiumUtils";
 import { Point } from "./Point";
-
-/* tslint:disable:no-var-requires */
-const Cesium = require("cesium/Cesium");
-/* tslint:enable:no-var-requires */
 
 enum PolygonState {
   drawingPolygon,
@@ -22,7 +19,7 @@ enum PolygonEvent {
 }
 
 // NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
-export const cartesiansEqual = (p1: ICartesian3, p2: ICartesian3, tolerance: number = 0): boolean => {
+export const cartesiansEqual = (p1: Cesium.Cartesian3, p2: Cesium.Cartesian3, tolerance: number = 0): boolean => {
   return (Math.abs(p1.x - p2.x) <= tolerance
           && Math.abs(p1.y - p2.y) <= tolerance
           && Math.abs(p1.z - p2.z) <= tolerance);
@@ -33,8 +30,8 @@ export const MIN_VERTICES = 3;
 export class PolygonMode {
 
   private activePointIndex: number = -1;
-  private billboards: IBillboardCollection;
-  private ellipsoid: any;
+  private billboards: Cesium.BillboardCollection;
+  private ellipsoid: Cesium.Ellipsoid;
   private finishedDrawingCallback: any;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
@@ -46,7 +43,7 @@ export class PolygonMode {
 
   public constructor(scene: any, lonLatEnableCallback: (s: boolean) => void,
                      lonLatLabelCallback: (s: string) => void,
-                     ellipsoid: any, finishedDrawingCallback: any) {
+                     ellipsoid: Cesium.Ellipsoid, finishedDrawingCallback: any) {
     this.scene = scene;
     this.lonLatEnableCallback = lonLatEnableCallback;
     this.lonLatLabelCallback = lonLatLabelCallback;
@@ -103,7 +100,7 @@ export class PolygonMode {
     }
   }
 
-  public lonLatToCartesian(lonLat: ILonLat): ICartesian3 {
+  public lonLatToCartesian(lonLat: ILonLat): Cesium.Cartesian3 {
     return CesiumUtils.lonLatToCartesian(lonLat, this.ellipsoid);
   }
 
@@ -120,7 +117,7 @@ export class PolygonMode {
       return this.lonLatToCartesian({lon, lat});
     });
 
-    let points: List<Point> = List(cartesians).map((cartesian?: ICartesian3) => {
+    let points: List<Point> = List(cartesians).map((cartesian?: Cesium.Cartesian3) => {
       return new Point(cartesian);
     }).toList();
     points = this.sortedPoints(this.reopenPolygonPoints(points));
@@ -171,10 +168,10 @@ export class PolygonMode {
     const appearance = new Cesium.EllipsoidSurfaceAppearance({
       aboveGround: false,
     });
-    const geometry = Cesium.PolygonGeometry.fromPositions({
+    const geometry = Cesium.PolygonGeometry.createGeometry(Cesium.PolygonGeometry.fromPositions({
       ellipsoid: this.ellipsoid,
       positions: cartesiansArray,
-    });
+    }));
 
     const geometryInstances = new Cesium.GeometryInstance({
       geometry,
@@ -188,7 +185,7 @@ export class PolygonMode {
   }
 
   private sortedPoints = (points: List<Point>): List<Point> => {
-    const cartesians = points.map((p) => p && p.cartesian) as List<ICartesian3>;
+    const cartesians = points.map((p) => p && p.cartesian) as List<Cesium.Cartesian3>;
 
     // Ensure that the points are in counterclockwise non-overlapping order.
     const sortedIndices = this.sortedPolygonPointIndices(cartesians);
@@ -229,7 +226,7 @@ export class PolygonMode {
   // the angles into ascending order.
   // Returns an array of indices that sort points into correct order.
   // For algorithm see https://stackoverflow.com/questions/19713092/
-  private sortedPolygonPointIndices(cartesians: List<ICartesian3>): List<number> {
+  private sortedPolygonPointIndices(cartesians: List<Cesium.Cartesian3>): List<number> {
 
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
@@ -283,11 +280,11 @@ export class PolygonMode {
     this.updateBillboardsAppearanceForActivePoint();
   }
 
-  private screenPositionToCartesian = (screenPosition: IScreenPosition): ICartesian3 | null => {
+  private screenPositionToCartesian = (screenPosition: Cesium.Cartesian2): Cesium.Cartesian3 | null => {
     return CesiumUtils.screenPositionToCartesian(screenPosition, this.scene.camera, this.ellipsoid);
   }
 
-  private isDuplicateCartesian = (cartesian: ICartesian3): boolean => {
+  private isDuplicateCartesian = (cartesian: Cesium.Cartesian3): boolean => {
     const tolerance = 1e-6;
     return this.points.some((point: Point | undefined) => {
       if (point === undefined) { throw new Error("point not found"); }
@@ -295,14 +292,14 @@ export class PolygonMode {
     });
   }
 
-  private addPointFromScreenPosition = (screenPosition: IScreenPosition) => {
+  private addPointFromScreenPosition = (screenPosition: Cesium.Cartesian2) => {
     const cartesian = this.screenPositionToCartesian(screenPosition);
     if (cartesian === null) { return; }
 
     return this.addPointFromCartesian(cartesian);
   }
 
-  private addPointFromCartesian = (cartesian: ICartesian3) => {
+  private addPointFromCartesian = (cartesian: Cesium.Cartesian3) => {
     if (this.isDuplicateCartesian(cartesian)) { return; }
 
     const point = new Point(cartesian);
@@ -322,7 +319,7 @@ export class PolygonMode {
     this.scene.primitives.add(this.billboards);
   }
 
-  private updateActivePoint = (screenPosition: IScreenPosition) => {
+  private updateActivePoint = (screenPosition: Cesium.Cartesian2) => {
     const cartesian = this.screenPositionToCartesian(screenPosition);
     if (cartesian === null) { return; }
 
@@ -356,7 +353,7 @@ export class PolygonMode {
     this.activatePoint(this.points.size - 1);
   }
 
-  private activePointCartesian = (): ICartesian3 | null => {
+  private activePointCartesian = (): Cesium.Cartesian3 | null => {
     if (this.activePointIndex === -1) { return null; }
 
     return this.activePoint().cartesian;
@@ -376,7 +373,7 @@ export class PolygonMode {
     }, this);
   }
 
-  private handleMouseCursor(screenPosition: IScreenPosition) {
+  private handleMouseCursor(screenPosition: Cesium.Cartesian2) {
     const mouseoverFeature = this.scene.pick(screenPosition);
     const mouseoverIndex = (mouseoverFeature !== undefined) ?
       this.indexOfPointByBillboard(mouseoverFeature.primitive) : -1;
@@ -387,7 +384,7 @@ export class PolygonMode {
     }
   }
 
-  private updateLonLatLabel(cartesian: ICartesian3 | null) {
+  private updateLonLatLabel(cartesian: Cesium.Cartesian3 | null) {
     try {
       if (cartesian) {
         const ll = CesiumUtils.cartesianToLonLat(cartesian);
@@ -428,11 +425,11 @@ export class PolygonMode {
   //   doubleClick: nop
   //   lonLatTextChange: nop
 
-  private stateTransition = (event: PolygonEvent, screenPositionOrCartesian: IScreenPosition | ICartesian3) => {
+  private stateTransition = (event: PolygonEvent, screenPositionOrCartesian: Cesium.Cartesian2 | Cesium.Cartesian3) => {
     // usually we're dealing with a 2D screen position, but sometimes (eg when
     // called from changeLonLat) it's a 3D `cartesian`
-    const screenPosition = screenPositionOrCartesian as IScreenPosition;
-    const cartesian = screenPositionOrCartesian as ICartesian3;
+    const screenPosition = screenPositionOrCartesian as Cesium.Cartesian2;
+    const cartesian = screenPositionOrCartesian as Cesium.Cartesian3;
 
     switch (this.state) {
       case PolygonState.drawingPolygon:
@@ -568,19 +565,19 @@ export class PolygonMode {
     }
   }
 
-  private onLeftClick = ({position}: {position: IScreenPosition}) => {
+  private onLeftClick = ({position}: {position: Cesium.Cartesian2}) => {
     this.stateTransition(PolygonEvent.leftClick, position);
   }
 
-  private onLeftDoubleClick = ({position}: {position: IScreenPosition}) => {
+  private onLeftDoubleClick = ({position}: {position: Cesium.Cartesian2}) => {
     this.stateTransition(PolygonEvent.doubleClick, position);
   }
 
-  private onMouseMove = ({endPosition}: {endPosition: IScreenPosition}) => {
+  private onMouseMove = ({endPosition}: {endPosition: Cesium.Cartesian2}) => {
     this.stateTransition(PolygonEvent.moveMouse, endPosition);
   }
 
-  private indexOfPointByBillboard = (billboard: IBillboard): number => {
+  private indexOfPointByBillboard = (billboard: Cesium.Billboard): number => {
     return this.points.findIndex((point) => {
       if (point === undefined) { return false; }
 

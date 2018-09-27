@@ -1,13 +1,14 @@
+import * as Cesium from "cesium";
+
 import * as dragImg from "../img/dragIcon.png";
-import { IBillboard, IBillboardCollection, ICartesian3 } from "./CesiumUtils";
 
 export class Point {
-  public readonly cartesian: ICartesian3;
+  public readonly cartesian: Cesium.Cartesian3;
 
-  private billboard: IBillboard;
-  private billboardProps: Partial<IBillboard>;
+  private billboard: Cesium.Billboard;
+  private billboardProps: Partial<Cesium.Billboard>;
 
-  public constructor(cartesian: ICartesian3 | undefined) {
+  public constructor(cartesian: Cesium.Cartesian3 | undefined) {
     if (cartesian) {
       this.cartesian = cartesian;
 
@@ -18,16 +19,16 @@ export class Point {
     }
   }
 
-  public getBillboard = (): IBillboard => {
+  public getBillboard = (): Cesium.Billboard => {
     return this.billboard;
   }
 
-  public addBillboard = (billboardCollection: IBillboardCollection): IBillboard => {
+  public addBillboard = (billboardCollection: Cesium.BillboardCollection): Cesium.Billboard => {
     this.billboard = billboardCollection.add(this.billboardProps);
     return this.billboard;
   }
 
-  public removeBillboard = (billboardCollection: IBillboardCollection): boolean => {
+  public removeBillboard = (billboardCollection: Cesium.BillboardCollection): boolean => {
     return billboardCollection.remove(this.billboard);
   }
 }

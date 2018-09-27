@@ -1,3 +1,5 @@
+import * as Cesium from "cesium";
+import "cesium/Widgets/widgets.css";
 import * as GeoJSON from "geojson";
 import { List } from "immutable";
 
@@ -6,14 +8,9 @@ import { CesiumUtils } from "../utils/CesiumUtils";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
-/* tslint:disable:no-var-requires */
-const Cesium = require("cesium/Cesium");
-require("cesium/Widgets/widgets.css");
-/* tslint:enable:no-var-requires */
-
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
-  private static ellipsoid = Cesium.Ellipsoid.WGS84;
+  private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public polygonMode: PolygonMode;
 
@@ -88,7 +85,7 @@ export class CesiumAdapter {
 
     if (!this.collectionCoverageIsGlobal(bbox)) {
       // draw rectangle showing collection's coverage
-      const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
+      const rectangleRadians = Cesium.Rectangle.fromDegrees(...bbox);
       this.viewer.entities.add({
         id: ENTITY_ID,
         name: ENTITY_ID,
