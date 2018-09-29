@@ -13,6 +13,7 @@ jobs:
             npm install
             npm run lint
             npm run test
+            npm run build-drupal
 
 workflows:
   version: 2
