@@ -34,7 +34,8 @@ export class CesiumUtils {
       return {lat: NaN, lon: NaN};
     }
 
-    const cartographicRadians = Cesium.Cartographic.fromCartesian(cartesian);
+    // @types/cesium is lacking some methods on the Cartographic class
+    const cartographicRadians = (Cesium.Cartographic as any).fromCartesian(cartesian);
 
     const lonLatDegrees = {
       lat: Cesium.Math.toDegrees(cartographicRadians.latitude),
@@ -46,7 +47,9 @@ export class CesiumUtils {
 
   public static lonLatToCartesian(lonLat: ILonLat, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 {
     const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
-    const point = Cesium.Cartographic.toCartesian(cart, ellipsoid);
+
+    // @types/cesium is lacking some methods on the Cartographic class
+    const point = (Cesium.Cartographic as any).toCartesian(cart, ellipsoid);
     return point;
   }
 
