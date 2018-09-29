@@ -18,13 +18,6 @@ enum PolygonEvent {
   lonLatTextChange,
 }
 
-// NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
-export const cartesiansEqual = (p1: Cesium.Cartesian3, p2: Cesium.Cartesian3, tolerance: number = 0): boolean => {
-  return (Math.abs(p1.x - p2.x) <= tolerance
-          && Math.abs(p1.y - p2.y) <= tolerance
-          && Math.abs(p1.z - p2.z) <= tolerance);
-};
-
 export const MIN_VERTICES = 3;
 
 export class PolygonMode {
@@ -288,7 +281,7 @@ export class PolygonMode {
     const tolerance = 1e-6;
     return this.points.some((point: Point | undefined) => {
       if (point === undefined) { throw new Error("point not found"); }
-      return cartesiansEqual(cartesian, point.cartesian, tolerance);
+      return cartesian.equalsEpsilon(point.cartesian, tolerance, tolerance);
     });
   }
 
@@ -593,6 +586,6 @@ export class PolygonMode {
     const first = points.first().cartesian;
     const last = points.last().cartesian;
 
-    return cartesiansEqual(first, last) ? points.pop() : List(points);
+    return first.equals(last) ? points.pop() : List(points);
   }
 }
