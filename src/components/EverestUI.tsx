@@ -257,9 +257,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const currentDatasetMatchesSaved = this.props.environment.drupalDataset!.id === orderParams.collection.short_name;
     if (!currentDatasetMatchesSaved) {
-      console.warn(`Found order parameters for ${orderParams.collection.short_name} `
-                 + `instead of ${this.props.environment.drupalDataset!.id}; clearing `
-                 + "previous state from localStorage.");
       this.clearLocalStorage();
       return null;
     }
