@@ -590,13 +590,9 @@ export class PolygonMode {
   // "unclose" the polygon by removing the last point if it equals the first
   // point
   private reopenPolygonPoints = (points: List<Point>): List<Point> => {
-    const firstCartesian = points.first().cartesian;
-    const lastCartesian = points.last().cartesian;
+    const first = points.first().cartesian;
+    const last = points.last().cartesian;
 
-    if (cartesiansEqual(firstCartesian, lastCartesian)) {
-      return points.pop();
-    }
-
-    return points;
+    return cartesiansEqual(first, last) ? points.pop() : List(points);
   }
 }
