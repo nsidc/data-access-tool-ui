@@ -14,7 +14,7 @@ export class CesiumAdapter {
 
   public polygonMode: PolygonMode;
 
-  private viewer: any;
+  private viewer: Cesium.Viewer;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
@@ -70,7 +70,9 @@ export class CesiumAdapter {
   }
 
   public flyHome() {
-    this.viewer.camera.flyHome();
+    // @types/cesium incorrectly has the parameter to Camera.flyHome as required
+    // instead of optinal
+    (this.viewer.camera as any).flyHome();
   }
 
   public renderCollectionCoverage(bbox: number[]): void {
@@ -86,14 +88,17 @@ export class CesiumAdapter {
     if (!this.collectionCoverageIsGlobal(bbox)) {
       // draw rectangle showing collection's coverage
       const rectangleRadians = Cesium.Rectangle.fromDegrees(...bbox);
-      this.viewer.entities.add({
+      this.viewer.entities.add(new Cesium.Entity({
         id: ENTITY_ID,
         name: ENTITY_ID,
-        rectangle: {
-          coordinates: rectangleRadians,
-          material: CesiumAdapter.extentColor,
-        },
-      });
+        rectangle: new Cesium.RectangleGraphics({
+          // Cesium docs (and @types/cesium) show that `coordinates` and
+          // `material` must be of type `Property`, yet they have examples using
+          // the same types we use here (`Rectangle` and `Color`)
+          coordinates: (rectangleRadians as any),
+          material: (CesiumAdapter.extentColor as any),
+        }),
+      }));
     }
   }
 
@@ -186,7 +191,7 @@ const gibsGeographicTilingScheme = () => {
     return result;
   };
 
-  ggts.tileXYToRectangle = (x: number, y: number, level: number, result: any) => {
+  ggts.tileXYToRectangle = (x: number, y: number, level: number, result?: Cesium.Rectangle) => {
     const resolution = levels[level].resolution;
 
     const xTileWidth = resolution * tilePixels;
@@ -207,7 +212,7 @@ const gibsGeographicTilingScheme = () => {
     return result;
   };
 
-  ggts.positionToTileXY = (position: any, level: number, result: any) => {
+  ggts.positionToTileXY = (position: Cesium.Cartographic, level: number, result: any) => {
     if (!Cesium.Rectangle.contains(rectangle, position)) {
       return undefined;
     }

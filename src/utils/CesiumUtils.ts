@@ -54,7 +54,7 @@ export class CesiumUtils {
   }
 
   public static screenPositionToCartesian = (screenPosition: Cesium.Cartesian2,
-                                             camera: any,
+                                             camera: Cesium.Camera,
                                              ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | null => {
     if (screenPosition === null) { return null; }
 
