@@ -1,5 +1,5 @@
 import * as Cesium from "cesium";
-import "cesium/Widgets/widgets.css";
+import "cesium-widgets/widgets.css";
 import * as GeoJSON from "geojson";
 import { List } from "immutable";
 
