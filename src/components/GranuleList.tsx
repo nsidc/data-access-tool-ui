@@ -50,8 +50,12 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderSpinnerOrButtonForNextPage = () => {
-    if (!this.props.loading && this.props.loadingNextPage) {
+    if (this.props.loading) {
+      return null;
+
+    } else if (this.props.loadingNextPage) {
       return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
+
     } else {
       return (
         <button
