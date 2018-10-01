@@ -128,10 +128,8 @@ export class CesiumAdapter {
     // when drawing is finished (by double-clicking), this function is called
     // with an array of points.
     const finishedDrawingCallback = (points: List<Point>) => {
-      const lonLatsArray = points.map((point: Point | undefined) => {
-        if (!point) { return []; }
-
-        const lonLat = CesiumUtils.cartesianToLonLat(point.cartesian);
+      const lonLatsArray = points.map((point) => {
+        const lonLat = CesiumUtils.cartesianToLonLat(point!.cartesian);
         return [lonLat.lon, lonLat.lat];
       }, this).toJS();
 

@@ -182,10 +182,8 @@ export class PolygonMode {
 
     // Ensure that the points are in counterclockwise non-overlapping order.
     const sortedIndices = this.sortedPolygonPointIndices(cartesians);
-    const pointsInSortedOrder = sortedIndices.map((sortedIndex: number | undefined) => {
-      if (sortedIndex === undefined) { throw new Error("index not found"); }
-
-      return points.get(sortedIndex);
+    const pointsInSortedOrder = sortedIndices.map((sortedIndex) => {
+      return points.get(sortedIndex!);
     }).toList();
 
     return pointsInSortedOrder;
@@ -224,9 +222,7 @@ export class PolygonMode {
     // Convert all points from 3D to 2D, save the original points.
     // Compute the bounding box for all the points.
     let lonLats = cartesians.map((cartesian, index): ILonLat => {
-      if (!cartesian) { throw new Error("cartesian not found"); }
-
-      const lonLat = CesiumUtils.cartesianToLonLat(cartesian);
+      const lonLat = CesiumUtils.cartesianToLonLat(cartesian!);
       return {index, ...lonLat};
     });
 
@@ -257,9 +253,7 @@ export class PolygonMode {
 
     // Strip out the indices that will sort the array
     const indices = lonLats.map((lonLat): number => {
-      if ((lonLat === undefined) || (lonLat.index === undefined)) { throw new Error("lonLat not found"); }
-
-      return lonLat.index;
+      return lonLat!.index!;
     }).toList();
     return indices;
   }
@@ -279,9 +273,8 @@ export class PolygonMode {
 
   private isDuplicateCartesian = (cartesian: Cesium.Cartesian3): boolean => {
     const tolerance = 1e-6;
-    return this.points.some((point: Point | undefined) => {
-      if (point === undefined) { throw new Error("point not found"); }
-      return cartesian.equalsEpsilon(point.cartesian, tolerance, tolerance);
+    return this.points.some((point) => {
+      return cartesian.equalsEpsilon(point!.cartesian, tolerance, tolerance);
     });
   }
 
@@ -300,11 +293,11 @@ export class PolygonMode {
     this.addPoint(point);
   }
 
+  // point only includes `| undefined` in the type annotation to appease
+  // Immutable 3.x's bad type declarations
   private addPoint = (point: Point | undefined): void => {
-    if (point === undefined) { throw new Error("point not found"); }
-
-    point.addBillboard(this.billboards);
-    this.points = this.points.push(point);
+    point!.addBillboard(this.billboards);
+    this.points = this.points.push(point!);
   }
 
   private initializeBillboards = () => {
