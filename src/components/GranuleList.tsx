@@ -39,25 +39,26 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           granules. Displaying
           {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />{" "}
           selected granules.
-          <button
-            className="submit-button eui-btn--blue"
-            onClick={() => this.props.updateGranulesFromCmr(true)}>
-            Get 10 more granules
-          </button>
         </div>
         <div id="granule-list-container">
           {this.renderContent()}
-          {this.renderSpinnerIfLoadingNextPage()}
+          {this.renderSpinnerOrButtonForNextPage()}
         </div>
       </div>
     );
   }
 
-  private renderSpinnerIfLoadingNextPage = () => {
+  private renderSpinnerOrButtonForNextPage = () => {
     if (!this.props.loading && this.props.loadingNextPage) {
       return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
     } else {
-      return null;
+      return (
+        <button
+          className="submit-button eui-btn--blue"
+          onClick={() => this.props.updateGranulesFromCmr(true)}>
+          Get 10 more granules
+        </button>
+      );
     }
   }
 
