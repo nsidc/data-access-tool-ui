@@ -141,8 +141,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleCount={this.state.cmrGranuleCount}
               cmrGranuleResponse={this.state.cmrGranules}
               loading={this.state.cmrLoading}
-              getMoreGranules={this.updateGranulesFromCmr}
-              orderParameters={this.state.orderParameters} />
+              orderParameters={this.state.orderParameters}
+              updateGranulesFromCmr={this.updateGranulesFromCmr} />
             <OrderButtons
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
@@ -153,7 +153,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     );
   }
 
-  private updateGranulesFromCmr = () => {
+  private updateGranulesFromCmr = (nextPage: boolean = false) => {
     if (this.state.stateCanBeFrozen) {
       this.freezeState();
     }
@@ -165,14 +165,16 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         && this.state.orderParameters.collection.id
         && this.state.orderParameters.temporalFilterLowerBound
         && this.state.orderParameters.temporalFilterUpperBound) {
-      this.handleCmrGranuleRequest();
+      this.handleCmrGranuleRequest(nextPage);
     } else {
       console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
     }
   }
 
-  private handleCmrGranuleRequest = () => {
-    this.setState({cmrLoading: true});
+  private handleCmrGranuleRequest = (nextPage: boolean = false) => {
+    if (!nextPage) {
+      this.setState({cmrLoading: true});
+    }
 
     let headers = Map<string, string>();
     if (this.state.cmrScrollingId) {

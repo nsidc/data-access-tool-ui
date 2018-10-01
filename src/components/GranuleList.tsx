@@ -12,7 +12,7 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
-  getMoreGranules: () => void;
+  updateGranulesFromCmr: (nextPage?: boolean) => void;
   orderParameters: OrderParameters;
 }
 
@@ -38,7 +38,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           {" "}selected granules.
           <button
             className="submit-button eui-btn--blue"
-            onClick={this.props.getMoreGranules}>
+            onClick={() => this.props.updateGranulesFromCmr(true)}>
             Get 10 more granules
           </button>
         </div>
