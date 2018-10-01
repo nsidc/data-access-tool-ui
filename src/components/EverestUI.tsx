@@ -30,6 +30,7 @@ interface IEverestState {
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
   cmrLoading: boolean;
+  cmrLoadingNextPage: boolean;
   cmrScrollingId: string;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
@@ -56,6 +57,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrGranuleCount: undefined,
       cmrGranules: List<CmrGranule>(),
       cmrLoading: false,
+      cmrLoadingNextPage: false,
       cmrScrollingId: "",
       cmrStatusChecked: false,
       cmrStatusOk: false,
@@ -98,6 +100,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const stateChanged = hasChanged(this.state, nextState, [
       "cmrGranules",
       "cmrLoading",
+      "cmrLoadingNextPage",
       "cmrStatusChecked",
       "cmrStatusOk",
       "orderParameters",
@@ -141,6 +144,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleCount={this.state.cmrGranuleCount}
               cmrGranuleResponse={this.state.cmrGranules}
               loading={this.state.cmrLoading}
+              loadingNextPage={this.state.cmrLoadingNextPage}
               orderParameters={this.state.orderParameters}
               updateGranulesFromCmr={this.updateGranulesFromCmr} />
             <OrderButtons
@@ -172,9 +176,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleRequest = (nextPage: boolean = false) => {
-    if (!nextPage) {
-      this.setState({cmrLoading: true});
-    }
+    this.setState({cmrLoading: !nextPage, cmrLoadingNextPage: true});
 
     let headers = Map<string, string>();
     if (this.state.cmrScrollingId) {
@@ -191,7 +193,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       headers,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
-     .finally(() => this.setState({cmrLoading: false}));
+     .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {

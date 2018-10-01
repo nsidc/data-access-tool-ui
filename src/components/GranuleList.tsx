@@ -5,6 +5,7 @@ import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderParameters } from "../types/OrderParameters";
+import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
@@ -12,6 +13,7 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
+  loadingNextPage: boolean;
   updateGranulesFromCmr: (nextPage?: boolean) => void;
   orderParameters: OrderParameters;
 }
@@ -20,10 +22,11 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
-    const cmrGranuleResponseChanged = !this.props.cmrGranuleResponse.equals(nextProps.cmrGranuleResponse);
-    const loadingChanged = this.props.loading !== nextProps.loading;
-
-    return cmrGranuleResponseChanged || loadingChanged;
+    return hasChanged(this.props, nextProps, [
+      "cmrGranuleResponse",
+      "loading",
+      "loadingNextPage",
+    ]);
   }
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
@@ -33,9 +36,9 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <div id="granule-list-count-header" className="views-field">
           You have selected
           {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
-          granules. Displaying{" "}
-          <span id="granule-displayed-count-container">{this.props.cmrGranuleResponse.size.toLocaleString()}</span>
-          {" "}selected granules.
+          granules. Displaying
+          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />{" "}
+          selected granules.
           <button
             className="submit-button eui-btn--blue"
             onClick={() => this.props.updateGranulesFromCmr(true)}>
@@ -44,9 +47,18 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </div>
         <div id="granule-list-container">
           {this.renderContent()}
+          {this.renderSpinnerIfLoadingNextPage()}
         </div>
       </div>
     );
+  }
+
+  private renderSpinnerIfLoadingNextPage = () => {
+    if (!this.props.loading && this.props.loadingNextPage) {
+      return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
+    } else {
+      return null;
+    }
   }
 
   private renderContent = () => {
