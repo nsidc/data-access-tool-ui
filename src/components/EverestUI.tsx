@@ -195,7 +195,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
     const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
-    this.setState({orderParameters}, this.updateGranulesFromCmr);
+    const state = {
+      orderParameters,
+
+      // clear existing results
+      cmrGranules: List<CmrGranule>(),
+      cmrScrollingId: "",
+    };
+
+    this.setState(state, this.updateGranulesFromCmr);
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
