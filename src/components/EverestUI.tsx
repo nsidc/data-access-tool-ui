@@ -82,7 +82,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     cmrStatusRequest().then(onSuccess, onFailure);
 
     if (this.state.loadedParamsFromLocalStorage) {
-      this.handleOrderParameterChange({}, this.enableStateFreezing);
+      this.updateGranulesFromCmr();
+      this.enableStateFreezing();
 
     } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
       this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
@@ -150,6 +151,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private updateGranulesFromCmr = () => {
+    if (this.state.stateCanBeFrozen) {
+      this.freezeState();
+    }
+
     if (this.state.cmrStatusChecked && !this.state.cmrStatusOk) {
       return;
     }
@@ -177,19 +182,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
      .finally(() => this.setState({cmrLoading: false}));
   }
 
-  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback?: () => void) => {
+  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
     const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
-    const modifiedCallback = (): void => {
-      if (this.state.stateCanBeFrozen) {
-        this.freezeState();
-      }
-      this.updateGranulesFromCmr();
-      if (callback) {
-        callback();
-      }
-    };
-    this.setState({orderParameters}, modifiedCallback);
+    this.setState({orderParameters}, this.updateGranulesFromCmr);
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
