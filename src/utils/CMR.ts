@@ -14,8 +14,8 @@ const CMR_PAGE_SIZE = 2000;
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
-const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?"
-                                  + `scroll=true&page_size=${CMR_PAGE_SIZE}&provider=NSIDC_ECS&sort_key=short_name`;
+const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?scroll=true"
+  + `&page_size=${CMR_PAGE_SIZE}&provider=NSIDC_ECS&sort_key=short_name`;
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
