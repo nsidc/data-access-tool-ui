@@ -15,7 +15,7 @@ interface IGranuleListProps {
   cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
   loadingNextPage: boolean;
-  updateGranulesFromCmr: (nextPage?: boolean) => void;
+  loadNextPageOfGranules: () => void;
   orderParameters: OrderParameters;
 }
 
@@ -56,7 +56,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       return (
         <button
           className="submit-button eui-btn--blue"
-          onClick={() => this.props.updateGranulesFromCmr(true)}>
+          onClick={() => this.props.loadNextPageOfGranules()}>
           Get {CMR_PAGE_SIZE} more granules
         </button>
       );
