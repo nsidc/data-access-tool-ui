@@ -5,6 +5,7 @@ import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderParameters } from "../types/OrderParameters";
+import { CMR_PAGE_SIZE } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
@@ -56,7 +57,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <button
           className="submit-button eui-btn--blue"
           onClick={() => this.props.updateGranulesFromCmr(true)}>
-          Get 10 more granules
+          Get {CMR_PAGE_SIZE} more granules
         </button>
       );
     }
