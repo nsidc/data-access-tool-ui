@@ -1,4 +1,4 @@
-import { fromJS, List } from "immutable";
+import { fromJS, List, Map } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
@@ -8,7 +8,7 @@ import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
-import { CMR_COUNT_HEADER_NAME, cmrBoxArrToSpatialSelection } from "../utils/CMR";
+import { CMR_COUNT_HEADER, CMR_SCROLL_HEADER, cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
@@ -28,8 +28,9 @@ interface IEverestProps {
 
 interface IEverestState {
   cmrGranuleCount?: number;
-  cmrGranuleResponse: List<CmrGranule>;
+  cmrGranules: List<CmrGranule>;
   cmrLoading: boolean;
+  cmrScrollingId: string;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   loadedParamsFromLocalStorage: boolean;
@@ -53,8 +54,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     this.state = {
       cmrGranuleCount: undefined,
-      cmrGranuleResponse: List<CmrGranule>(),
+      cmrGranules: List<CmrGranule>(),
       cmrLoading: false,
+      cmrScrollingId: "",
       cmrStatusChecked: false,
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
@@ -94,7 +96,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
     const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
     const stateChanged = hasChanged(this.state, nextState, [
-      "cmrGranuleResponse",
+      "cmrGranules",
       "cmrLoading",
       "cmrStatusChecked",
       "cmrStatusOk",
@@ -137,13 +139,14 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           <div id="right-side">
             <GranuleList
               cmrGranuleCount={this.state.cmrGranuleCount}
-              cmrGranuleResponse={this.state.cmrGranuleResponse}
+              cmrGranuleResponse={this.state.cmrGranules}
               loading={this.state.cmrLoading}
+              getMoreGranules={this.updateGranulesFromCmr}
               orderParameters={this.state.orderParameters} />
             <OrderButtons
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
-              cmrGranuleResponse={this.state.cmrGranuleResponse} />
+              cmrGranuleResponse={this.state.cmrGranules} />
           </div>
         </div>
       </div>
@@ -170,6 +173,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private handleCmrGranuleRequest = () => {
     this.setState({cmrLoading: true});
+
+    let headers = Map<string, string>();
+    if (this.state.cmrScrollingId) {
+      headers = Map([[CMR_SCROLL_HEADER, this.state.cmrScrollingId]]);
+    }
+
     return cmrGranuleRequest(
       this.state.orderParameters.collection.short_name,
       Number(this.state.orderParameters.collection.version_id),
@@ -177,6 +186,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.collectionSpatialCoverage,
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
+      headers,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
      .finally(() => this.setState({cmrLoading: false}));
@@ -189,21 +199,33 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
-    const cmrGranuleCount: number = Number(response.headers.get(CMR_COUNT_HEADER_NAME));
-    this.setState({cmrGranuleCount});
+    const cmrGranuleCount: number = Number(response.headers.get(CMR_COUNT_HEADER));
+    const cmrScrollingId: string = String(response.headers.get(CMR_SCROLL_HEADER));
+
+    if (!this.state.cmrScrollingId && cmrScrollingId) {
+      // tslint:disable-next-line:no-console
+      console.log(`got Cmr-Scroll-Id "${cmrScrollingId}"`);
+    }
+
+    if (this.state.cmrScrollingId && (cmrScrollingId !== this.state.cmrScrollingId)) {
+      throw new Error(`Had CMR-Scroll-Id "${this.state.cmrScrollingId}", but got back ${cmrScrollingId}`);
+    }
+
+    this.setState({cmrGranuleCount, cmrScrollingId});
     return response.json();
   }
 
   private handleCmrGranuleResponseJSON = (json: any) => {
-    const cmrGranuleResponse = fromJS(json.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
+    const newCmrGranules = fromJS(json.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
+    const cmrGranules = this.state.cmrGranules.concat(newCmrGranules) as List<CmrGranule>;
 
-    const granuleURs = cmrGranuleResponse.map((g: CmrGranule) => g.title);
-    const collectionIDs = cmrGranuleResponse.map((g: CmrGranule) => g.dataset_id);
-    const collectionLinks = cmrGranuleResponse.map((g: CmrGranule) => g.links.last().get("href"));
-    const collectionInfo = collectionIDs.map((id: string, key: number) => List([id, collectionLinks.get(key)]));
+    const granuleURs = cmrGranules.map((g) => g!.title) as List<string>;
+    const collectionIDs = cmrGranules.map((g) => g!.dataset_id) as List<string>;
+    const collectionLinks = cmrGranules.map((g) => g!.links.last().get("href")) as List<string>;
+    const collectionInfo = collectionIDs.map((id, key) => List([id!, collectionLinks.get(key!)])) as List<List<string>>;
     const orderSubmissionParameters = new OrderSubmissionParameters({collectionInfo, granuleURs});
 
-    this.setState({cmrGranuleResponse, orderSubmissionParameters});
+    this.setState({cmrGranules, orderSubmissionParameters});
   }
 
   private onCmrRequestFailure = (response: any) => {

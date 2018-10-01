@@ -12,6 +12,7 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranuleResponse: List<CmrGranule>;
   loading: boolean;
+  getMoreGranules: () => void;
   orderParameters: OrderParameters;
 }
 
@@ -35,6 +36,11 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           granules. Displaying{" "}
           <span id="granule-displayed-count-container">{this.props.cmrGranuleResponse.size.toLocaleString()}</span>
           {" "}selected granules.
+          <button
+            className="submit-button eui-btn--blue"
+            onClick={this.props.getMoreGranules}>
+            Get 10 more granules
+          </button>
         </div>
         <div id="granule-list-container">
           {this.renderContent()}
@@ -44,6 +50,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderContent = () => {
+    if (this.props.loading) {
+      return (<LoadingIcon size="5x" />);
+    }
+
     const granuleList = this.props.cmrGranuleResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
       const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
       return (
@@ -55,10 +65,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </tr>
       );
     });
-
-    if (this.props.loading) {
-      return (<LoadingIcon size="5x" />);
-    }
 
     return (
       <CSSTransition in
