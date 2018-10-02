@@ -24,6 +24,12 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private containerId = "granule-list-container";
   private trHeight: number;
 
+  // how many rows from the bottom should we be before getting more granules?
+  //
+  // instead of setting a magic number, alternate method for this might be
+  // something like CMR_PAGE_SIZE * .05
+  private scrollingRowThreshold: number = 10;
+
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     return hasChanged(this.props, nextProps, [
       "cmrGranuleResponse",
@@ -84,8 +90,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     }
 
     // how close to the bottom do we get before loading more? in px
-    const numberOfRows = 10;  // alternate method for this might be something like CMR_PAGE_SIZE * .05
-    const threshold = this.trHeight * numberOfRows;
+    const threshold = this.trHeight * this.scrollingRowThreshold;
 
     // @ts-ignore 2339 - TypeScript doesn't think offsetHeight is real
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
