@@ -51,7 +51,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   public componentDidMount = () => {
     // attach onscroll handler to container div since TypeScript will not allow
-    // it via an onscroll attribute in the TSX
+    // it via an onscroll attribute in the TSX (nor is a @ts-ignore comment able
+    // to work in the TSX)
     const container = document.getElementById(this.containerId);
     if (!container) {
       console.warn("GranuleList container div was not mounted.");
@@ -73,7 +74,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       return;
     }
 
-    // @ts-ignore 2339 - TypeScript doesn't think offsetHeight is real
+    // @ts-ignore 2339 - TypeScript somehow doesn't think offsetHeight is real
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
     const scrollBottom = el.scrollTop + el.offsetHeight;
 
