@@ -77,7 +77,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
     const scrollBottom = el.scrollTop + el.offsetHeight;
 
-    if ((el.scrollHeight - scrollBottom) === 0) {
+    if (el.scrollHeight === scrollBottom) {
       this.props.loadNextPageOfGranules();
     }
   }
