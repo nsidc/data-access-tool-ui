@@ -22,13 +22,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
   private containerId = "granule-list-container";
-  private trHeight: number;
-
-  // how many rows from the bottom should we be before getting more granules?
-  //
-  // instead of setting a magic number, alternate method for this might be
-  // something like CMR_PAGE_SIZE * .05
-  private scrollingRowThreshold: number = 10;
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     return hasChanged(this.props, nextProps, [
@@ -45,9 +38,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <div id="granule-list-count-header" className="views-field">
           You have selected
           {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
-          granules. Displaying the first
-          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />{" "}
-          of those selected granules.
+          granules (displaying
+          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />).
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
@@ -58,14 +50,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   public componentDidMount = () => {
-    // get the height of each row
-    const tr = document.querySelector(`#${this.containerId} tr`);
-    if (!tr) {
-      console.warn("GranuleList tr could not be found.");
-      return;
-    }
-    this.trHeight = tr.scrollHeight;
-
     // attach onscroll handler to container div since TypeScript will not allow
     // it via an onscroll attribute in the TSX
     const container = document.getElementById(this.containerId);
@@ -93,10 +77,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
     const scrollBottom = el.scrollTop + el.offsetHeight;
 
-    // how close to the bottom do we get before loading more? in px
-    const threshold = this.trHeight * this.scrollingRowThreshold;
-
-    if ((el.scrollHeight - scrollBottom) <= threshold) {
+    if ((el.scrollHeight - scrollBottom) === 0) {
       this.props.loadNextPageOfGranules();
     }
   }
