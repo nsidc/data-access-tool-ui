@@ -31,7 +31,7 @@ interface IEverestState {
   cmrGranules: List<CmrGranule>;
   cmrLoading: boolean;
   cmrLoadingNextPage: boolean;
-  cmrScrollId: string;
+  cmrScrollId?: string;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   loadedParamsFromLocalStorage: boolean;
@@ -58,7 +58,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrGranules: List<CmrGranule>(),
       cmrLoading: false,
       cmrLoadingNextPage: false,
-      cmrScrollId: "",
+      cmrScrollId: undefined,
       cmrStatusChecked: false,
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
@@ -204,7 +204,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
       // clear existing results
       cmrGranules: List<CmrGranule>(),
-      cmrScrollId: "",
+      cmrScrollId: undefined,
     };
 
     this.setState(state, this.updateGranulesFromCmr);
