@@ -7,7 +7,7 @@ import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
+import { CMR_MAX_GRANULES, cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
 import { CMR_COUNT_HEADER, CMR_SCROLL_HEADER, cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
@@ -158,6 +158,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private updateGranulesFromCmr = (nextPage: boolean = false) => {
+    if (this.state.cmrGranules.size >= CMR_MAX_GRANULES) { return; }
+
     if (this.state.stateCanBeFrozen) {
       this.freezeState();
     }
