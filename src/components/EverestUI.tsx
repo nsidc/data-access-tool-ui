@@ -214,11 +214,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const cmrGranuleCount: number = Number(response.headers.get(CMR_COUNT_HEADER));
     const cmrScrollingId: string = String(response.headers.get(CMR_SCROLL_HEADER));
 
-    if (!this.state.cmrScrollingId && cmrScrollingId) {
-      // tslint:disable-next-line:no-console
-      console.log(`got Cmr-Scroll-Id "${cmrScrollingId}"`);
-    }
-
     if (this.state.cmrScrollingId && (cmrScrollingId !== this.state.cmrScrollingId)) {
       throw new Error(`Had CMR-Scroll-Id "${this.state.cmrScrollingId}", but got back ${cmrScrollingId}`);
     }
