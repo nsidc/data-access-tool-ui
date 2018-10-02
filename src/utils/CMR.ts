@@ -7,7 +7,7 @@ import { getEnvironment } from "./environment";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
-export const CMR_PAGE_SIZE = 10;
+const CMR_PAGE_SIZE = 2000;
 
 // Note!
 // Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
