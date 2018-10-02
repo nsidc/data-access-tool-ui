@@ -31,7 +31,7 @@ interface IEverestState {
   cmrGranules: List<CmrGranule>;
   cmrLoading: boolean;
   cmrLoadingNextPage: boolean;
-  cmrScrollingId: string;
+  cmrScrollId: string;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   loadedParamsFromLocalStorage: boolean;
@@ -58,7 +58,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrGranules: List<CmrGranule>(),
       cmrLoading: false,
       cmrLoadingNextPage: false,
-      cmrScrollingId: "",
+      cmrScrollId: "",
       cmrStatusChecked: false,
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
@@ -179,8 +179,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.setState({cmrLoading: !nextPage, cmrLoadingNextPage: true});
 
     let headers = Map<string, string>();
-    if (this.state.cmrScrollingId) {
-      headers = Map([[CMR_SCROLL_HEADER, this.state.cmrScrollingId]]);
+    if (this.state.cmrScrollId) {
+      headers = Map([[CMR_SCROLL_HEADER, this.state.cmrScrollId]]);
     }
 
     return cmrGranuleRequest(
@@ -204,7 +204,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
       // clear existing results
       cmrGranules: List<CmrGranule>(),
-      cmrScrollingId: "",
+      cmrScrollId: "",
     };
 
     this.setState(state, this.updateGranulesFromCmr);
@@ -212,13 +212,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private handleCmrGranuleResponse = (response: Response) => {
     const cmrGranuleCount: number = Number(response.headers.get(CMR_COUNT_HEADER));
-    const cmrScrollingId: string = String(response.headers.get(CMR_SCROLL_HEADER));
+    const cmrScrollId: string = String(response.headers.get(CMR_SCROLL_HEADER));
 
-    if (this.state.cmrScrollingId && (cmrScrollingId !== this.state.cmrScrollingId)) {
-      throw new Error(`Had CMR-Scroll-Id "${this.state.cmrScrollingId}", but got back ${cmrScrollingId}`);
+    if (this.state.cmrScrollId && (cmrScrollId !== this.state.cmrScrollId)) {
+      throw new Error(`Had CMR-Scroll-Id "${this.state.cmrScrollId}", but got back ${cmrScrollId}`);
     }
 
-    this.setState({cmrGranuleCount, cmrScrollingId});
+    this.setState({cmrGranuleCount, cmrScrollId});
     return response.json();
   }
 
