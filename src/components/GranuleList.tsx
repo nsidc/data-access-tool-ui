@@ -5,7 +5,6 @@ import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderParameters } from "../types/OrderParameters";
-import { CMR_PAGE_SIZE } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
@@ -21,6 +20,9 @@ interface IGranuleListProps {
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
+
+  private containerId = "granule-list-container";
+  private trHeight: number;
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     return hasChanged(this.props, nextProps, [
@@ -41,29 +43,63 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />{" "}
           selected granules.
         </div>
-        <div id="granule-list-container">
+        <div id={this.containerId}>
           {this.renderContent()}
-          {this.renderSpinnerOrButtonForNextPage()}
+          {this.renderSpinnerForNextPage()}
         </div>
       </div>
     );
   }
 
-  private renderSpinnerOrButtonForNextPage = () => {
-    if (this.props.loading) {
-      return null;
+  public componentDidMount = () => {
+    // get the height of each row
+    const tr = document.querySelector(`#${this.containerId} tr`);
+    if (!tr) {
+      console.warn("GranuleList tr could not be found.");
+      return;
+    }
+    this.trHeight = tr.scrollHeight;
 
-    } else if (this.props.loadingNextPage) {
+    // attach onscroll handler to container div since TypeScript will not allow
+    // it via an onscroll attribute in the TSX
+    const container = document.getElementById(this.containerId);
+    if (!container) {
+      console.warn("GranuleList container div was not mounted.");
+      return;
+    }
+    container.onscroll = this.onScroll;
+  }
+
+  private onScroll = (event: Event) => {
+    // don't worry about scrolling if there's already a nextPage load in progress
+    if (this.props.loadingNextPage) { return; }
+
+    const el = event.srcElement;
+
+    if (!el || (el.id !== this.containerId)) {
+      console.warn(`GranuleList.onScroll did not get div#${this.containerId} `
+                   + `for event.srcElement: ${event.srcElement}`);
+      return;
+    }
+
+    // how close to the bottom do we get before loading more? in px
+    const numberOfRows = 10;
+    const threshold = this.trHeight * numberOfRows;
+
+    // @ts-ignore 2339 - TypeScript doesn't think offsetHeight is real
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
+    const scrollBottom = el.scrollTop + el.offsetHeight;
+
+    if ((el.scrollHeight - scrollBottom) <= threshold) {
+      this.props.loadNextPageOfGranules();
+    }
+  }
+
+  private renderSpinnerForNextPage = () => {
+    if (!this.props.loading && this.props.loadingNextPage) {
       return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
-
     } else {
-      return (
-        <button
-          className="submit-button eui-btn--blue"
-          onClick={() => this.props.loadNextPageOfGranules()}>
-          Get {CMR_PAGE_SIZE} more granules
-        </button>
-      );
+      return null;
     }
   }
 
