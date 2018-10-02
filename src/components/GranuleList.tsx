@@ -89,12 +89,12 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       return;
     }
 
-    // how close to the bottom do we get before loading more? in px
-    const threshold = this.trHeight * this.scrollingRowThreshold;
-
     // @ts-ignore 2339 - TypeScript doesn't think offsetHeight is real
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
     const scrollBottom = el.scrollTop + el.offsetHeight;
+
+    // how close to the bottom do we get before loading more? in px
+    const threshold = this.trHeight * this.scrollingRowThreshold;
 
     if ((el.scrollHeight - scrollBottom) <= threshold) {
       this.props.loadNextPageOfGranules();
