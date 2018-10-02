@@ -45,9 +45,9 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <div id="granule-list-count-header" className="views-field">
           You have selected
           {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
-          granules. Displaying
+          granules. Displaying the first
           {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />{" "}
-          selected granules.
+          of those selected granules.
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
