@@ -11,7 +11,7 @@ import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 
 interface IOrderButtonsProps {
-  cmrGranuleResponse?: List<CmrGranule>;
+  cmrGranules?: List<CmrGranule>;
   environment: IEnvironment;
   orderSubmissionParameters?: OrderSubmissionParameters;
 }
@@ -47,7 +47,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           disabled={orderButtonsDisabled}
           environment={this.props.environment}
           loggedOut={loggedOut}
-          cmrGranuleResponse={this.props.cmrGranuleResponse} />
+          cmrGranules={this.props.cmrGranules} />
         <SubmitButton
           buttonText={"Get Individual Files"}
           disabled={orderButtonsDisabled}

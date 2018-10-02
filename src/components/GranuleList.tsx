@@ -11,7 +11,7 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
   cmrGranuleCount?: number;
-  cmrGranuleResponse: List<CmrGranule>;
+  cmrGranules: List<CmrGranule>;
   loading: boolean;
   loadingNextPage: boolean;
   loadNextPageOfGranules: () => void;
@@ -25,7 +25,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     return hasChanged(this.props, nextProps, [
-      "cmrGranuleResponse",
+      "cmrGranules",
       "loading",
       "loadingNextPage",
     ]);
@@ -39,7 +39,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           You have selected
           {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
           granules (displaying
-          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranuleResponse.size} />).
+          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranules.size} />).
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
@@ -96,7 +96,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       return (<LoadingIcon size="5x" />);
     }
 
-    const granuleList = this.props.cmrGranuleResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
+    const granuleList = this.props.cmrGranules.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
       const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
       return (
         <tr key={i}>

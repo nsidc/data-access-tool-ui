@@ -142,7 +142,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           <div id="right-side">
             <GranuleList
               cmrGranuleCount={this.state.cmrGranuleCount}
-              cmrGranuleResponse={this.state.cmrGranules}
+              cmrGranules={this.state.cmrGranules}
               loadNextPageOfGranules={() => this.updateGranulesFromCmr(true)}
               loading={this.state.cmrLoading}
               loadingNextPage={this.state.cmrLoadingNextPage}
@@ -150,7 +150,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
             <OrderButtons
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
-              cmrGranuleResponse={this.state.cmrGranules} />
+              cmrGranules={this.state.cmrGranules} />
           </div>
         </div>
       </div>
