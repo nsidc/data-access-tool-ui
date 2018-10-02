@@ -71,7 +71,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private onScroll = (event: Event) => {
-    // don't worry about scrolling if there's already a nextPage load in progress
+    // don't want to request the next page when scrolling if there's already a
+    // nextPage load in progress
     if (this.props.loadingNextPage) { return; }
 
     const el = event.srcElement;
@@ -83,7 +84,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     }
 
     // how close to the bottom do we get before loading more? in px
-    const numberOfRows = 10;
+    const numberOfRows = 10;  // alternate method for this might be something like CMR_PAGE_SIZE * .05
     const threshold = this.trHeight * numberOfRows;
 
     // @ts-ignore 2339 - TypeScript doesn't think offsetHeight is real
