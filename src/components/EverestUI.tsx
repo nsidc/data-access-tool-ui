@@ -29,6 +29,7 @@ interface IEverestProps {
 
 export interface IEverestState {
   cmrGranuleCount?: number;
+  cmrGranuleScrollDepleted: boolean;
   cmrGranuleScrollId?: string;
   cmrGranules: List<CmrGranule>;
   cmrLoading: boolean;
@@ -56,6 +57,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     this.state = {
       cmrGranuleCount: undefined,
+      cmrGranuleScrollDepleted: false,
       cmrGranuleScrollId: undefined,
       cmrGranules: List<CmrGranule>(),
       cmrLoading: false,
@@ -170,7 +172,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         && this.state.orderParameters.collection.id
         && this.state.orderParameters.temporalFilterLowerBound
         && this.state.orderParameters.temporalFilterUpperBound) {
-      this.handleCmrGranuleRequest(nextPage);
+      if (!this.state.cmrGranuleScrollDepleted) {
+        this.handleCmrGranuleRequest(nextPage);
+      }
     } else {
       console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
     }
@@ -224,6 +228,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleResponseJSON = (json: any) => {
+    if (json.feed.entry.length === 0) {
+      this.setState({cmrGranuleScrollDepleted: true});
+    }
+
     this.setState(updateStateAddGranules(json.feed.entry));
   }
 
