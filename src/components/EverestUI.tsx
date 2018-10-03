@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
-import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
+import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
@@ -12,6 +12,7 @@ import { CMR_COUNT_HEADER, CMR_SCROLL_HEADER, cmrBoxArrToSpatialSelection } from
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
+import { updateStateAddGranules } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
@@ -26,7 +27,7 @@ interface IEverestProps {
   environment: IEnvironment;
 }
 
-interface IEverestState {
+export interface IEverestState {
   cmrGranuleCount?: number;
   cmrGranuleScrollId?: string;
   cmrGranules: List<CmrGranule>;
@@ -223,16 +224,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleResponseJSON = (json: any) => {
-    const newCmrGranules = fromJS(json.feed.entry).map((e: ICmrGranule) => new CmrGranule(e));
-    const cmrGranules = this.state.cmrGranules.concat(newCmrGranules) as List<CmrGranule>;
-
-    const granuleURs = cmrGranules.map((g) => g!.title) as List<string>;
-    const collectionIDs = cmrGranules.map((g) => g!.dataset_id) as List<string>;
-    const collectionLinks = cmrGranules.map((g) => g!.links.last().get("href")) as List<string>;
-    const collectionInfo = collectionIDs.map((id, key) => List([id!, collectionLinks.get(key!)])) as List<List<string>>;
-    const orderSubmissionParameters = new OrderSubmissionParameters({collectionInfo, granuleURs});
-
-    this.setState({cmrGranules, orderSubmissionParameters});
+    this.setState(updateStateAddGranules(json.feed.entry));
   }
 
   private onCmrRequestFailure = (response: any) => {
