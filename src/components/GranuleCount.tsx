@@ -19,7 +19,7 @@ export const GranuleCount = (props: IGranuleCountProps) => {
   };
 
   return (
-    <span id="granule-count-container">
+    <span className="granule-count-container">
       {renderContent()}
     </span>
   );

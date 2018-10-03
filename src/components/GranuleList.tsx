@@ -5,24 +5,30 @@ import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderParameters } from "../types/OrderParameters";
+import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
   cmrGranuleCount?: number;
-  cmrGranuleResponse: List<CmrGranule>;
+  cmrGranules: List<CmrGranule>;
   loading: boolean;
+  loadingNextPage: boolean;
+  loadNextPageOfGranules: () => void;
   orderParameters: OrderParameters;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
 
-  public shouldComponentUpdate(nextProps: IGranuleListProps) {
-    const cmrGranuleResponseChanged = !this.props.cmrGranuleResponse.equals(nextProps.cmrGranuleResponse);
-    const loadingChanged = this.props.loading !== nextProps.loading;
+  private containerId = "granule-list-container";
 
-    return cmrGranuleResponseChanged || loadingChanged;
+  public shouldComponentUpdate(nextProps: IGranuleListProps) {
+    return hasChanged(this.props, nextProps, [
+      "cmrGranules",
+      "loading",
+      "loadingNextPage",
+    ]);
   }
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
@@ -32,17 +38,65 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <div id="granule-list-count-header" className="views-field">
           You have selected
           {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
-          granules.
+          granules (displaying
+          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranules.size} />).
         </div>
-        <div id="granule-list-container">
+        <div id={this.containerId}>
           {this.renderContent()}
+          {this.renderSpinnerForNextPage()}
         </div>
       </div>
     );
   }
 
+  public componentDidMount = () => {
+    // attach onscroll handler to container div since TypeScript will not allow
+    // it via an onscroll attribute in the TSX (nor is a @ts-ignore comment able
+    // to work in the TSX)
+    const container = document.getElementById(this.containerId);
+    if (!container) {
+      console.warn("GranuleList container div was not mounted.");
+      return;
+    }
+    container.onscroll = this.onScroll;
+  }
+
+  private onScroll = (event: Event) => {
+    // don't want to request the next page when scrolling if there's already a
+    // nextPage load in progress
+    if (this.props.loadingNextPage) { return; }
+
+    const el = event.srcElement;
+
+    if (!el || (el.id !== this.containerId)) {
+      console.warn(`GranuleList.onScroll did not get div#${this.containerId} `
+                   + `for event.srcElement: ${event.srcElement}`);
+      return;
+    }
+
+    // @ts-ignore 2339 - TypeScript somehow doesn't think offsetHeight is real
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
+    const scrollBottom = el.scrollTop + el.offsetHeight;
+
+    if (el.scrollHeight === scrollBottom) {
+      this.props.loadNextPageOfGranules();
+    }
+  }
+
+  private renderSpinnerForNextPage = () => {
+    if (!this.props.loading && this.props.loadingNextPage) {
+      return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
+    } else {
+      return null;
+    }
+  }
+
   private renderContent = () => {
-    const granuleList = this.props.cmrGranuleResponse.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
+    if (this.props.loading) {
+      return (<LoadingIcon size="5x" />);
+    }
+
+    const granuleList = this.props.cmrGranules.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
       const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
       return (
         <tr key={i}>
@@ -53,10 +107,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </tr>
       );
     });
-
-    if (this.props.loading) {
-      return (<LoadingIcon size="5x" />);
-    }
 
     return (
       <CSSTransition in

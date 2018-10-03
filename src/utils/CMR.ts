@@ -1,5 +1,5 @@
 import * as fetchMock from "fetch-mock";
-import { List } from "immutable";
+import { List, Map } from "immutable";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
@@ -7,19 +7,25 @@ import { getEnvironment } from "./environment";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
+const CMR_PAGE_SIZE = 2000;
+export const CMR_MAX_GRANULES = 10000;
+
 // Note!
 // Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
-const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?page_size=2000&provider=NSIDC_ECS&sort_key=short_name";
+const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?"
+                                  + `scroll=true&page_size=${CMR_PAGE_SIZE}&provider=NSIDC_ECS&sort_key=short_name`;
 
-export const CMR_COUNT_HEADER_NAME = "CMR-Hits";
+export const CMR_COUNT_HEADER = "CMR-Hits";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
 
-const cmrHeaders = [
-  ["Client-Id", `nsidc-everest-${getEnvironment()}`],
-];
+export const CMR_SCROLL_HEADER = "CMR-Scroll-Id";
+
+const CMR_DEFAULT_HEADERS = Map({
+  "Client-Id": `nsidc-everest-${getEnvironment()}`,
+});
 
 // NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
 export const spatialParameter = (spatialSelection: IGeoJsonPolygon | null,
@@ -64,11 +70,11 @@ export const versionParameters = (versionId: number): string => {
   return queryParams;
 };
 
-// make a request with cmrHeaders
+// make a request with CMR headers
 // return response.json() on a successful request; reject the Promise otherwise
-const cmrFetch = (url: string) => {
+const cmrFetch = (url: string, headers: Map<string, string> = Map()) => {
   const init = {
-    headers: cmrHeaders,
+    headers: List(CMR_DEFAULT_HEADERS.merge(headers)).toJS(),
   };
 
   const onFulfilled = (response: Response) => {
@@ -120,14 +126,15 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   spatialSelection: IGeoJsonPolygon | null,
                                   collectionSpatialCoverage: IGeoJsonPolygon | null,
                                   temporalLowerBound: moment.Moment,
-                                  temporalUpperBound: moment.Moment) => {
+                                  temporalUpperBound: moment.Moment,
+                                  headers?: Map<string, string>) => {
   const URL = CMR_GRANULE_URL
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
     + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
 
-  return cmrFetch(URL);
+  return cmrFetch(URL, headers);
 };
 
 export const globalSpatialSelection: IGeoJsonBbox = {
