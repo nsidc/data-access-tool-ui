@@ -53,7 +53,8 @@ module.exports = {
         extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx'],
         alias: {
             // Cesium module name
-            cesium: path.resolve(__dirname, cesiumSource)
+            cesium: path.resolve(__dirname, cesiumSource, "Cesium.js"),
+            "cesium-widgets": path.resolve(__dirname, cesiumSource, "Widgets"),
         }
     },
 

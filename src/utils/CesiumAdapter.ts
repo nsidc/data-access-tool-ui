@@ -1,21 +1,20 @@
+import * as Cesium from "cesium";
+import "cesium-widgets/widgets.css";
 import * as GeoJSON from "geojson";
+import { List } from "immutable";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils } from "../utils/CesiumUtils";
+import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
-
-/* tslint:disable:no-var-requires */
-const Cesium = require("cesium/Cesium");
-require("cesium/Widgets/widgets.css");
-/* tslint:enable:no-var-requires */
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
-  private static ellipsoid = Cesium.Ellipsoid.WGS84;
+  private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public polygonMode: PolygonMode;
 
-  private viewer: any;
+  private viewer: Cesium.Viewer;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
@@ -71,7 +70,9 @@ export class CesiumAdapter {
   }
 
   public flyHome() {
-    this.viewer.camera.flyHome();
+    // @types/cesium incorrectly has the parameter to Camera.flyHome as required
+    // instead of optinal
+    (this.viewer.camera as any).flyHome();
   }
 
   public renderCollectionCoverage(bbox: number[]): void {
@@ -86,15 +87,18 @@ export class CesiumAdapter {
 
     if (!this.collectionCoverageIsGlobal(bbox)) {
       // draw rectangle showing collection's coverage
-      const rectangleRadians = new Cesium.Rectangle.fromDegrees(...bbox);
-      this.viewer.entities.add({
+      const rectangleRadians = Cesium.Rectangle.fromDegrees(...bbox);
+      this.viewer.entities.add(new Cesium.Entity({
         id: ENTITY_ID,
         name: ENTITY_ID,
-        rectangle: {
-          coordinates: rectangleRadians,
-          material: CesiumAdapter.extentColor,
-        },
-      });
+        rectangle: new Cesium.RectangleGraphics({
+          // Cesium docs (and @types/cesium) show that `coordinates` and
+          // `material` must be of type `Property`, yet they have examples using
+          // the same types we use here (`Rectangle` and `Color`)
+          coordinates: (rectangleRadians as any),
+          material: (CesiumAdapter.extentColor as any),
+        }),
+      }));
     }
   }
 
@@ -123,11 +127,11 @@ export class CesiumAdapter {
 
     // when drawing is finished (by double-clicking), this function is called
     // with an array of points.
-    const finishedDrawingCallback = (points: any) => {
-      const lonLatsArray = points.map((point: any) => {
-        const lonLat = this.polygonMode.cartesianPositionToLonLatDegrees(point);
+    const finishedDrawingCallback = (points: List<Point>) => {
+      const lonLatsArray = points.map((point) => {
+        const lonLat = CesiumUtils.cartesianToLonLat(point!.cartesian);
         return [lonLat.lon, lonLat.lat];
-      }, this);
+      }, this).toJS();
 
       let geo = null;
       if (lonLatsArray.length >= MIN_VERTICES) {
@@ -185,7 +189,7 @@ const gibsGeographicTilingScheme = () => {
     return result;
   };
 
-  ggts.tileXYToRectangle = (x: number, y: number, level: number, result: any) => {
+  ggts.tileXYToRectangle = (x: number, y: number, level: number, result?: Cesium.Rectangle) => {
     const resolution = levels[level].resolution;
 
     const xTileWidth = resolution * tilePixels;
@@ -206,7 +210,7 @@ const gibsGeographicTilingScheme = () => {
     return result;
   };
 
-  ggts.positionToTileXY = (position: any, level: number, result: any) => {
+  ggts.positionToTileXY = (position: Cesium.Cartographic, level: number, result: any) => {
     if (!Cesium.Rectangle.contains(rectangle, position)) {
       return undefined;
     }

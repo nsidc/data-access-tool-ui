@@ -33,8 +33,13 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public componentDidMount() {
     this.cesiumAdapter.createViewer();
+
     if (this.props.collectionSpatialCoverage !== null) {
       this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+    }
+
+    if (this.props.spatialSelection !== null) {
+      this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
     }
   }
 
@@ -49,10 +54,6 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       if (this.props.collectionSpatialCoverage !== null) {
         this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
       }
-    }
-
-    if (hasChanged(prevProps, this.props, ["spatialSelection"])) {
-      this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
     }
   }
 
@@ -112,9 +113,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       case "Tab":
         this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
         if (e.shiftKey) {
-          this.cesiumAdapter.polygonMode.previousPoint();
+          this.cesiumAdapter.polygonMode.activateRelativePoint(-1);
         } else {
-          this.cesiumAdapter.polygonMode.nextPoint();
+          this.cesiumAdapter.polygonMode.activateRelativePoint(+1);
         }
         e.preventDefault();
         break;

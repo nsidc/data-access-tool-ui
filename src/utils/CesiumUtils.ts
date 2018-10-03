@@ -1,3 +1,10 @@
+import * as Cesium from "cesium";
+
+export interface ILonLat {
+  readonly lat: number;
+  readonly lon: number;
+  readonly index?: number;
+}
 
 export class CesiumUtils {
 
@@ -17,5 +24,42 @@ export class CesiumUtils {
     if (el && el.classList && el.classList.remove) {
       el.classList.remove("cursor-crosshair");
     }
+  }
+
+  // cartesian: 3D coordinates for position on earth's surface
+  // https://en.wikipedia.org/wiki/ECEF
+  public static cartesianToLonLat(cartesian: Cesium.Cartesian3): ILonLat {
+    // this means the position is not on the globe
+    if (cartesian === undefined) {
+      return {lat: NaN, lon: NaN};
+    }
+
+    // @types/cesium is lacking some methods on the Cartographic class
+    const cartographicRadians = (Cesium.Cartographic as any).fromCartesian(cartesian);
+
+    const lonLatDegrees = {
+      lat: Cesium.Math.toDegrees(cartographicRadians.latitude),
+      lon: Cesium.Math.toDegrees(cartographicRadians.longitude),
+    };
+
+    return lonLatDegrees;
+  }
+
+  public static lonLatToCartesian(lonLat: ILonLat, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 {
+    const cart = Cesium.Cartographic.fromDegrees(lonLat.lon, lonLat.lat);
+
+    // @types/cesium is lacking some methods on the Cartographic class
+    const point = (Cesium.Cartographic as any).toCartesian(cart, ellipsoid);
+    return point;
+  }
+
+  public static screenPositionToCartesian = (screenPosition: Cesium.Cartesian2,
+                                             camera: Cesium.Camera,
+                                             ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | null => {
+    if (screenPosition === null) { return null; }
+
+    const cartesian = camera.pickEllipsoid(screenPosition, ellipsoid);
+    if (!cartesian) { return null; }
+    return cartesian;
   }
 }

@@ -32,6 +32,7 @@ interface IEverestState {
   cmrLoading: boolean;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
+  loadedParamsFromLocalStorage: boolean;
   orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
   stateCanBeFrozen: boolean;
@@ -40,13 +41,24 @@ interface IEverestState {
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   public constructor(props: any) {
     super(props);
+
+    let loadedParamsFromLocalStorage = false;
+    let orderParameters = this.initializeOrderParametersFromLocalStorage();
+
+    if (orderParameters === null) {
+      orderParameters = new OrderParameters();
+    } else {
+      loadedParamsFromLocalStorage = true;
+    }
+
     this.state = {
       cmrGranuleCount: undefined,
       cmrGranuleResponse: List<CmrGranule>(),
       cmrLoading: false,
       cmrStatusChecked: false,
       cmrStatusOk: false,
-      orderParameters: new OrderParameters(),
+      loadedParamsFromLocalStorage,
+      orderParameters,
       orderSubmissionParameters: undefined,
       stateCanBeFrozen: false,
     };
@@ -69,8 +81,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     cmrStatusRequest().then(onSuccess, onFailure);
 
-    if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
-      this.initializeState(this.props.environment.drupalDataset);
+    if (this.state.loadedParamsFromLocalStorage) {
+      this.updateGranulesFromCmr();
+      this.enableStateFreezing();
+
+    } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
+      this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
+
     }
   }
 
@@ -134,6 +151,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private updateGranulesFromCmr = () => {
+    if (this.state.stateCanBeFrozen) {
+      this.freezeState();
+    }
+
     if (this.state.cmrStatusChecked && !this.state.cmrStatusOk) {
       return;
     }
@@ -161,19 +182,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
      .finally(() => this.setState({cmrLoading: false}));
   }
 
-  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>, callback?: () => void) => {
+  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
     const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
-    const modifiedCallback = (): void => {
-      if (this.state.stateCanBeFrozen) {
-        this.freezeState();
-      }
-      this.updateGranulesFromCmr();
-      if (callback) {
-        callback();
-      }
-    };
-    this.setState({orderParameters}, modifiedCallback);
+    this.setState({orderParameters}, this.updateGranulesFromCmr);
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
@@ -229,24 +241,29 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     });
   }
 
-  private initializeState = (selectedCollection: IDrupalDataset) => {
-    const localStorageOrderParams: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (localStorageOrderParams) {
-      const orderParams: any = JSON.parse(localStorageOrderParams);
-      orderParams.temporalFilterLowerBound = moment(orderParams.temporalFilterLowerBound);
-      orderParams.temporalFilterUpperBound = moment(orderParams.temporalFilterUpperBound);
-      const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+  // returns an OrderParameters object built using values saved in localStorage,
+  // or null
+  private initializeOrderParametersFromLocalStorage = (): OrderParameters | null => {
+    if (!this.props.environment.inDrupal) { return null; }
 
-      if (selectedCollection.id === orderParameters.collection.short_name) {
-        this.hydrateState(orderParameters);
-        return;
-      } else {
-        console.warn(`Found order parameters for ${orderParameters.collection.short_name} `
-                     + `instead of ${selectedCollection.id}; clearing previous state from localStorage.`);
-        this.clearLocalStorage();
-      }
+    const localStorageOrderParams: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!localStorageOrderParams) { return null; }
+
+    const orderParams: any = JSON.parse(localStorageOrderParams);
+
+    const currentDatasetMatchesSaved = this.props.environment.drupalDataset!.id === orderParams.collection.short_name;
+    if (!currentDatasetMatchesSaved) {
+      this.clearLocalStorage();
+      return null;
     }
-    this.initStateFromCollectionDefaults(selectedCollection);
+
+    orderParams.temporalFilterLowerBound = moment(orderParams.temporalFilterLowerBound);
+    orderParams.temporalFilterUpperBound = moment(orderParams.temporalFilterUpperBound);
+    const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+
+    console.warn("Order parameters loaded from previous state.");
+
+    return orderParameters;
   }
 
   private initStateFromCollectionDefaults = (selectedCollection: IDrupalDataset) => {
@@ -259,11 +276,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private freezeState = () => {
     return localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.state.orderParameters));
-  }
-
-  private hydrateState = (orderParameters: OrderParameters) => {
-    console.warn("Order parameters loaded from previous state.");
-    this.handleOrderParameterChange(orderParameters, this.enableStateFreezing);
   }
 
   private enableStateFreezing = () => {
