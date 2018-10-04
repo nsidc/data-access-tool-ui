@@ -64,7 +64,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private onScroll = (event: Event) => {
     // don't want to request the next page when scrolling if there's already a
     // nextPage load in progress
-    if (this.props.loadingNextPage) { return; }
+    if (this.props.loadingNextPage || this.props.loading) { return; }
 
     const el = event.srcElement;
 

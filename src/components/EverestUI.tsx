@@ -182,8 +182,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private advanceCmrGranuleScroll = () => {
-    if (!this.state.cmrGranuleScrollId) {
-      throw new Error("Can't scroll without a scroll ID.");
+    if (this.state.cmrGranules.isEmpty() || !this.state.cmrGranuleScrollId) {
+      throw new Error("Can't scroll without an initial granule response or a scroll ID.");
     }
 
     if (this.state.stateCanBeFrozen) {
