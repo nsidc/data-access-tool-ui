@@ -148,8 +148,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleCount={this.state.cmrGranuleCount}
               cmrGranules={this.state.cmrGranules}
               loadNextPageOfGranules={this.advanceCmrGranuleScroll}
-              loading={this.state.cmrLoadingGranuleInit}
-              loadingNextPage={this.state.cmrLoadingGranuleScroll}
+              cmrLoadingGranuleInit={this.state.cmrLoadingGranuleInit}
+              cmrLoadingGranuleScroll={this.state.cmrLoadingGranuleScroll}
               orderParameters={this.state.orderParameters} />
             <OrderButtons
               environment={this.props.environment}
