@@ -7,9 +7,9 @@ import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { cmrGranuleScrollInitRequest, cmrGranuleScrollNextRequest } from "../utils/CMR";
-import { cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrStatusRequest } from "../utils/CMR";
-import { CMR_COUNT_HEADER, CMR_MAX_GRANULES, CMR_SCROLL_HEADER } from "../utils/CMR";
+import { CMR_COUNT_HEADER, CMR_MAX_GRANULES, CMR_SCROLL_HEADER,
+         cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrGranuleScrollInitRequest,
+         cmrGranuleScrollNextRequest, cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
