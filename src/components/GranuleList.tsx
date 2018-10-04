@@ -12,8 +12,8 @@ import { LoadingIcon } from "./LoadingIcon";
 interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
-  loading: boolean;
-  loadingNextPage: boolean;
+  cmrLoadingGranuleInit: boolean;
+  cmrLoadingGranuleScroll: boolean;
   loadNextPageOfGranules: () => void;
   orderParameters: OrderParameters;
 }
@@ -26,8 +26,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     return hasChanged(this.props, nextProps, [
       "cmrGranules",
-      "loading",
-      "loadingNextPage",
+      "cmrLoadingGranuleInit",
+      "cmrLoadingGranuleScroll",
     ]);
   }
 
@@ -37,9 +37,9 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       <div>
         <div id="granule-list-count-header" className="views-field">
           You have selected
-          {" "}<GranuleCount loading={this.props.loading} count={this.props.cmrGranuleCount} />{" "}
+          {" "}<GranuleCount loading={this.props.cmrLoadingGranuleInit} count={this.props.cmrGranuleCount} />{" "}
           granules (displaying
-          {" "}<GranuleCount loading={this.props.loadingNextPage} count={this.props.cmrGranules.size} />).
+          {" "}<GranuleCount loading={this.props.cmrLoadingGranuleScroll} count={this.props.cmrGranules.size} />).
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
@@ -64,7 +64,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private onScroll = (event: Event) => {
     // don't want to request the next page when scrolling if there's already a
     // nextPage load in progress
-    if (this.props.loadingNextPage || this.props.loading) { return; }
+    if (this.props.cmrLoadingGranuleScroll || this.props.cmrLoadingGranuleInit) { return; }
 
     const el = event.srcElement;
 
@@ -84,7 +84,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderSpinnerForNextPage = () => {
-    if (!this.props.loading && this.props.loadingNextPage) {
+    if (!this.props.cmrLoadingGranuleInit && this.props.cmrLoadingGranuleScroll) {
       return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
     } else {
       return null;
@@ -92,7 +92,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderContent = () => {
-    if (this.props.loading) {
+    if (this.props.cmrLoadingGranuleInit) {
       return (<LoadingIcon size="5x" />);
     }
 
