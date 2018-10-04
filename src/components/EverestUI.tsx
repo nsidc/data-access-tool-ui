@@ -33,8 +33,8 @@ export interface IEverestState {
   cmrGranuleScrollDepleted: boolean;
   cmrGranuleScrollId?: string;
   cmrGranules: List<CmrGranule>;
-  cmrLoading: boolean;
-  cmrLoadingNextPage: boolean;
+  cmrLoadingGranuleInit: boolean;
+  cmrLoadingGranuleScroll: boolean;
   cmrStatusChecked: boolean;
   cmrStatusOk: boolean;
   loadedParamsFromLocalStorage: boolean;
@@ -61,8 +61,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrGranuleScrollDepleted: false,
       cmrGranuleScrollId: undefined,
       cmrGranules: List<CmrGranule>(),
-      cmrLoading: false,
-      cmrLoadingNextPage: false,
+      cmrLoadingGranuleInit: false,
+      cmrLoadingGranuleScroll: false,
       cmrStatusChecked: false,
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
@@ -103,8 +103,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
     const stateChanged = hasChanged(this.state, nextState, [
       "cmrGranules",
-      "cmrLoading",
-      "cmrLoadingNextPage",
+      "cmrLoadingGranuleInit",
+      "cmrLoadingGranuleScroll",
       "cmrStatusChecked",
       "cmrStatusOk",
       "orderParameters",
@@ -148,8 +148,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleCount={this.state.cmrGranuleCount}
               cmrGranules={this.state.cmrGranules}
               loadNextPageOfGranules={this.advanceCmrGranuleScroll}
-              loading={this.state.cmrLoading}
-              loadingNextPage={this.state.cmrLoadingNextPage}
+              loading={this.state.cmrLoadingGranuleInit}
+              loadingNextPage={this.state.cmrLoadingGranuleScroll}
               orderParameters={this.state.orderParameters} />
             <OrderButtons
               environment={this.props.environment}
@@ -176,7 +176,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
                                 && this.state.orderParameters.temporalFilterLowerBound
                                 && this.state.orderParameters.temporalFilterUpperBound;
     if (orderInputPopulated) {
-      this.setState({cmrLoading: true}, this.handleCmrGranuleInitRequest);
+      this.setState({cmrLoadingGranuleInit: true}, this.handleCmrGranuleInitRequest);
     } else {
       console.warn("EverestUI.startCmrGranuleScroll: Insufficient props provided.");
     }
@@ -196,7 +196,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     this.setState(
-      {cmrLoading: false, cmrLoadingNextPage: true},
+      {cmrLoadingGranuleScroll: true},
       () => this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!),
     );
   }
@@ -211,14 +211,14 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.temporalFilterUpperBound,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
-     .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
+     .finally(() => this.setState({cmrLoadingGranuleInit: false}));
   }
 
   private handleCmrGranuleScrollRequest = (cmrGranuleScrollId: string) => {
     return cmrGranuleScrollNextRequest(cmrGranuleScrollId)
       .then(this.handleCmrGranuleScrollResponse, this.onCmrRequestFailure)
       .then(this.handleCmrGranuleScrollResponseJSON)
-      .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
+      .finally(() => this.setState({cmrLoadingGranuleScroll: false}));
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
