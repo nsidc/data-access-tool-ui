@@ -1,4 +1,4 @@
-import { fromJS, List, Map } from "immutable";
+import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 
@@ -7,12 +7,13 @@ import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { cmrCollectionRequest, cmrGranuleRequest, cmrStatusRequest } from "../utils/CMR";
+import { cmrGranuleScrollInitRequest, cmrGranuleScrollNextRequest } from "../utils/CMR";
+import { cmrCollectionRequest, cmrStatusRequest } from "../utils/CMR";
 import { CMR_COUNT_HEADER, CMR_SCROLL_HEADER, cmrBoxArrToSpatialSelection } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
-import { updateStateAddGranules } from "../utils/state";
+import { updateStateAddGranules, updateStateInitGranules } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
@@ -89,7 +90,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     cmrStatusRequest().then(onSuccess, onFailure);
 
     if (this.state.loadedParamsFromLocalStorage) {
-      this.updateGranulesFromCmr();
+      this.startCmrGranuleScroll();
       this.enableStateFreezing();
 
     } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
@@ -146,7 +147,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
             <GranuleList
               cmrGranuleCount={this.state.cmrGranuleCount}
               cmrGranules={this.state.cmrGranules}
-              loadNextPageOfGranules={() => this.updateGranulesFromCmr(true)}
+              loadNextPageOfGranules={this.advanceCmrGranuleScroll}
               loading={this.state.cmrLoading}
               loadingNextPage={this.state.cmrLoadingNextPage}
               orderParameters={this.state.orderParameters} />
@@ -160,7 +161,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     );
   }
 
-  private updateGranulesFromCmr = (nextPage: boolean = false) => {
+  private startCmrGranuleScroll = () => {
     if (this.state.stateCanBeFrozen) {
       this.freezeState();
     }
@@ -168,37 +169,53 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     if (this.state.cmrStatusChecked && !this.state.cmrStatusOk) {
       return;
     }
-    if (this.state.orderParameters.collection
-        && this.state.orderParameters.collection.id
-        && this.state.orderParameters.temporalFilterLowerBound
-        && this.state.orderParameters.temporalFilterUpperBound) {
-      if (!this.state.cmrGranuleScrollDepleted) {
-        this.handleCmrGranuleRequest(nextPage);
-      }
+
+    const orderInputPopulated = this.state.orderParameters.collection
+                                && this.state.orderParameters.collection.id
+                                && this.state.orderParameters.temporalFilterLowerBound
+                                && this.state.orderParameters.temporalFilterUpperBound;
+    if (orderInputPopulated) {
+      this.setState({cmrLoading: true}, this.handleCmrGranuleRequest);
     } else {
-      console.warn("EverestUI.updateGranulesFromCmr: Insufficient props provided.");
+      console.warn("EverestUI.startCmrGranuleScroll: Insufficient props provided.");
     }
   }
 
-  private handleCmrGranuleRequest = (nextPage: boolean = false) => {
-    this.setState({cmrLoading: !nextPage, cmrLoadingNextPage: true});
-
-    let headers = Map<string, string>();
-    if (this.state.cmrGranuleScrollId) {
-      headers = Map([[CMR_SCROLL_HEADER, this.state.cmrGranuleScrollId]]);
-    }
-
-    return cmrGranuleRequest(
+  private handleCmrGranuleRequest = () => {
+    return cmrGranuleScrollInitRequest(
       this.state.orderParameters.collection.short_name,
       Number(this.state.orderParameters.collection.version_id),
       this.state.orderParameters.spatialSelection,
       this.state.orderParameters.collectionSpatialCoverage,
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
-      headers,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
      .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
+  }
+
+  private advanceCmrGranuleScroll = () => {
+    if (!this.state.cmrGranuleScrollId) {
+      throw new Error("Can't scroll without a scroll ID.");
+    }
+
+    if (this.state.stateCanBeFrozen) {
+      this.freezeState();
+    }
+
+    if (!this.state.cmrGranuleScrollDepleted) {
+      this.setState(
+        {cmrLoading: false, cmrLoadingNextPage: true},
+        () => this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!),
+      );
+    }
+  }
+
+  private handleCmrGranuleScrollRequest = (cmrGranuleScrollId: string) => {
+    return cmrGranuleScrollNextRequest(cmrGranuleScrollId)
+      .then(this.handleCmrGranuleScrollResponse, this.onCmrRequestFailure)
+      .then(this.handleCmrGranuleScrollResponseJSON)
+      .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
@@ -212,24 +229,39 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrGranules: List<CmrGranule>(),
     };
 
-    this.setState(state, this.updateGranulesFromCmr);
+    this.setState(state, this.startCmrGranuleScroll);
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
     const cmrGranuleCount: number = Number(response.headers.get(CMR_COUNT_HEADER));
     const cmrGranuleScrollId: string = String(response.headers.get(CMR_SCROLL_HEADER));
 
-    if (this.state.cmrGranuleScrollId && (cmrGranuleScrollId !== this.state.cmrGranuleScrollId)) {
-      throw new Error(`Had CMR-Scroll-Id "${this.state.cmrGranuleScrollId}", but got back ${cmrGranuleScrollId}`);
-    }
-
-    this.setState({cmrGranuleCount, cmrGranuleScrollId });
+    this.setState({cmrGranuleCount, cmrGranuleScrollDepleted: false, cmrGranuleScrollId });
     return response.json();
   }
 
   private handleCmrGranuleResponseJSON = (json: any) => {
+    this.setState(updateStateInitGranules(json.feed.entry));
+  }
+
+  private handleCmrGranuleScrollResponse = (response: Response) => {
+    const cmrGranuleScrollId: string = String(response.headers.get(CMR_SCROLL_HEADER));
+
+    if (this.state.cmrGranuleScrollId && (cmrGranuleScrollId !== this.state.cmrGranuleScrollId)) {
+      throw new Error(`Had CMR-Scroll-Id "${this.state.cmrGranuleScrollId}", but got back ${cmrGranuleScrollId}`);
+    }
+
+    return response.json();
+  }
+
+  private handleCmrGranuleScrollResponseJSON = (json: any) => {
+    if (this.state.cmrGranuleScrollDepleted) {
+      return;
+    }
+
     if (json.feed.entry.length === 0) {
       this.setState({cmrGranuleScrollDepleted: true});
+      return;
     }
 
     this.setState(updateStateAddGranules(json.feed.entry));
