@@ -12,7 +12,7 @@ const orderSubmissionParametersFromCmrGranules = (cmrGranules: List<CmrGranule>)
   return new OrderSubmissionParameters({collectionInfo, granuleURs});
 };
 
-export const updateStateInitGranules = (granules: List<ICmrGranule>) => {
+export const updateStateInitGranules = (granules: any[]) => {
   return () => {
     const cmrGranules = fromJS(granules).map((e: ICmrGranule) => new CmrGranule(e));
     const orderSubmissionParameters = orderSubmissionParametersFromCmrGranules(cmrGranules);
@@ -21,7 +21,7 @@ export const updateStateInitGranules = (granules: List<ICmrGranule>) => {
   };
 };
 
-export const updateStateAddGranules = (newGranules: List<ICmrGranule>) => {
+export const updateStateAddGranules = (newGranules: any[]) => {
   return (state: IEverestState) => {
     const newCmrGranules = fromJS(newGranules).map((g: ICmrGranule) => new CmrGranule(g));
     const cmrGranules = state.cmrGranules.concat(newCmrGranules) as List<CmrGranule>;
