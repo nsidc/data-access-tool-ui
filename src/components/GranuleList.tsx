@@ -66,6 +66,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     // nextPage load in progress
     if (this.props.loadingNextPage) { return; }
 
+    // for browser compatibility, fallback to event.target; this happens to have
+    // the type EventTarget, so cast to Element for TypeScript compatibility--we
+    // can be sure it's an element because this method is only ever called from
+    // the container div's `onscroll` event firing
     const el = (event.srcElement || event.target) as Element;
 
     if (!el || (el.id !== this.containerId)) {
