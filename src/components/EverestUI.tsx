@@ -175,23 +175,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
                                 && this.state.orderParameters.temporalFilterLowerBound
                                 && this.state.orderParameters.temporalFilterUpperBound;
     if (orderInputPopulated) {
-      this.setState({cmrLoading: true}, this.handleCmrGranuleRequest);
+      this.setState({cmrLoading: true}, this.handleCmrGranuleInitRequest);
     } else {
       console.warn("EverestUI.startCmrGranuleScroll: Insufficient props provided.");
     }
-  }
-
-  private handleCmrGranuleRequest = () => {
-    return cmrGranuleScrollInitRequest(
-      this.state.orderParameters.collection.short_name,
-      Number(this.state.orderParameters.collection.version_id),
-      this.state.orderParameters.spatialSelection,
-      this.state.orderParameters.collectionSpatialCoverage,
-      this.state.orderParameters.temporalFilterLowerBound,
-      this.state.orderParameters.temporalFilterUpperBound,
-    ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
-     .then(this.handleCmrGranuleResponseJSON)
-     .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
   }
 
   private advanceCmrGranuleScroll = () => {
@@ -211,25 +198,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
   }
 
+  private handleCmrGranuleInitRequest = () => {
+    return cmrGranuleScrollInitRequest(
+      this.state.orderParameters.collection.short_name,
+      Number(this.state.orderParameters.collection.version_id),
+      this.state.orderParameters.spatialSelection,
+      this.state.orderParameters.collectionSpatialCoverage,
+      this.state.orderParameters.temporalFilterLowerBound,
+      this.state.orderParameters.temporalFilterUpperBound,
+    ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
+     .then(this.handleCmrGranuleResponseJSON)
+     .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
+  }
+
   private handleCmrGranuleScrollRequest = (cmrGranuleScrollId: string) => {
     return cmrGranuleScrollNextRequest(cmrGranuleScrollId)
       .then(this.handleCmrGranuleScrollResponse, this.onCmrRequestFailure)
       .then(this.handleCmrGranuleScrollResponseJSON)
       .finally(() => this.setState({cmrLoading: false, cmrLoadingNextPage: false}));
-  }
-
-  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
-    const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
-
-    const state = {
-      orderParameters,
-
-      // clear existing results
-      cmrGranuleScrollId: undefined,
-      cmrGranules: List<CmrGranule>(),
-    };
-
-    this.setState(state, this.startCmrGranuleScroll);
   }
 
   private handleCmrGranuleResponse = (response: Response) => {
@@ -271,6 +257,20 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.setState({cmrStatusChecked: true, cmrStatusOk: false});
   }
 
+  private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
+    const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
+
+    const state = {
+      orderParameters,
+
+      // clear existing results
+      cmrGranuleScrollId: undefined,
+      cmrGranules: List<CmrGranule>(),
+    };
+
+    this.setState(state, this.startCmrGranuleScroll);
+  }
+
   private handleCollectionChange = (collection: any) => {
     const boundingBoxes = collection.boxes;
     const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
@@ -302,8 +302,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     });
   }
 
-  // returns an OrderParameters object built using values saved in localStorage,
-  // or null
   private initializeOrderParametersFromLocalStorage = (): OrderParameters | null => {
     if (!this.props.environment.inDrupal) { return null; }
 
