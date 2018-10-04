@@ -66,7 +66,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     // nextPage load in progress
     if (this.props.loadingNextPage) { return; }
 
-    const el = event.srcElement;
+    const el = (event.srcElement || event.target) as Element;
 
     if (!el || (el.id !== this.containerId)) {
       console.warn(`GranuleList.onScroll did not get div#${this.containerId} `
