@@ -7,9 +7,9 @@ import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { cmrGranuleScrollInitRequest, cmrGranuleScrollNextRequest } from "../utils/CMR";
-import { cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrStatusRequest } from "../utils/CMR";
-import { CMR_COUNT_HEADER, CMR_MAX_GRANULES, CMR_SCROLL_HEADER } from "../utils/CMR";
+import { CMR_COUNT_HEADER, CMR_MAX_GRANULES, CMR_SCROLL_HEADER,
+         cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrGranuleScrollInitRequest,
+         cmrGranuleScrollNextRequest, cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
@@ -183,7 +183,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private advanceCmrGranuleScroll = () => {
-    if (this.state.cmrGranules.size >= CMR_MAX_GRANULES) { return; }
+    const canScroll = this.state.cmrGranules.size < CMR_MAX_GRANULES
+      && !this.state.cmrGranuleScrollDepleted;
+    if (!canScroll) { return; }
 
     if (this.state.cmrGranules.isEmpty() || !this.state.cmrGranuleScrollId) {
       throw new Error("Can't scroll without an initial granule response or a scroll ID.");
@@ -193,12 +195,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.freezeState();
     }
 
-    if (!this.state.cmrGranuleScrollDepleted) {
-      this.setState(
-        {cmrLoading: false, cmrLoadingNextPage: true},
-        () => this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!),
-      );
-    }
+    this.setState(
+      {cmrLoading: false, cmrLoadingNextPage: true},
+      () => this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!),
+    );
   }
 
   private handleCmrGranuleInitRequest = () => {
@@ -244,10 +244,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleScrollResponseJSON = (json: any) => {
-    if (this.state.cmrGranuleScrollDepleted) {
-      return;
-    }
-
     if (json.feed.entry.length === 0) {
       this.setState({cmrGranuleScrollDepleted: true});
       return;
