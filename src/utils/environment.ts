@@ -57,7 +57,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       console.warn(`Attempted to add function ${name} to window; property already exists on window.`);
       return false;
     } else {
-      // @ts-ignore 7017 - TypeScript doesn't recognize the `window` has being
+      // @ts-ignore 7017 - TypeScript doesn't recognize the `window` as being
       // able to take square brackets, so ignore its complaints.
       //
       // Also note that modifying `window` in this way is traditionally a Bad
