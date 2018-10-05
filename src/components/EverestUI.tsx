@@ -70,6 +70,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       orderSubmissionParameters: undefined,
       stateCanBeFrozen: false,
     };
+
+    props.environment.exposeFunction("CmrError", () => {
+      this.setState({cmrStatusChecked: true, cmrStatusOk: false});
+    });
+    props.environment.exposeFunction("CmrReset", () => {
+      this.setState({cmrStatusChecked: false, cmrStatusOk: false}, this.cmrStatusRequestUntilOK);
+    });
   }
 
   public componentDidMount() {

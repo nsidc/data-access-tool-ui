@@ -15,6 +15,7 @@ interface IUrls {
 
 export interface IEnvironment {
   drupalDataset?: IDrupalDataset;
+  exposeFunction: (name: string, callback: (...args: any[]) => any) => boolean;
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
@@ -47,6 +48,21 @@ function getEnvironmentDependentURLs() {
 }
 
 export default function setupEnvironment(inDrupal: boolean): IEnvironment {
+  const exposeFunction = (name: string, callback: (...args: any[]) => any): boolean => {
+    if (!["dev", "integration"].includes(getEnvironment())) {
+      return false;
+    }
+
+    if (window.hasOwnProperty(name)) {
+      console.warn(`Attempted to add function ${name} to window; property already exists on window.`);
+      return false;
+    } else {
+      // @ts-ignore 7017
+      window[name] = callback;
+      return true;
+    }
+  };
+
   if (inDrupal) {
     const urls = {
       ...getEnvironmentDependentURLs(),
@@ -56,6 +72,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     };
     return {
       drupalDataset: Drupal.settings.data_downloads.dataset,
+      exposeFunction,
       hermesAPI: constructAPI(urls, true),
       inDrupal,
       urls,
@@ -72,6 +89,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     };
     return {
       drupalDataset: undefined,
+      exposeFunction,
       hermesAPI: constructAPI(urls, false),
       inDrupal,
       urls,
