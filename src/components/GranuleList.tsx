@@ -66,7 +66,14 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     // nextPage load in progress
     if (this.props.cmrLoadingGranuleScroll || this.props.cmrLoadingGranuleInit) { return; }
 
-    const el = event.srcElement;
+    // for browser compatibility, fallback to event.target; this happens to have
+    // the type EventTarget, so cast to Element for TypeScript compatibility--we
+    // can be sure it's an element because this method is only ever called from
+    // the container div's `onscroll` event firing
+    //
+    // https://developer.mozilla.org/en-US/docs/Web/API/Event/srcElement
+    // https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+    const el = (event.srcElement || event.target) as Element;
 
     if (!el || (el.id !== this.containerId)) {
       console.warn(`GranuleList.onScroll did not get div#${this.containerId} `
