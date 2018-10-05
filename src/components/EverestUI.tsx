@@ -71,6 +71,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       stateCanBeFrozen: false,
     };
 
+    // allow easy testing of CMR errors by creating functions that can be called
+    // from the console in a browser's dev tools
     props.environment.exposeFunction("CmrError", () => {
       this.setState({cmrStatusChecked: true, cmrStatusOk: false});
     });
