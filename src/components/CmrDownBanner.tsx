@@ -18,11 +18,11 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
     }
 
     return (
-      <span>
+      <div id="cmr-status">
         We're sorry, but due to the unavailability of an external resource, we
         cannot process your request at this time. Please try again in a few
         minutes.
-      </span>
+      </div>
     );
   }
 }

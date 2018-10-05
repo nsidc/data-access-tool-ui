@@ -126,12 +126,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
     return (
       <div id="everest-container">
-        <div id="cmr-status">
-          <CmrDownBanner
-            cmrStatusChecked={this.state.cmrStatusChecked}
-            cmrStatusOk={this.state.cmrStatusOk}
-          />
-        </div>
+        <CmrDownBanner
+          cmrStatusChecked={this.state.cmrStatusChecked}
+          cmrStatusOk={this.state.cmrStatusOk}
+        />
         <div id="collection-list">
           {collectionDropdown}
         </div>
