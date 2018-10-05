@@ -13,10 +13,11 @@ export const CMR_MAX_GRANULES = 10000;
 // Note!
 // Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
 const CMR_URL = "https://cmr.earthdata.nasa.gov";
-const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?page_size=500&provider=NSIDC_ECS&sort_key=short_name";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS"
+  + "&page_size=500&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
-const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?"
-                                  + `scroll=true&page_size=${CMR_PAGE_SIZE}&provider=NSIDC_ECS&sort_key=short_name`;
+const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?provider=NSIDC_ECS"
+  + `&scroll=true&page_size=${CMR_PAGE_SIZE}&sort_key=short_name`;
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
@@ -121,13 +122,13 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
   return cmrFetch(collectionUrl).then((response: Response) => response.json());
 };
 
-export const cmrGranuleRequest = (collectionAuthId: string,
-                                  collectionVersionId: number,
-                                  spatialSelection: IGeoJsonPolygon | null,
-                                  collectionSpatialCoverage: IGeoJsonPolygon | null,
-                                  temporalLowerBound: moment.Moment,
-                                  temporalUpperBound: moment.Moment,
-                                  headers?: Map<string, string>) => {
+export const cmrGranuleScrollInitRequest = (collectionAuthId: string,
+                                            collectionVersionId: number,
+                                            spatialSelection: IGeoJsonPolygon | null,
+                                            collectionSpatialCoverage: IGeoJsonPolygon | null,
+                                            temporalLowerBound: moment.Moment,
+                                            temporalUpperBound: moment.Moment,
+                                            headers?: Map<string, string>) => {
   const URL = CMR_GRANULE_URL
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
@@ -135,6 +136,10 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
 
   return cmrFetch(URL, headers);
+};
+
+export const cmrGranuleScrollNextRequest = (scrollId: string) => {
+  return cmrFetch(CMR_GRANULE_URL, Map({[CMR_SCROLL_HEADER]: scrollId}));
 };
 
 export const globalSpatialSelection: IGeoJsonBbox = {
