@@ -73,21 +73,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   public componentDidMount() {
-    const onSuccess = (response: any) => {
-      this.setState({cmrStatusChecked: true, cmrStatusOk: true});
-    };
-
-    const onFailure = (response: any) => {
-      this.onCmrRequestFailure(response);
-
-      // retry periodically so that the app comes back to life when CMR is back
-      const delayMilliseconds = 1000 * (__DEV__ ? 5 : 60);
-      setTimeout(() => {
-        cmrStatusRequest().then(onSuccess, onFailure);
-      }, delayMilliseconds);
-    };
-
-    cmrStatusRequest().then(onSuccess, onFailure);
+    this.cmrStatusRequestUntilOK();
 
     if (this.state.loadedParamsFromLocalStorage) {
       this.startCmrGranuleScroll();
@@ -157,6 +143,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         </div>
       </div>
     );
+  }
+
+  private cmrStatusRequestUntilOK = () => {
+    const onSuccess = (response: any) => {
+      this.setState({cmrStatusChecked: true, cmrStatusOk: true});
+    };
+
+    const onFailure = (response: any) => {
+      this.onCmrRequestFailure(response);
+
+      // retry periodically so that the app comes back to life when CMR is back
+      const delayMilliseconds = 1000 * (__DEV__ ? 5 : 60);
+      setTimeout(() => {
+        cmrStatusRequest().then(onSuccess, onFailure);
+      }, delayMilliseconds);
+    };
+
+    cmrStatusRequest().then(onSuccess, onFailure);
   }
 
   private startCmrGranuleScroll = () => {
