@@ -3,7 +3,6 @@ import * as Cesium from "cesium";
 export interface ILonLat {
   readonly lat: number;
   readonly lon: number;
-  readonly index?: number;
 }
 
 export class CesiumUtils {

@@ -113,7 +113,7 @@ export class PolygonMode {
     let points: List<Point> = List(cartesians).map((cartesian?: Cesium.Cartesian3) => {
       return new Point(cartesian);
     }).toList();
-    points = this.sortedPoints(this.reopenPolygonPoints(points));
+    points = this.reopenPolygonPoints(points);
 
     points.forEach(this.addPoint);
 
@@ -146,11 +146,9 @@ export class PolygonMode {
   // render the given List of points; this also updates this.points to the given
   // list of points, but sorted clockwiseness
   private renderPolygonFromPoints = (points: List<Point>): void => {
-    const sortedPoints = this.sortedPoints(this.reopenPolygonPoints(points));
+    this.points = this.reopenPolygonPoints(points);
 
-    this.points = sortedPoints;
-
-    const cartesiansArray = sortedPoints.map((p) => p && p.cartesian).toJS();
+    const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS();
 
     // remove previously rendered polygon
     if (this.polygon) {
@@ -177,18 +175,6 @@ export class PolygonMode {
     this.scene.primitives.add(this.polygon);
   }
 
-  private sortedPoints = (points: List<Point>): List<Point> => {
-    const cartesians = points.map((p) => p && p.cartesian) as List<Cesium.Cartesian3>;
-
-    // Ensure that the points are in counterclockwise non-overlapping order.
-    const sortedIndices = this.sortedPolygonPointIndices(cartesians);
-    const pointsInSortedOrder = sortedIndices.map((sortedIndex) => {
-      return points.get(sortedIndex!);
-    }).toList();
-
-    return pointsInSortedOrder;
-  }
-
   private parseLonLat(sLonLat: string): ILonLat {
     let s = sLonLat.split(",");
     if (s.length < 2) {
@@ -207,55 +193,6 @@ export class PolygonMode {
       lon = -lon;
     }
     return {lat, lon};
-  }
-
-  // To avoid bow-ties if the user draws the points in a strange order,
-  // reorder the points to ensure that they form a counterclockwise
-  // non-overlapping polygon.
-  // To reorder, convert points to 2D, compute the angle between each point
-  // and the center of the bounding box for all the points. Then sort
-  // the angles into ascending order.
-  // Returns an array of indices that sort points into correct order.
-  // For algorithm see https://stackoverflow.com/questions/19713092/
-  private sortedPolygonPointIndices(cartesians: List<Cesium.Cartesian3>): List<number> {
-
-    // Convert all points from 3D to 2D, save the original points.
-    // Compute the bounding box for all the points.
-    let lonLats = cartesians.map((cartesian, index): ILonLat => {
-      const lonLat = CesiumUtils.cartesianToLonLat(cartesian!);
-      return {index, ...lonLat};
-    });
-
-    const lats = lonLats.map((lonLat) => lonLat!.lat);
-    const lons = lonLats.map((lonLat) => lonLat!.lon);
-
-    const center = {
-      lat: 0.5 * (lats.min() + lats.max()),
-      lon: 0.5 * (lons.min() + lons.max()),
-    };
-    const last = lonLats.last();
-    const angleLast = Math.atan2(last.lat - center.lat, last.lon - center.lon);
-
-    lonLats = lonLats.map((lonLat) => {
-      let angle = Math.atan2(lonLat!.lat - center.lat, lonLat!.lon - center.lon);
-      // Rotate (shift) all of the points that come before the last point
-      // to the end of the array. The <= ensures that the last point comes
-      // at the very end, since that is the activePoint and may be stripped
-      // off the end before storing.
-      if (angle <= angleLast) {
-        angle += 2 * Math.PI;
-      }
-      return {...lonLat!, angle};
-    });
-
-    // Sort the points in counter-clockwise order using the 2D angles
-    lonLats = lonLats.sort((a: any, b: any) => (a.angle - b.angle));
-
-    // Strip out the indices that will sort the array
-    const indices = lonLats.map((lonLat): number => {
-      return lonLat!.index!;
-    }).toList();
-    return indices;
   }
 
   private interactionRender = () => {

@@ -4,7 +4,7 @@ import * as GeoJSON from "geojson";
 import { List } from "immutable";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
-import { CesiumUtils } from "../utils/CesiumUtils";
+import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
@@ -123,15 +123,47 @@ export class CesiumAdapter {
     return bbox.every((val: number, i: number) => val === globalBbox[i]);
   }
 
+  // https://stackoverflow.com/a/1165943
+  // http://en.wikipedia.org/wiki/Shoelace_formula
+  private polygonIsClockwise(lonLats: List<ILonLat>) {
+    const lons = lonLats.map((lonLat) => lonLat!.lon);
+    const crossesDateline = ((lons.max() - lons.min()) > 180);
+
+    const sum = lonLats.reduce((acc: number | undefined, coord: ILonLat | undefined, index: number | undefined) => {
+      const nextIndex = ((index ? index : 0) + 1) % lonLats.count();
+      const nextLonLat = lonLats.get(nextIndex);
+      let lon = coord!.lon;
+      let nextLon = nextLonLat!.lon;
+      if (crossesDateline) {
+        if (lon < 0) { lon += 360; }
+        if (nextLon < 0) { nextLon += 360; }
+      }
+
+      const edge = (nextLon - lon) * (nextLonLat.lat + coord!.lat);
+
+      return (acc ? acc : 0) + edge;
+    }, 0);
+
+    return sum > 0;
+  }
+
   private createPolygonMode() {
 
     // when drawing is finished (by double-clicking), this function is called
     // with an array of points.
     const finishedDrawingCallback = (points: List<Point>) => {
-      const lonLatsArray = points.map((point) => {
+      let lonLats = points.map((point) => {
         const lonLat = CesiumUtils.cartesianToLonLat(point!.cartesian);
-        return [lonLat.lon, lonLat.lat];
-      }, this).toJS();
+        return lonLat;
+      }).toList();
+
+      if (this.polygonIsClockwise(lonLats)) {
+        lonLats = lonLats.reverse().toList();
+      }
+
+      const lonLatsArray = lonLats.map((lonLat) => {
+        return [lonLat!.lon, lonLat!.lat];
+      }).toJS();
 
       let geo = null;
       if (lonLatsArray.length >= MIN_VERTICES) {
