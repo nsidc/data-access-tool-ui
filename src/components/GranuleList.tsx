@@ -84,8 +84,16 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     // @ts-ignore 2339 - TypeScript somehow doesn't think offsetHeight is real
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
     const scrollBottom = el.scrollTop + el.offsetHeight;
+    const distanceFromBottom = el.scrollHeight - scrollBottom;
 
-    if (el.scrollHeight === scrollBottom) {
+    // when we're this many pixels from the bottom (or even closer), trigger the
+    // request for the next page of granules
+    const tolerance = 0;
+
+    // the browser might give a float for scrollTop, which could actually result
+    // in a value for distanceFromBottom between -1 and 0, so we should check
+    // for less-than-or-equal to the tolerance, even if the tolerance is 0
+    if (distanceFromBottom <= tolerance) {
       this.props.loadNextPageOfGranules();
     }
   }
