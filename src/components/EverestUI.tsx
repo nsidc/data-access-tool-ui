@@ -219,7 +219,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     return this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!)
       .then((foo): Promise<any> => {
         if (!this.canScroll()) {
-          console.log("Can't scroll anymore, stopping");
           return Promise.resolve();
         }
 
