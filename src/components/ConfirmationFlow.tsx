@@ -57,7 +57,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
       this.showLoadingIcon();
 
-      this.props.ensureGranuleScrollDepleted(this.submitOrder);
+      return this.props.ensureGranuleScrollDepleted(this.submitOrder);
     }
     return;
   }

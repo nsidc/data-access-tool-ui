@@ -226,7 +226,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       })
       .then(() => {
         if (callback) {
-          callback();
+          return callback();
         }
       });
   }
