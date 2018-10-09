@@ -152,6 +152,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrLoadingGranuleScroll={this.state.cmrLoadingGranuleScroll}
               orderParameters={this.state.orderParameters} />
             <OrderButtons
+              ensureGranuleScrollDepleted={this.advanceCmrGranuleScrollToEnd}
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
               cmrGranules={this.state.cmrGranules} />
@@ -161,8 +162,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     );
   }
 
-  private startCmrGranuleScroll = () => {
+  private canScroll = () => {
+    return this.state.cmrGranules.size < CMR_MAX_GRANULES
+      && !this.state.cmrGranuleScrollDepleted;
+  }
 
+  private startCmrGranuleScroll = () => {
     if (this.state.stateCanBeFrozen) {
       this.freezeState();
     }
@@ -183,9 +188,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private advanceCmrGranuleScroll = () => {
-    const canScroll = this.state.cmrGranules.size < CMR_MAX_GRANULES
-      && !this.state.cmrGranuleScrollDepleted;
-    if (!canScroll) { return; }
+    if (!this.canScroll()) { return; }
 
     if (this.state.cmrGranules.isEmpty() || !this.state.cmrGranuleScrollId) {
       throw new Error("Can't scroll without an initial granule response or a scroll ID.");
@@ -199,6 +202,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       {cmrLoadingGranuleScroll: true},
       () => this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!),
     );
+  }
+
+  private advanceCmrGranuleScrollToEnd = (callback?: () => any): Promise<any> => {
+    return this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!)
+      .then((foo): Promise<any> => {
+        if (!this.canScroll()) {
+          console.log("Can't scroll anymore, stopping");
+          return Promise.resolve();
+        }
+
+        return this.advanceCmrGranuleScrollToEnd();
+      })
+      .then(() => {
+        if (callback) {
+          callback();
+        }
+      });
+
   }
 
   private handleCmrGranuleInitRequest = () => {

@@ -15,6 +15,7 @@ const environment = setupEnvironment(false);
 
 const setup = (props = {}) => {
   const defaultProps = {
+    ensureGranuleScrollDepleted: () => {},
     environment,
     onRequestClose: () => {},  // set props.show to false
     orderSubmissionParameters: undefined,

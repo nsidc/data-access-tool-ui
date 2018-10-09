@@ -12,6 +12,7 @@ import { SubmitButton } from "./SubmitButton";
 
 interface IOrderButtonsProps {
   cmrGranules?: List<CmrGranule>;
+  ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   orderSubmissionParameters?: OrderSubmissionParameters;
 }
@@ -63,6 +64,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.zipFile} />
         <ConfirmationFlow
+          ensureGranuleScrollDepleted={this.props.ensureGranuleScrollDepleted}
           environment={this.props.environment}
           onRequestClose={this.closeConfirmationFlow}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
