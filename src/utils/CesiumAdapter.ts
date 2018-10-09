@@ -123,25 +123,62 @@ export class CesiumAdapter {
     return bbox.every((val: number, i: number) => val === globalBbox[i]);
   }
 
+  private fixDatelineCoordinates(lonLatsIn: List<ILonLat>) {
+    const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
+    const crossesDateline = ((lons.max() - lons.min()) > 180);
+    let lonLats: List<ILonLat> = lonLatsIn;
+    if (crossesDateline) {
+      lonLats = lonLatsIn.map((lonLat) => {
+        const lon = lonLat!.lon;
+        return {lon: (lon >= 0) ? lon : lon + 360, lat: lonLat!.lat};
+      }).toList();
+    }
+    return lonLats;
+  }
+
+  // Return +1 if the polygon circles the North Pole,
+  // -1 if it circles the South Pole,
+  // 0 otherwise
+  private isCircumPolar(lonLatsIn: List<ILonLat>) {
+    const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
+    const lats = lonLatsIn.map((lonLat) => lonLat!.lat);
+    const circumPolar = ((lons.max() - lons.min()) > 180);
+    return circumPolar ? ((lats.max() >= 0) ? 1 : -1) : 0;
+  }
+
+  // Find the difference between one longitude and the next;
+  // If the difference is positive then add +1, otherwise add -1.
+  // For the Northern hemisphere if the sum is positive then the
+  // polygon is counterclockwise; vice versa for the Southern hemisphere.
+  private polarWindingNumber(lonLats: List<ILonLat>) {
+    // Convert to JS to avoid all of the Immutable undefined's.
+    const lons = lonLats.map((lonLat) => lonLat!.lon).toJS();
+    const winding = lons.reduce((acc: number, lon: number, index: number) => {
+      const nextIndex = ((index ? index : 0) + 1) % lons.length;
+      const diff = lons[nextIndex] - lon;
+      return acc + ((diff < -180 || (diff > 0 && diff < 180)) ? 1 : -1);
+    }, 0);
+    return winding;
+  }
+
   // https://stackoverflow.com/a/1165943
   // http://en.wikipedia.org/wiki/Shoelace_formula
-  private polygonIsClockwise(lonLats: List<ILonLat>) {
-    const lons = lonLats.map((lonLat) => lonLat!.lon);
-    const crossesDateline = ((lons.max() - lons.min()) > 180);
+  private polygonIsClockwise(lonLatsIn: List<ILonLat>) {
+    const lonLats = this.fixDatelineCoordinates(lonLatsIn);
 
-    const sum = lonLats.reduce((acc: number | undefined, coord: ILonLat | undefined, index: number | undefined) => {
-      const nextIndex = ((index ? index : 0) + 1) % lonLats.count();
-      const nextLonLat = lonLats.get(nextIndex);
-      let lon = coord!.lon;
-      let nextLon = nextLonLat!.lon;
-      if (crossesDateline) {
-        if (lon < 0) { lon += 360; }
-        if (nextLon < 0) { nextLon += 360; }
-      }
+    const circumPolar = this.isCircumPolar(lonLats);
+    if (circumPolar !== 0) {
+      const polarWinding = this.polarWindingNumber(lonLats);
+      return (circumPolar === 1) ? (polarWinding < 0) : (polarWinding > 0);
+    }
 
-      const edge = (nextLon - lon) * (nextLonLat.lat + coord!.lat);
+    // Convert to JS to avoid all of the Immutable undefined's.
+    const lonLatsJS: ILonLat[] = lonLats.toJS();
 
-      return (acc ? acc : 0) + edge;
+    const sum = lonLatsJS.reduce((acc: number, lonLat: ILonLat, index: number) => {
+      const next = ((index ? index : 0) + 1) % lonLatsJS.length;
+      const edge = (lonLatsJS[next].lon - lonLat.lon) * (lonLatsJS[next].lat + lonLat.lat);
+      return acc + edge;
     }, 0);
 
     return sum > 0;
