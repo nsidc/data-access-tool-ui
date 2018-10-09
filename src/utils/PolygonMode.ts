@@ -121,6 +121,10 @@ export class PolygonMode {
     this.initializeMouseHandler();
   }
 
+  public getPolygon(): any {
+    return this.polygon;
+  }
+
   private clearAllPoints = () => {
     this.points = List<Point>();
     if (this.billboards && this.billboards.length) {

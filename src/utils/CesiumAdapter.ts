@@ -77,7 +77,7 @@ export class CesiumAdapter {
 
   public flyHome() {
     // @types/cesium incorrectly has the parameter to Camera.flyHome as required
-    // instead of optinal
+    // instead of optional
     (this.viewer.camera as any).flyHome();
   }
 
@@ -112,6 +112,13 @@ export class CesiumAdapter {
     if (spatialSelection === null) { return; }
 
     this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
+  }
+
+  public flyToPolygon(): void {
+    const polygon = this.polygonMode.getPolygon();
+    if (polygon) {
+      this.viewer.flyTo(polygon);
+    }
   }
 
   private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {
