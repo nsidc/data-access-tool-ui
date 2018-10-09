@@ -229,7 +229,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           callback();
         }
       });
-
   }
 
   private handleCmrGranuleInitRequest = () => {
