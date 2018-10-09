@@ -218,15 +218,12 @@ export class PolygonMode {
   private addPointFromScreenPosition = (screenPosition: Cesium.Cartesian2) => {
     const cartesian = this.screenPositionToCartesian(screenPosition);
     if (cartesian === null) { return; }
-
     return this.addPointFromCartesian(cartesian);
   }
 
   private addPointFromCartesian = (cartesian: Cesium.Cartesian3) => {
     if (this.isDuplicateCartesian(cartesian)) { return; }
-
     const point = new Point(cartesian);
-
     this.addPoint(point);
   }
 
@@ -242,14 +239,28 @@ export class PolygonMode {
     this.scene.primitives.add(this.billboards);
   }
 
-  private updateActivePoint = (screenPosition: Cesium.Cartesian2) => {
+  private updateActivePointFromCartesian = (cartesian: Cesium.Cartesian3) => {
+    if (this.activePointIndex !== -1) {
+      this.activePoint().removeBillboard(this.billboards);
+      const point = new Point(cartesian);
+      this.points = this.points.update(this.activePointIndex, (v) => (point));
+      point!.addBillboard(this.billboards);
+    }
+  }
+
+  private updateActivePointFromScreen = (screenPosition: Cesium.Cartesian2) => {
     const cartesian = this.screenPositionToCartesian(screenPosition);
     if (cartesian === null) { return; }
+    this.updateActivePointFromCartesian(cartesian);
+  }
 
-    this.removeActivePoint();
-
-    this.addPointFromCartesian(cartesian);
-    this.activePointIndex = this.points.size - 1;
+  private movePointUsingScreenPosition = (screenPosition: Cesium.Cartesian2) => {
+    if (this.activePointIndex === -1) {
+      this.addPointFromScreenPosition(screenPosition);
+      this.activateLastPoint();
+    } else {
+      this.updateActivePointFromScreen(screenPosition);
+    }
   }
 
   private removeActivePoint = () => {
@@ -288,10 +299,10 @@ export class PolygonMode {
 
       if (index === this.activePointIndex) {
         billboard.color = Cesium.Color.CHARTREUSE;
-        billboard.scale = 1.5;
+        billboard.scale = 1.75;
       } else {
-        billboard.color = Cesium.Color.WHITE;
-        billboard.scale = 1.0;
+        billboard.color = Cesium.Color.CRIMSON;
+        billboard.scale = 1.25;
       }
     }, this);
   }
@@ -364,7 +375,7 @@ export class PolygonMode {
             this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
-            this.updateActivePoint(screenPosition);
+            this.movePointUsingScreenPosition(screenPosition);
             this.updateLonLatLabel(this.activePointCartesian());
             this.interactionRender();
             break;
@@ -452,10 +463,7 @@ export class PolygonMode {
               this.updateLonLatLabel(this.activePointCartesian());
               break;
             }
-            this.removeActivePoint();
-            this.addPointFromCartesian(cartesian);
-            // Our active point will now be at the end of the list
-            this.activateLastPoint();
+            this.updateActivePointFromCartesian(cartesian);
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
@@ -473,7 +481,7 @@ export class PolygonMode {
             this.finishedDrawingCallback(this.points);
             break;
           case PolygonEvent.moveMouse:
-            this.updateActivePoint(screenPosition);
+            this.movePointUsingScreenPosition(screenPosition);
             this.updateLonLatLabel(this.activePointCartesian());
             this.interactionRender();
             break;
