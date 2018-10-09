@@ -217,7 +217,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private advanceCmrGranuleScrollToEnd = (callback?: () => any): Promise<any> => {
     return this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!)
-      .then((foo): Promise<any> => {
+      .then((): Promise<any> => {
         if (!this.canScroll()) {
           return Promise.resolve();
         }
