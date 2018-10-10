@@ -222,6 +222,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           return Promise.resolve();
         }
 
+        // Recurse within the promise without a callback. The callback from the
+        // initial call will be called at the end of the recursive calls.
         return this.advanceCmrGranuleScrollToEnd();
       })
       .then(() => {
