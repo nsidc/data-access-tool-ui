@@ -4,9 +4,15 @@ import * as GeoJSON from "geojson";
 import { List } from "immutable";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
-import { CesiumUtils } from "../utils/CesiumUtils";
+import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
+
+enum Circumpolar {
+  Neither,
+  North,
+  South,
+}
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
@@ -123,15 +129,83 @@ export class CesiumAdapter {
     return bbox.every((val: number, i: number) => val === globalBbox[i]);
   }
 
+  private fixDatelineCoordinates(lonLatsIn: List<ILonLat>) {
+    const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
+    const crossesDateline = ((lons.max() - lons.min()) > 180);
+    let lonLats: List<ILonLat> = lonLatsIn;
+    if (crossesDateline) {
+      lonLats = lonLatsIn.map((lonLat) => {
+        const lon = lonLat!.lon;
+        return {lon: (lon >= 0) ? lon : lon + 360, lat: lonLat!.lat};
+      }).toList();
+    }
+    return lonLats;
+  }
+
+  private isCircumPolar(lonLatsIn: List<ILonLat>) {
+    const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
+    const lats = lonLatsIn.map((lonLat) => lonLat!.lat);
+    const circumPolar = ((lons.max() - lons.min()) > 180);
+    return circumPolar ? ((lats.max() >= 0) ? Circumpolar.North : Circumpolar.South) : Circumpolar.Neither;
+  }
+
+  // Find the difference between one longitude and the next;
+  // If the difference is positive then add +1, otherwise add -1.
+  // For the Northern hemisphere if the sum is positive then the
+  // polygon is counterclockwise; vice versa for the Southern hemisphere.
+  private polarWindingIsPositive(lonLats: List<ILonLat>) {
+    // Convert to JS to avoid all of the Immutable undefined's.
+    // TODO: Update when Immutable 4 is released and installed
+    const lons = lonLats.map((lonLat) => lonLat!.lon).toJS();
+    const winding = lons.reduce((acc: number, lon: number, index: number) => {
+      const nextIndex = ((index ? index : 0) + 1) % lons.length;
+      const diff = lons[nextIndex] - lon;
+      return acc + ((diff < -180 || (diff >= 0 && diff < 180)) ? 1 : -1);
+    }, 0);
+    return winding > 0;
+  }
+
+  // https://stackoverflow.com/a/1165943
+  // http://en.wikipedia.org/wiki/Shoelace_formula
+  private polygonIsClockwise(lonLatsIn: List<ILonLat>) {
+    const lonLats = this.fixDatelineCoordinates(lonLatsIn);
+
+    const circumPolar = this.isCircumPolar(lonLats);
+    if (circumPolar !== Circumpolar.Neither) {
+      const windingIsPositive = this.polarWindingIsPositive(lonLats);
+      return (circumPolar === Circumpolar.North) ? (!windingIsPositive) : (windingIsPositive);
+    }
+
+    // Convert to JS to avoid all of the Immutable undefined's.
+    // TODO: Update when Immutable 4 is released and installed
+    const lonLatsJS: ILonLat[] = lonLats.toJS();
+
+    const sum = lonLatsJS.reduce((acc: number, lonLat: ILonLat, index: number) => {
+      const next = ((index ? index : 0) + 1) % lonLatsJS.length;
+      const edge = (lonLatsJS[next].lon - lonLat.lon) * (lonLatsJS[next].lat + lonLat.lat);
+      return acc + edge;
+    }, 0);
+
+    return sum > 0;
+  }
+
   private createPolygonMode() {
 
     // when drawing is finished (by double-clicking), this function is called
     // with an array of points.
     const finishedDrawingCallback = (points: List<Point>) => {
-      const lonLatsArray = points.map((point) => {
+      let lonLats = points.map((point) => {
         const lonLat = CesiumUtils.cartesianToLonLat(point!.cartesian);
-        return [lonLat.lon, lonLat.lat];
-      }, this).toJS();
+        return lonLat;
+      }).toList();
+
+      if (this.polygonIsClockwise(lonLats)) {
+        lonLats = lonLats.reverse().toList();
+      }
+
+      const lonLatsArray = lonLats.map((lonLat) => {
+        return [lonLat!.lon, lonLat!.lat];
+      }).toJS();
 
       let geo = null;
       if (lonLatsArray.length >= MIN_VERTICES) {
