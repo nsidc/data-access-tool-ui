@@ -9,6 +9,7 @@ import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IConfirmationFlowProps {
+  ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
@@ -56,27 +57,31 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
       this.showLoadingIcon();
 
-      return this.props.environment.hermesAPI.submitOrder(
-        this.props.environment.user,
-        this.props.orderSubmissionParameters.granuleURs,
-        this.props.orderSubmissionParameters.collectionInfo,
-        this.props.orderType,
-      )
-      .then((response: any) => {
-        if (![200, 201].includes(response.status)) {
-          throw new Error(`${response.status} received from order system: "${response.statusText}"`);
-        }
-        const json = response.json();
-        return json;
-      })
-      .then((json: any) => {
-        this.handleOrderResponse(json);
-      })
-      .catch((err: any) => {
-        this.handleOrderError(err);
-      });
+      return this.props.ensureGranuleScrollDepleted(this.submitOrder);
     }
     return;
+  }
+
+  private submitOrder = () => {
+    return this.props.environment.hermesAPI.submitOrder(
+      this.props.environment.user,
+      this.props.orderSubmissionParameters!.granuleURs,
+      this.props.orderSubmissionParameters!.collectionInfo,
+      this.props.orderType!,
+    )
+    .then((response: any) => {
+      if (![200, 201].includes(response.status)) {
+        throw new Error(`${response.status} received from order system: "${response.statusText}"`);
+      }
+      const json = response.json();
+      return json;
+    })
+    .then((json: any) => {
+      this.handleOrderResponse(json);
+    })
+    .catch((err: any) => {
+      this.handleOrderError(err);
+    });
   }
 
   private showLoadingIcon() {

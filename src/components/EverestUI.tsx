@@ -145,6 +145,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrLoadingGranuleScroll={this.state.cmrLoadingGranuleScroll}
               orderParameters={this.state.orderParameters} />
             <OrderButtons
+              ensureGranuleScrollDepleted={this.advanceCmrGranuleScrollToEnd}
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}
               cmrGranules={this.state.cmrGranules} />
@@ -172,8 +173,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     cmrStatusRequest().then(onSuccess, onFailure);
   }
 
-  private startCmrGranuleScroll = () => {
+  private canScroll = () => {
+    return this.state.cmrGranules.size < CMR_MAX_GRANULES
+      && !this.state.cmrGranuleScrollDepleted;
+  }
 
+  private startCmrGranuleScroll = () => {
     if (this.state.stateCanBeFrozen) {
       this.freezeState();
     }
@@ -194,9 +199,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private advanceCmrGranuleScroll = () => {
-    const canScroll = this.state.cmrGranules.size < CMR_MAX_GRANULES
-      && !this.state.cmrGranuleScrollDepleted;
-    if (!canScroll) { return; }
+    if (!this.canScroll()) { return; }
 
     if (this.state.cmrGranules.isEmpty() || !this.state.cmrGranuleScrollId) {
       throw new Error("Can't scroll without an initial granule response or a scroll ID.");
@@ -210,6 +213,24 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       {cmrLoadingGranuleScroll: true},
       () => this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!),
     );
+  }
+
+  private advanceCmrGranuleScrollToEnd = (callback?: () => any): Promise<any> => {
+    return this.handleCmrGranuleScrollRequest(this.state.cmrGranuleScrollId!)
+      .then((): Promise<any> => {
+        if (!this.canScroll()) {
+          return Promise.resolve();
+        }
+
+        // Recurse within the promise without a callback. The callback from the
+        // initial call will be called at the end of the recursive calls.
+        return this.advanceCmrGranuleScrollToEnd();
+      })
+      .then(() => {
+        if (callback) {
+          return callback();
+        }
+      });
   }
 
   private handleCmrGranuleInitRequest = () => {
