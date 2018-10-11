@@ -57,7 +57,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else {
       return (
-        <div id="order-details">{"Select an order!"}</div>
+        <div id="order-details">{"Select an order from the list at left"}</div>
       );
     }
   }
