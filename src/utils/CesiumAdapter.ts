@@ -8,6 +8,12 @@ import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
+enum Circumpolar {
+  Neither,
+  North,
+  South,
+}
+
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
   private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
@@ -136,29 +142,27 @@ export class CesiumAdapter {
     return lonLats;
   }
 
-  // Return +1 if the polygon circles the North Pole,
-  // -1 if it circles the South Pole,
-  // 0 otherwise
   private isCircumPolar(lonLatsIn: List<ILonLat>) {
     const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
     const lats = lonLatsIn.map((lonLat) => lonLat!.lat);
     const circumPolar = ((lons.max() - lons.min()) > 180);
-    return circumPolar ? ((lats.max() >= 0) ? 1 : -1) : 0;
+    return circumPolar ? ((lats.max() >= 0) ? Circumpolar.North : Circumpolar.South) : Circumpolar.Neither;
   }
 
   // Find the difference between one longitude and the next;
   // If the difference is positive then add +1, otherwise add -1.
   // For the Northern hemisphere if the sum is positive then the
   // polygon is counterclockwise; vice versa for the Southern hemisphere.
-  private polarWindingNumber(lonLats: List<ILonLat>) {
+  private polarWindingIsPositive(lonLats: List<ILonLat>) {
     // Convert to JS to avoid all of the Immutable undefined's.
+    // TODO: Update when Immutable 4 is released and installed
     const lons = lonLats.map((lonLat) => lonLat!.lon).toJS();
     const winding = lons.reduce((acc: number, lon: number, index: number) => {
       const nextIndex = ((index ? index : 0) + 1) % lons.length;
       const diff = lons[nextIndex] - lon;
-      return acc + ((diff < -180 || (diff > 0 && diff < 180)) ? 1 : -1);
+      return acc + ((diff < -180 || (diff >= 0 && diff < 180)) ? 1 : -1);
     }, 0);
-    return winding;
+    return winding > 0;
   }
 
   // https://stackoverflow.com/a/1165943
@@ -167,12 +171,13 @@ export class CesiumAdapter {
     const lonLats = this.fixDatelineCoordinates(lonLatsIn);
 
     const circumPolar = this.isCircumPolar(lonLats);
-    if (circumPolar !== 0) {
-      const polarWinding = this.polarWindingNumber(lonLats);
-      return (circumPolar === 1) ? (polarWinding < 0) : (polarWinding > 0);
+    if (circumPolar !== Circumpolar.Neither) {
+      const windingIsPositive = this.polarWindingIsPositive(lonLats);
+      return (circumPolar === Circumpolar.North) ? (!windingIsPositive) : (windingIsPositive);
     }
 
     // Convert to JS to avoid all of the Immutable undefined's.
+    // TODO: Update when Immutable 4 is released and installed
     const lonLatsJS: ILonLat[] = lonLats.toJS();
 
     const sum = lonLatsJS.reduce((acc: number, lonLat: ILonLat, index: number) => {
