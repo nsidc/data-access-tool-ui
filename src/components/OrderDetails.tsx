@@ -7,6 +7,7 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
+  orderCount: number;
   orderId?: string;
 }
 
@@ -29,7 +30,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
     const stateChanged = hasChanged(this.state, nextState, ["order", "loading"]);
-    const propsChanged = hasChanged(this.props, nextProps, ["orderId"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["orderCount", "orderId"]);
     return stateChanged || propsChanged;
   }
 
@@ -55,9 +56,13 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
           </div>
         </div>
       );
-    } else {
+    } else if (this.props.orderCount > 0) {
       return (
         <div id="order-details">{"Select an order from the list at left"}</div>
+      );
+    } else {
+      return (
+        <div id="order-details">{"You have no orders."}</div>
       );
     }
   }
