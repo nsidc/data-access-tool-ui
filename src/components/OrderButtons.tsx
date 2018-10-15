@@ -12,6 +12,7 @@ import { SubmitButton } from "./SubmitButton";
 
 interface IOrderButtonsProps {
   cmrGranules?: List<CmrGranule>;
+  cmrGranuleCount?: number;
   ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   orderSubmissionParameters?: OrderSubmissionParameters;
@@ -32,7 +33,9 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["environment", "orderSubmissionParameters"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount",
+                                                            "environment",
+                                                            "orderSubmissionParameters"]);
     const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow"]);
 
     return propsChanged || stateChanged;
@@ -44,7 +47,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     return (
       <div>
-      <div id="order-limit-message">
+      <div className="order-limit-message">
       IMPORTANT: During the beta test period, orders are limited to 10,000
       granules regardless of the number you request.
       </div>
@@ -70,6 +73,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onSubmitOrder={this.handleSubmitOrder}
           orderType={OrderTypes.zipFile} />
         <ConfirmationFlow
+          cmrGranuleCount={this.props.cmrGranuleCount}
           ensureGranuleScrollDepleted={this.props.ensureGranuleScrollDepleted}
           environment={this.props.environment}
           onRequestClose={this.closeConfirmationFlow}

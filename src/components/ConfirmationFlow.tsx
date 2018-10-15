@@ -9,6 +9,7 @@ import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IConfirmationFlowProps {
+  cmrGranuleCount?: number;
   ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   onRequestClose: () => void;
@@ -18,26 +19,20 @@ interface IConfirmationFlowProps {
 }
 
 interface IConfirmationFlowState {
-  visibleUI: JSX.Element;
+  visibleUI: JSX.Element | null;
 }
 
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
-  private orderConfirmationContent = (
-    <OrderConfirmationContent onOK={() => { this.handleConfirmationClick(); }}
-                              onCancel={this.props.onRequestClose}
-                              environment={this.props.environment} />
-  );
-
   public constructor(props: IConfirmationFlowProps) {
     super(props);
 
     this.state = {
-      visibleUI: this.orderConfirmationContent,
+      visibleUI: null,
     };
   }
 
   public shouldComponentUpdate(nextProps: IConfirmationFlowProps, nextState: IConfirmationFlowState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["environment", "show", "orderType"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount", "environment", "show", "orderType"]);
     const stateChanged = hasChanged(this.state, nextState, ["visibleUI"]);
     return stateChanged || propsChanged;
   }
@@ -48,7 +43,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
                   isOpen={this.props.show}
                   onRequestClose={this.props.onRequestClose}
                   parentSelector={() => document.getElementById("everest-ui") || document.body}>
-        {this.state.visibleUI}
+        {this.state.visibleUI || this.orderConfirmationContent()}
       </ReactModal>
     );
   }
@@ -60,6 +55,15 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       return this.props.ensureGranuleScrollDepleted(this.submitOrder);
     }
     return;
+  }
+
+  private orderConfirmationContent = () => {
+    return (
+      <OrderConfirmationContent onOK={() => { this.handleConfirmationClick(); }}
+                                onCancel={this.props.onRequestClose}
+                                cmrGranuleCount={this.props.cmrGranuleCount}
+                                environment={this.props.environment} />
+    );
   }
 
   private submitOrder = () => {
@@ -91,7 +95,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   private resetUI = () => {
     this.props.onRequestClose();
     this.setState({
-      visibleUI: this.orderConfirmationContent,
+      visibleUI: null,
     });
   }
 
