@@ -7,8 +7,8 @@ import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IScriptButtonProps {
-  disabled: boolean;
   cmrGranules?: List<CmrGranule>;
+  disabled: boolean;
   environment: IEnvironment;
   loggedOut: boolean;
 }
