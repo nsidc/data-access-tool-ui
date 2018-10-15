@@ -1,10 +1,12 @@
 import { List, Map } from "immutable";
 import * as React from "react";
+import * as ReactModal from "react-modal";
 
 import * as callout from "../img/callout.png";
 import { CmrGranule } from "../types/CmrGranule";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { LoadingIcon } from "./LoadingIcon";
 
 interface IScriptButtonProps {
   cmrGranules?: List<CmrGranule>;
@@ -14,25 +16,38 @@ interface IScriptButtonProps {
   loggedOut: boolean;
 }
 
-export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
+interface IScriptButtonState {
+  loading: boolean;
+}
+
+export class ScriptButton extends React.Component<IScriptButtonProps, IScriptButtonState> {
   private formName: string = "ScriptButtonForm";
 
   public constructor(props: IScriptButtonProps) {
     super(props);
+
+    this.state = {
+      loading: false,
+    };
   }
 
-  public shouldComponentUpdate(nextProps: IScriptButtonProps) {
-    return hasChanged(this.props, nextProps, ["cmrGranules", "disabled"]);
+  public shouldComponentUpdate(nextProps: IScriptButtonProps, nextState: IScriptButtonState) {
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrGranules", "disabled"]);
+    const stateChanged = hasChanged(this.state, nextState, ["loading"]);
+
+    return propsChanged || stateChanged;
   }
 
   public render() {
-    let urls: List<string> = List<string>();
-    if (this.props.cmrGranules) {
-      urls = this.props.cmrGranules
-               .flatMap((granule: CmrGranule = new CmrGranule()) =>
-                 granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
-    }
+    return (
+      <div>
+        {this.renderForm()}
+        {this.renderLoadingIcon()}
+      </div>
+    );
+  }
 
+  private renderForm = () => {
     const loggedOutSpan = this.props.loggedOut ? (
       <span>
         <br/>
@@ -42,7 +57,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
 
     return (
       <form name={this.formName} action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
-        <input type="hidden" name="urls" value={urls.toJS()}/>
+        <input type="hidden" name="urls" value={this.granulesArray()}/>
         <div className="tooltip">
           <span className="hover-text">
             Download a command line script that will retrieve all the files.
@@ -61,8 +76,34 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
     );
   }
 
+  private renderLoadingIcon = () => {
+    return (
+      <ReactModal className="modal-content"
+        isOpen={this.state.loading}
+        parentSelector={() => document.getElementById("everest-ui") || document.body}>
+        <LoadingIcon size="5x" />
+      </ReactModal>
+    );
+  }
+
+  private granulesArray = (): any[] => {
+    if (!this.props.cmrGranules) {
+      return [];
+    }
+
+    const urls: List<string> = this.props.cmrGranules
+      .flatMap((granule: CmrGranule = new CmrGranule()) =>
+               granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
+
+    return urls.toJS();
+  }
+
   private handleClick = () => {
-    this.props.ensureGranuleScrollDepleted(this.submitForm);
+    this.setState({loading: true}, () => {
+      this.props.ensureGranuleScrollDepleted(() => {
+        this.setState({loading: false}, this.submitForm);
+      });
+    });
   }
 
   private submitForm = () => {
