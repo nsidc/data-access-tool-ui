@@ -1,10 +1,14 @@
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 
 import { hasChanged } from "../utils/hasChanged";
 
 interface ICmrDownBannerProps {
   cmrStatusChecked: boolean;
+  cmrStatusMessage: string;
   cmrStatusOk: boolean;
+  onChange: any;
 }
 
 export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
@@ -19,9 +23,12 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
 
     return (
       <div id="cmr-status">
-        We're sorry, but due to the unavailability of an external resource, we
-        cannot process your request at this time. Please try again in a few
-        minutes.
+        <div id="banner-close" onClick={(e: any) => this.props.onChange()}>
+          <FontAwesomeIcon
+            icon={faTimesCircle}
+            size="2x" />
+        </div>
+        {this.props.cmrStatusMessage}
       </div>
     );
   }

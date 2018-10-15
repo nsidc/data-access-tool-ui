@@ -36,6 +36,7 @@ export interface IEverestState {
   cmrLoadingGranuleInit: boolean;
   cmrLoadingGranuleScroll: boolean;
   cmrStatusChecked: boolean;
+  cmrStatusMessage: string;
   cmrStatusOk: boolean;
   loadedParamsFromLocalStorage: boolean;
   orderParameters: OrderParameters;
@@ -64,6 +65,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrLoadingGranuleInit: false,
       cmrLoadingGranuleScroll: false,
       cmrStatusChecked: false,
+      cmrStatusMessage: "Unknown CMR error",
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
       orderParameters,
@@ -79,6 +81,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     props.environment.exposeFunction("CmrReset", () => {
       this.setState({cmrStatusChecked: false, cmrStatusOk: false}, this.cmrStatusRequestUntilOK);
     });
+  }
+
+  public CmrReset() {
+    this.setState({ cmrStatusChecked: false, cmrStatusOk: false }, this.cmrStatusRequestUntilOK);
   }
 
   public componentDidMount() {
@@ -102,6 +108,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       "cmrLoadingGranuleInit",
       "cmrLoadingGranuleScroll",
       "cmrStatusChecked",
+      "cmrStatusMessage",
       "cmrStatusOk",
       "orderParameters",
       "orderSubmissionParameters",
@@ -125,7 +132,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
           cmrStatusOk={this.state.cmrStatusOk}
-        />
+          cmrStatusMessage={this.state.cmrStatusMessage}
+          onChange={() => { this.CmrReset(); }}
+      />
         <div id="collection-list">
           {collectionDropdown}
         </div>
@@ -287,7 +296,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private onCmrRequestFailure = (response: any) => {
-    this.setState({cmrStatusChecked: true, cmrStatusOk: false});
+    response.json().then((json: any) => {
+      const msg = "Error: " + json.errors[0];
+      this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
+    });
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
