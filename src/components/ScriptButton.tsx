@@ -57,7 +57,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
 
     return (
       <form name={this.formName} action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
-        <input type="hidden" name="urls" value={this.granulesArray()}/>
+        <input type="hidden" name="urls" value={this.urlsArray()}/>
         <div className="tooltip">
           <span className="hover-text">
             Download a command line script that will retrieve all the files.
@@ -86,7 +86,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
     );
   }
 
-  private granulesArray = (): any[] => {
+  private urlsArray = (): string[] => {
     if (!this.props.cmrGranules) {
       return [];
     }
