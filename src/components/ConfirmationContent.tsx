@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { CMR_MAX_GRANULES } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
+import { GranuleLimitWarning } from "./GranuleLimitWarning";
 
 interface IOrderConfirmationContentProps {
   cmrGranuleCount?: number;
@@ -11,14 +12,9 @@ interface IOrderConfirmationContentProps {
 }
 
 export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) => {
-  let warningMessage = null;
+  let showWarning: boolean = false;
   if (props.cmrGranuleCount && (props.cmrGranuleCount > CMR_MAX_GRANULES)) {
-    warningMessage = (
-      <div className="order-limit-message">
-        IMPORTANT: During the beta test period, orders are limited to 10,000
-        granules regardless of the number you request.
-      </div>
-    );
+    showWarning = true;
   }
 
   return (
@@ -36,7 +32,7 @@ export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) 
               onClick={props.onCancel}>
         Cancel
       </button>
-      {warningMessage}
+      <GranuleLimitWarning show={showWarning}/>
     </div>
   );
 };

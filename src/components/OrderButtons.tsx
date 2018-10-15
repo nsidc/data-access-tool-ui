@@ -7,6 +7,7 @@ import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { ConfirmationFlow } from "./ConfirmationFlow";
+import { GranuleLimitWarning } from "./GranuleLimitWarning";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 
@@ -47,10 +48,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     return (
       <div>
-      <div className="order-limit-message">
-      IMPORTANT: During the beta test period, orders are limited to 10,000
-      granules regardless of the number you request.
-      </div>
+      <GranuleLimitWarning show={true} />
       <div id="order-buttons">
         <ScriptButton
           disabled={orderButtonsDisabled}
