@@ -10,6 +10,7 @@ interface IEverestProps {
 }
 
 interface IEverestProfileState {
+  orderCount: number;
   selectedOrder?: string;
 }
 
@@ -18,13 +19,14 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
     super(props);
 
     this.state = {
+      orderCount: 0,
       selectedOrder: undefined,
     };
   }
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestProfileState) {
     const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
-    const stateChanged = hasChanged(this.state, nextState, ["selectedOrder"]);
+    const stateChanged = hasChanged(this.state, nextState, ["orderCount", "selectedOrder"]);
 
     return propsChanged || stateChanged;
   }
@@ -35,9 +37,11 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
         <OrderList
           environment={this.props.environment}
           onSelectionChange={this.handleOrderSelection}
-          selectedOrder={this.state.selectedOrder} />
+          selectedOrder={this.state.selectedOrder}
+          updateOrderCount={this.updateOrderCount} />
         <OrderDetails
           environment={this.props.environment}
+          orderCount={this.state.orderCount}
           orderId={this.state.selectedOrder} />
       </div>
     );
@@ -46,6 +50,12 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
   private handleOrderSelection = (orderId: string) => {
     this.setState({
       selectedOrder: orderId,
+    });
+  }
+
+  private updateOrderCount = (count: number) => {
+    this.setState({
+      orderCount: count,
     });
   }
 }

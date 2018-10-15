@@ -41,7 +41,7 @@ describe("The user profile", () => {
   describe("OrderDetails", () => {
     it("should update when new order selected", () => {
       const environment = setup().environment;
-      const oldProps = {environment, orderId: undefined};
+      const oldProps = {environment, orderId: undefined, orderCount: 0};
       const wrapper = mount(
         <OrderDetails {...oldProps} />
       );
