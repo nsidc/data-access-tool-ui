@@ -46,6 +46,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       <div id="order-buttons">
         <ScriptButton
           disabled={orderButtonsDisabled}
+          ensureGranuleScrollDepleted={this.props.ensureGranuleScrollDepleted}
           environment={this.props.environment}
           loggedOut={loggedOut}
           cmrGranules={this.props.cmrGranules} />

@@ -9,11 +9,14 @@ import { hasChanged } from "../utils/hasChanged";
 interface IScriptButtonProps {
   cmrGranules?: List<CmrGranule>;
   disabled: boolean;
+  ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   loggedOut: boolean;
 }
 
 export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
+  private formName: string = "ScriptButtonForm";
+
   public constructor(props: IScriptButtonProps) {
     super(props);
   }
@@ -38,7 +41,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
     ) : null;
 
     return (
-      <form action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
+      <form name={this.formName} action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={urls.toJS()}/>
         <div className="tooltip">
           <span className="hover-text">
@@ -47,13 +50,23 @@ export class ScriptButton extends React.Component<IScriptButtonProps, {}> {
             <img className="img-no-border-left callout" src={callout} />
           </span>
           <button
-            type="submit"
+            type="button"
             className="script-button eui-btn--blue"
-            disabled={this.props.disabled}>
+            disabled={this.props.disabled}
+            onClick={this.handleClick}>
             Download Script
           </button>
         </div>
       </form>
     );
+  }
+
+  private handleClick = () => {
+    this.props.ensureGranuleScrollDepleted(this.submitForm);
+  }
+
+  private submitForm = () => {
+    // @ts-ignore 7017 - allow reference to the global `document`
+    document[this.formName].submit();
   }
 }
