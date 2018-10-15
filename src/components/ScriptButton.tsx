@@ -40,10 +40,10 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
 
   public render() {
     return (
-      <div>
+      <span>
         {this.renderForm()}
         {this.renderLoadingIcon()}
-      </div>
+      </span>
     );
   }
 
