@@ -43,6 +43,11 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     const orderButtonsDisabled = !this.props.orderSubmissionParameters || loggedOut;
 
     return (
+      <div>
+      <div id="order-limit-message">
+      IMPORTANT: During the beta test period, orders are limited to 10,000
+      granules regardless of the number you request.
+      </div>
       <div id="order-buttons">
         <ScriptButton
           disabled={orderButtonsDisabled}
@@ -71,6 +76,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderSubmissionParameters={this.props.orderSubmissionParameters}
           orderType={this.state.orderType}
           show={this.state.showConfirmationFlow} />
+      </div>
       </div>
     );
   }
