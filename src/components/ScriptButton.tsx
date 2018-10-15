@@ -107,7 +107,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   }
 
   private submitForm = () => {
-    // @ts-ignore 7017 - allow reference to the global `document`
+    // @ts-ignore 7017 - allow using [] on the global `document`
     document[this.formName].submit();
   }
 }
