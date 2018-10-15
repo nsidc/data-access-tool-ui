@@ -98,6 +98,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
     const stateChanged = hasChanged(this.state, nextState, [
       "cmrGranules",
+      "cmrGranuleCount",
       "cmrLoadingGranuleInit",
       "cmrLoadingGranuleScroll",
       "cmrStatusChecked",
@@ -145,6 +146,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrLoadingGranuleScroll={this.state.cmrLoadingGranuleScroll}
               orderParameters={this.state.orderParameters} />
             <OrderButtons
+              cmrGranuleCount={this.state.cmrGranuleCount}
               ensureGranuleScrollDepleted={this.advanceCmrGranuleScrollToEnd}
               environment={this.props.environment}
               orderSubmissionParameters={this.state.orderSubmissionParameters}

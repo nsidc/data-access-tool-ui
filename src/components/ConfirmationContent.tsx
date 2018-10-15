@@ -1,14 +1,22 @@
 import * as React from "react";
 
+import { CMR_MAX_GRANULES } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
+import { GranuleLimitWarning } from "./GranuleLimitWarning";
 
 interface IOrderConfirmationContentProps {
+  cmrGranuleCount?: number;
   environment: IEnvironment;
   onCancel: () => void;
   onOK: () => void;
 }
 
 export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) => {
+  let showWarning: boolean = false;
+  if (props.cmrGranuleCount && (props.cmrGranuleCount > CMR_MAX_GRANULES)) {
+    showWarning = true;
+  }
+
   return (
     <div>
       <h3>Confirm Your Download Order</h3>
@@ -24,6 +32,7 @@ export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) 
               onClick={props.onCancel}>
         Cancel
       </button>
+      <GranuleLimitWarning show={showWarning}/>
     </div>
   );
 };
