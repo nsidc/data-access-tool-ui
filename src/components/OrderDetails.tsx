@@ -58,7 +58,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else if (this.props.orderCount > 0) {
       return (
-        <div id="order-details">{"Select an order from the list at left"}</div>
+        <div id="order-details">{"Select an order from the list at left."}</div>
       );
     } else {
       return (
