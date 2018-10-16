@@ -65,7 +65,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrLoadingGranuleInit: false,
       cmrLoadingGranuleScroll: false,
       cmrStatusChecked: false,
-      cmrStatusMessage: "Unknown CMR error",
+      cmrStatusMessage: "Error: Unknown request",
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
       orderParameters,
@@ -88,7 +88,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   public componentDidMount() {
-    this.cmrStatusRequestUntilOK();
+    if (!this.state.cmrStatusChecked) {
+      this.cmrStatusRequestUntilOK();
+    }
 
     if (this.state.loadedParamsFromLocalStorage) {
       this.startCmrGranuleScroll();
@@ -134,7 +136,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           cmrStatusOk={this.state.cmrStatusOk}
           cmrStatusMessage={this.state.cmrStatusMessage}
           onChange={() => { this.CmrReset(); }}
-      />
+        />
         <div id="collection-list">
           {collectionDropdown}
         </div>
@@ -254,6 +256,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.temporalFilterUpperBound,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
+     .catch((err) => { err = null; })
      .finally(() => this.setState({cmrLoadingGranuleInit: false}));
   }
 
@@ -297,9 +300,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private onCmrRequestFailure = (response: any) => {
     response.json().then((json: any) => {
-      const msg = "Error: " + json.errors[0];
+      let msg = "Error: " + json.errors[0];
+      if (msg.length > 300) {
+        msg = msg.substr(0, 300) + "...";
+      }
       this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
     });
+    return Promise.reject(response);
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {

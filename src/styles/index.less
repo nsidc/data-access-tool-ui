@@ -49,6 +49,10 @@
     }
   }
 
+  #everest-container {
+    position: relative;
+  }
+
   #columns {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -356,21 +360,28 @@
     background: red;
     color: white;
     position: absolute;
-    width: calc(100% - 4em);
+    width: calc(100% - 2em);
     padding: 1em;
     z-index: 1001;
   }
 
-  #banner-close {
+  #cmr-status-close {
     cursor: pointer;
     float: right;
+  }
+
+  #cmr-status-msg {
+    position: absolute;
+    width: calc(100% - 4em);
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   #cmr-status-blocked {
     background: black;
     position: absolute;
-    width: calc(100% - 2em);
-    height: calc(100%);
+    width: 100%;
+    height: 100%;
     opacity: 0.2;
     z-index: 1000;
   }
