@@ -22,14 +22,22 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
     }
 
     return (
-      <div id="cmr-status">
-        <div id="banner-close" onClick={(e: any) => this.props.onChange()}>
-          <FontAwesomeIcon
-            icon={faTimesCircle}
-            size="2x" />
+      <div>
+        <div id="cmr-status">
+          <div id="banner-close" onClick={(e: any) => this.props.onChange()}>
+            <FontAwesomeIcon
+              icon={faTimesCircle}
+              size="2x" />
+          </div>
+          {this.props.cmrStatusMessage}
         </div>
-        {this.props.cmrStatusMessage}
+        <div id="cmr-status-blocked" onClick={this.handleClick}>
+        </div>
       </div>
     );
+  }
+
+  private handleClick = (e: any) => {
+    e.preventDefault();
   }
 }
