@@ -4,6 +4,10 @@
   * change granule count color from blue to dark grey
   * adjust positioning of order buttons
   * tweak header of granule table
+* Load single orders from the Hermes endpoint for single orders, instead of
+  selecting from a collection by order ID.
+* Load orders only once per click, instead of twice per click, on the order
+  history / profile page.
 
 # v0.1.0 (2018-10-16)
 
