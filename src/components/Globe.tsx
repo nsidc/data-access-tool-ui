@@ -6,6 +6,7 @@ import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { CesiumUtils } from "../utils/CesiumUtils";
 import { hasChanged } from "../utils/hasChanged";
 import { HelpText } from "./HelpText";
+import { LonLatInput } from "./LonLatInput";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
@@ -62,11 +63,12 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       <div id="spatial-selection">
         <HelpText />
         <div id={CesiumUtils.viewerId}>
-          <div>
-            <input id="lonLat" type="text" disabled={!this.state.lonLatEnable}
-              value={this.state.lonLatLabel} onChange={this.handleLonLat} onKeyDown={this.lonLatOnKeydown}>
-              </input>
-          </div>
+          <LonLatInput
+            lonLatEnable={this.state.lonLatEnable}
+            lonLatLabel={this.state.lonLatLabel}
+            polygonMode={this.cesiumAdapter.polygonMode}
+            updateLonLat={this.updateLonLat}
+          />
           <SpatialSelectionToolbar
             onClickHome={() => {
               this.cesiumAdapter.flyHome();
@@ -98,29 +100,4 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     this.setState({ lonLatEnable });
   }
 
-  private handleLonLat = (e: any) => {
-    this.setState({ lonLatLabel: e.target.value });
-  }
-
-  private lonLatOnKeydown = (e: any) => {
-    switch (e.key) {
-      case "Enter":
-        this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
-        break;
-      case "Escape":
-        this.cesiumAdapter.polygonMode.resetLonLat();
-        break;
-      case "Tab":
-        this.cesiumAdapter.polygonMode.changeLonLat(e.target.value);
-        if (e.shiftKey) {
-          this.cesiumAdapter.polygonMode.activateRelativePoint(-1);
-        } else {
-          this.cesiumAdapter.polygonMode.activateRelativePoint(+1);
-        }
-        e.preventDefault();
-        break;
-      default:
-        break;
-    }
-  }
 }
