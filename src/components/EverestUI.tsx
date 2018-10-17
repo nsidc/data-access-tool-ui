@@ -301,12 +301,20 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.setState(updateStateAddGranules(json.feed.entry));
   }
 
+  private createErrorMessage = (errorMsg: string) => {
+    let msg = errorMsg;
+    if (msg.length > 300) {
+      msg = msg.substr(0, 300) + "...";
+    }
+    if (errorMsg.includes("polygon boundary intersected")) {
+      msg = "Polygon lines cannot intersect. Please redraw your polygon.";
+    }
+    return msg;
+  }
+
   private onCmrRequestFailure = (response: any) => {
     response.json().then((json: any) => {
-      let msg = "Error: " + json.errors[0];
-      if (msg.length > 300) {
-        msg = msg.substr(0, 300) + "...";
-      }
+      const msg = "Error: " + this.createErrorMessage(json.errors[0]);
       this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
     });
     return Promise.reject(response);
