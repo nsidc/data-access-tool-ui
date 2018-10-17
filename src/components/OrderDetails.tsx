@@ -106,8 +106,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   private requestOrder = () => {
     this.props.environment.hermesAPI.getOrder(this.props.orderId!)
-      .then((order: object) => this.setState({order}))
-      .finally(() => this.setState({loading: false}));
+      .then((order: object) => this.setState({order, loading: false}))
+      .catch(() => this.setState({loading: false}));
   }
 
   private handleNotification = (event: any) => {
