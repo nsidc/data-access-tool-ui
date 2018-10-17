@@ -85,6 +85,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   public CmrReset() {
     this.setState({ cmrStatusChecked: false, cmrStatusOk: false }, this.cmrStatusRequestUntilOK);
+    this.handleOrderParameterChange({
+      spatialSelection: null,
+    });
   }
 
   public componentDidMount() {
