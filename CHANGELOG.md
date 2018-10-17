@@ -1,4 +1,11 @@
-# v0.1.0 (Unreleased)
+# v0.2.0 (Unreleased)
+
+* Minor CSS changes based on internal user feedback
+  * change granule count color from blue to dark grey
+  * adjust positioning of order buttons
+  * tweak header of granule table
+
+# v0.1.0 (2018-10-16)
 
 * Add changelog (see [Pull Requests
   #1-#40](https://bitbucket.org/nsidc/everest-ui/pull-requests/?state=MERGED)
