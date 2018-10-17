@@ -65,7 +65,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrLoadingGranuleInit: false,
       cmrLoadingGranuleScroll: false,
       cmrStatusChecked: false,
-      cmrStatusMessage: "Error: Unknown request",
+      cmrStatusMessage: "Internal Error",
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
       orderParameters,
