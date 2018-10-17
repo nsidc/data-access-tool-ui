@@ -74,7 +74,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public componentDidUpdate() {
     const orderSynced: boolean = this.state.order && (this.props.orderId === this.state.order.order_id);
-    if (this.props.orderId && !orderSynced) {
+    if (this.props.orderId && !orderSynced && !this.state.loading) {
       this.loadOrder();
     }
   }
