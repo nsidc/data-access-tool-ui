@@ -4,6 +4,7 @@
   * change granule count color from blue to dark grey
   * adjust positioning of order buttons
   * tweak header of granule table
+* Hide lonlat edit box if it's empty, show when displaying lonlat
 
 # v0.1.0 (2018-10-16)
 
