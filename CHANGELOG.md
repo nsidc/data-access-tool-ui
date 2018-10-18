@@ -11,6 +11,8 @@
   selecting from a collection by order ID.
 * Load orders only once per click, instead of twice per click, on the order
   history / profile page.
+* On the order history page, before the user's orders are actually loaded, show
+  a spinner instead of the "You have no orders" message.
 
 # v0.1.0 (2018-10-16)
 
