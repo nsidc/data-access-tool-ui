@@ -4,6 +4,9 @@
   * change granule count color from blue to dark grey
   * adjust positioning of order buttons
   * tweak header of granule table
+* Hide lonlat edit box if it's empty, show when displaying lonlat
+* After reload from `localStorage`, fly to last-known camera position
+  when polygon was created or edited.
 * Load single orders from the Hermes endpoint for single orders, instead of
   selecting from a collection by order ID.
 * Load orders only once per click, instead of twice per click, on the order

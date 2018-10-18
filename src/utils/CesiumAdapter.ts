@@ -77,7 +77,7 @@ export class CesiumAdapter {
 
   public flyHome() {
     // @types/cesium incorrectly has the parameter to Camera.flyHome as required
-    // instead of optinal
+    // instead of optional
     (this.viewer.camera as any).flyHome();
   }
 
@@ -106,6 +106,24 @@ export class CesiumAdapter {
         }),
       }));
     }
+  }
+
+  public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
+    if (spatialSelection === null || spatialSelection.properties === null) { return; }
+
+    const cameraPosition = spatialSelection.properties.camera;
+    if (cameraPosition === null) { return; }
+
+    const camera = this.viewer.camera;
+    camera.setView({
+      destination: cameraPosition.position,
+      endTransform: cameraPosition.transform,
+      orientation: {
+        heading: cameraPosition.heading,
+        pitch: cameraPosition.pitch,
+        roll: cameraPosition.roll,
+      },
+    });
   }
 
   public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
@@ -203,6 +221,15 @@ export class CesiumAdapter {
         lonLats = lonLats.reverse().toList();
       }
 
+      const camera = this.viewer.camera;
+      const cameraPosition = {
+        heading: camera.heading,
+        pitch: camera.pitch,
+        position: camera.positionWC.clone(),
+        roll: camera.roll,
+        transform: camera.transform.clone(),
+      };
+
       const lonLatsArray = lonLats.map((lonLat) => {
         return [lonLat!.lon, lonLat!.lat];
       }).toJS();
@@ -211,7 +238,8 @@ export class CesiumAdapter {
       if (lonLatsArray.length >= MIN_VERTICES) {
         // the last point in a polygon needs to be the first again to close it
         lonLatsArray.push(lonLatsArray[0]);
-        geo = GeoJSON.parse({polygon: [lonLatsArray]}, {Polygon: "polygon"});
+        geo = GeoJSON.parse({ polygon: [lonLatsArray] }, { Polygon: "polygon",
+          extraGlobal: { camera: cameraPosition}});
       }
       this.updateSpatialSelection(geo);
     };
