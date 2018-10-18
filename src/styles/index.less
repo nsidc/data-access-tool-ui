@@ -61,7 +61,7 @@
 
     #right-side {
       grid-column: 2;
-      overflow-x: auto;
+      overflow-x: hidden;
       padding: 0 0 0 1em;
     }
   }
@@ -81,7 +81,7 @@
   h3 {
     font-size: 100%;
     margin: 0.5em 0;
-    color: #027ac6;
+    color: #474747;
   }
 
   #temporal-selection {
@@ -194,7 +194,7 @@
   }
 
   .granule-count-container {
-    color: #027ac6;
+    color: #474747;
     display: inline;
     font-weight: bold;
   }
@@ -231,6 +231,7 @@
       position: -webkit-sticky;
       top: 0;
       z-index: 9;
+      border-top: 2px;
       background: #7ab5da; /* EUI Sky Blue */
     }
 
@@ -402,6 +403,7 @@
     padding-right: 2px;
     text-align: right;
     padding-top: 6px;
+    margin-right: -12px;
 
     .callout {
       bottom: -22px;
