@@ -5,6 +5,8 @@
   * adjust positioning of order buttons
   * tweak header of granule table
 * Hide lonlat edit box if it's empty, show when displaying lonlat
+* After reload from `localStorage`, fly to last-known camera position
+  when polygon was created or edited.
 
 # v0.1.0 (2018-10-16)
 

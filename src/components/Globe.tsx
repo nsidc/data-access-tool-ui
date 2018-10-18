@@ -41,6 +41,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
     if (this.props.spatialSelection !== null) {
       this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
+      this.cesiumAdapter.flyToSpatialSelection(this.props.spatialSelection);
     }
   }
 
