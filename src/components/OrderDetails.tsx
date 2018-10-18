@@ -7,6 +7,7 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
+  initialLoadComplete?: boolean;
   orderCount: number;
   orderId?: string;
 }
@@ -35,7 +36,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   public render() {
-    if (this.state.loading) {
+    if (!this.props.initialLoadComplete || this.state.loading) {
       return (
         <LoadingIcon size="5x" />
       );

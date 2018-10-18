@@ -10,6 +10,7 @@ interface IEverestProps {
 }
 
 interface IEverestProfileState {
+  initialLoadComplete: boolean;
   orderCount: number;
   selectedOrder?: string;
 }
@@ -19,6 +20,7 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
     super(props);
 
     this.state = {
+      initialLoadComplete: false,
       orderCount: 0,
       selectedOrder: undefined,
     };
@@ -36,11 +38,13 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
       <div id="profile-container">
         <OrderList
           environment={this.props.environment}
+          initialLoadComplete={this.state.initialLoadComplete}
           onSelectionChange={this.handleOrderSelection}
           selectedOrder={this.state.selectedOrder}
           updateOrderCount={this.updateOrderCount} />
         <OrderDetails
           environment={this.props.environment}
+          initialLoadComplete={this.state.initialLoadComplete}
           orderCount={this.state.orderCount}
           orderId={this.state.selectedOrder} />
       </div>
@@ -55,6 +59,7 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
 
   private updateOrderCount = (count: number) => {
     this.setState({
+      initialLoadComplete: true,
       orderCount: count,
     });
   }
