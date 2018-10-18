@@ -110,8 +110,10 @@ export class CesiumAdapter {
 
   public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
     if (spatialSelection === null || spatialSelection.properties === null) { return; }
+
     const cameraPosition = spatialSelection.properties.camera;
     if (cameraPosition === null) { return; }
+
     const camera = this.viewer.camera;
     camera.setView({
       destination: cameraPosition.position,
