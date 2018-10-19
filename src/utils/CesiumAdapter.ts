@@ -82,8 +82,6 @@ export class CesiumAdapter {
   }
 
   public renderCollectionCoverage(bbox: number[]): void {
-    this.cameraFlyToCollectionCoverage(bbox);
-
     const ENTITY_ID = "collectionCoverage";
 
     // remove any already-existing collection coverage (this *should* only exist
@@ -132,7 +130,7 @@ export class CesiumAdapter {
     this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
   }
 
-  private cameraFlyToCollectionCoverage(collectionBbox: number[]): void {
+  public flyToCollectionCoverage(collectionBbox: number[]): void {
     const boulderCO = [-135, 10, -75, 70];
     const flyToRectangle = this.collectionCoverageIsGlobal(collectionBbox) ? boulderCO : collectionBbox;
 
