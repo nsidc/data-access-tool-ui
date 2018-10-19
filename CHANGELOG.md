@@ -10,7 +10,8 @@
 * When creating a polygon, don't lose points--fix bug where moving the mouse
   slowly after clicking would sometimes lose the point that should have just
   been created by clicking (easiest to see in Safari)
-
+* After a CMR error, display an error banner, gray out the app; when the
+  user dismisses the banner restore CMR functionality
 
 # v0.1.0 (2018-10-16)
 
