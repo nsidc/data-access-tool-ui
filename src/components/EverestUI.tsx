@@ -24,11 +24,6 @@ const __DEV__ = false;  // set to true to test CMR failure case in development
 
 const LOCAL_STORAGE_KEY = "nsidcDataOrderParams";
 
-const GENERIC_ERROR = "We're sorry, but an error has occurred that is blocking this process. " +
-  "Please contact User Services at nsidc@nsidc.org " +
-  "for further information and assistance. " +
-  "User Services operates Monday to Friday, from 9:00 a.m. to 5 p.m. (MT).";
-
 interface IEverestProps {
   environment: IEnvironment;
 }
@@ -70,7 +65,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrLoadingGranuleInit: false,
       cmrLoadingGranuleScroll: false,
       cmrStatusChecked: false,
-      cmrStatusMessage: "Internal Error",
+      cmrStatusMessage: "",
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
       orderParameters,
@@ -326,8 +321,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       });
       return Promise.reject(response);
     }
-    msg = GENERIC_ERROR;
-    this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
+    // Setting status to an empty string will generate the default error message.
+    this.setState({ cmrStatusChecked: true, cmrStatusMessage: "", cmrStatusOk: false });
     return Promise.reject(response);
   }
 

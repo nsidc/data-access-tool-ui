@@ -24,7 +24,7 @@ const initialState = {
   cmrLoadingGranuleInit: false,
   cmrLoadingGranuleScroll: false,
   cmrStatusChecked: false,
-  cmrStatusMessage: "Internal Error",
+  cmrStatusMessage: "",
   cmrStatusOk: false,
   loadedParamsFromLocalStorage: false,
   orderParameters: new OrderParameters(),
