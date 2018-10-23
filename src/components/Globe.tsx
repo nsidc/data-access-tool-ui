@@ -35,13 +35,23 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   public componentDidMount() {
     this.cesiumAdapter.createViewer();
 
+    let flyToCollectionCoverage = false;
+    let flyToSpatialSelection = false;
+
     if (this.props.collectionSpatialCoverage !== null) {
       this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+      flyToCollectionCoverage = true;
     }
 
     if (this.props.spatialSelection !== null) {
       this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
+      flyToSpatialSelection = true;
+    }
+
+    if (flyToSpatialSelection) {
       this.cesiumAdapter.flyToSpatialSelection(this.props.spatialSelection);
+    } else if (flyToCollectionCoverage) {
+      this.cesiumAdapter.flyToCollectionCoverage(this.props.collectionSpatialCoverage!.bbox);
     }
   }
 
@@ -55,6 +65,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     if (hasChanged(prevProps, this.props, ["collectionSpatialCoverage"])) {
       if (this.props.collectionSpatialCoverage !== null) {
         this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
+        this.cesiumAdapter.flyToCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
       }
     }
   }

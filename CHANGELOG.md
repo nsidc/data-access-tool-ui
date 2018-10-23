@@ -7,6 +7,9 @@
 * Hide lonlat edit box if it's empty, show when displaying lonlat
 * After reload from `localStorage`, fly to last-known camera position
   when polygon was created or edited.
+* When creating a polygon, don't lose points--fix bug where moving the mouse
+  slowly after clicking would sometimes lose the point that should have just
+  been created by clicking (easiest to see in Safari)
 * Load single orders from the Hermes endpoint for single orders, instead of
   selecting from a collection by order ID.
 * Load orders only once per click, instead of twice per click, on the order
