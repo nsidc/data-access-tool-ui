@@ -6,6 +6,7 @@ import { OrderListItem } from "./OrderListItem";
 
 interface IOrderListProps {
   environment: IEnvironment;
+  initialLoadComplete: boolean;
   onSelectionChange: any;
   selectedOrder?: string;
   updateOrderCount: (count: number) => void;
@@ -48,7 +49,7 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
       });
     }
 
-    if (orderList.length === 0) { return null; }
+    if (!this.props.initialLoadComplete || (orderList.length === 0)) { return null; }
 
     return (
       <div id="order-list">
