@@ -28,7 +28,7 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestProfileState) {
     const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
-    const stateChanged = hasChanged(this.state, nextState, ["orderCount", "selectedOrder"]);
+    const stateChanged = hasChanged(this.state, nextState, ["initialLoadComplete", "orderCount", "selectedOrder"]);
 
     return propsChanged || stateChanged;
   }
