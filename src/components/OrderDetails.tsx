@@ -31,7 +31,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
     const stateChanged = hasChanged(this.state, nextState, ["order", "loading"]);
-    const propsChanged = hasChanged(this.props, nextProps, ["orderCount", "orderId"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["initialLoadComplete", "orderCount", "orderId"]);
     return stateChanged || propsChanged;
   }
 
