@@ -18,8 +18,11 @@ interface ICollectionDropdownState {
 }
 
 const WHITELIST = List([
+  "MOD10A2",
   "MOD10_L2",
+  "MYD10A2",
   "MYD10_L2",
+  "NISE",
   "NSIDC-0642",
   "NSIDC-0724",
   "SPL2SMP",
