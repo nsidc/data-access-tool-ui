@@ -25,10 +25,21 @@ export class Point {
 
   public addBillboard = (billboardCollection: Cesium.BillboardCollection): Cesium.Billboard => {
     this.billboard = billboardCollection.add(this.billboardProps);
+    this.deactivate();
     return this.billboard;
   }
 
   public removeBillboard = (billboardCollection: Cesium.BillboardCollection): boolean => {
     return billboardCollection.remove(this.billboard);
+  }
+
+  public activate = () => {
+    this.billboard.color = Cesium.Color.CHARTREUSE;
+    this.billboard.scale = 1.75;
+  }
+
+  public deactivate = () => {
+    this.billboard.color = Cesium.Color.CRIMSON;
+    this.billboard.scale = 1.25;
   }
 }

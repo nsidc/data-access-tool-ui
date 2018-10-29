@@ -10,8 +10,19 @@
 * When creating a polygon, don't lose points--fix bug where moving the mouse
   slowly after clicking would sometimes lose the point that should have just
   been created by clicking (easiest to see in Safari)
+* Load single orders from the Hermes endpoint for single orders, instead of
+  selecting from a collection by order ID.
+* Load orders only once per click, instead of twice per click, on the order
+  history / profile page.
+* On the order history page, before the user's orders are actually loaded, show
+  a spinner instead of the "You have no orders" message.
+* Whitelist datasets for standalone mode: MOD10A2, MYD10A2, and NISE
+* Fix issue where when reloading a polygon from `localStorage`, the points
+  render as white instead of the desired crimson.
+* Allow setting dates with MM/DD/YYYY format or M/D/YYYY
 * After a CMR error, display an error banner, gray out the app; when the
   user dismisses the banner restore CMR functionality
+
 
 # v0.1.0 (2018-10-16)
 

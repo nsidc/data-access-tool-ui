@@ -7,6 +7,7 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
+  initialLoadComplete?: boolean;
   orderCount: number;
   orderId?: string;
 }
@@ -30,12 +31,12 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
     const stateChanged = hasChanged(this.state, nextState, ["order", "loading"]);
-    const propsChanged = hasChanged(this.props, nextProps, ["orderCount", "orderId"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["initialLoadComplete", "orderCount", "orderId"]);
     return stateChanged || propsChanged;
   }
 
   public render() {
-    if (this.state.loading) {
+    if (!this.props.initialLoadComplete || this.state.loading) {
       return (
         <LoadingIcon size="5x" />
       );
@@ -74,7 +75,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public componentDidUpdate() {
     const orderSynced: boolean = this.state.order && (this.props.orderId === this.state.order.order_id);
-    if (this.props.orderId && !orderSynced) {
+    if (this.props.orderId && !orderSynced && !this.state.loading) {
       this.loadOrder();
     }
   }
@@ -106,8 +107,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   private requestOrder = () => {
     this.props.environment.hermesAPI.getOrder(this.props.orderId!)
-      .then((order: object) => this.setState({order}))
-      .finally(() => this.setState({loading: false}));
+      .then((order: object) => this.setState({order, loading: false}))
+      .catch(() => this.setState({loading: false}));
   }
 
   private handleNotification = (event: any) => {

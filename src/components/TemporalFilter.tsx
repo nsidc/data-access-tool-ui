@@ -31,12 +31,14 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           id="from"
           maxDate={this.props.toDate}
           selected={this.props.fromDate.utc()}
+          dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
           onChange={(d: Moment) => this.props.onFromDateChange(d.utc())} />
         <label>To</label>
         <DatePicker
           id="to"
           minDate={this.props.fromDate}
           selected={this.props.toDate.utc()}
+          dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
           onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
       </div>
     );
