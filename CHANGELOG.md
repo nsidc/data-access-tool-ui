@@ -17,6 +17,8 @@
 * On the order history page, before the user's orders are actually loaded, show
   a spinner instead of the "You have no orders" message.
 * Whitelist datasets for standalone mode: MOD10A2, MYD10A2, and NISE
+* Fix issue where when reloading a polygon from `localStorage`, the points
+  render as white instead of the desired crimson.
 * Allow setting dates with MM/DD/YYYY format or M/D/YYYY
 
 
