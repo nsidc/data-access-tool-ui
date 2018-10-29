@@ -17,6 +17,7 @@
 * On the order history page, before the user's orders are actually loaded, show
   a spinner instead of the "You have no orders" message.
 * Whitelist datasets for standalone mode: MOD10A2, MYD10A2, and NISE
+* Allow setting dates with MM/DD/YYYY format or M/D/YYYY
 
 
 # v0.1.0 (2018-10-16)
