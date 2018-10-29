@@ -297,14 +297,10 @@ export class PolygonMode {
 
   private updateBillboardsAppearanceForActivePoint = () => {
     this.points.forEach((point, index) => {
-      const billboard = point!.getBillboard();
-
       if (index === this.activePointIndex) {
-        billboard.color = Cesium.Color.CHARTREUSE;
-        billboard.scale = 1.75;
+        point!.activate();
       } else {
-        billboard.color = Cesium.Color.CRIMSON;
-        billboard.scale = 1.25;
+        point!.deactivate();
       }
     }, this);
   }
