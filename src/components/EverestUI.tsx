@@ -36,6 +36,7 @@ export interface IEverestState {
   cmrLoadingGranuleInit: boolean;
   cmrLoadingGranuleScroll: boolean;
   cmrStatusChecked: boolean;
+  cmrStatusMessage: string;
   cmrStatusOk: boolean;
   loadedParamsFromLocalStorage: boolean;
   orderParameters: OrderParameters;
@@ -44,6 +45,9 @@ export interface IEverestState {
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
+
+  private resetPolygon: boolean = true;
+
   public constructor(props: any) {
     super(props);
 
@@ -64,6 +68,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       cmrLoadingGranuleInit: false,
       cmrLoadingGranuleScroll: false,
       cmrStatusChecked: false,
+      cmrStatusMessage: "",
       cmrStatusOk: false,
       loadedParamsFromLocalStorage,
       orderParameters,
@@ -81,8 +86,19 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     });
   }
 
+  public CmrReset() {
+    this.setState({ cmrStatusChecked: false, cmrStatusOk: false }, this.cmrStatusRequestUntilOK);
+    if (this.resetPolygon) {
+      this.handleOrderParameterChange({
+        spatialSelection: null,
+      });
+    }
+  }
+
   public componentDidMount() {
-    this.cmrStatusRequestUntilOK();
+    if (!this.state.cmrStatusChecked) {
+      this.cmrStatusRequestUntilOK();
+    }
 
     if (this.state.loadedParamsFromLocalStorage) {
       this.startCmrGranuleScroll();
@@ -102,6 +118,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       "cmrLoadingGranuleInit",
       "cmrLoadingGranuleScroll",
       "cmrStatusChecked",
+      "cmrStatusMessage",
       "cmrStatusOk",
       "orderParameters",
       "orderSubmissionParameters",
@@ -125,6 +142,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
           cmrStatusOk={this.state.cmrStatusOk}
+          cmrStatusMessage={this.state.cmrStatusMessage}
+          onChange={() => { this.CmrReset(); }}
         />
         <div id="collection-list">
           {collectionDropdown}
@@ -245,6 +264,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.temporalFilterUpperBound,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
+     .catch((err) => { err = null; })
      .finally(() => this.setState({cmrLoadingGranuleInit: false}));
   }
 
@@ -286,8 +306,35 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.setState(updateStateAddGranules(json.feed.entry));
   }
 
+  private createErrorMessage = (errorMsg: string) => {
+    let msg = "";
+    this.resetPolygon = true;
+    if (errorMsg.includes("polygon boundary intersected")) {
+      msg = "Polygon lines cannot intersect. Please redraw your polygon.";
+    } else if (errorMsg.includes("Scroll session")) {
+      msg = "Your session has timed out. Please reload the page and try again.";
+      this.resetPolygon = false;
+    } else {
+      msg = errorMsg;
+      if (msg.length > 300) {
+        msg = msg.substr(0, 300) + "...";
+      }
+    }
+    return msg;
+  }
+
   private onCmrRequestFailure = (response: any) => {
-    this.setState({cmrStatusChecked: true, cmrStatusOk: false});
+    let msg = "";
+    if (response.json) {
+      response.json().then((json: any) => {
+        msg = "Error: " + this.createErrorMessage(json.errors[0]);
+        this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
+      });
+      return Promise.reject(response);
+    }
+    // Setting status to an empty string will generate the default error message.
+    this.setState({ cmrStatusChecked: true, cmrStatusMessage: "", cmrStatusOk: false });
+    return Promise.reject(response);
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {

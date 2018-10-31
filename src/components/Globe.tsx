@@ -68,6 +68,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         this.cesiumAdapter.flyToCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
       }
     }
+    if (hasChanged(prevProps, this.props, ["spatialSelection"])) {
+      if (this.props.spatialSelection === null) {
+        this.cesiumAdapter.clearSpatialSelection();
+      }
+    }
   }
 
   public render() {
