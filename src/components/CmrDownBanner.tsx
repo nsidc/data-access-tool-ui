@@ -36,7 +36,7 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
             {this.props.cmrStatusMessage}
             <div style={style}>
               We're sorry, but an error has occurred that is blocking this process.
-              Please contact User Services at <a href="mailto:nsidc.org">nsidc@nsidc.org</a>
+              Please contact User Services at <a href="mailto:nsidc@nsidc.org">nsidc@nsidc.org</a>
               <i> </i>for further information and assistance.
               User Services operates Monday to Friday, from 9:00 a.m. to 5 p.m. (MT).
             </div>
