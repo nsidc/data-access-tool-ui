@@ -45,6 +45,9 @@ export interface IEverestState {
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
+
+  private resetPolygon: boolean = true;
+
   public constructor(props: any) {
     super(props);
 
@@ -85,9 +88,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   public CmrReset() {
     this.setState({ cmrStatusChecked: false, cmrStatusOk: false }, this.cmrStatusRequestUntilOK);
-    this.handleOrderParameterChange({
-      spatialSelection: null,
-    });
+    if (this.resetPolygon) {
+      this.handleOrderParameterChange({
+        spatialSelection: null,
+      });
+    }
   }
 
   public componentDidMount() {
@@ -302,12 +307,18 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private createErrorMessage = (errorMsg: string) => {
-    let msg = errorMsg;
-    if (msg.length > 300) {
-      msg = msg.substr(0, 300) + "...";
-    }
+    let msg = "";
+    this.resetPolygon = true;
     if (errorMsg.includes("polygon boundary intersected")) {
       msg = "Polygon lines cannot intersect. Please redraw your polygon.";
+    } else if (errorMsg.includes("Scroll session")) {
+      msg = "Your session has timed out. Please reload the page and try again.";
+      this.resetPolygon = false;
+    } else {
+      msg = errorMsg;
+      if (msg.length > 300) {
+        msg = msg.substr(0, 300) + "...";
+      }
     }
     return msg;
   }

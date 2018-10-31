@@ -21,7 +21,7 @@ export class CmrDownBanner extends React.Component<ICmrDownBannerProps, {}> {
       return null;
     }
 
-    const style = (this.props.cmrStatusMessage !== "") ? {display: "none"} : {};
+    const style = (this.props.cmrStatusMessage === "") ? {} : {display: "none"};
 
     // That &#0020; is necessary to ensure that there is a space after the 'mailto' link.
     return (
