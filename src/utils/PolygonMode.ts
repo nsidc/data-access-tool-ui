@@ -164,15 +164,18 @@ export class PolygonMode {
       positions: cartesiansArray,
     }));
 
-    const geometryInstances = new Cesium.GeometryInstance({
-      geometry,
-    });
-    this.polygon = new Cesium.Primitive({
-      appearance,
-      asynchronous: false,
-      geometryInstances,
-    });
-    this.scene.primitives.add(this.polygon);
+    // The geometry can be undefined if all 3 points are on a line, etc.
+    if (geometry !== undefined) {
+      const geometryInstances = new Cesium.GeometryInstance({
+        geometry,
+      });
+      this.polygon = new Cesium.Primitive({
+        appearance,
+        asynchronous: false,
+        geometryInstances,
+      });
+      this.scene.primitives.add(this.polygon);
+    }
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
@@ -222,7 +225,6 @@ export class PolygonMode {
   }
 
   private addPointFromCartesian = (cartesian: Cesium.Cartesian3) => {
-    if (this.isDuplicateCartesian(cartesian)) { return; }
     const point = new Point(cartesian);
     this.addPoint(point);
   }
@@ -295,14 +297,10 @@ export class PolygonMode {
 
   private updateBillboardsAppearanceForActivePoint = () => {
     this.points.forEach((point, index) => {
-      const billboard = point!.getBillboard();
-
       if (index === this.activePointIndex) {
-        billboard.color = Cesium.Color.CHARTREUSE;
-        billboard.scale = 1.75;
+        point!.activate();
       } else {
-        billboard.color = Cesium.Color.CRIMSON;
-        billboard.scale = 1.25;
+        point!.deactivate();
       }
     }, this);
   }
@@ -371,7 +369,10 @@ export class PolygonMode {
           case PolygonEvent.leftClick:
             // Add a new point to the polygon, keep drawing
             this.removeActivePoint();
-            this.addPointFromScreenPosition(screenPosition);
+            const newCartesian = this.screenPositionToCartesian(screenPosition);
+            if (newCartesian !== null && !this.isDuplicateCartesian(newCartesian)) {
+              this.addPointFromCartesian(newCartesian);
+            }
             this.interactionRender();
             break;
           case PolygonEvent.moveMouse:

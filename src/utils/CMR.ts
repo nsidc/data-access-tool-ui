@@ -82,7 +82,7 @@ const cmrFetch = (url: string, headers: Map<string, string> = Map()) => {
     if (response.ok) {
       return Promise.resolve(response);
     } else {
-      return Promise.reject(new Error(`CMR responded with status code ${response.status}; request URL: ${url}`));
+      return Promise.reject(response);
     }
   };
 

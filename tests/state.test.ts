@@ -4,15 +4,15 @@ import * as moment from "moment";
 import { CmrGranule } from "../src/types/CmrGranule";
 import { OrderParameters } from "../src/types/OrderParameters";
 import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
-import { updateStateInitGranules, updateStateAddGranules } from "../src/utils/state";
+import { updateStateAddGranules, updateStateInitGranules } from "../src/utils/state";
 
 const granuleInput = {
   dataset_id: "id1",
   granule_size: "",
   links: List([Map({href: "href1"})]),
   producer_granule_id: "",
-  time_start: moment(),
   time_end: moment(),
+  time_start: moment(),
   title: "Barry",
 };
 
@@ -24,6 +24,7 @@ const initialState = {
   cmrLoadingGranuleInit: false,
   cmrLoadingGranuleScroll: false,
   cmrStatusChecked: false,
+  cmrStatusMessage: "",
   cmrStatusOk: false,
   loadedParamsFromLocalStorage: false,
   orderParameters: new OrderParameters(),
@@ -40,7 +41,7 @@ const expected = {
       "id1",
       "href1",
     ])]),
-    granuleURs: List(["Barry"])
+    granuleURs: List(["Barry"]),
   }),
 };
 

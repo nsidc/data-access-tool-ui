@@ -49,6 +49,10 @@
     }
   }
 
+  #everest-container {
+    position: relative;
+  }
+
   #columns {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -61,7 +65,7 @@
 
     #right-side {
       grid-column: 2;
-      overflow-x: auto;
+      overflow-x: hidden;
       padding: 0 0 0 1em;
     }
   }
@@ -81,7 +85,7 @@
   h3 {
     font-size: 100%;
     margin: 0.5em 0;
-    color: #027ac6;
+    color: #474747;
   }
 
   #temporal-selection {
@@ -194,7 +198,7 @@
   }
 
   .granule-count-container {
-    color: #027ac6;
+    color: #474747;
     display: inline;
     font-weight: bold;
   }
@@ -231,6 +235,7 @@
       position: -webkit-sticky;
       top: 0;
       z-index: 9;
+      border-top: 2px;
       background: #7ab5da; /* EUI Sky Blue */
     }
 
@@ -354,7 +359,31 @@
   #cmr-status {
     background: red;
     color: white;
+    position: absolute;
+    width: calc(100% - 2em);
+    padding: 1em;
+    z-index: 1001;
+  }
+
+  #cmr-status-close {
+    cursor: pointer;
+    float: right;
+  }
+
+  #cmr-status-msg {
+    position: absolute;
+    width: calc(100% - 4em);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  #cmr-status-blocked {
+    background: black;
+    position: absolute;
     width: 100%;
+    height: 100%;
+    opacity: 0.2;
+    z-index: 1000;
   }
 
   /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
@@ -402,6 +431,7 @@
     padding-right: 2px;
     text-align: right;
     padding-top: 6px;
+    margin-right: -12px;
 
     .callout {
       bottom: -22px;

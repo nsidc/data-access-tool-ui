@@ -1,3 +1,22 @@
+# v0.3.0 (Unreleased)
+
+* Minor CSS changes based on internal user feedback
+  * change granule count color from blue to dark grey
+  * adjust positioning of order buttons
+  * tweak header of granule table
+* Hide lonlat edit box if it's empty, show when displaying lonlat
+* After reload from `localStorage`, fly to last-known camera position
+  when polygon was created or edited.
+* When creating a polygon, don't lose points--fix bug where moving the mouse
+  slowly after clicking would sometimes lose the point that should have just
+  been created by clicking (easiest to see in Safari)
+* Whitelist datasets for standalone mode: MOD10A2, MYD10A2, and NISE
+* Fix issue where when reloading a polygon from `localStorage`, the points
+  render as white instead of the desired crimson.
+* Allow setting dates with MM/DD/YYYY format or M/D/YYYY
+* After a CMR error, display an error banner, gray out the app; when the
+  user dismisses the banner restore CMR functionality
+
 # v0.2.0 (2018-11-07)
 
 * Load single orders from the Hermes endpoint for single orders, instead of
