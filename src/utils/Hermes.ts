@@ -30,9 +30,8 @@ const getOrderParamsByType = (orderType: OrderTypes): any => {
 
 export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   const getOrderInDrupal = (orderId: string) => {
-    return fetch(urls.hermesOrderUrl, {credentials: "include"})
-      .then((response) => response.json())
-      .then((json) => json[orderId]);
+    return fetch(`https://${urls.hermesBaseUrl}/api/orders/${orderId}`)
+      .then((response) => response.json());
   };
 
   const getOrderInStandalone = (orderId: string) => {
