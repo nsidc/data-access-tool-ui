@@ -23,6 +23,8 @@ const WHITELIST = List([
   "MYD10A2",
   "MYD10_L2",
   "NISE",
+  "NSIDC-0478",
+  "NSIDC-0630",
   "NSIDC-0642",
   "NSIDC-0724",
   "SPL2SMP",
