@@ -103,10 +103,46 @@
     label.from {
       margin-left: 0.5em;
     }
+
+    label.to {
+      margin-left: 1.5em;
+    }
+
+    .timeReset {
+      cursor: pointer;
+      border-style: none;
+      border-width: 1px;
+      border-color: darkgray;
+      border-radius: 4px;
+      padding-left: 4px;
+      padding-right: 4px;
+      padding-top: 3px;
+      padding-bottom: 4px;
+      margin-left: 1.5em;
+      margin-right: 1em;
+
+      &:hover {
+        background-color: #48b;
+        border-color: #aef;
+        box-shadow: 0 0 8px #fff;
+      }
+
+      &:focus {
+        outline-width: 0;
+      }
+
+      &:active {
+        color: #000;
+        fill: #000;
+        background: #adf;
+        border-color: #000;
+        box-shadow: 0 0 8px #fff;
+      }
+    }
   }
 
   div.react-datepicker-wrapper {
-    margin: 0 1.5em 0 0.5em;
+    margin: 0 0 0 0.5em;
 
     input {
       margin: 0;

@@ -154,7 +154,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrStatusOk={this.state.cmrStatusOk}
               environment={this.props.environment}
               onChange={this.handleOrderParameterChange}
-              orderParameters={this.state.orderParameters} />
+              orderParameters={this.state.orderParameters}
+              onTemporalReset={this.handleTemporalReset}
+            />
           </div>
           <div id="right-side">
             <GranuleList
@@ -337,6 +339,14 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     return Promise.reject(response);
   }
 
+  private handleTemporalReset = () => {
+    const collection = this.state.orderParameters.collection;
+    this.handleOrderParameterChange({
+      temporalFilterLowerBound: collection.time_start ? moment.utc(collection.time_start) : moment.utc("20100101"),
+      temporalFilterUpperBound: collection.time_end ? moment.utc(collection.time_end) : moment.utc(),
+    });
+  }
+
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
     const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
@@ -373,13 +383,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
 
     const collection = cmrCollections.first();
-    const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(collection.boxes);
-    this.handleOrderParameterChange({
-      collection,
-      collectionSpatialCoverage,
-      temporalFilterLowerBound: moment(collection.time_start),
-      temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
-    });
+    this.handleCollectionChange(collection);
   }
 
   private extractOrderParametersFromLocalStorage = (): OrderParameters | null => {
