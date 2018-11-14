@@ -1,8 +1,8 @@
 import { List, Map } from "immutable";
 import * as React from "react";
 import * as ReactModal from "react-modal";
+import * as ReactTooltip from "react-tooltip";
 
-import * as callout from "../img/callout.png";
 import { CmrGranule } from "../types/CmrGranule";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
@@ -48,22 +48,21 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   }
 
   private renderForm = () => {
-    const loggedOutSpan = this.props.loggedOut ? (
+    const tooltipSpan = <span>Download a command line script that will retrieve all the files.</span>;
+    const loggedOutSpan = (this.props.loggedOut || true) ? (
       <span>
         <br/>
         <span className="must-be-logged-in">You must be logged in.</span>
       </span>
     ) : null;
+    const tooltip = <div>{tooltipSpan}{loggedOutSpan}</div>;
 
     return (
       <form name={this.formName} action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
         <input type="hidden" name="urls" value={this.urlsArray()}/>
-        <div className="tooltip">
-          <span className="hover-text">
-            Download a command line script that will retrieve all the files.
-            {loggedOutSpan}
-            <img className="img-no-border-left callout" src={callout} />
-          </span>
+        <div className="tooltip" data-tip data-for="scriptbutton">
+          <ReactTooltip id="scriptbutton" className="reactTooltip"
+            effect="solid" delayShow={500}>{tooltip}</ReactTooltip>
           <button
             type="button"
             className="script-button eui-btn--blue"

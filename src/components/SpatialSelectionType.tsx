@@ -22,7 +22,8 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
   public render() {
     return (
       <div className="cesium-button cesium-toolbar-button" onClick={(e: any) => this.props.onClick(e.target.value)}>
-        <img src={this.props.img} alt={this.props.title} title={this.props.title}/>
+        <img src={this.props.img} alt={this.props.title}
+          data-tip={this.props.title} data-offset="{'top':10}"/>
       </div>
     );
   }

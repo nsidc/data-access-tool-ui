@@ -1,6 +1,6 @@
 import * as React from "react";
+import * as ReactTooltip from "react-tooltip";
 
-import * as callout from "../img/callout.png";
 import { OrderTypes } from "../types/orderTypes";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -24,20 +24,19 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   }
 
   public render() {
-    const loggedOutSpan = this.props.loggedOut ? (
+    const tooltipSpan = <span>{this.props.hoverText}</span>;
+    const loggedOutSpan = (this.props.loggedOut || true) ? (
       <span>
-        <br/>
+        <br />
         <span className="must-be-logged-in">You must be logged in.</span>
       </span>
     ) : null;
+    const tooltip = <div>{tooltipSpan}{loggedOutSpan}</div>;
 
     return (
-      <div className="tooltip">
-        <span className="hover-text">
-          {this.props.hoverText}
-          {loggedOutSpan}
-          <img className="img-no-border-left callout" src={callout} />
-        </span>
+      <div className="tooltip" data-tip data-for={this.props.buttonText}>
+        <ReactTooltip id={this.props.buttonText} className="reactTooltip"
+          effect="solid" delayShow={500}>{tooltip}</ReactTooltip>
         <button
           className="submit-button eui-btn--blue"
           disabled={this.props.disabled}

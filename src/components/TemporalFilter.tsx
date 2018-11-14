@@ -44,7 +44,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
           onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
         <div onClick={this.props.onClick}>
-          <button className="timeReset" title="Reset dates to defaults">
+          <button className="timeReset" data-tip="Reset dates to defaults">
             <FontAwesomeIcon icon={faUndo} size="1x" />
           </button>
         </div>

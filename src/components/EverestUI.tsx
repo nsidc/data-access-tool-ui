@@ -1,6 +1,7 @@
 import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
+import * as ReactTooltip from "react-tooltip";
 
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule } from "../types/CmrGranule";
@@ -139,6 +140,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     }
     return (
       <div id="everest-container">
+        <ReactTooltip effect="solid" delayShow={500} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
           cmrStatusOk={this.state.cmrStatusOk}

@@ -422,60 +422,11 @@
     z-index: 1000;
   }
 
-  /* Tooltip adapted from: http://www.menucool.com/tooltip/css-tooltip */
-  div.tooltip {
-    outline: none;
-
-    > span {
-      z-index: 10;
-      display: none;
-      padding: 0.7em;
-      margin-top: -12px;
-      margin-left: 20px;
-      width: auto;
-      line-height: 1.2em;
-      border-radius: 4px;
-    }
-
-    &:hover {
-      text-decoration: none;
-
-      > span {
-        display: inline;
-        position: absolute;
-        color: #111;
-        border: 1px solid #dca;
-        background: #fffaf0;
-      }
-
-      > span.maptool {
-        width: 12em;
-      }
-    }
-  }
-
-  .callout {
-    z-index: 10;
-    position: absolute;
-    border: 0;
-    top: 0.3em;
-    left: -15px;
-    padding: 5px;
-  }
-
   #order-buttons {
     padding-right: 2px;
     text-align: right;
     padding-top: 6px;
     margin-right: -12px;
-
-    .callout {
-      bottom: -22px;
-      left: 24px;
-      position: absolute;
-      top: unset;
-      transform: rotate(270deg);
-    }
 
     .inline {
       display: inline;
@@ -484,25 +435,17 @@
     div.tooltip {
       display: inline-block;
       position: relative;
+      text-align: left;
 
-      > span {
-        bottom: 64px;
-        display: none;
-        margin-left: 0;
-        position: absolute;
-        text-align: left;
-        background: #000;
-        color: #fff;
+      .reactTooltip {
+        width: 140px;
+        font-size: 100%;
         line-height: 24px;
-
-        span.must-be-logged-in {
-          color: #f57e20;
-          font-weight: bolder;
-        }
       }
 
-      &:hover > span {
-        display: inline-block;
+      .must-be-logged-in {
+        color: #f57e20;
+        font-weight: bolder;
       }
     }
   }
