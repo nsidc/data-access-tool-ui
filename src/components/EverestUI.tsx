@@ -350,7 +350,34 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
-    const orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
+    let timeErrorLowerBound = "";
+    let timeErrorUpperBound = "";
+
+    let orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
+
+    if (orderParameters.temporalFilterLowerBound >= orderParameters.temporalFilterUpperBound) {
+      timeErrorLowerBound = "Start date is after the end date";
+      timeErrorUpperBound = timeErrorLowerBound;
+    } else {
+      const collectionStart = moment.utc(orderParameters.collection.time_start);
+      const collectionEnd = (orderParameters.collection.time_end) ?
+        moment.utc(orderParameters.collection.time_end) : moment.utc();
+      if (orderParameters.temporalFilterLowerBound < collectionStart) {
+        const c = collectionStart.format("MM/DD/YYYY");
+        timeErrorLowerBound = "The data set begins on " + c;
+      }
+      if (orderParameters.temporalFilterUpperBound > collectionEnd) {
+        const c = collectionEnd.format("MM/DD/YYYY");
+        timeErrorUpperBound = "The data set ends on " + c;
+      }
+    }
+
+    orderParameters = mergeOrderParameters(orderParameters, { timeErrorLowerBound, timeErrorUpperBound });
+
+    if (timeErrorLowerBound || timeErrorUpperBound) {
+      this.setState({ orderParameters });
+      return;
+    }
 
     const state = {
       orderParameters,
@@ -370,8 +397,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.handleOrderParameterChange({
       collection,
       collectionSpatialCoverage,
-      temporalFilterLowerBound: moment(collection.time_start),
-      temporalFilterUpperBound: collection.time_end ? moment(collection.time_end) : moment(),
+      temporalFilterLowerBound: moment.utc(collection.time_start),
+      temporalFilterUpperBound: collection.time_end ? moment.utc(collection.time_end) : moment.utc(),
     });
   }
 
@@ -402,8 +429,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       return null;
     }
 
-    orderParams.temporalFilterLowerBound = moment(orderParams.temporalFilterLowerBound);
-    orderParams.temporalFilterUpperBound = moment(orderParams.temporalFilterUpperBound);
+    orderParams.temporalFilterLowerBound = moment.utc(orderParams.temporalFilterLowerBound);
+    orderParams.temporalFilterUpperBound = moment.utc(orderParams.temporalFilterUpperBound);
     const orderParameters: OrderParameters = new OrderParameters(...orderParams);
 
     console.warn("Order parameters loaded from previous state.");

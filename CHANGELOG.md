@@ -17,6 +17,7 @@
 * After a CMR error, display an error banner, gray out the app; when the
   user dismisses the banner restore CMR functionality
 * Add temporal reset button
+* Add time error messages for illegal dates
 
 # v0.2.0 (2018-11-07)
 

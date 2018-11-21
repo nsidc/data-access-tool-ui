@@ -33,6 +33,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           toDate={this.props.orderParameters.temporalFilterUpperBound}
           onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
             this.props.onChange({temporalFilterUpperBound})}
+          timeErrorLowerBound={this.props.orderParameters.timeErrorLowerBound}
+          timeErrorUpperBound={this.props.orderParameters.timeErrorUpperBound}
           onClick={this.props.onTemporalReset}
         />
         <Globe

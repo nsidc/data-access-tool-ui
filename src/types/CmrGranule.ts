@@ -16,8 +16,8 @@ const defaultCmrGranule = {
   granule_size: "",
   links: List<Map<string, string>>(),
   producer_granule_id: "",
-  time_end: moment(),
-  time_start: moment(),
+  time_end: moment.utc(),
+  time_start: moment.utc(),
   title: "",
 };
 const CmrGranuleRecord = Record(defaultCmrGranule);
