@@ -25,7 +25,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
 
   public render() {
     const tooltipSpan = <span>{this.props.hoverText}</span>;
-    const loggedOutSpan = (this.props.loggedOut || true) ? (
+    const loggedOutSpan = (this.props.loggedOut) ? (
       <span>
         <br />
         <span className="must-be-logged-in">You must be logged in.</span>
