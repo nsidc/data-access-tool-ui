@@ -15,6 +15,7 @@ interface IOrderParametersProps {
   environment: IEnvironment;
   onChange: any;
   orderParameters: OrderParameters;
+  onTemporalReset: any;
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
@@ -31,7 +32,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
             this.props.onChange({temporalFilterLowerBound})}
           toDate={this.props.orderParameters.temporalFilterUpperBound}
           onToDateChange={(temporalFilterUpperBound: moment.Moment) =>
-            this.props.onChange({temporalFilterUpperBound})} />
+            this.props.onChange({temporalFilterUpperBound})}
+          onClick={this.props.onTemporalReset}
+        />
         <Globe
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>

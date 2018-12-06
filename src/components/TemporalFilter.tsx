@@ -1,3 +1,5 @@
+import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Moment } from "moment";
 import * as React from "react";
 import DatePicker from "react-datepicker";
@@ -10,6 +12,7 @@ interface ITemporalFilterProps {
   onFromDateChange: (date: Moment) => void;
   toDate: Moment;
   onToDateChange: (date: Moment) => void;
+  onClick: any;
 }
 
 export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
@@ -33,13 +36,18 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           selected={this.props.fromDate.utc()}
           dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
           onChange={(d: Moment) => this.props.onFromDateChange(d.utc())} />
-        <label>To</label>
+        <label className="to">To</label>
         <DatePicker
           id="to"
           minDate={this.props.fromDate}
           selected={this.props.toDate.utc()}
           dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
           onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
+        <div onClick={this.props.onClick}>
+          <button className="timeReset" data-tip="Reset dates to defaults">
+            <FontAwesomeIcon icon={faUndo} size="1x" />
+          </button>
+        </div>
       </div>
     );
   }
