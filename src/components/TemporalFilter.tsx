@@ -1,4 +1,4 @@
-import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Moment } from "moment";
 import * as React from "react";
@@ -54,7 +54,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
         <div onClick={this.props.onClick}>
           <button className="timeReset" data-tip="Reset dates to defaults">
-            <FontAwesomeIcon icon={faUndo} size="1x" />
+            <FontAwesomeIcon icon={faUndoAlt} size="lg" />
           </button>
         </div>
         <div className="timeError">{timeErrorDiv}</div>
