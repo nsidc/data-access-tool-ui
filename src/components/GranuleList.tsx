@@ -117,8 +117,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <tr key={i}>
           <td>{granule.producer_granule_id}</td>
           <td>{granuleSize}</td>
-          <td>{moment(granule.time_start).format(GranuleList.timeFormat)}</td>
-          <td>{moment(granule.time_end).format(GranuleList.timeFormat)}</td>
+          <td>{moment.utc(granule.time_start).format(GranuleList.timeFormat)}</td>
+          <td>{moment.utc(granule.time_end).format(GranuleList.timeFormat)}</td>
         </tr>
       );
     });

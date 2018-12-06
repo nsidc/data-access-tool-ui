@@ -10,14 +10,18 @@ export interface IOrderParameters {
   spatialSelection: IGeoJsonPolygon | null;
   temporalFilterLowerBound: moment.Moment;
   temporalFilterUpperBound: moment.Moment;
+  timeErrorLowerBound: string;
+  timeErrorUpperBound: string;
 }
 
 const defaultOrderParameters: IOrderParameters = {
   collection: new CmrCollection(),
   collectionSpatialCoverage: null,
   spatialSelection: null,
-  temporalFilterLowerBound: moment("20100101"),
-  temporalFilterUpperBound: moment(),
+  temporalFilterLowerBound: moment.utc("20100101"),
+  temporalFilterUpperBound: moment.utc(),
+  timeErrorLowerBound: "",
+  timeErrorUpperBound: "",
 };
 const OrderParametersRecord = Record(defaultOrderParameters);
 
@@ -27,6 +31,8 @@ export class OrderParameters extends OrderParametersRecord implements IOrderPara
   public spatialSelection: IGeoJsonPolygon | null;
   public temporalFilterLowerBound: moment.Moment;
   public temporalFilterUpperBound: moment.Moment;
+  public timeErrorLowerBound: string;
+  public timeErrorUpperBound: string;
 
   constructor(props: Partial<IOrderParameters> = defaultOrderParameters) {
     super(props);
