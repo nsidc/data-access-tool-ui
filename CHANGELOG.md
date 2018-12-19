@@ -1,4 +1,4 @@
-# v0.3.0 (Unreleased)
+# v0.3.0 (2018-12-19)
 
 * Minor CSS changes based on internal user feedback
   * change granule count color from blue to dark grey
