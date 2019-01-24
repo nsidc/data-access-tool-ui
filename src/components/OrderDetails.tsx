@@ -85,7 +85,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       return [];
     }
 
-    const zipLink: any = order.links.find((link: any) => link.uri.includes(order.order_id));
+    // NOTE: Matching on `/\.zip$/` will yield false positives for shapefile dataproducts
+    const zipLink: any = order.links.find((link: any) => link.uri.match(/\.zip$/));
     if (zipLink) {
       if (!zipLink.uri.includes("https://")) {
         zipLink.uri = "https://" + this.props.environment.urls.hermesBaseUrl + zipLink.uri;
