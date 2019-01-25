@@ -1,3 +1,10 @@
+# v0.4.0
+
+* Parse ZIP links by files ending in ".zip", rather than matching the Hermes
+  order ID; this is necessary for ZIP links from ESI orders, which do not
+  include the Hermes order IDs in their filenames.
+
+
 # v0.3.0 (2018-12-19)
 
 * Minor CSS changes based on internal user feedback
