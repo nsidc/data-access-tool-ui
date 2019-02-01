@@ -43,8 +43,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection} />
-        <div id="version"><a href="https://cesiumjs.org">
-          <img id="cesium" src={cesiumImg} alt="Cesium"/></a>
+        <div id="version">
+          <a href="https://cesiumjs.org"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>
           <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
       </div>
     );
