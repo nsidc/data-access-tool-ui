@@ -1,3 +1,7 @@
+# v0.4.0 (Unreleased)
+
+* Add Cesium logo beneath the globe widget
+
 # v0.3.0 (2018-12-19)
 
 * Minor CSS changes based on internal user feedback
