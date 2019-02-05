@@ -1,6 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import * as cesiumImg from "../img/cesium_credit.png";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { OrderParameters } from "../types/OrderParameters";
 import { IEnvironment } from "../utils/environment";
@@ -42,7 +43,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection} />
-        <div id="version">Download Data UI v{EVEREST_UI_VERSION}</div>
+        <div id="version">
+          <a href="https://cesiumjs.org"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>
+          <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
       </div>
     );
   }
