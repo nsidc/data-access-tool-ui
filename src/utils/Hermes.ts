@@ -71,7 +71,9 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     };
     let body: object = {
       collection_info: collectionInfo,
-      selection_criteria: selectionCriteria,
+      selection_criteria: {
+        include_granules: selectionCriteria.includeGranules,
+      },
     };
     body = Object.assign(body, getOrderParamsByType(orderType));
 
