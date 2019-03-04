@@ -3,5 +3,4 @@
 
 copied from TODO in hermes-api:
 - Update everest-ui to use v4 api
-  - Use /api-v4/ prefix
   - POST fulfillment/delivery instead of destination/data_format
