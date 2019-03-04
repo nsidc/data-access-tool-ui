@@ -5,6 +5,7 @@
   order ID; this is necessary for ZIP links from ESI orders, which do not
   include the Hermes order IDs in their filenames.
 * Add `uid` field to JSON submitted in POST requests to Hermes for new orders
+* Update Hermes-related URLs and data for hermes-api v4
 
 # v0.3.0 (2018-12-19)
 
