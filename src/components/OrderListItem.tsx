@@ -23,7 +23,7 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
     }
     return (
       <div onClick={this.handleOrderSelection} className={style}>
-        {moment.unix(this.props.order.date).format(OrderListItem.timeFormat)}
+        {moment(this.props.order.timestamp).format(OrderListItem.timeFormat)}
       </div>
     );
   }

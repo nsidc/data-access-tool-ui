@@ -1,2 +1,0 @@
-* change handling of a hermes order date from a unix-time float to whatever we
-  change the API to; eg at `OrderDetails.tsx:46`

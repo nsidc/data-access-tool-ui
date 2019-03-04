@@ -43,7 +43,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     } else if (this.state.order) {
       const order: any = this.state.order;
       const links = this.buildOrderLinks(order);
-      const orderPlacedDate = moment.unix(order.date);
+      const orderPlacedDate = moment(order.timestamp);
       const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
         <div id="order-details">

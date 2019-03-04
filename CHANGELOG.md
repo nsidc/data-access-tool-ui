@@ -11,6 +11,8 @@
     orders
   * Replace `destination` and `format` fields with `fulfillment` and `delivery`
     for new orders
+  * parse ISO datestring from `timestamp` field rather than UNIX date from
+    `date` field
 
 # v0.3.0 (2018-12-19)
 
