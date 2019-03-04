@@ -4,6 +4,7 @@
 * Parse ZIP links by files ending in ".zip", rather than matching the Hermes
   order ID; this is necessary for ZIP links from ESI orders, which do not
   include the Hermes order IDs in their filenames.
+* Add `uid` field to JSON submitted in POST requests to Hermes for new orders
 
 # v0.3.0 (2018-12-19)
 

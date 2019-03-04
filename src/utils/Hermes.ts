@@ -65,7 +65,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   };
 
   const submitOrder = (
-    user: any,
+    user: IUser,
     granuleURs: List<string>,
     collectionInfo: List<List<string>>,
     orderType: OrderTypes,
@@ -79,7 +79,8 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     };
     body = Object.assign(body, getOrderParamsByType(orderType));
 
-    body = Object.assign(body, {user});
+    const uid = user.uid;
+    body = Object.assign(body, {uid, user});
 
     return fetch(urls.hermesOrderUrl, {
       body: JSON.stringify(body),

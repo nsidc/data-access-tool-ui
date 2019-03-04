@@ -1,5 +1,3 @@
-* change submitOrder in src/utils/Hermes.ts to take a `uid: string` rather than
-  a `user: IUser`
 * change handling of a hermes order date from a unix-time float to whatever we
   change the API to; eg at `OrderDetails.tsx:46`
 * script endpoint was /downloader-script/, now is /script/
@@ -9,4 +7,3 @@ copied from TODO in hermes-api:
   - Use /api-v4/ prefix
   - POST fulfillment/delivery instead of destination/data_format
   - POST selection_criteria instead of granule_URs
-  - POST UID "bare" (no user object)
