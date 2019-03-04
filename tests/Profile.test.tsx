@@ -9,7 +9,8 @@ const setup = () => {
     "order1": {
       "collection_info": [["A Collection", "https://a.collection.url"]],
       "date": 1533864141.4570563,
-      "destination": "archive",
+      "delivery": "esi",
+      "fulfillment": "esi",
       "selection_criteria": {
         "include_granules": ["1 granule", "2 granule"],
       },
@@ -20,7 +21,8 @@ const setup = () => {
     "order2": {
       "collection_info": [["B Collection", "https://b.collection.url"]],
       "date": 1533864141.4570563,
-      "destination": "archive",
+      "delivery": "esi",
+      "fulfillment": "esi",
       "selection_criteria": {
         "include_granules": ["3 granule", "4 granule"],
       },

@@ -16,15 +16,10 @@ export interface IHermesAPI {
 }
 
 const getOrderParamsByType = (orderType: OrderTypes): any => {
-  if (orderType === OrderTypes.listOfLinks) {
+  if ([OrderTypes.listOfLinks, OrderTypes.zipFile].includes(orderType)) {
     return {
-      destination: "archive",
-      format: "files",
-    };
-  } else if (orderType === OrderTypes.zipFile) {
-    return {
-      destination: "archive",
-      format: "",
+      delivery: "esi",
+      fulfillment: "esi",
     };
   }
 };

@@ -9,6 +9,8 @@
   * Add `uid` field to JSON submitted in POST requests to Hermes for new orders
   * Change `granule_URs` to `selection_critera.include_granules` for submitting
     orders
+  * Replace `destination` and `format` fields with `fulfillment` and `delivery`
+    for new orders
 
 # v0.3.0 (2018-12-19)
 

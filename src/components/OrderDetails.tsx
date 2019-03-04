@@ -51,7 +51,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
           <div>Placed: {orderPlacedDate.format(OrderDetails.timeFormat)}</div>
           <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
           <div>Status: {order.status}</div>
-          <div>Destination: {order.destination}</div>
+          <div>Fulfillment method: {order.fulfillment}</div>
+          <div>Delivery method: {order.delivery}</div>
           <div>Links:
             <ul>{links}</ul>
           </div>
