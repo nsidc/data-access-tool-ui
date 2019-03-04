@@ -1,6 +1,7 @@
 import { List } from "immutable";
 import * as io from "socket.io-client";
 
+import { ISelectionCriteria } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IUser } from "../types/User";
 
@@ -9,7 +10,7 @@ export interface IHermesAPI {
   getUserOrders: (user: IUser) => any;
   openNotificationConnection: (user: IUser, callback: any) => void;
   submitOrder: (user: IUser,
-                granuleURs: List<string>,
+                selectionCriteria: ISelectionCriteria,
                 collectionInfo: List<List<string>>,
                 orderType: OrderTypes) => Promise<any>;
 }
@@ -66,7 +67,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
 
   const submitOrder = (
     user: IUser,
-    granuleURs: List<string>,
+    selectionCriteria: ISelectionCriteria,
     collectionInfo: List<List<string>>,
     orderType: OrderTypes,
   ) => {
@@ -75,7 +76,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     };
     let body: object = {
       collection_info: collectionInfo,
-      granule_URs: granuleURs,
+      selection_criteria: selectionCriteria,
     };
     body = Object.assign(body, getOrderParamsByType(orderType));
 

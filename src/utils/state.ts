@@ -5,11 +5,14 @@ import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 
 const orderSubmissionParametersFromCmrGranules = (cmrGranules: List<CmrGranule>) => {
-  const granuleURs = cmrGranules.map((g) => g!.title) as List<string>;
+  const granules = cmrGranules.map((g) => g!.title) as List<string>;
+  const selectionCriteria = {includeGranules: granules};
+
   const collectionIDs = cmrGranules.map((g) => g!.dataset_id) as List<string>;
   const collectionLinks = cmrGranules.map((g) => g!.links.last().get("href")) as List<string>;
   const collectionInfo = collectionIDs.map((id, key) => List([id!, collectionLinks.get(key!)])) as List<List<string>>;
-  return new OrderSubmissionParameters({collectionInfo, granuleURs});
+
+  return new OrderSubmissionParameters({collectionInfo, selectionCriteria});
 };
 
 export const updateStateInitGranules = (granules: any[]) => {

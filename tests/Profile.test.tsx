@@ -10,7 +10,9 @@ const setup = () => {
       "collection_info": [["A Collection", "https://a.collection.url"]],
       "date": 1533864141.4570563,
       "destination": "archive",
-      "granule_URs": ["1 granule", "2 granule"],
+      "selection_criteria": {
+        "include_granules": ["1 granule", "2 granule"],
+      },
       "links": [],
       "order_id": "order1",
       "status": "complete",
@@ -19,7 +21,9 @@ const setup = () => {
       "collection_info": [["B Collection", "https://b.collection.url"]],
       "date": 1533864141.4570563,
       "destination": "archive",
-      "granule_URs": ["3 granule", "4 granule"],
+      "selection_criteria": {
+        "include_granules": ["3 granule", "4 granule"],
+      },
       "links": [],
       "order_id": "order2",
       "status": "complete",
