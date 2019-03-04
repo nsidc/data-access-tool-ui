@@ -1,6 +1,5 @@
 * change handling of a hermes order date from a unix-time float to whatever we
   change the API to; eg at `OrderDetails.tsx:46`
-* script endpoint was /downloader-script/, now is /script/
 
 copied from TODO in hermes-api:
 - Update everest-ui to use v4 api
