@@ -41,7 +41,9 @@ const expected = {
       "id1",
       "href1",
     ])]),
-    granuleURs: List(["Barry"]),
+    selectionCriteria: {
+      includeGranules: List(["Barry"]),
+    },
   }),
 };
 

@@ -8,21 +8,27 @@ const setup = () => {
   const orders: any = {
     "order1": {
       "collection_info": [["A Collection", "https://a.collection.url"]],
-      "date": 1533864141.4570563,
-      "destination": "archive",
-      "granule_URs": ["1 granule", "2 granule"],
+      "delivery": "esi",
+      "fulfillment": "esi",
+      "selection_criteria": {
+        "include_granules": ["1 granule", "2 granule"],
+      },
       "links": [],
       "order_id": "order1",
       "status": "complete",
+      "timestamp": "2018-08-10T01:22:21.457Z",
     },
     "order2": {
       "collection_info": [["B Collection", "https://b.collection.url"]],
-      "date": 1533864141.4570563,
-      "destination": "archive",
-      "granule_URs": ["3 granule", "4 granule"],
+      "delivery": "esi",
+      "fulfillment": "esi",
+      "selection_criteria": {
+        "include_granules": ["3 granule", "4 granule"],
+      },
       "links": [],
       "order_id": "order2",
       "status": "complete",
+      "timestamp": "2018-08-10T01:22:21.457Z",
     },
   };
   const environment = Object.assign(setupEnvironment(false), {

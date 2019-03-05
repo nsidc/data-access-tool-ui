@@ -1,6 +1,7 @@
 import { List } from "immutable";
 import * as io from "socket.io-client";
 
+import { ISelectionCriteria } from "../types/OrderSubmissionParameters";
 import { OrderTypes } from "../types/orderTypes";
 import { IUser } from "../types/User";
 
@@ -9,28 +10,23 @@ export interface IHermesAPI {
   getUserOrders: (user: IUser) => any;
   openNotificationConnection: (user: IUser, callback: any) => void;
   submitOrder: (user: IUser,
-                granuleURs: List<string>,
+                selectionCriteria: ISelectionCriteria,
                 collectionInfo: List<List<string>>,
                 orderType: OrderTypes) => Promise<any>;
 }
 
 const getOrderParamsByType = (orderType: OrderTypes): any => {
-  if (orderType === OrderTypes.listOfLinks) {
+  if ([OrderTypes.listOfLinks, OrderTypes.zipFile].includes(orderType)) {
     return {
-      destination: "archive",
-      format: "files",
-    };
-  } else if (orderType === OrderTypes.zipFile) {
-    return {
-      destination: "archive",
-      format: "",
+      delivery: "esi",
+      fulfillment: "esi",
     };
   }
 };
 
 export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   const getOrderInDrupal = (orderId: string) => {
-    return fetch(`https://${urls.hermesBaseUrl}/api/orders/${orderId}`)
+    return fetch(`https://${urls.hermesBaseUrl}/api-v4/orders/${orderId}`)
       .then((response) => response.json());
   };
 
@@ -45,7 +41,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   };
 
   const getUserOrdersInStandalone = (user: any) => {
-    const url = `https://${urls.hermesBaseUrl}/api/users/${user.uid}/orders/`;
+    const url = `https://${urls.hermesBaseUrl}/api-v4/users/${user.uid}/orders/`;
 
     return fetch(url, {credentials: "include"})
       .then((response) => response.json());
@@ -65,8 +61,8 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   };
 
   const submitOrder = (
-    user: any,
-    granuleURs: List<string>,
+    user: IUser,
+    selectionCriteria: ISelectionCriteria,
     collectionInfo: List<List<string>>,
     orderType: OrderTypes,
   ) => {
@@ -75,11 +71,14 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     };
     let body: object = {
       collection_info: collectionInfo,
-      granule_URs: granuleURs,
+      selection_criteria: {
+        include_granules: selectionCriteria.includeGranules,
+      },
     };
     body = Object.assign(body, getOrderParamsByType(orderType));
 
-    body = Object.assign(body, {user});
+    const uid = user.uid;
+    body = Object.assign(body, {uid, user});
 
     return fetch(urls.hermesOrderUrl, {
       body: JSON.stringify(body),

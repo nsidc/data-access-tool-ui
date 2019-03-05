@@ -69,7 +69,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   private submitOrder = () => {
     return this.props.environment.hermesAPI.submitOrder(
       this.props.environment.user,
-      this.props.orderSubmissionParameters!.granuleURs,
+      this.props.orderSubmissionParameters!.selectionCriteria,
       this.props.orderSubmissionParameters!.collectionInfo,
       this.props.orderType!,
     )
