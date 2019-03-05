@@ -1,0 +1,2 @@
+* fix ScriptButton.tsx to POST the data as JSON (and fix hermes-api to consume
+  that) OR fix hermes-api to handle the form data
