@@ -10,12 +10,14 @@ import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IGranuleListProps {
+  cmrGranuleFilter: string;
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranuleInit: boolean;
   cmrLoadingGranuleScroll: boolean;
   loadNextPageOfGranules: () => void;
   orderParameters: OrderParameters;
+  updateGranuleFilter: any;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
@@ -26,6 +28,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     return hasChanged(this.props, nextProps, [
       "cmrGranules",
+      "cmrGranuleFilter",
       "cmrLoadingGranuleInit",
       "cmrLoadingGranuleScroll",
     ]);
@@ -40,6 +43,15 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           {" "}<GranuleCount loading={this.props.cmrLoadingGranuleInit} count={this.props.cmrGranuleCount} />{" "}
           granules (displaying
           {" "}<GranuleCount loading={this.props.cmrLoadingGranuleScroll} count={this.props.cmrGranules.size} />).
+        </div>
+        <div>
+          Filter by name:
+          <input id="granule-list-filter" type="text"
+            disabled={!this.props.cmrGranuleCount || this.props.cmrGranuleCount === 0}
+            value={this.props.cmrGranuleFilter}
+            onChange={this.handleGranuleFilter}
+            onKeyDown={this.granuleFilterOnKeydown}>
+          </input>
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
@@ -59,6 +71,32 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       return;
     }
     container.onscroll = this.onScroll;
+  }
+
+  private handleGranuleFilter = (e: any) => {
+    this.props.updateGranuleFilter(e.target.value);
+  }
+
+  private granuleFilterOnKeydown = (e: any) => {
+    switch (e.key) {
+      case "Enter":
+//        this.props.polygonMode.changeLonLat(e.target.value);
+        break;
+      case "Escape":
+//        this.props.polygonMode.resetLonLat();
+        break;
+      case "Tab":
+//        this.props.polygonMode.changeLonLat(e.target.value);
+        if (e.shiftKey) {
+//          this.props.polygonMode.activateRelativePoint(-1);
+        } else {
+//          this.props.polygonMode.activateRelativePoint(+1);
+        }
+        e.preventDefault();
+        break;
+      default:
+        break;
+    }
   }
 
   private onScroll = (event: Event) => {

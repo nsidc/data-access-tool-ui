@@ -31,6 +31,7 @@ interface IEverestProps {
 
 export interface IEverestState {
   cmrGranuleCount?: number;
+  cmrGranuleFilter: string;
   cmrGranuleScrollDepleted: boolean;
   cmrGranuleScrollId?: string;
   cmrGranules: List<CmrGranule>;
@@ -63,6 +64,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     this.state = {
       cmrGranuleCount: undefined,
+      cmrGranuleFilter: "",
       cmrGranuleScrollDepleted: false,
       cmrGranuleScrollId: undefined,
       cmrGranules: List<CmrGranule>(),
@@ -116,6 +118,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const stateChanged = hasChanged(this.state, nextState, [
       "cmrGranules",
       "cmrGranuleCount",
+      "cmrGranuleFilter",
       "cmrLoadingGranuleInit",
       "cmrLoadingGranuleScroll",
       "cmrStatusChecked",
@@ -163,11 +166,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           <div id="right-side">
             <GranuleList
               cmrGranuleCount={this.state.cmrGranuleCount}
+              cmrGranuleFilter={this.state.cmrGranuleFilter}
               cmrGranules={this.state.cmrGranules}
               loadNextPageOfGranules={this.advanceCmrGranuleScroll}
               cmrLoadingGranuleInit={this.state.cmrLoadingGranuleInit}
               cmrLoadingGranuleScroll={this.state.cmrLoadingGranuleScroll}
-              orderParameters={this.state.orderParameters} />
+              orderParameters={this.state.orderParameters}
+              updateGranuleFilter={this.updateGranuleFilter} />
             <OrderButtons
               cmrGranuleCount={this.state.cmrGranuleCount}
               ensureGranuleScrollDepleted={this.advanceCmrGranuleScrollToEnd}
@@ -347,6 +352,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       temporalFilterLowerBound: collection.time_start ? moment.utc(collection.time_start) : moment.utc("20100101"),
       temporalFilterUpperBound: collection.time_end ? moment.utc(collection.time_end) : moment.utc(),
     });
+  }
+
+  private updateGranuleFilter = (cmrGranuleFilter: string) => {
+    this.setState({ cmrGranuleFilter });
+    this.handleOrderParameterChange({ cmrGranuleFilter });
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {

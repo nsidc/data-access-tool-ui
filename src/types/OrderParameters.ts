@@ -5,6 +5,7 @@ import { CmrCollection } from "./CmrCollection";
 import { IGeoJsonPolygon } from "./GeoJson";
 
 export interface IOrderParameters {
+  cmrGranuleFilter: string;
   collection: CmrCollection;
   collectionSpatialCoverage: IGeoJsonPolygon | null;
   spatialSelection: IGeoJsonPolygon | null;
@@ -15,6 +16,7 @@ export interface IOrderParameters {
 }
 
 const defaultOrderParameters: IOrderParameters = {
+  cmrGranuleFilter: "",
   collection: new CmrCollection(),
   collectionSpatialCoverage: null,
   spatialSelection: null,
@@ -26,6 +28,7 @@ const defaultOrderParameters: IOrderParameters = {
 const OrderParametersRecord = Record(defaultOrderParameters);
 
 export class OrderParameters extends OrderParametersRecord implements IOrderParameters {
+  public cmrGranuleFilter: string;
   public collection: CmrCollection;
   public collectionSpatialCoverage: IGeoJsonPolygon | null;
   public spatialSelection: IGeoJsonPolygon | null;
