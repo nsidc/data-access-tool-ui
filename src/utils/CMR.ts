@@ -17,12 +17,10 @@ const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_E
   + "&page_size=500&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?provider=NSIDC_ECS"
-  + `&scroll=true&page_size=${CMR_PAGE_SIZE}&sort_key=short_name`;
+  + `&page_size=${CMR_PAGE_SIZE}&sort_key=short_name`;
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
-
-export const CMR_SCROLL_HEADER = "CMR-Scroll-Id";
 
 const CMR_DEFAULT_HEADERS = Map({
   "Client-Id": `nsidc-everest-${getEnvironment()}`,
@@ -136,10 +134,6 @@ export const cmrGranuleScrollInitRequest = (collectionAuthId: string,
     + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
 
   return cmrFetch(URL, headers);
-};
-
-export const cmrGranuleScrollNextRequest = (scrollId: string) => {
-  return cmrFetch(CMR_GRANULE_URL, Map({[CMR_SCROLL_HEADER]: scrollId}));
 };
 
 export const globalSpatialSelection: IGeoJsonBbox = {
