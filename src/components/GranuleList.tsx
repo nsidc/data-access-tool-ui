@@ -13,7 +13,7 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranuleInit: boolean;
-  cmrLoadingGranuleScroll: boolean;
+  cmrLoadingGranule: boolean;
   orderParameters: OrderParameters;
 }
 
@@ -26,7 +26,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     return hasChanged(this.props, nextProps, [
       "cmrGranules",
       "cmrLoadingGranuleInit",
-      "cmrLoadingGranuleScroll",
+      "cmrLoadingGranule",
     ]);
   }
 
@@ -38,7 +38,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           You have selected
           {" "}<GranuleCount loading={this.props.cmrLoadingGranuleInit} count={this.props.cmrGranuleCount} />{" "}
           granules (displaying
-          {" "}<GranuleCount loading={this.props.cmrLoadingGranuleScroll} count={this.props.cmrGranules.size} />).
+          {" "}<GranuleCount loading={this.props.cmrLoadingGranule} count={this.props.cmrGranules.size} />).
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
@@ -49,7 +49,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderSpinnerForNextPage = () => {
-    if (!this.props.cmrLoadingGranuleInit && this.props.cmrLoadingGranuleScroll) {
+    if (!this.props.cmrLoadingGranuleInit && this.props.cmrLoadingGranule) {
       return (<LoadingIcon size="5x" className="loading-spinner-next-page" />);
     } else {
       return null;

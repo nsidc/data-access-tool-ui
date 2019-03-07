@@ -20,7 +20,7 @@ const initialState = {
   cmrGranuleCount: undefined,
   cmrGranules: List<CmrGranule>(),
   cmrLoadingGranuleInit: false,
-  cmrLoadingGranuleScroll: false,
+  cmrLoadingGranule: false,
   cmrStatusChecked: false,
   cmrStatusMessage: "",
   cmrStatusOk: false,

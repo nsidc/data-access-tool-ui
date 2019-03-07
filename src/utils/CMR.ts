@@ -120,13 +120,13 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
   return cmrFetch(collectionUrl).then((response: Response) => response.json());
 };
 
-export const cmrGranuleScrollInitRequest = (collectionAuthId: string,
-                                            collectionVersionId: number,
-                                            spatialSelection: IGeoJsonPolygon | null,
-                                            collectionSpatialCoverage: IGeoJsonPolygon | null,
-                                            temporalLowerBound: moment.Moment,
-                                            temporalUpperBound: moment.Moment,
-                                            headers?: Map<string, string>) => {
+export const cmrGranuleInitRequest = (collectionAuthId: string,
+                                      collectionVersionId: number,
+                                      spatialSelection: IGeoJsonPolygon | null,
+                                      collectionSpatialCoverage: IGeoJsonPolygon | null,
+                                      temporalLowerBound: moment.Moment,
+                                      temporalUpperBound: moment.Moment,
+                                      headers?: Map<string, string>) => {
   const URL = CMR_GRANULE_URL
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
