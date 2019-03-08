@@ -15,6 +15,8 @@
     `date` field
 * Stop loading 10,000 granules; limit previews and orders to 2,000 granules, as
   that is the limit on EGI.
+  * Update the warning message to reflect the new limit, and change the box from
+    red with white text to yellow with black text.
 
 # v0.3.0 (2018-12-19)
 
