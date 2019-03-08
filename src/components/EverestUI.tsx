@@ -242,7 +242,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     this.resetPolygon = true;
     if (errorMsg.includes("polygon boundary intersected")) {
       msg = "Polygon lines cannot intersect. Please redraw your polygon.";
-    } else  {
+    } else {
       msg = errorMsg;
       if (msg.length > 300) {
         msg = msg.substr(0, 300) + "...";
