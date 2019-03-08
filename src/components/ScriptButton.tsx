@@ -11,7 +11,6 @@ import { LoadingIcon } from "./LoadingIcon";
 interface IScriptButtonProps {
   cmrGranules?: List<CmrGranule>;
   disabled: boolean;
-  ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   loggedOut: boolean;
 }
@@ -67,7 +66,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
             type="button"
             className="script-button eui-btn--blue"
             disabled={this.props.disabled}
-            onClick={this.handleClick}>
+            onClick={this.submitForm}>
             Download Script
           </button>
         </div>
@@ -95,14 +94,6 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
                granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
 
     return urls.toJS();
-  }
-
-  private handleClick = () => {
-    this.setState({loading: true}, () => {
-      this.props.ensureGranuleScrollDepleted(() => {
-        this.setState({loading: false}, this.submitForm);
-      });
-    });
   }
 
   private submitForm = () => {

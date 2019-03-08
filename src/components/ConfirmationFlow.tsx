@@ -10,7 +10,6 @@ import { LoadingIcon } from "./LoadingIcon";
 
 interface IConfirmationFlowProps {
   cmrGranuleCount?: number;
-  ensureGranuleScrollDepleted: (callback?: () => any) => void;
   environment: IEnvironment;
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
@@ -48,18 +47,17 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     );
   }
 
-  public handleConfirmationClick() {
+  public handleConfirmationClick = () => {
     if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
       this.showLoadingIcon();
-
-      return this.props.ensureGranuleScrollDepleted(this.submitOrder);
+      return this.submitOrder();
     }
     return;
   }
 
   private orderConfirmationContent = () => {
     return (
-      <OrderConfirmationContent onOK={() => { this.handleConfirmationClick(); }}
+      <OrderConfirmationContent onOK={this.handleConfirmationClick}
                                 onCancel={this.props.onRequestClose}
                                 cmrGranuleCount={this.props.cmrGranuleCount}
                                 environment={this.props.environment} />
