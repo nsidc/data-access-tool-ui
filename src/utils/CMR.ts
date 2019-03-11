@@ -128,6 +128,7 @@ export const cmrGranuleScrollInitRequest = (collectionAuthId: string,
                                             collectionSpatialCoverage: IGeoJsonPolygon | null,
                                             temporalLowerBound: moment.Moment,
                                             temporalUpperBound: moment.Moment,
+                                            cmrGranuleFilter: string,
                                             headers?: Map<string, string>) => {
   const URL = CMR_GRANULE_URL
     + `&short_name=${collectionAuthId}`

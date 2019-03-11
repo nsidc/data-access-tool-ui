@@ -271,6 +271,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.collectionSpatialCoverage,
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
+      this.state.orderParameters.cmrGranuleFilter,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
      .catch((err) => { err = null; })
