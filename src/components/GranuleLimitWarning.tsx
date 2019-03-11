@@ -9,7 +9,7 @@ export const GranuleLimitWarning = (props: IGranuleLimitWarningProps) => {
 
   return (
     <div className="order-limit-message">
-      IMPORTANT: During the beta test period, orders are limited to 10,000
+      IMPORTANT: During the beta test period, orders are limited to 2,000
       granules regardless of the number you request.
     </div>
   );

@@ -4,6 +4,19 @@
 * Parse ZIP links by files ending in ".zip", rather than matching the Hermes
   order ID; this is necessary for ZIP links from ESI orders, which do not
   include the Hermes order IDs in their filenames.
+* Update Hermes-related URLs and data for hermes-api v4
+  * use `/api-v4/` rather than `/api/`
+  * Add `uid` field to JSON submitted in POST requests to Hermes for new orders
+  * Change `granule_URs` to `selection_critera.include_granules` for submitting
+    orders
+  * Replace `destination` and `format` fields with `fulfillment` and `delivery`
+    for new orders
+  * parse ISO datestring from `timestamp` field rather than UNIX date from
+    `date` field
+* Stop loading 10,000 granules; limit previews and orders to 2,000 granules, as
+  that is the limit on EGI.
+  * Update the warning message to reflect the new limit, and change the box from
+    red with white text to yellow with black text.
 
 # v0.3.0 (2018-12-19)
 

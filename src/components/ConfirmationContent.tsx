@@ -67,7 +67,7 @@ interface IOrderSuccessContentProps {
 }
 
 export const OrderSuccessContent = (props: IOrderSuccessContentProps) => {
-  const orderId = props.response.message.order_id;
+  const orderId = props.response.order.order_id;
   return (
     <div>
       <h3>Order Received</h3>

@@ -19,11 +19,8 @@ const granuleInput = {
 const initialState = {
   cmrGranuleCount: undefined,
   cmrGranuleFilter: "",
-  cmrGranuleScrollDepleted: false,
-  cmrGranuleScrollId: undefined,
   cmrGranules: List<CmrGranule>(),
-  cmrLoadingGranuleInit: false,
-  cmrLoadingGranuleScroll: false,
+  cmrLoadingGranules: false,
   cmrStatusChecked: false,
   cmrStatusMessage: "",
   cmrStatusOk: false,
@@ -42,7 +39,9 @@ const expected = {
       "id1",
       "href1",
     ])]),
-    granuleURs: List(["Barry"]),
+    selectionCriteria: {
+      includeGranules: List(["Barry"]),
+    },
   }),
 };
 
