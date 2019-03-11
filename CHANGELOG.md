@@ -5,6 +5,7 @@
   order ID; this is necessary for ZIP links from ESI orders, which do not
   include the Hermes order IDs in their filenames.
 * Update Hermes-related URLs and data for hermes-api v4
+  * use `/api-v4/` rather than `/api/`
   * access hermes-api v4 via the "hermes2" stack in "dev" (other environments
     require change in the data downloads Drupal module)
   * Add `uid` field to JSON submitted in POST requests to Hermes for new orders
