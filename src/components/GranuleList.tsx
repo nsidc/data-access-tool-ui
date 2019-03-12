@@ -14,30 +14,18 @@ interface IGranuleListProps {
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranules: boolean;
   updateGranuleFilter: any;
+  fireGranuleFilter: any;
 }
 
-interface IGranuleListState {
-  tempGranuleFilter: string;
-}
-
-export class GranuleList extends React.Component<IGranuleListProps, IGranuleListState> {
+export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
   private containerId = "granule-list-container";
   private timeout = 0;
 
-  public constructor(props: IGranuleListProps) {
-    super(props);
-
-    this.state = {
-      tempGranuleFilter: "",
-    };
-  }
-
-  public shouldComponentUpdate(nextProps: IGranuleListProps, nextState: IGranuleListState) {
+  public shouldComponentUpdate(nextProps: IGranuleListProps) {
     const propsChanged = hasChanged(this.props, nextProps,
       ["cmrGranules", "cmrGranuleFilter", "cmrLoadingGranules"]);
-    const stateChanged = hasChanged(this.state, nextState, ["tempGranuleFilter"]);
-    return propsChanged || stateChanged;
+    return propsChanged;
   }
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
@@ -53,7 +41,7 @@ export class GranuleList extends React.Component<IGranuleListProps, IGranuleList
         <div>
           Filter by ID:
           <input id="granule-list-filter" type="text"
-            value={this.state.tempGranuleFilter}
+            value={this.props.cmrGranuleFilter}
             onChange={this.granuleFilterChange}>
           </input>
         </div>
@@ -64,15 +52,11 @@ export class GranuleList extends React.Component<IGranuleListProps, IGranuleList
     );
   }
 
-  private handleGranuleFilter = (e: any) => {
-    this.props.updateGranuleFilter(this.state.tempGranuleFilter);
-  }
-
   private granuleFilterChange = (e: any) => {
-    if (e.target.value === this.state.tempGranuleFilter) { return; }
-    this.setState({ tempGranuleFilter: e.target.value });
+    if (e.target.value === this.props.cmrGranuleFilter) { return; }
+    this.props.updateGranuleFilter(e.target.value);
     if (this.timeout) { window.clearTimeout(this.timeout); }
-    this.timeout = window.setTimeout(this.handleGranuleFilter, 500);
+    this.timeout = window.setTimeout(this.props.fireGranuleFilter, 500);
   }
 
   private renderContent = () => {

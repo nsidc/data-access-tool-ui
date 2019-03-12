@@ -160,7 +160,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
               cmrGranules={this.state.cmrGranules}
               cmrLoadingGranules={this.state.cmrLoadingGranules}
-              updateGranuleFilter={this.updateGranuleFilter} />
+              updateGranuleFilter={this.updateGranuleFilter}
+              fireGranuleFilter={this.fireGranuleFilter} />
             <OrderButtons
               cmrGranuleCount={this.state.cmrGranuleCount}
               environment={this.props.environment}
@@ -273,7 +274,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private updateGranuleFilter = (cmrGranuleFilter: string) => {
-    this.handleOrderParameterChange({ cmrGranuleFilter });
+    const orderParameters = mergeOrderParameters(this.state.orderParameters, { cmrGranuleFilter });
+    this.setState({ orderParameters });
+  }
+
+  private fireGranuleFilter = () => {
+    this.handleOrderParameterChange({ cmrGranuleFilter: this.state.orderParameters.cmrGranuleFilter });
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
