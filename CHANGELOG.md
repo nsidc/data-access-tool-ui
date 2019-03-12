@@ -1,4 +1,4 @@
-# v0.4.0 (Unreleased)
+# v0.4.0 (2019-03-11)
 
 * Add Cesium logo beneath the globe widget
 * Parse ZIP links by files ending in ".zip", rather than matching the Hermes
