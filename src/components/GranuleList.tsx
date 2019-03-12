@@ -4,7 +4,6 @@ import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
-import { OrderParameters } from "../types/OrderParameters";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
@@ -14,21 +13,31 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranules: boolean;
-  orderParameters: OrderParameters;
   updateGranuleFilter: any;
 }
 
-export class GranuleList extends React.Component<IGranuleListProps, {}> {
+interface IGranuleListState {
+  tempGranuleFilter: string;
+}
+
+export class GranuleList extends React.Component<IGranuleListProps, IGranuleListState> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
-
   private containerId = "granule-list-container";
+  private timeout = 0;
 
-  public shouldComponentUpdate(nextProps: IGranuleListProps) {
-    return hasChanged(this.props, nextProps, [
-      "cmrGranules",
-      "cmrGranuleFilter",
-      "cmrLoadingGranules",
-    ]);
+  public constructor(props: IGranuleListProps) {
+    super(props);
+
+    this.state = {
+      tempGranuleFilter: "",
+    };
+  }
+
+  public shouldComponentUpdate(nextProps: IGranuleListProps, nextState: IGranuleListState) {
+    const propsChanged = hasChanged(this.props, nextProps,
+      ["cmrGranules", "cmrGranuleFilter", "cmrLoadingGranules"]);
+    const stateChanged = hasChanged(this.state, nextState, ["tempGranuleFilter"]);
+    return propsChanged || stateChanged;
   }
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
@@ -42,12 +51,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranules.size} />).
         </div>
         <div>
-          Filter by name:
+          Filter by ID:
           <input id="granule-list-filter" type="text"
-            disabled={!this.props.cmrGranuleCount || this.props.cmrGranuleCount === 0}
-            value={this.props.cmrGranuleFilter}
-            onChange={this.handleGranuleFilter}
-            onKeyDown={this.granuleFilterOnKeydown}>
+            value={this.state.tempGranuleFilter}
+            onChange={this.granuleFilterChange}>
           </input>
         </div>
         <div id={this.containerId}>
@@ -58,29 +65,14 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private handleGranuleFilter = (e: any) => {
-    this.props.updateGranuleFilter(e.target.value);
+    this.props.updateGranuleFilter(this.state.tempGranuleFilter);
   }
 
-  private granuleFilterOnKeydown = (e: any) => {
-    switch (e.key) {
-      case "Enter":
-        //        this.props.polygonMode.changeLonLat(e.target.value);
-        break;
-      case "Escape":
-        //        this.props.polygonMode.resetLonLat();
-        break;
-      case "Tab":
-        //        this.props.polygonMode.changeLonLat(e.target.value);
-        if (e.shiftKey) {
-          //          this.props.polygonMode.activateRelativePoint(-1);
-        } else {
-          //          this.props.polygonMode.activateRelativePoint(+1);
-        }
-        e.preventDefault();
-        break;
-      default:
-        break;
-    }
+  private granuleFilterChange = (e: any) => {
+    if (e.target.value === this.state.tempGranuleFilter) { return; }
+    this.setState({ tempGranuleFilter: e.target.value });
+    if (this.timeout) { window.clearTimeout(this.timeout); }
+    this.timeout = window.setTimeout(this.handleGranuleFilter, 500);
   }
 
   private renderContent = () => {

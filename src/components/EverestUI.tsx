@@ -31,7 +31,6 @@ interface IEverestProps {
 
 export interface IEverestState {
   cmrGranuleCount?: number;
-  cmrGranuleFilter: string;
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranules: boolean;
   cmrStatusChecked: boolean;
@@ -61,7 +60,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     this.state = {
       cmrGranuleCount: undefined,
-      cmrGranuleFilter: "",
       cmrGranules: List<CmrGranule>(),
       cmrLoadingGranules: false,
       cmrStatusChecked: false,
@@ -159,10 +157,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           <div id="right-side">
             <GranuleList
               cmrGranuleCount={this.state.cmrGranuleCount}
-              cmrGranuleFilter={this.state.cmrGranuleFilter}
+              cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
               cmrGranules={this.state.cmrGranules}
               cmrLoadingGranules={this.state.cmrLoadingGranules}
-              orderParameters={this.state.orderParameters}
               updateGranuleFilter={this.updateGranuleFilter} />
             <OrderButtons
               cmrGranuleCount={this.state.cmrGranuleCount}
@@ -276,7 +273,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private updateGranuleFilter = (cmrGranuleFilter: string) => {
-    this.setState({ cmrGranuleFilter });
     this.handleOrderParameterChange({ cmrGranuleFilter });
   }
 
@@ -325,6 +321,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
 
     this.handleOrderParameterChange({
+      cmrGranuleFilter: "",
       collection,
       collectionSpatialCoverage,
       temporalFilterLowerBound: moment.utc(collection.time_start),
