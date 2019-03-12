@@ -1,3 +1,8 @@
+# v0.5.0 (2019-03-12)
+
+* Switch to use /apps/orders/notification2 endpoint for websockets. This will
+  need to be reverted.
+
 # v0.4.0 (2019-03-11)
 
 * Add Cesium logo beneath the globe widget
