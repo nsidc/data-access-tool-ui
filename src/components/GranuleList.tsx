@@ -1,6 +1,7 @@
 import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
+import * as ReactTooltip from "react-tooltip";
 import { CSSTransition } from "react-transition-group";
 
 import { CmrGranule } from "../types/CmrGranule";
@@ -32,18 +33,24 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   public render() {
     return (
       <div>
-        <div id="granule-list-count-header" className="views-field">
-          You have selected
-          {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />{" "}
-          granules (displaying
-          {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranules.size} />).
-        </div>
-        <div>
-          Filter by ID:
-          <input id="granule-list-filter" type="text"
-            value={this.props.cmrGranuleFilter}
-            onChange={this.granuleFilterChange}>
-          </input>
+        <div id="granule-list-header">
+          <div id="granule-list-count-header" className="views-field">
+            You have selected
+            {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />{" "}
+            granules (displaying
+            {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranules.size} />).
+          </div>
+          <div id="granule-list-filter" data-tip data-for="granuleFilter">
+            <ReactTooltip id="granuleFilter" className="reactTooltip"
+              disable={this.props.cmrGranuleFilter !== ""}
+              effect="solid" delayShow={1000}>
+              * = match any characters<br/>? = match one character</ReactTooltip>
+            <input type="text"
+              value={this.props.cmrGranuleFilter}
+              placeholder="Search granules"
+              onChange={this.granuleFilterChange}>
+            </input>
+          </div>
         </div>
         <div id={this.containerId}>
           {this.renderContent()}
@@ -53,6 +60,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private granuleFilterChange = (e: any) => {
+    ReactTooltip.hide();
     if (e.target.value === this.props.cmrGranuleFilter) { return; }
     this.props.updateGranuleFilter(e.target.value);
     if (this.timeout) { window.clearTimeout(this.timeout); }

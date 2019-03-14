@@ -264,9 +264,25 @@
     font-weight: bold;
   }
 
-  #granule-list-count-header {
-    color: #474747;
-    padding: 0;
+  #granule-list-header {
+    display: flex;
+    align-items: baseline;
+
+    #granule-list-count-header {
+      color: #474747;
+      padding: 0;
+      flex-grow: 1;
+    }
+
+    input {
+      width: 200px;
+      font-size: 90%;
+      margin-bottom: 2px;
+
+      &::placeholder {
+        font-style: italic;
+      }
+    }
   }
 
   #granule-list-container {
