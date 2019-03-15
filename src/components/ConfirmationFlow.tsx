@@ -66,7 +66,6 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     return this.props.environment.hermesAPI.submitOrder(
       this.props.environment.user,
       this.props.orderSubmissionParameters!.selectionCriteria,
-      this.props.orderSubmissionParameters!.collectionInfo,
     )
     .then((response: any) => {
       if (![200, 201].includes(response.status)) {

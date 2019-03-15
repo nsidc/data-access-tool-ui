@@ -8,11 +8,7 @@ const orderSubmissionParametersFromCmrGranules = (cmrGranules: List<CmrGranule>)
   const granules = cmrGranules.map((g) => g!.title) as List<string>;
   const selectionCriteria = {includeGranules: granules};
 
-  const collectionIDs = cmrGranules.map((g) => g!.dataset_id) as List<string>;
-  const collectionLinks = cmrGranules.map((g) => g!.links.last().get("href")) as List<string>;
-  const collectionInfo = collectionIDs.map((id, key) => List([id!, collectionLinks.get(key!)])) as List<List<string>>;
-
-  return new OrderSubmissionParameters({collectionInfo, selectionCriteria});
+  return new OrderSubmissionParameters({selectionCriteria});
 };
 
 export const updateStateInitGranules = (granules: any[]) => {
