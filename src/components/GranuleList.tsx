@@ -62,9 +62,9 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private granuleFilterChange = (e: any) => {
     ReactTooltip.hide();
     if (e.target.value === this.props.cmrGranuleFilter) { return; }
-    this.props.updateGranuleFilter(e.target.value);
     if (this.timeout) { window.clearTimeout(this.timeout); }
-    this.timeout = window.setTimeout(this.props.fireGranuleFilter, 500);
+    this.props.updateGranuleFilter(e.target.value);
+    this.timeout = window.setTimeout(this.props.fireGranuleFilter, 600);
   }
 
   private renderContent = () => {
