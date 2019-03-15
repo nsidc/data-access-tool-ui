@@ -1,4 +1,9 @@
-# v0.4.0 (Unreleased)
+# v0.5.0 (2019-03-12)
+
+* Switch to use /apps/orders/notification2 endpoint for websockets. This will
+  need to be reverted.
+
+# v0.4.0 (2019-03-11)
 
 * Add Cesium logo beneath the globe widget
 * Parse ZIP links by files ending in ".zip", rather than matching the Hermes
@@ -6,6 +11,8 @@
   include the Hermes order IDs in their filenames.
 * Update Hermes-related URLs and data for hermes-api v4
   * use `/api-v4/` rather than `/api/`
+  * access hermes-api v4 via the "hermes2" stack in "dev" (other environments
+    require change in the data downloads Drupal module)
   * Add `uid` field to JSON submitted in POST requests to Hermes for new orders
   * Change `granule_URs` to `selection_critera.include_granules` for submitting
     orders

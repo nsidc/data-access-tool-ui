@@ -34,15 +34,15 @@ function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     return {
-      hermesBaseUrl: `${window.location.hostname}`.replace("nsidc.org.drupal", "hermes"),
-      orderNotificationHost: `wss://dev.hermes.${devPostfix}`,
+      hermesBaseUrl: `${window.location.hostname}`.replace("nsidc.org.drupal", "hermes2"),
+      orderNotificationHost: `wss://dev.hermes2.${devPostfix}`,
       orderNotificationPath: "/notification/",
     };
   } else {
     return {
       hermesBaseUrl: `${window.location.hostname}/apps/orders`,
       orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/orders/notification/",
+      orderNotificationPath: "/apps/orders/notification2/",
     };
   }
 }
