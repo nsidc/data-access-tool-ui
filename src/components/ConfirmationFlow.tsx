@@ -2,7 +2,6 @@ import * as React from "react";
 import * as ReactModal from "react-modal";
 
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from "./ConfirmationContent";
@@ -13,7 +12,6 @@ interface IConfirmationFlowProps {
   environment: IEnvironment;
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
-  orderType?: OrderTypes;
   show: boolean;
 }
 
@@ -31,7 +29,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   public shouldComponentUpdate(nextProps: IConfirmationFlowProps, nextState: IConfirmationFlowState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount", "environment", "show", "orderType"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount", "environment", "show"]);
     const stateChanged = hasChanged(this.state, nextState, ["visibleUI"]);
     return stateChanged || propsChanged;
   }
@@ -48,7 +46,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   public handleConfirmationClick = () => {
-    if (this.props.orderSubmissionParameters && this.props.orderType !== undefined) {
+    if (this.props.orderSubmissionParameters) {
       this.showLoadingIcon();
       return this.submitOrder();
     }
@@ -69,7 +67,6 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       this.props.environment.user,
       this.props.orderSubmissionParameters!.selectionCriteria,
       this.props.orderSubmissionParameters!.collectionInfo,
-      this.props.orderType!,
     )
     .then((response: any) => {
       if (![200, 201].includes(response.status)) {

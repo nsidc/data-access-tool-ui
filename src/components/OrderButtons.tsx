@@ -3,7 +3,6 @@ import * as React from "react";
 
 import { CmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { OrderTypes } from "../types/orderTypes";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { ConfirmationFlow } from "./ConfirmationFlow";
@@ -19,7 +18,6 @@ interface IOrderButtonsProps {
 }
 
 interface IOrderButtonsState {
-  orderType?: OrderTypes;
   showConfirmationFlow: boolean;
 }
 
@@ -27,7 +25,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   public constructor(props: IOrderButtonsProps) {
     super(props);
     this.state = {
-      orderType: undefined, // Don't forget to set it back after submitting order
       showConfirmationFlow: false,
     };
   }
@@ -55,25 +52,17 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           loggedOut={loggedOut}
           cmrGranules={this.props.cmrGranules} />
         <SubmitButton
-          buttonText={"Get Individual Files"}
+          buttonText={"Order Files"}
           disabled={orderButtonsDisabled}
-          hoverText={"Once processed, your Order page will have a linked list of files."}
+          hoverText={`Once processed, your Order page will contain links to one or more zip files,
+          as well as to the individual file URLs.`}
           loggedOut={loggedOut}
-          onSubmitOrder={this.handleSubmitOrder}
-          orderType={OrderTypes.listOfLinks} />
-        <SubmitButton
-          buttonText={"Order Zip File"}
-          disabled={orderButtonsDisabled}
-          hoverText={"Once processed, your Order page will link to one or more zipped files."}
-          loggedOut={loggedOut}
-          onSubmitOrder={this.handleSubmitOrder}
-          orderType={OrderTypes.zipFile} />
+          onSubmitOrder={this.handleSubmitOrder} />
         <ConfirmationFlow
           cmrGranuleCount={this.props.cmrGranuleCount}
           environment={this.props.environment}
           onRequestClose={this.closeConfirmationFlow}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
-          orderType={this.state.orderType}
           show={this.state.showConfirmationFlow} />
       </div>
       </div>
@@ -84,9 +73,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.setState({showConfirmationFlow: false});
   }
 
-  private handleSubmitOrder = (orderType: OrderTypes) => {
+  private handleSubmitOrder = () => {
     this.setState({
-      orderType,
       showConfirmationFlow: true,
     });
   }
