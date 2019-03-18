@@ -1,8 +1,6 @@
-import { List } from "immutable";
 import * as io from "socket.io-client";
 
 import { ISelectionCriteria } from "../types/OrderSubmissionParameters";
-import { OrderTypes } from "../types/orderTypes";
 import { IUser } from "../types/User";
 
 export interface IHermesAPI {
@@ -10,19 +8,8 @@ export interface IHermesAPI {
   getUserOrders: (user: IUser) => any;
   openNotificationConnection: (user: IUser, callback: any) => void;
   submitOrder: (user: IUser,
-                selectionCriteria: ISelectionCriteria,
-                collectionInfo: List<List<string>>,
-                orderType: OrderTypes) => Promise<any>;
+                selectionCriteria: ISelectionCriteria) => Promise<any>;
 }
-
-const getOrderParamsByType = (orderType: OrderTypes): any => {
-  if ([OrderTypes.listOfLinks, OrderTypes.zipFile].includes(orderType)) {
-    return {
-      delivery: "esi",
-      fulfillment: "esi",
-    };
-  }
-};
 
 export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   const getOrderInDrupal = (orderId: string) => {
@@ -63,19 +50,17 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   const submitOrder = (
     user: IUser,
     selectionCriteria: ISelectionCriteria,
-    collectionInfo: List<List<string>>,
-    orderType: OrderTypes,
   ) => {
     const headers: any = {
       "Content-Type": "application/json",
     };
     let body: object = {
-      collection_info: collectionInfo,
+      delivery: "esi",
+      fulfillment: "esi",
       selection_criteria: {
         include_granules: selectionCriteria.includeGranules,
       },
     };
-    body = Object.assign(body, getOrderParamsByType(orderType));
 
     const uid = user.uid;
     body = Object.assign(body, {uid, user});

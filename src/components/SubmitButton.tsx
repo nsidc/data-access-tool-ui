@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
 
-import { OrderTypes } from "../types/orderTypes";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
@@ -10,7 +9,6 @@ interface ISubmitButtonProps {
   hoverText: string;
   loggedOut: boolean;
   onSubmitOrder: any;
-  orderType: OrderTypes;
 }
 
 export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
@@ -48,6 +46,6 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   }
 
   public handleClick() {
-    this.props.onSubmitOrder(this.props.orderType);
+    this.props.onSubmitOrder();
   }
 }
