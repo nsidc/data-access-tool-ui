@@ -54,7 +54,8 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
           <div>Status: {order.status}</div>
           <div>Fulfillment method: {order.fulfillment}</div>
           <div>Delivery method: {order.delivery}</div>
-          <div>Zip: {zipLink}</div>
+          <hr />
+          <div>Zip link: {zipLink}</div>
           <div>File links:
             <ul>{links}</ul>
           </div>
@@ -97,8 +98,11 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   private buildZipLink(order: any): JSX.Element {
-    const zipLink = this.findZipLink(order).uri;
-    return ( <a href={zipLink}>{zipLink}</a> );
+    const zipLink = this.findZipLink(order);
+    if (!zipLink) {
+      return ( <span>Please wait...</span> );
+    }
+    return ( <a href={zipLink.uri}>{zipLink.uri}</a> );
   }
 
   private findZipLink(order: any): any {

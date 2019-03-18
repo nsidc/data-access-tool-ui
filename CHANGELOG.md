@@ -5,7 +5,6 @@
   * This was done in a hacky way that won't work once we enable dataproducts
     which contain .zip files. We plan to address this with the database switch.
 
-
 # v0.5.0 (2019-03-12)
 
 * Switch to use /apps/orders/notification2 endpoint for websockets. This will
