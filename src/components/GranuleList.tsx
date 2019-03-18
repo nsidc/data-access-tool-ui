@@ -35,10 +35,10 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       <div>
         <div id="granule-list-header">
           <div id="granule-list-count-header" className="views-field">
-            You have selected
-            {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />{" "}
-            granules (displaying
-            {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranules.size} />).
+            <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />{" "}
+            granules selected,
+            {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranules.size} />
+            {" "}displayed.
           </div>
           <div id="granule-list-filter" data-tip data-for="granuleFilter">
             <ReactTooltip id="granuleFilter" className="reactTooltip"
@@ -47,7 +47,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
               * = match any characters<br/>? = match one character</ReactTooltip>
             <input type="text"
               value={this.props.cmrGranuleFilter}
-              placeholder="Search granules"
+              placeholder="Search granule list"
               onChange={this.granuleFilterChange}>
             </input>
           </div>
