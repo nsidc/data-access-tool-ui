@@ -3,7 +3,6 @@ import * as moment from "moment";
 import * as React from "react";
 
 import { SubmitButton } from "../src/components/SubmitButton";
-import { OrderTypes } from "../src/types/orderTypes";
 
 const setup = () => {
   const props = {
@@ -14,7 +13,6 @@ const setup = () => {
     loggedOut: false,
     onGranuleResponse: jest.fn(),
     onSubmitOrder: jest.fn(),
-    orderType: OrderTypes.listOfLinks,
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {

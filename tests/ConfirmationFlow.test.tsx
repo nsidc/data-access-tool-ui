@@ -6,7 +6,6 @@ import * as React from "react";
 import { ConfirmationFlow } from "../src/components/ConfirmationFlow";
 import { OrderConfirmationContent } from "../src/components/ConfirmationContent";
 import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
-import { OrderTypes } from "../src/types/orderTypes";
 import setupEnvironment from "../src/utils/environment";
 
 shim();
@@ -18,7 +17,6 @@ const setup = (props = {}) => {
     environment,
     onRequestClose: () => {},  // set props.show to false
     orderSubmissionParameters: undefined,
-    orderType: undefined,
     show: true,
   };
 
@@ -41,7 +39,6 @@ describe("ConfirmationFlow", () => {
 
     const describedComponent = setup({
       orderSubmissionParameters: new OrderSubmissionParameters(),
-      orderType: OrderTypes.listOfLinks,
     });
 
     beforeAll(() => {

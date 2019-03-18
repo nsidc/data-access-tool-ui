@@ -35,10 +35,6 @@ const expected = {
     new CmrGranule(granuleInput),
   ]),
   orderSubmissionParameters: new OrderSubmissionParameters({
-    collectionInfo: List([List([
-      "id1",
-      "href1",
-    ])]),
     selectionCriteria: {
       includeGranules: List(["Barry"]),
     },

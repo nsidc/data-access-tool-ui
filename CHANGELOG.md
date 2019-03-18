@@ -1,6 +1,14 @@
-# v0.6.0 (Unreleased)
+# v0.7.0 (Unreleased)
 
 * Add text filter for granule IDs.
+
+# v0.6.0 (2019-03-18)
+
+* Merge list-of-links and zip buttons into one -- ESI provides both for free.
+* Display file links and zip link separately on order history page
+  * This was done in a hacky way that won't work once we enable dataproducts
+    which contain .zip files. We plan to address this with the database switch.
+
 
 # v0.5.0 (2019-03-12)
 
