@@ -1,3 +1,7 @@
+# v0.6.0 (Unreleased)
+
+* Add text filter for granule IDs.
+
 # v0.5.0 (2019-03-12)
 
 * Switch to use /apps/orders/notification2 endpoint for websockets. This will
