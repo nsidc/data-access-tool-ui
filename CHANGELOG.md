@@ -1,4 +1,4 @@
-# v0.7.0 (Unreleased)
+# v0.7.0 (2019-03-20)
 
 * Add text filter for granule IDs.
 
