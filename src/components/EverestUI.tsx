@@ -110,6 +110,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const stateChanged = hasChanged(this.state, nextState, [
       "cmrGranules",
       "cmrGranuleCount",
+      "cmrGranuleFilter",
       "cmrLoadingGranules",
       "cmrStatusChecked",
       "cmrStatusMessage",
@@ -156,9 +157,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           <div id="right-side">
             <GranuleList
               cmrGranuleCount={this.state.cmrGranuleCount}
+              cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
               cmrGranules={this.state.cmrGranules}
               cmrLoadingGranules={this.state.cmrLoadingGranules}
-              orderParameters={this.state.orderParameters} />
+              updateGranuleFilter={this.updateGranuleFilter}
+              fireGranuleFilter={this.fireGranuleFilter} />
             <OrderButtons
               cmrGranuleCount={this.state.cmrGranuleCount}
               environment={this.props.environment}
@@ -216,6 +219,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.collectionSpatialCoverage,
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
+      this.state.orderParameters.cmrGranuleFilter,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
      .catch((err) => { err = null; })
@@ -269,6 +273,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     });
   }
 
+  private updateGranuleFilter = (cmrGranuleFilter: string) => {
+    const orderParameters = mergeOrderParameters(this.state.orderParameters, { cmrGranuleFilter });
+    this.setState({ orderParameters });
+  }
+
+  private fireGranuleFilter = () => {
+    this.handleOrderParameterChange({ cmrGranuleFilter: this.state.orderParameters.cmrGranuleFilter });
+  }
+
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {
     let timeErrorLowerBound = "";
     let timeErrorUpperBound = "";
@@ -314,6 +327,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
 
     this.handleOrderParameterChange({
+      cmrGranuleFilter: "",
       collection,
       collectionSpatialCoverage,
       temporalFilterLowerBound: moment.utc(collection.time_start),

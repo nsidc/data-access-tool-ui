@@ -69,6 +69,14 @@ export const versionParameters = (versionId: number): string => {
   return queryParams;
 };
 
+export const granuleFilterParameters = (cmrGranuleFilter: string): string => {
+  let f = cmrGranuleFilter;
+  if (!f.startsWith("*")) { f = "*" + f; }
+  if (!f.endsWith("*")) { f += "*"; }
+  const result = `&producer_granule_id[]=${f}&options[producer_granule_id][pattern]=true`;
+  return result;
+};
+
 // make a request with CMR headers
 // return response.json() on a successful request; reject the Promise otherwise
 const cmrFetch = (url: string, headers: Map<string, string> = Map()) => {
@@ -126,13 +134,17 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionSpatialCoverage: IGeoJsonPolygon | null,
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment,
+                                  cmrGranuleFilter: string,
                                   headers?: Map<string, string>) => {
-  const URL = CMR_GRANULE_URL
+  let URL = CMR_GRANULE_URL
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
     + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
 
+  if (cmrGranuleFilter !== "") {
+    URL += `&${granuleFilterParameters(cmrGranuleFilter)}`;
+  }
   return cmrFetch(URL, headers);
 };
 

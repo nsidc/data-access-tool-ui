@@ -1,3 +1,7 @@
+# v0.7.0 (2019-03-20)
+
+* Add text filter for granule IDs.
+
 # v0.6.0 (2019-03-18)
 
 * Merge list-of-links and zip buttons into one -- ESI provides both for free.

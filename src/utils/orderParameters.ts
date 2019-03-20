@@ -27,6 +27,7 @@ export const mergeOrderParameters = (orderParamsA: OrderParameters,
   // they are converted to Immutable Maps
   if (aGeoJsonPolygonWasUpdated) {
     orderParameters = new OrderParameters({
+      cmrGranuleFilter: orderParameters.cmrGranuleFilter,
       collection: orderParameters.collection,
       collectionSpatialCoverage,
       spatialSelection,

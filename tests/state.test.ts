@@ -18,6 +18,7 @@ const granuleInput = {
 
 const initialState = {
   cmrGranuleCount: undefined,
+  cmrGranuleFilter: "",
   cmrGranules: List<CmrGranule>(),
   cmrLoadingGranules: false,
   cmrStatusChecked: false,
