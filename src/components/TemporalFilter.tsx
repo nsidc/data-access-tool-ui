@@ -37,7 +37,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
     // items, while still showing the calendar popups correctly.
     return (
       <div id="temporal-selection">
-        <h3>Limit by date:</h3>
+        <h3>Filter by date:</h3>
         <label className="from">From</label>
         <DatePicker
           id="from"

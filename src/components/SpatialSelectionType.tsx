@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -21,9 +22,11 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
 
   public render() {
     return (
-      <div className="cesium-button cesium-toolbar-button" onClick={(e: any) => this.props.onClick(e.target.value)}>
-        <img src={this.props.img} alt={this.props.title}
-          data-tip={this.props.title} data-offset="{'top':10}"/>
+      <div className="cesium-button cesium-toolbar-button"
+        onClick={(e: any) => this.props.onClick(e.target.value)}>
+        <button className="toolbarButton" data-tip={this.props.title}>
+          <FontAwesomeIcon icon={this.props.img} />
+        </button>
       </div>
     );
   }
