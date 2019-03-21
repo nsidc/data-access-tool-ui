@@ -51,12 +51,16 @@ export class PolygonMode {
   }
 
   public reset = () => {
+    const didHavePoints = this.points.size >= MIN_VERTICES;
     this.clearAllPoints();
     this.deactivateActivePoint();
     this.scene.primitives.removeAll();
     this.lonLatEnableCallback(false);
     this.lonLatLabelCallback("");
-    this.finishedDrawingCallback(this.points);
+    // Avoid doing a CMR refresh if our polygon was already empty.
+    if (didHavePoints) {
+      this.finishedDrawingCallback(this.points);
+    }
     this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();

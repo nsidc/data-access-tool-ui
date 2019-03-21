@@ -108,6 +108,10 @@
       margin-left: 1.5em;
     }
 
+    #to {
+      margin-right: 1.5em;
+    }
+
     div.timeError {
       position: relative;
       z-index: 100;
@@ -129,31 +133,30 @@
       left: -calc(100% + 1em);
       margin-right: -calc(100% + 1em);
     }
+  }
 
-    .timeReset {
-      cursor: pointer;
-      background-color: inherit;
-      border-style: none;
-      padding-left: 4px;
-      padding-right: 4px;
-      padding-top: 1px;
-      padding-bottom: 2px;
-      margin-left: 1em;
-      margin-right: 1em;
+  .buttonReset {
+    cursor: pointer;
+    background-color: inherit;
+    border-style: none;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0;
+    padding-bottom: 3px;
+    vertical-align: middle;
 
-      &:hover {
-        color: #48b;
-        box-shadow: 0 0 8px #fff;
-      }
+    &:hover {
+      color: #48b;
+      box-shadow: 0 0 8px #fff;
+    }
 
-      &:focus {
-        outline-width: 0;
-      }
+    &:focus {
+      outline-width: 0;
+    }
 
-      &:active {
-        color: #adf;
-        box-shadow: 0 0 8px #fff;
-      }
+    &:active {
+      color: #adf;
+      box-shadow: 0 0 8px #fff;
     }
   }
 

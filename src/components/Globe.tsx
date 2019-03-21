@@ -92,8 +92,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             }}
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
-              this.cesiumAdapter.startSpatialSelection();
-              CesiumUtils.setCursorCrosshair();
+              window.setTimeout(this.startSpatialSelection, 0);
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
@@ -102,6 +101,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         </div>
       </div>
     );
+  }
+
+  private startSpatialSelection = () => {
+    this.cesiumAdapter.startSpatialSelection();
+    CesiumUtils.setCursorCrosshair();
   }
 
   private updateSpatialSelection = (spatialSelection: IGeoJsonPolygon) => {
