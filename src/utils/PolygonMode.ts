@@ -216,7 +216,7 @@ export class PolygonMode {
   }
 
   private isDuplicateCartesian = (cartesian: Cesium.Cartesian3): boolean => {
-    const tolerance = 1e-2;
+    const tolerance = 1e-6;
     return this.points.some((point) => {
       return cartesian.equalsEpsilon(point!.cartesian, tolerance, tolerance);
     });
