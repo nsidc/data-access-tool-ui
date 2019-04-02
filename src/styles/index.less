@@ -144,6 +144,7 @@
     padding-top: 0;
     padding-bottom: 3px;
     vertical-align: middle;
+    color: #555;
 
     &:hover {
       color: #48b;
@@ -190,17 +191,22 @@
     padding: 0;
   }
 
+  .note {
+    font-style: italic;
+  }
+
   .help-text {
     display: inline;
     line-height: 1.2em;
 
-    span,
-    section {
+    span {
       font-size: 80%;
-      padding: 0 0 1em 1.2em;
+      padding: 0;
     }
 
     section {
+      font-size: 80%;
+      padding: 6pt 0 6pt 1em;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
 

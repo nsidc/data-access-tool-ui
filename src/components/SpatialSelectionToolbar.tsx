@@ -20,7 +20,7 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
         <SpatialSelectionType name="home"
                               onClick={() => this.props.onClickHome()}
                               img={faHome}
-                              title="Recenter globe/coverage"/>
+                              title="Re-center globe/coverage"/>
         <SpatialSelectionType name="polygon"
                               onClick={() => this.props.onClickPolygon()}
                               img={faDrawPolygon}
@@ -28,7 +28,7 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
         <SpatialSelectionType name="reset"
                               onClick={() => this.props.onClickReset()}
                               img={faTrashAlt}
-                              title="Delete polygon and remove filter"/>
+                              title="Delete polygon (remove filter)"/>
       </div>
     );
   }
