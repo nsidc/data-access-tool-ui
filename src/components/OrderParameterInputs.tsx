@@ -44,7 +44,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
             this.props.onChange({spatialSelection})}
           spatialSelection={this.props.orderParameters.spatialSelection} />
         <div id="version">
-          <a href="https://cesiumjs.org"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>
+          <a href="https://cesiumjs.org" target="_blank"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>
           <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
       </div>
     );
