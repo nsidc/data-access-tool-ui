@@ -66,6 +66,7 @@ export class PolygonMode {
       this.mouseHandler.destroy();
       this.mouseHandler = null;
     }
+    this.scene.requestRender();
   }
 
   public changeLonLat(sLonLat: string) {
@@ -186,6 +187,8 @@ export class PolygonMode {
       });
       this.scene.primitives.add(this.polygon);
     }
+
+    this.scene.requestRender();
   }
 
   private parseLonLat(sLonLat: string): ILonLat {
@@ -313,6 +316,7 @@ export class PolygonMode {
         point!.deactivate();
       }
     }, this);
+    this.scene.requestRender();
   }
 
   private handleMouseCursor(screenPosition: Cesium.Cartesian2) {
