@@ -4,6 +4,8 @@ import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
 import { CSSTransition } from "react-transition-group";
 
+import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CmrGranule } from "../types/CmrGranule";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
@@ -50,6 +52,14 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
               placeholder="Search granule list"
               onChange={this.granuleFilterChange}>
             </input>
+          </div>
+          <div onClick={(e: any) => {
+            this.props.updateGranuleFilter("");
+            window.setTimeout(this.props.fireGranuleFilter, 0);
+            }}>
+            <button className="buttonReset" data-tip="Reset search filter">
+              <FontAwesomeIcon icon={faUndoAlt} size="lg" />
+            </button>
           </div>
         </div>
         <div id={this.containerId}>

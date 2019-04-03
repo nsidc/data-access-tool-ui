@@ -108,6 +108,10 @@
       margin-left: 1.5em;
     }
 
+    #to {
+      margin-right: 1.5em;
+    }
+
     div.timeError {
       position: relative;
       z-index: 100;
@@ -129,31 +133,31 @@
       left: -calc(100% + 1em);
       margin-right: -calc(100% + 1em);
     }
+  }
 
-    .timeReset {
-      cursor: pointer;
-      background-color: inherit;
-      border-style: none;
-      padding-left: 4px;
-      padding-right: 4px;
-      padding-top: 1px;
-      padding-bottom: 2px;
-      margin-left: 1em;
-      margin-right: 1em;
+  .buttonReset {
+    cursor: pointer;
+    background-color: inherit;
+    border-style: none;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0;
+    padding-bottom: 3px;
+    vertical-align: middle;
+    color: #555;
 
-      &:hover {
-        color: #48b;
-        box-shadow: 0 0 8px #fff;
-      }
+    &:hover {
+      color: #48b;
+      box-shadow: 0 0 8px #fff;
+    }
 
-      &:focus {
-        outline-width: 0;
-      }
+    &:focus {
+      outline-width: 0;
+    }
 
-      &:active {
-        color: #adf;
-        box-shadow: 0 0 8px #fff;
-      }
+    &:active {
+      color: #adf;
+      box-shadow: 0 0 8px #fff;
     }
   }
 
@@ -187,17 +191,22 @@
     padding: 0;
   }
 
+  .note {
+    font-style: italic;
+  }
+
   .help-text {
     display: inline;
     line-height: 1.2em;
 
-    span,
-    section {
+    span {
       font-size: 80%;
-      padding: 0 0 1em 1.2em;
+      padding: 0;
     }
 
     section {
+      font-size: 80%;
+      padding: 6pt 0 6pt 1em;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
 
@@ -266,7 +275,7 @@
 
   #granule-list-header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
 
     #granule-list-count-header {
       color: #474747;
@@ -507,6 +516,19 @@
         font-weight: bolder;
       }
     }
+  }
+
+  .toolbarButton {
+    color: white;
+    border-color: inherit;
+    border-style: none;
+    background-color: inherit;
+    font-size: 14pt;
+    padding: inherit;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .ReactModal__Overlay {

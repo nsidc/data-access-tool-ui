@@ -37,7 +37,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
     // items, while still showing the calendar popups correctly.
     return (
       <div id="temporal-selection">
-        <h3>Limit by date:</h3>
+        <h3>Filter by date:</h3>
         <label className="from">From</label>
         <DatePicker
           id="from"
@@ -53,7 +53,7 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
           onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
         <div onClick={this.props.onClick}>
-          <button className="timeReset" data-tip="Reset dates to defaults">
+          <button className="buttonReset" data-tip="Reset dates to defaults">
             <FontAwesomeIcon icon={faUndoAlt} size="lg" />
           </button>
         </div>

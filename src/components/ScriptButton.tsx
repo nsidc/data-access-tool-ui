@@ -47,7 +47,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   }
 
   private renderForm = () => {
-    const tooltipSpan = <span>Download a command line script that will retrieve all the files.</span>;
+    const tooltipSpan = <span>Download executable shell script (requires UNIX environment).</span>;
     const loggedOutSpan = (this.props.loggedOut) ? (
       <span>
         <br/>

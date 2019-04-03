@@ -1,3 +1,7 @@
+# v0.8.0 (Unreleased)
+
+* Minor UI tweaks, use font-awesome icons, add granule search reset button.
+
 # v0.7.0 (2019-03-20)
 
 * Add text filter for granule IDs.

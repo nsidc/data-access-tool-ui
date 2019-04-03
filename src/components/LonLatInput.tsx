@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import "../styles/index.less";
+import { hasChanged } from "../utils/hasChanged";
 import { PolygonMode } from "../utils/PolygonMode";
 
 interface ILonLatProps {
@@ -11,6 +12,13 @@ interface ILonLatProps {
 }
 
 export class LonLatInput extends React.Component<ILonLatProps, {}> {
+
+  public componentDidUpdate(prevProps: ILonLatProps) {
+    if (hasChanged(prevProps, this.props, ["lonLatEnable"]) && this.props.lonLatEnable) {
+      document.getElementById("lonLat")!.focus();
+    }
+  }
+
   public render() {
     if (this.props.lonLatLabel === "") {
       return null;

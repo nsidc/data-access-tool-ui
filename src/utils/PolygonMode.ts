@@ -51,12 +51,16 @@ export class PolygonMode {
   }
 
   public reset = () => {
+    const didHavePoints = this.points.size >= MIN_VERTICES;
     this.clearAllPoints();
     this.deactivateActivePoint();
     this.scene.primitives.removeAll();
     this.lonLatEnableCallback(false);
     this.lonLatLabelCallback("");
-    this.finishedDrawingCallback(this.points);
+    // Avoid doing a CMR refresh if our polygon was already empty.
+    if (didHavePoints) {
+      this.finishedDrawingCallback(this.points);
+    }
     this.state = PolygonState.drawingPolygon;
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();
@@ -65,6 +69,12 @@ export class PolygonMode {
   }
 
   public changeLonLat(sLonLat: string) {
+    if (this.activePointIndex !== -1) {
+      const point = this.activePoint();
+      if (this.getLonLatLabel(point.cartesian) === sLonLat) {
+        return;
+      }
+    }
     const lonLat = this.parseLonLat(sLonLat);
     if (isNaN(lonLat.lat) || isNaN(lonLat.lon)) {
       return;
@@ -316,15 +326,19 @@ export class PolygonMode {
     }
   }
 
+  private getLonLatLabel(cartesian: Cesium.Cartesian3) {
+    const ll = CesiumUtils.cartesianToLonLat(cartesian);
+    const lat1 = Math.round(ll.lat * 100) / 100;
+    const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
+    const lon1 = Math.round(ll.lon * 100) / 100;
+    const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
+    return lat + ", " + lon;
+  }
+
   private updateLonLatLabel(cartesian: Cesium.Cartesian3 | null) {
     try {
       if (cartesian) {
-        const ll = CesiumUtils.cartesianToLonLat(cartesian);
-        const lat1 = Math.round(ll.lat * 100) / 100;
-        const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
-        const lon1 = Math.round(ll.lon * 100) / 100;
-        const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
-        this.lonLatLabelCallback(lat + ", " + lon);
+        this.lonLatLabelCallback(this.getLonLatLabel(cartesian));
       } else {
         this.lonLatLabelCallback("");
       }

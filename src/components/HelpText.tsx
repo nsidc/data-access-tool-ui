@@ -1,6 +1,6 @@
+import { faDrawPolygon } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import * as resetImg from "../img/glyphicons_067_cleaning.png";
-import * as polygonImg from "../img/glyphicons_096_vector_path_polygon.png";
 
 export class HelpText extends React.Component {
   public render() {
@@ -10,22 +10,26 @@ export class HelpText extends React.Component {
         <a className="toggle"><strong>Instructions</strong></a>
       </div>
       <div className="help-text">
-        <h3>Limit spatially by drawing a polygon:</h3>
+        <h3>Filter spatially by drawing a polygon:</h3>
         <div className="show-hide-div" id="help-text">
-        <span>Blue-green overlay shows spatial coverage, unless dataset is global.</span>
+        <span className="note">Note: Blue-green overlay shows coverage, unless global.</span>
         <section>
-          <ul>
-            <li><strong>Zoom:</strong> Scroll or two-finger drag</li>
-            <li><strong>Rotation:</strong> Drag globe</li>
-            <li><strong>Begin:</strong> Click <img src={polygonImg} alt="the polygon" /> icon to start</li>
-            <li><strong>Draw:</strong> Click (do not drag) to set each point</li>
-          </ul>
-          <ul>
-            <li><strong>Finish:</strong> Double click</li>
-            <li><strong>Clear:</strong> Click <img src={resetImg} alt="the cleanup" /> icon</li>
-            <li><strong>Edit:</strong> Click to select point; click again to activate</li>
-            <li><strong>Move:</strong> Drag point or edit lat/lon in box, then click or <kbd>Enter</kbd></li>
-          </ul>
+          <div>
+            Drag/zoom to area of interest, then
+            <ul>
+              <li>Click <FontAwesomeIcon icon={faDrawPolygon} size="lg" /> to start</li>
+              <li>Click (don't drag) to set points</li>
+              <li>Double click to finish</li>
+            </ul>
+          </div>
+          <div>
+            To move a point, click to turn green, then
+            <ul>
+              <li>edit lat/lon box directly, or</li>
+              <li>click again to begin moving, and</li>
+              <li>click again to set new location</li>
+            </ul>
+          </div>
         </section>
        </div>
       </div>
