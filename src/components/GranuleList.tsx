@@ -33,14 +33,26 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   // "views-field" is a class defined in the Drupal/NSIDC site css
   public render() {
+    let granuleDisplayed = null;
+    if (!this.props.cmrLoadingGranules && this.props.cmrGranules.size > 0 &&
+      this.props.cmrGranuleCount !== this.props.cmrGranules.size) {
+      granuleDisplayed = (
+        <span>
+          {", "}
+          <GranuleCount loading = {this.props.cmrLoadingGranules} count = { this.props.cmrGranules.size} />
+          &nbsp;displayed
+        </span>
+      );
+    }
     return (
       <div>
         <div id="granule-list-header">
           <div id="granule-list-count-header" className="views-field">
-            <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />{" "}
-            granules selected,
-            {" "}<GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranules.size} />
-            {" "}displayed.
+            <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />
+            {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
+            selected
+            {granuleDisplayed}
+            .
           </div>
           <div id="granule-list-filter" data-tip data-for="granuleFilter">
             <ReactTooltip id="granuleFilter" className="reactTooltip"
@@ -49,7 +61,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
               * = match any characters<br/>? = match one character</ReactTooltip>
             <input type="text"
               value={this.props.cmrGranuleFilter}
-              placeholder="Search granule list"
+              placeholder="Search file names"
               onChange={this.granuleFilterChange}>
             </input>
           </div>
@@ -102,8 +114,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <table id="granule-table">
           <thead>
             <tr>
-              <th className="granule-id-col">Granule ID</th>
-              <th className="size-col">Size (MB)</th>
+              <th className="granule-id-col">File Name</th>
+              <th className="size-col">Size&nbsp;(MB)</th>
               <th className="start-time-col">Start Time</th>
               <th className="end-time-col">End Time</th>
             </tr>
