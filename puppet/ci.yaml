@@ -29,7 +29,7 @@ nsidc_jenkins::jobs:
         - production
     wrappers:
       - name: build name
-        template: "#${BUILD_NUMBER} ${ref}"
+        template: "#${BUILD_NUMBER} ${environment} ${ref}"
     description: >
       Build the app and deploy to the selected environment, then clear the
       Drupal css-js cache so the new build is picked up.
