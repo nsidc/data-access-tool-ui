@@ -1,6 +1,7 @@
 # v0.8.0 (Unreleased)
 
 * Minor UI tweaks, use font-awesome icons, add granule search reset button.
+* Improve Cesium performance - only redraw when a property/polygon is updated.
 
 # v0.7.0 (2019-03-20)
 
