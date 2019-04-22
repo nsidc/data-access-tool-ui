@@ -39,10 +39,10 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
       path: urls.orderNotificationPath,
       transports: ["websocket", "polling"],
     });
-    ws.emit("join", { userid: user.uid });
+    ws.emit("join", { user_id: user.uid });
     ws.on("reconnect", (event: any) => {
       // console.log("Order notification: reconnected and rejoining");
-      ws.emit("join", { userid: user.uid });
+      ws.emit("join", { user_id: user.uid });
     });
     ws.on("notification", callback);
   };
