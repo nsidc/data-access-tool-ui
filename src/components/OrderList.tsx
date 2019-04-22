@@ -61,7 +61,7 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
   public componentDidMount() {
     this.props.environment.hermesAPI.getUserOrders(this.props.environment.user)
         .then((orders: any) => Object.values(orders).sort((a: any, b: any) => {
-          return moment(b.timestamp).diff(moment(a.timestamp));
+          return moment(b.submitted_timestamp).diff(moment(a.submitted_timestamp));
         }))
       .then((orderList: any) => {
         this.setState({orderList}, () => this.props.updateOrderCount(orderList.length));
