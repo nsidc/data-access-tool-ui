@@ -36,12 +36,19 @@ export class CesiumUtils {
     // @types/cesium is lacking some methods on the Cartographic class
     const cartographicRadians = (Cesium.Cartographic as any).fromCartesian(cartesian);
 
-    const lonLatDegrees = {
-      lat: Cesium.Math.toDegrees(cartographicRadians.latitude),
-      lon: Cesium.Math.toDegrees(cartographicRadians.longitude),
-    };
+    let lat = Cesium.Math.toDegrees(cartographicRadians.latitude);
+    let lon = Cesium.Math.toDegrees(cartographicRadians.longitude);
 
-    return lonLatDegrees;
+    const ilat = Math.round(lat * 100);
+    if (Cesium.Math.equalsEpsilon(ilat, lat * 100, 1e-13, 1e-13)) {
+      lat = ilat / 100;
+    }
+    const ilon = Math.round(lon * 100);
+    if (Cesium.Math.equalsEpsilon(ilon, lon * 100, 1e-13, 1e-13)) {
+      lon = ilon / 100;
+    }
+
+    return {lon, lat};
   }
 
   public static lonLatToCartesian(lonLat: ILonLat, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 {
