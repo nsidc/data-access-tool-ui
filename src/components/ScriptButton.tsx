@@ -98,6 +98,30 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
 
   private submitForm = () => {
     // @ts-ignore 7017 - allow using [] on the global `document`
-    document[this.formName].submit();
+    // document[this.formName].submit();
+    const headers: any = {
+      "Content-Type": "application/json",
+    };
+    const body: object = {
+      bounding_box: "-180,-90,180,90",
+      collectionAuthId: "MOD10A2",
+      collectionVersionId: "6",
+      end_date: "2019-03-07T22:09:38Z",
+      polygon: "-109,37,-102,37,-102,41,-109,41,-109,37",
+      producer_granule_id: "*A2019*",
+      start_date: "2001-01-01T00:00:00Z",
+    };
+
+    fetch(this.props.environment.urls.hermesScriptUrl, {
+      body: JSON.stringify(body),
+      headers,
+      method: "POST",
+    }).then((response) => {
+      return response.json();
+    }).then((result) => {
+      // tslint:disable-next-line:no-console
+      console.log(JSON.stringify(result));
+    });
+
   }
 }
