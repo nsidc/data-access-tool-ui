@@ -1,7 +1,6 @@
-import { List } from "immutable";
 import * as React from "react";
 
-import { CmrGranule } from "../types/CmrGranule";
+import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
@@ -11,9 +10,9 @@ import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 
 interface IOrderButtonsProps {
-  cmrGranules?: List<CmrGranule>;
   cmrGranuleCount?: number;
   environment: IEnvironment;
+  orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
 }
 
@@ -32,6 +31,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   public shouldComponentUpdate(nextProps: IOrderButtonsProps, nextState: IOrderButtonsState) {
     const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount",
                                                             "environment",
+                                                            "orderParameters",
                                                             "orderSubmissionParameters"]);
     const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow"]);
 
@@ -50,7 +50,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           disabled={orderButtonsDisabled}
           environment={this.props.environment}
           loggedOut={loggedOut}
-          cmrGranules={this.props.cmrGranules} />
+          orderParameters={this.props.orderParameters} />
         <SubmitButton
           buttonText={"Order Files"}
           disabled={orderButtonsDisabled}
