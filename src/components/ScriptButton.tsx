@@ -127,6 +127,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
 
     fetch(this.props.environment.urls.hermesScriptUrl, {
       body: JSON.stringify(body),
+      credentials: "include",
       headers,
       method: "POST",
     }).then((response) => {
