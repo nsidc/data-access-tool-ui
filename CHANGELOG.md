@@ -1,3 +1,10 @@
+# v0.9.0 (2019-04-22)
+
+* Parse of responses from hermes-api v5
+    * the response can include multiple zip / file_url.archive links, but we
+      continue to only render one on the order history page for now
+* Parse websocket messages from hermes-notfication v4
+
 # v0.8.0 (2019-04-09)
 
 * Minor UI tweaks, use font-awesome icons, add granule search reset button,

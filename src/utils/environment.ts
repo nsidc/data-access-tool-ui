@@ -88,8 +88,8 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     const hermesBaseUrl = environmentDependentURLs.hermesBaseUrl;
     const urls = {
       ...environmentDependentURLs,
-      hermesOrderUrl: `https://${hermesBaseUrl}/api-v4/orders/`,
-      hermesScriptUrl: `https://${hermesBaseUrl}/api-v4/script/`,
+      hermesOrderUrl: `https://${hermesBaseUrl}/api-v5/orders/`,
+      hermesScriptUrl: `https://${hermesBaseUrl}/api-v5/script/`,
       profileUrl: "/profile.html",
     };
     return {

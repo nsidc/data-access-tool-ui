@@ -13,7 +13,7 @@ export interface IHermesAPI {
 
 export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   const getOrderInDrupal = (orderId: string) => {
-    return fetch(`https://${urls.hermesBaseUrl}/api-v4/orders/${orderId}`)
+    return fetch(`https://${urls.hermesBaseUrl}/api-v5/orders/${orderId}`)
       .then((response) => response.json());
   };
 
@@ -28,7 +28,7 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   };
 
   const getUserOrdersInStandalone = (user: any) => {
-    const url = `https://${urls.hermesBaseUrl}/api-v4/users/${user.uid}/orders/`;
+    const url = `https://${urls.hermesBaseUrl}/api-v5/users/${user.uid}/orders/`;
 
     return fetch(url, {credentials: "include"})
       .then((response) => response.json());
@@ -39,10 +39,10 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
       path: urls.orderNotificationPath,
       transports: ["websocket", "polling"],
     });
-    ws.emit("join", { userid: user.uid });
+    ws.emit("join", { user_id: user.uid });
     ws.on("reconnect", (event: any) => {
       // console.log("Order notification: reconnected and rejoining");
-      ws.emit("join", { userid: user.uid });
+      ws.emit("join", { user_id: user.uid });
     });
     ws.on("notification", callback);
   };

@@ -44,7 +44,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       const order: any = this.state.order;
       const links = this.buildOrderLinks(order);
       const zipLink = this.buildZipLink(order);
-      const orderPlacedDate = moment(order.timestamp);
+      const orderPlacedDate = moment(order.submitted_timestamp);
       const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
         <div id="order-details">
@@ -88,25 +88,26 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     if (["inprogress", "expired"].includes(order.status)) {
       return [];
     }
-    const zipLink = this.findZipLink(order);
-    const filteredLinks = order.links.filter((i: any) => i !== zipLink);
 
-    const links = filteredLinks.map((link: any, index: number) => {
-      return ( <li key={index}><a href={link.uri}>{link.uri}</a></li> );
+    const links = order.file_urls.data.map((link: any, index: number) => {
+      return ( <li key={index}><a href={link}>{link}</a></li> );
     });
     return links;
   }
 
   private buildZipLink(order: any): JSX.Element {
-    const zipLink = this.findZipLink(order);
-    if (!zipLink) {
+    const zipLinks = this.findZipLinks(order);
+    if (!zipLinks) {
       return ( <span>Please wait...</span> );
     }
-    return ( <a href={zipLink.uri}>{zipLink.uri}</a> );
+
+    const zipLink = zipLinks[0];
+
+    return ( <a href={zipLink}>{zipLink}</a> );
   }
 
-  private findZipLink(order: any): any {
-    return order.links.find((link: any) => link.uri.match(/\.zip$/));
+  private findZipLinks(order: any): any {
+    return order.file_urls.archive;
   }
 
   private loadOrder = () => {
