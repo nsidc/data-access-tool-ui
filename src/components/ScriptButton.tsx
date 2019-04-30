@@ -131,6 +131,9 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       headers,
       method: "POST",
     }).then((response) => {
+      if (![200, 201].includes(response.status)) {
+        throw new Error(`${response.status} received from script system: "${response.statusText}"`);
+      }
       return response.json();
     }).then((result) => {
       // tslint:disable-next-line:no-console
