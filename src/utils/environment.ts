@@ -32,13 +32,13 @@ function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     return {
-      hermesApiUrl: `/order-proxy/api-v5`,
+      hermesApiUrl: `/order-proxy`,
       orderNotificationHost: `wss://dev.hermes2.${devPostfix}`,
       orderNotificationPath: "/notification/",
     };
   } else {
     return {
-      hermesApiUrl: `/order-proxy/api-v5`,
+      hermesApiUrl: `/order-proxy`,
       orderNotificationHost: `wss://${window.location.hostname}`,
       orderNotificationPath: "/apps/orders/notification2/",
     };
