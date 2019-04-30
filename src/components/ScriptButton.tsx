@@ -57,7 +57,10 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
     const tooltip = <div>{tooltipSpan}{loggedOutSpan}</div>;
 
     return (
-      <form name={this.formName} action={this.props.environment.urls.hermesScriptUrl} method="post" className="inline">
+      <form name={this.formName}
+            action={`${this.props.environment.urls.hermesApiUrl}/downloader-script/`}
+            method="post"
+            className="inline">
         <input type="hidden" name="urls" value={this.urlsArray()}/>
         <div className="tooltip" data-tip data-for="scriptbutton">
           <ReactTooltip id="scriptbutton" className="reactTooltip"
