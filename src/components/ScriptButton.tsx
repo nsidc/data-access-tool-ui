@@ -131,15 +131,15 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       headers,
       method: "POST",
     }).then((response) => {
-//      if (![200, 201].includes(response.status)) {
-//        throw new Error(`${response.status} received from script system: "${response.statusText}"`);
-//      }
+      if (response.status !== 200) {
+        throw new Error(`${response.status} received from script system: "${response.statusText}"`);
+      }
       return response.blob();
     }).then((result) => {
       const url = window.URL.createObjectURL(result);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "filename.py";
+      a.download = "nsidc-data-download.py";
       // we need to append the element to the dom -> otherwise it will not work in firefox
       document.body.appendChild(a);
       a.click();
