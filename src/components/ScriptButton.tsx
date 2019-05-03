@@ -134,10 +134,16 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
 //      if (![200, 201].includes(response.status)) {
 //        throw new Error(`${response.status} received from script system: "${response.statusText}"`);
 //      }
-      return response.json();
+      return response.blob();
     }).then((result) => {
-      // tslint:disable-next-line:no-console
-      console.log(JSON.stringify(result));
+      const url = window.URL.createObjectURL(result);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "filename.py";
+      // we need to append the element to the dom -> otherwise it will not work in firefox
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     });
 
   }
