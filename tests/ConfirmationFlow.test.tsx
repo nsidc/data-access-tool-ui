@@ -67,7 +67,7 @@ describe("ConfirmationFlow", () => {
 
     describe("that is successful", () => {
       beforeEach(() => {
-        const matcher = environment.urls.hermesOrderUrl;
+        const matcher = `${environment.urls.hermesApiUrl}/orders/`;
         const response = {status: 200, body: "{}"};
         const options = {method: "POST"};
 
@@ -88,7 +88,7 @@ describe("ConfirmationFlow", () => {
 
     describe("that fails", () => {
       beforeEach(() => {
-        const matcher = environment.urls.hermesOrderUrl;
+        const matcher = `${environment.urls.hermesApiUrl}/orders/`;
         const response = {status: 500};
         const options = {method: "POST"};
 

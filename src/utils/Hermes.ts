@@ -11,25 +11,16 @@ export interface IHermesAPI {
                 selectionCriteria: ISelectionCriteria) => Promise<any>;
 }
 
-export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
-  const getOrderInDrupal = (orderId: string) => {
-    return fetch(`https://${urls.hermesBaseUrl}/api-v5/orders/${orderId}`)
+// TODO: now that we don't depend on `inDrupal`, we could export a dict instead
+// of this function
+export function constructAPI(urls: any): IHermesAPI {
+  const getOrder = (orderId: string) => {
+    return fetch(`${urls.hermesApiUrl}/orders/${orderId}`)
       .then((response) => response.json());
   };
 
-  const getOrderInStandalone = (orderId: string) => {
-    return fetch(urls.hermesOrderUrl + orderId)
-      .then((response) => response.json());
-  };
-
-  const getUserOrdersInDrupal = (user: any) => {
-    return fetch(urls.hermesOrderUrl, {credentials: "include"})
-      .then((response) => response.json());
-  };
-
-  const getUserOrdersInStandalone = (user: any) => {
-    const url = `https://${urls.hermesBaseUrl}/api-v5/users/${user.uid}/orders/`;
-
+  const getUserOrders = (user: any) => {
+    const url = `${urls.hermesApiUrl}/users/${user.uid}/orders/`;
     return fetch(url, {credentials: "include"})
       .then((response) => response.json());
   };
@@ -65,7 +56,8 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
     const uid = user.uid;
     body = Object.assign(body, {uid, user});
 
-    return fetch(urls.hermesOrderUrl, {
+    const url = `${urls.hermesApiUrl}/orders/`;
+    return fetch(url, {
       body: JSON.stringify(body),
       credentials: "include",
       headers,
@@ -74,8 +66,8 @@ export function constructAPI(urls: any, inDrupal: boolean): IHermesAPI {
   };
 
   return {
-    getOrder: inDrupal ? getOrderInDrupal : getOrderInStandalone,
-    getUserOrders: inDrupal ? getUserOrdersInDrupal : getUserOrdersInStandalone,
+    getOrder,
+    getUserOrders,
     openNotificationConnection,
     submitOrder,
   };

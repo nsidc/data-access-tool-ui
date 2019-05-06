@@ -1,3 +1,14 @@
+# v0.11.0 (2019-04-30)
+
+* Stop passing the 'api' version string to `/order-proxy`; the Drupal module
+  manages this so we don't have to
+
+# v0.10.0 (2019-04-30)
+
+* Update Hermes communication such that the notification endpoint is the only
+  thing using `/apps/orders`; all others go through `/order-proxy` (ie, Drupal)
+  * removed any communication via `/script-proxy`
+
 # v0.9.0 (2019-04-22)
 
 * Parse of responses from hermes-api v5

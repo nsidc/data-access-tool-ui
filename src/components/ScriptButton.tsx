@@ -125,7 +125,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       "Content-Type": "application/json",
     };
 
-    fetch(this.props.environment.urls.hermesScriptUrl, {
+    fetch(this.props.environment.urls.hermesApiUrl + "/downloader-script/", {
       body: JSON.stringify(body),
       credentials: "include",
       headers,
