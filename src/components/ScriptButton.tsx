@@ -10,7 +10,6 @@ import { LoadingIcon } from "./LoadingIcon";
 interface IScriptButtonProps {
   disabled: boolean;
   environment: IEnvironment;
-  loggedOut: boolean;
   orderParameters: OrderParameters;
 }
 
@@ -44,14 +43,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   }
 
   private renderForm = () => {
-    const tooltipSpan = <span>Download Python script (requires Python 2 or 3).</span>;
-    const loggedOutSpan = (this.props.loggedOut) ? (
-      <span>
-        <br/>
-        <span className="must-be-logged-in">You must be logged in.</span>
-      </span>
-    ) : null;
-    const tooltip = <div>{tooltipSpan}{loggedOutSpan}</div>;
+    const tooltip = <div><span>Download Python script (requires Python 2 or 3).</span></div>;
 
     return (
       <div className="tooltip" data-tip data-for="scriptbutton">
