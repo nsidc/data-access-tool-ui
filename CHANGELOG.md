@@ -1,3 +1,7 @@
+# v0.12.0 (2019-05-07)
+
+* Change Script Button to download a Python script.
+
 # v0.11.0 (2019-04-30)
 
 * Stop passing the 'api' version string to `/order-proxy`; the Drupal module
