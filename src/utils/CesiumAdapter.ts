@@ -66,6 +66,11 @@ export class CesiumAdapter {
       timeline: false,
     });
 
+    // By default a double click on the globe zooms into
+    // the current polygon and switches to a weird rotate mode.
+    // Remove the double-click handler to avoid this.
+    this.viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
     this.polygonMode = this.createPolygonMode();
   }
 
