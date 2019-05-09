@@ -83,26 +83,21 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
     let f = params.cmrGranuleFilter;
     if (!f.startsWith("*")) { f = "*" + f; }
     if (!f.endsWith("*")) { f += "*"; }
-    const cmrGranuleFilter = f;
+    const filenameFilter = f;
 
-    let collectionSpatialCoverage = "";
-    if (params.collectionSpatialCoverage && params.collectionSpatialCoverage.hasOwnProperty("bbox")) {
-      collectionSpatialCoverage = params.collectionSpatialCoverage.bbox.join(",");
-    }
-    let spatialSelection = "";
+    let polygon = "";
     if (params.spatialSelection && params.spatialSelection.geometry
       && (params.spatialSelection.geometry.type === "Polygon")) {
-      spatialSelection = params.spatialSelection.geometry.coordinates.join(",");
+      polygon = params.spatialSelection.geometry.coordinates.join(",");
     }
 
     const body: object = {
-      cmrGranuleFilter,
-      collectionAuthId: params.collection.short_name,
-      collectionSpatialCoverage,
-      collectionVersionId: params.collection.version_id,
-      spatialSelection,
-      temporalLowerBound: params.temporalFilterLowerBound.utc().format(),
-      temporalUpperBound: params.temporalFilterUpperBound.utc().format(),
+      filename_filter: filenameFilter,
+      polygon,
+      short_name: params.collection.short_name,
+      time_end: params.temporalFilterUpperBound.utc().format(),
+      time_start: params.temporalFilterLowerBound.utc().format(),
+      version: params.collection.version_id,
     };
     return body;
   }
