@@ -42,7 +42,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else if (this.state.order) {
       const order: any = this.state.order;
-      const dataLinks = this.buildOrderLinks(order);
+      const dataLinks = this.buildDataLinks(order);
       const zipLinks = this.buildZipLinks(order);
       const orderPlacedDate = moment(order.submitted_timestamp);
       const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
@@ -87,7 +87,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
     }
   }
 
-  private buildOrderLinks(order: any): JSX.Element[] {
+  private buildDataLinks(order: any): JSX.Element[] {
     if (["inprogress", "expired"].includes(order.status)) {
       return [];
     }
