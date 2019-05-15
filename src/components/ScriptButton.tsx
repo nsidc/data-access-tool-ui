@@ -36,13 +36,13 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   public render() {
     return (
       <span>
-        {this.renderForm()}
+        {this.renderScriptButton()}
         {this.renderLoadingIcon()}
       </span>
     );
   }
 
-  private renderForm = () => {
+  private renderScriptButton = () => {
     const tooltip = <div><span>Download Python script (requires Python 2 or 3).</span></div>;
 
     return (
@@ -53,7 +53,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
           type="button"
           className="script-button eui-btn--blue"
           disabled={this.props.disabled}
-          onClick={this.submitForm}>
+          onClick={this.downloadScript}>
           Download Script
         </button>
       </div>
@@ -102,7 +102,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
     return body;
   }
 
-  private submitForm = () => {
+  private downloadScript = () => {
     const body = this.getBody();
     if (!body) {
       return;
