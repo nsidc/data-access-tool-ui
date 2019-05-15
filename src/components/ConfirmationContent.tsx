@@ -1,11 +1,12 @@
 import * as React from "react";
 
-import { CMR_MAX_GRANULES } from "../utils/CMR";
+import { CMR_MAX_GRANULES, formatBytes } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { GranuleLimitWarning } from "./GranuleLimitWarning";
 
 interface IOrderConfirmationContentProps {
   cmrGranuleCount?: number;
+  totalSize: number;
   environment: IEnvironment;
   onCancel: () => void;
   onOK: () => void;
@@ -16,12 +17,15 @@ export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) 
   if (props.cmrGranuleCount && (props.cmrGranuleCount > CMR_MAX_GRANULES)) {
     showWarning = true;
   }
+  const count = props.cmrGranuleCount ? props.cmrGranuleCount : 0;
+  const countFiles = count + (count !== 1 ? " files" : " file");
 
   return (
     <div>
       <h3>Confirm Your Download Order</h3>
       <p>
-        Your download order is about to be submitted. You will be able to view
+        Your download order contains {countFiles} (approximately {formatBytes(props.totalSize)}).
+        Your order is about to be submitted. You will be able to view
         the status of your order on the Orders page.
       </p>
       <button className="submit-button eui-btn--blue"

@@ -13,6 +13,7 @@ interface IConfirmationFlowProps {
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
   show: boolean;
+  totalSize: number;
 }
 
 interface IConfirmationFlowState {
@@ -58,6 +59,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       <OrderConfirmationContent onOK={this.handleConfirmationClick}
                                 onCancel={this.props.onRequestClose}
                                 cmrGranuleCount={this.props.cmrGranuleCount}
+                                totalSize={this.props.totalSize}
                                 environment={this.props.environment} />
     );
   }

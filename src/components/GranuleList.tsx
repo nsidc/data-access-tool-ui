@@ -7,6 +7,7 @@ import { CSSTransition } from "react-transition-group";
 import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CmrGranule } from "../types/CmrGranule";
+import { formatBytes } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
@@ -54,7 +55,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
           <div id="granule-list-count-header" className="views-field">
             <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />
             {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
-            selected (~{this.formatBytes(totalSize)})
+            selected (~{formatBytes(totalSize)})
             {granuleDisplayed}
             .
           </div>
@@ -83,21 +84,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </div>
       </div>
     );
-  }
-
-  private formatBytes = (bytes: number): string => {
-    if (bytes <= 0) {
-      return "0 MB";
-    }
-    const k = 1024;
-    const sizes = ["MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    // Keep values < 2*size in the smaller units
-    const offset = Math.log(2) / Math.log(k);
-    let i = Math.floor(Math.log(bytes) / Math.log(k) - offset);
-    i = Math.min(Math.max(i, 0), 6);
-    const value = bytes / Math.pow(k, i);
-    // Use parseFloat to get rid of scientific notation from toPrecision
-    return parseFloat(value.toPrecision(2)) + " " + sizes[i];
   }
 
   private granuleFilterChange = (e: any) => {

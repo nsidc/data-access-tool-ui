@@ -1,10 +1,10 @@
 import { shallow } from "enzyme";
 import * as fetchMock from "fetch-mock";
-import { shim } from "promise.prototype.finally"
+import { shim } from "promise.prototype.finally";
 import * as React from "react";
 
-import { ConfirmationFlow } from "../src/components/ConfirmationFlow";
 import { OrderConfirmationContent } from "../src/components/ConfirmationContent";
+import { ConfirmationFlow } from "../src/components/ConfirmationFlow";
 import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
 import setupEnvironment from "../src/utils/environment";
 
@@ -15,12 +15,14 @@ const environment = setupEnvironment(false);
 const setup = (props = {}) => {
   const defaultProps = {
     environment,
+    // tslint:disable-next-line:no-empty
     onRequestClose: () => {},  // set props.show to false
     orderSubmissionParameters: undefined,
     show: true,
+    totalSize: 0,
   };
 
-  const finalProps = Object.assign({}, defaultProps, props)
+  const finalProps = Object.assign({}, defaultProps, props);
 
   return shallow(<ConfirmationFlow {...finalProps} />);
 };
@@ -83,7 +85,7 @@ describe("ConfirmationFlow", () => {
         return describedComponent.instance().handleConfirmationClick().finally(() => {
           expect(mockShowLoadingIcon).toHaveBeenCalled();
         });
-      })
+      });
     });
 
     describe("that fails", () => {

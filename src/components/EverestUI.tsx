@@ -170,7 +170,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleCount={this.state.cmrGranuleCount}
               environment={this.props.environment}
               orderParameters={this.state.orderParameters}
-              orderSubmissionParameters={this.state.orderSubmissionParameters} />
+              orderSubmissionParameters={this.state.orderSubmissionParameters}
+              totalSize={this.state.totalSize} />
           </div>
         </div>
       </div>

@@ -51,7 +51,7 @@ describe("State updater", () => {
   });
 
   test("appends granules", () => {
-    const actual = updateStateAddGranules([granuleInput])(initialState);
+    const actual = updateStateAddGranules([granuleInput], 0)(initialState);
 
     expect(actual).toEqual(expected);
   });

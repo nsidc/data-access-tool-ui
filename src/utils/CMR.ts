@@ -213,3 +213,18 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGe
     type: "Feature",
   };
 };
+
+export const formatBytes = (bytes: number): string => {
+  if (bytes <= 0) {
+    return "0 MB";
+  }
+  const k = 1024;
+  const sizes = ["MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  // Keep values < 2*size in the smaller units
+  const offset = Math.log(2) / Math.log(k);
+  let i = Math.floor(Math.log(bytes) / Math.log(k) - offset);
+  i = Math.min(Math.max(i, 0), 6);
+  const value = bytes / Math.pow(k, i);
+  // Use parseFloat to get rid of scientific notation from toPrecision
+  return parseFloat(value.toPrecision(2)) + " " + sizes[i];
+};

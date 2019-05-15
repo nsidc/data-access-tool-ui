@@ -14,6 +14,7 @@ interface IOrderButtonsProps {
   environment: IEnvironment;
   orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
+  totalSize: number;
 }
 
 interface IOrderButtonsState {
@@ -32,7 +33,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount",
                                                             "environment",
                                                             "orderParameters",
-                                                            "orderSubmissionParameters"]);
+                                                            "orderSubmissionParameters",
+                                                            "totalSize"]);
     const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow"]);
 
     return propsChanged || stateChanged;
@@ -63,7 +65,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           environment={this.props.environment}
           onRequestClose={this.closeConfirmationFlow}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
-          show={this.state.showConfirmationFlow} />
+          show={this.state.showConfirmationFlow}
+          totalSize={this.props.totalSize} />
       </div>
       </div>
     );
