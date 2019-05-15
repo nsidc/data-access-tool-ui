@@ -18,6 +18,7 @@ interface IGranuleListProps {
   cmrLoadingGranules: boolean;
   updateGranuleFilter: any;
   fireGranuleFilter: any;
+  totalSize: number;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
@@ -44,13 +45,16 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </span>
       );
     }
+
+    const totalSize = this.props.cmrLoadingGranules ? 0 : this.props.totalSize;
+
     return (
       <div>
         <div id="granule-list-header">
           <div id="granule-list-count-header" className="views-field">
             <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />
             {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
-            selected
+            selected (~{this.formatBytes(totalSize)})
             {granuleDisplayed}
             .
           </div>
@@ -79,6 +83,21 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </div>
       </div>
     );
+  }
+
+  private formatBytes = (bytes: number): string => {
+    if (bytes <= 0) {
+      return "0 MB";
+    }
+    const k = 1024;
+    const sizes = ["MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    // Keep values < 2*size in the smaller units
+    const offset = Math.log(2) / Math.log(k);
+    let i = Math.floor(Math.log(bytes) / Math.log(k) - offset);
+    i = Math.min(Math.max(i, 0), 6);
+    const value = bytes / Math.pow(k, i);
+    // Use parseFloat to get rid of scientific notation from toPrecision
+    return parseFloat(value.toPrecision(2)) + " " + sizes[i];
   }
 
   private granuleFilterChange = (e: any) => {

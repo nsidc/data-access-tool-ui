@@ -11,12 +11,24 @@ const orderSubmissionParametersFromCmrGranules = (cmrGranules: List<CmrGranule>)
   return new OrderSubmissionParameters({selectionCriteria});
 };
 
-export const updateStateInitGranules = (granules: any[]) => {
+export const updateStateInitGranules = (granules: any[], cmrGranuleCount: number) => {
   return () => {
-    const cmrGranules = fromJS(granules).map((e: ICmrGranule) => new CmrGranule(e));
+    const cmrGranules: List<CmrGranule> = fromJS(granules).map((e: ICmrGranule) => new CmrGranule(e));
     const orderSubmissionParameters = orderSubmissionParametersFromCmrGranules(cmrGranules);
+    let totalSize = 0;
+    if (cmrGranuleCount > 0 && cmrGranules.size) {
+      // Convert to JS to avoid all of the Immutable undefined's.
+      // TODO: Update when Immutable 4 is released and installed
+      const sizes = cmrGranules.map((granule) => parseFloat(granule!.granule_size)).toJS();
+      totalSize = sizes.reduce((value: number, s: number) => {
+        value += s;
+        return value;
+        }, 0);
+      // Estimate the size based on the first "page" of results
+      totalSize = totalSize / cmrGranules.size * cmrGranuleCount;
+    }
 
-    return {cmrGranules, orderSubmissionParameters};
+    return {cmrGranules, orderSubmissionParameters, totalSize};
   };
 };
 

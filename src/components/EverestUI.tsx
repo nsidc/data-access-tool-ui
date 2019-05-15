@@ -40,6 +40,7 @@ export interface IEverestState {
   orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
   stateCanBeFrozen: boolean;
+  totalSize: number;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -69,6 +70,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       orderParameters,
       orderSubmissionParameters: undefined,
       stateCanBeFrozen: false,
+      totalSize: 0,
     };
 
     // allow easy testing of CMR errors by creating functions that can be called
@@ -117,6 +119,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       "cmrStatusOk",
       "orderParameters",
       "orderSubmissionParameters",
+      "totalSize",
     ]);
 
     return propsChanged || stateChanged;
@@ -160,6 +163,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
               cmrGranules={this.state.cmrGranules}
               cmrLoadingGranules={this.state.cmrLoadingGranules}
+              totalSize={this.state.totalSize}
               updateGranuleFilter={this.updateGranuleFilter}
               fireGranuleFilter={this.fireGranuleFilter} />
             <OrderButtons
@@ -234,7 +238,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private handleCmrGranuleResponseJSON = (json: any) => {
-    this.setState(updateStateInitGranules(json.feed.entry));
+    this.setState(updateStateInitGranules(json.feed.entry,
+      this.state.cmrGranuleCount ? this.state.cmrGranuleCount : 0));
   }
 
   private createErrorMessage = (errorMsg: string) => {
