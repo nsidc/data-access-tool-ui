@@ -40,6 +40,7 @@ const expected = {
       includeGranules: List(["Barry"]),
     },
   }),
+  totalSize: 0,
 };
 
 describe("State updater", () => {
