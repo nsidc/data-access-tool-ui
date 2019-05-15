@@ -3,6 +3,7 @@ import * as ReactModal from "react-modal";
 import * as ReactTooltip from "react-tooltip";
 
 import { OrderParameters } from "../types/OrderParameters";
+import { filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { LoadingIcon } from "./LoadingIcon";
@@ -80,10 +81,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       return null;
     }
 
-    let f = params.cmrGranuleFilter;
-    if (!f.startsWith("*")) { f = "*" + f; }
-    if (!f.endsWith("*")) { f += "*"; }
-    const filenameFilter = f;
+    const filenameFilter = filterAddWildcards(params.cmrGranuleFilter);
 
     let polygon = "";
     if (params.spatialSelection && params.spatialSelection.geometry

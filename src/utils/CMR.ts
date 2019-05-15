@@ -69,11 +69,15 @@ export const versionParameters = (versionId: number): string => {
   return queryParams;
 };
 
+export const filterAddWildcards = (filter: string): string => {
+  if (!filter.startsWith("*")) { filter = "*" + filter; }
+  if (!filter.endsWith("*")) { filter += "*"; }
+  return filter;
+};
+
 export const granuleFilterParameters = (cmrGranuleFilter: string): string => {
-  let f = cmrGranuleFilter;
-  if (!f.startsWith("*")) { f = "*" + f; }
-  if (!f.endsWith("*")) { f += "*"; }
-  const result = `&producer_granule_id[]=${f}&options[producer_granule_id][pattern]=true`;
+  const filter = filterAddWildcards(cmrGranuleFilter);
+  const result = `&producer_granule_id[]=${filter}&options[producer_granule_id][pattern]=true`;
   return result;
 };
 
