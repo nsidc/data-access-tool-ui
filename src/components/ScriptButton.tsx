@@ -110,6 +110,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       "Content-Type": "application/json",
     };
 
+    let responseHeaders: any = "";
     fetch(`${this.props.environment.urls.hermesApiUrl}/downloader-script/`, {
       body: JSON.stringify(body),
       credentials: "include",
@@ -119,12 +120,14 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       if (response.status !== 200) {
         throw new Error(`${response.status} received from script system: "${response.statusText}"`);
       }
+      responseHeaders = response.headers;
       return response.blob();
-    }).then((blob) => URL.createObjectURL(blob)).then((url) => {
+    }).then((blob) => URL.createObjectURL(blob))
+      .then((url) => {
       const a = document.createElement("a");
       a.href = url;
-      a.download = "nsidc-data-download.py";
-      // we need to append the element to the dom -> otherwise it will not work in firefox
+      a.download = responseHeaders.get("content-disposition").split("filename=")[1];
+      // we need to append the element to the dom, otherwise it will not work in firefox
       document.body.appendChild(a);
       a.click();
       a.remove();
