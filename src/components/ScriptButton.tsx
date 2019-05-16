@@ -119,10 +119,8 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       if (response.status !== 200) {
         throw new Error(`${response.status} received from script system: "${response.statusText}"`);
       }
-      return response.json();
-    }).then((result) => {
-      const blob = new Blob([result.script], {type: "text/plain"});
-      const url = window.URL.createObjectURL(blob);
+      return response.blob();
+    }).then((blob) => URL.createObjectURL(blob)).then((url) => {
       const a = document.createElement("a");
       a.href = url;
       a.download = "nsidc-data-download.py";
@@ -131,6 +129,5 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
       a.click();
       a.remove();
     });
-
   }
 }
