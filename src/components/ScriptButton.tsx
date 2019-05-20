@@ -1,18 +1,17 @@
-import { List, Map } from "immutable";
 import * as React from "react";
 import * as ReactModal from "react-modal";
 import * as ReactTooltip from "react-tooltip";
 
-import { CmrGranule } from "../types/CmrGranule";
+import { OrderParameters } from "../types/OrderParameters";
+import { filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { LoadingIcon } from "./LoadingIcon";
 
 interface IScriptButtonProps {
-  cmrGranules?: List<CmrGranule>;
   disabled: boolean;
   environment: IEnvironment;
-  loggedOut: boolean;
+  orderParameters: OrderParameters;
 }
 
 interface IScriptButtonState {
@@ -20,8 +19,6 @@ interface IScriptButtonState {
 }
 
 export class ScriptButton extends React.Component<IScriptButtonProps, IScriptButtonState> {
-  private formName: string = "ScriptButtonForm";
-
   public constructor(props: IScriptButtonProps) {
     super(props);
 
@@ -31,7 +28,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   }
 
   public shouldComponentUpdate(nextProps: IScriptButtonProps, nextState: IScriptButtonState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["cmrGranules", "disabled"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["orderParameters", "disabled"]);
     const stateChanged = hasChanged(this.state, nextState, ["loading"]);
 
     return propsChanged || stateChanged;
@@ -40,40 +37,27 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   public render() {
     return (
       <span>
-        {this.renderForm()}
+        {this.renderScriptButton()}
         {this.renderLoadingIcon()}
       </span>
     );
   }
 
-  private renderForm = () => {
-    const tooltipSpan = <span>Download executable shell script (requires UNIX environment).</span>;
-    const loggedOutSpan = (this.props.loggedOut) ? (
-      <span>
-        <br/>
-        <span className="must-be-logged-in">You must be logged in.</span>
-      </span>
-    ) : null;
-    const tooltip = <div>{tooltipSpan}{loggedOutSpan}</div>;
+  private renderScriptButton = () => {
+    const tooltip = <div><span>Download Python script (requires Python 2 or 3).</span></div>;
 
     return (
-      <form name={this.formName}
-            action={`${this.props.environment.urls.hermesApiUrl}/downloader-script/`}
-            method="post"
-            className="inline">
-        <input type="hidden" name="urls" value={this.urlsArray()}/>
-        <div className="tooltip" data-tip data-for="scriptbutton">
-          <ReactTooltip id="scriptbutton" className="reactTooltip"
-            effect="solid" delayShow={500}>{tooltip}</ReactTooltip>
-          <button
-            type="button"
-            className="script-button eui-btn--blue"
-            disabled={this.props.disabled}
-            onClick={this.submitForm}>
-            Download Script
-          </button>
-        </div>
-      </form>
+      <div className="tooltip" data-tip data-for="scriptbutton">
+        <ReactTooltip id="scriptbutton" className="reactTooltip"
+          effect="solid" delayShow={500}>{tooltip}</ReactTooltip>
+        <button
+          type="button"
+          className="script-button eui-btn--blue"
+          disabled={this.props.disabled}
+          onClick={this.downloadScript}>
+          Download Script
+        </button>
+      </div>
     );
   }
 
@@ -87,20 +71,66 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
     );
   }
 
-  private urlsArray = (): string[] => {
-    if (!this.props.cmrGranules) {
-      return [];
+  private getBody = () => {
+    const params = this.props.orderParameters;
+    const orderInputPopulated = params.collection
+      && params.collection.id
+      && params.temporalFilterLowerBound;
+
+    if (!orderInputPopulated) {
+      return null;
     }
 
-    const urls: List<string> = this.props.cmrGranules
-      .flatMap((granule: CmrGranule = new CmrGranule()) =>
-               granule.links.map((link: Map<string, string> = Map({})) => link.get("href"))) as List<string>;
+    const filenameFilter = filterAddWildcards(params.cmrGranuleFilter);
 
-    return urls.toJS();
+    let polygon = "";
+    if (params.spatialSelection && params.spatialSelection.geometry
+      && (params.spatialSelection.geometry.type === "Polygon")) {
+      polygon = params.spatialSelection.geometry.coordinates.join(",");
+    }
+
+    const body: object = {
+      dataset_short_name: params.collection.short_name,
+      dataset_version: params.collection.version_id,
+      filename_filter: filenameFilter,
+      polygon,
+      time_end: params.temporalFilterUpperBound.utc().format(),
+      time_start: params.temporalFilterLowerBound.utc().format(),
+    };
+    return body;
   }
 
-  private submitForm = () => {
-    // @ts-ignore 7017 - allow using [] on the global `document`
-    document[this.formName].submit();
+  private downloadScript = () => {
+    const body = this.getBody();
+    if (!body) {
+      return;
+    }
+
+    const headers: any = {
+      "Content-Type": "application/json",
+    };
+
+    let responseHeaders: any = "";
+    fetch(`${this.props.environment.urls.hermesApiUrl}/downloader-script/`, {
+      body: JSON.stringify(body),
+      credentials: "include",
+      headers,
+      method: "POST",
+    }).then((response) => {
+      if (response.status !== 200) {
+        throw new Error(`${response.status} received from script system: "${response.statusText}"`);
+      }
+      responseHeaders = response.headers;
+      return response.blob();
+    }).then((blob) => URL.createObjectURL(blob))
+      .then((url) => {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = responseHeaders.get("content-disposition").split("filename=")[1];
+      // we need to append the element to the dom, otherwise it will not work in firefox
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
   }
 }
