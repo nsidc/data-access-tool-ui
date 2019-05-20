@@ -36,12 +36,10 @@ export class CesiumUtils {
     // @types/cesium is lacking some methods on the Cartographic class
     const cartographicRadians = (Cesium.Cartographic as any).fromCartesian(cartesian);
 
-    const lonLatDegrees = {
-      lat: Cesium.Math.toDegrees(cartographicRadians.latitude),
-      lon: Cesium.Math.toDegrees(cartographicRadians.longitude),
-    };
+    const lat = this.removeRoundoffError(Cesium.Math.toDegrees(cartographicRadians.latitude));
+    const lon = this.removeRoundoffError(Cesium.Math.toDegrees(cartographicRadians.longitude));
 
-    return lonLatDegrees;
+    return {lon, lat};
   }
 
   public static lonLatToCartesian(lonLat: ILonLat, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 {
@@ -60,5 +58,14 @@ export class CesiumUtils {
     const cartesian = camera.pickEllipsoid(screenPosition, ellipsoid);
     if (!cartesian) { return null; }
     return cartesian;
+  }
+
+  private static removeRoundoffError = (val: number): number => {
+    const ival = Math.round(val * 100);
+    // Round off tiny trailing 0.99999's or 0.00001's to nearest hundredth.
+    if (Cesium.Math.equalsEpsilon(ival, val * 100, 1e-13, 1e-13)) {
+      return ival / 100;
+    }
+    return val;
   }
 }

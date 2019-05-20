@@ -1,5 +1,7 @@
 # v0.12.0 (Unreleased)
 
+* Change Script button to download a Python script.
+* Change Script button to not require logging in (since the script does that).
 * Support multiple EGI zips in Hermes API responses
 
 # v0.11.0 (2019-04-30)
