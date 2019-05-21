@@ -6,6 +6,7 @@
 
 * Change Script button to download a Python script.
 * Change Script button to not require logging in (since the script does that).
+* Remove default double click handler to avoid Cesium crash with global datasets
 
 # v0.11.0 (2019-04-30)
 
