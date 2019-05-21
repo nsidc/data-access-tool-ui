@@ -35,6 +35,15 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     return stateChanged || propsChanged;
   }
 
+  public componentDidUpdate() {
+    setTimeout(() => {
+      const ok = document.getElementById("confirmOrder");
+      if (ok) {
+        ok.focus();
+      }
+    }, 0);
+  }
+
   public render() {
     return (
       <ReactModal className="modal-content"

@@ -29,6 +29,7 @@ export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) 
         the status of your order on the Orders page.
       </p>
       <button className="submit-button eui-btn--blue"
+              id="confirmOrder"
               onClick={props.onOK}>
         OK
       </button>
