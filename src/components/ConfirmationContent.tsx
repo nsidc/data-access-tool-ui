@@ -14,17 +14,20 @@ interface IOrderConfirmationContentProps {
 
 export const OrderConfirmationContent = (props: IOrderConfirmationContentProps) => {
   let showWarning: boolean = false;
-  if (props.cmrGranuleCount && (props.cmrGranuleCount > CMR_MAX_GRANULES)) {
+  let cmrGranuleCount = props.cmrGranuleCount ? props.cmrGranuleCount : 0;
+  let totalSize = props.totalSize;
+  if (cmrGranuleCount > CMR_MAX_GRANULES) {
     showWarning = true;
+    totalSize = totalSize / cmrGranuleCount * CMR_MAX_GRANULES;
+    cmrGranuleCount = CMR_MAX_GRANULES;
   }
-  const count = props.cmrGranuleCount ? props.cmrGranuleCount : 0;
-  const countFiles = count + (count !== 1 ? " files" : " file");
+  const countFiles = cmrGranuleCount + (cmrGranuleCount !== 1 ? " files" : " file");
 
   return (
     <div>
       <h3>Confirm Your Download Order</h3>
       <p>
-        Your download order contains {countFiles} (approximately {formatBytes(props.totalSize)}).
+        Your download order contains {countFiles} (approximately {formatBytes(totalSize)}).
         Your order is about to be submitted. You will be able to view
         the status of your order on the Orders page.
       </p>

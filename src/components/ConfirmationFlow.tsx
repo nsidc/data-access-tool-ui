@@ -36,6 +36,8 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   public componentDidUpdate() {
+    // Use setTimeout to ensure that the OK button is rendered before setting focus.
+    // See https://github.com/reactjs/react-modal/issues/51
     setTimeout(() => {
       const ok = document.getElementById("confirmOrder");
       if (ok) {

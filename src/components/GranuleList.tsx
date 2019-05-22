@@ -42,7 +42,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <span>
           {", "}
           <GranuleCount loading = {this.props.cmrLoadingGranules} count = { this.props.cmrGranules.size} />
-          &nbsp;displayed
+          {" "}displayed
         </span>
       );
     }
