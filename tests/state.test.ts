@@ -28,6 +28,7 @@ const initialState = {
   orderParameters: new OrderParameters(),
   orderSubmissionParameters: undefined,
   stateCanBeFrozen: false,
+  totalSize: 0,
 };
 
 const expected = {
@@ -39,17 +40,18 @@ const expected = {
       includeGranules: List(["Barry"]),
     },
   }),
+  totalSize: 0,
 };
 
 describe("State updater", () => {
   test("initializes granules", () => {
-    const actual = updateStateInitGranules([granuleInput])();
+    const actual = updateStateInitGranules([granuleInput], 0)();
 
     expect(actual).toEqual(expected);
   });
 
   test("appends granules", () => {
-    const actual = updateStateAddGranules([granuleInput])(initialState);
+    const actual = updateStateAddGranules([granuleInput], 0)(initialState);
 
     expect(actual).toEqual(expected);
   });

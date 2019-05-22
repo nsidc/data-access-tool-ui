@@ -13,6 +13,7 @@ interface IConfirmationFlowProps {
   onRequestClose: () => void;
   orderSubmissionParameters?: OrderSubmissionParameters;
   show: boolean;
+  totalSize: number;
 }
 
 interface IConfirmationFlowState {
@@ -32,6 +33,17 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
     const propsChanged = hasChanged(this.props, nextProps, ["cmrGranuleCount", "environment", "show"]);
     const stateChanged = hasChanged(this.state, nextState, ["visibleUI"]);
     return stateChanged || propsChanged;
+  }
+
+  public componentDidUpdate() {
+    // Use setTimeout to ensure that the OK button is rendered before setting focus.
+    // See https://github.com/reactjs/react-modal/issues/51
+    setTimeout(() => {
+      const ok = document.getElementById("confirmOrder");
+      if (ok) {
+        ok.focus();
+      }
+    }, 0);
   }
 
   public render() {
@@ -58,6 +70,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       <OrderConfirmationContent onOK={this.handleConfirmationClick}
                                 onCancel={this.props.onRequestClose}
                                 cmrGranuleCount={this.props.cmrGranuleCount}
+                                totalSize={this.props.totalSize}
                                 environment={this.props.environment} />
     );
   }

@@ -7,6 +7,7 @@ import { CSSTransition } from "react-transition-group";
 import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CmrGranule } from "../types/CmrGranule";
+import { formatBytes } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
 import { LoadingIcon } from "./LoadingIcon";
@@ -18,6 +19,7 @@ interface IGranuleListProps {
   cmrLoadingGranules: boolean;
   updateGranuleFilter: any;
   fireGranuleFilter: any;
+  totalSize: number;
 }
 
 export class GranuleList extends React.Component<IGranuleListProps, {}> {
@@ -40,17 +42,20 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <span>
           {", "}
           <GranuleCount loading = {this.props.cmrLoadingGranules} count = { this.props.cmrGranules.size} />
-          &nbsp;displayed
+          {" "}displayed
         </span>
       );
     }
+
+    const totalSize = this.props.cmrLoadingGranules ? 0 : this.props.totalSize;
+
     return (
       <div>
         <div id="granule-list-header">
           <div id="granule-list-count-header" className="views-field">
             <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />
             {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
-            selected
+            selected (~{formatBytes(totalSize)})
             {granuleDisplayed}
             .
           </div>
