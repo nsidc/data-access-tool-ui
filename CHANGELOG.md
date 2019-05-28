@@ -1,4 +1,4 @@
-# v0.14.0 (unreleased)
+# v0.14.0 (2019-05-28)
 
 * On the Order History page make sure URLs wrap correctly.
 * Add the total order size (in MB etc.) to the file list and confirmation dialog.
