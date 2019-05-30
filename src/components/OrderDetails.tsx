@@ -55,7 +55,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
           <div>Fulfillment method: {order.fulfillment}</div>
           <div>Delivery method: {order.delivery}</div>
           <hr />
-          <div>Zip links:
+          <div>Zip links (Note: download may take a moment to start):
             <ul>{zipLinks}</ul>
           </div>
 
