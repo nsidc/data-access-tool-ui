@@ -1,4 +1,4 @@
-# v0.15.0 (Unreleased)
+# v0.15.0 (2019-05-30)
 
 * Ensure that the latlon box remains visible while editing.
 * Add note to Order page that zip files may take a moment to start.
