@@ -20,7 +20,7 @@ export class LonLatInput extends React.Component<ILonLatProps, {}> {
   }
 
   public render() {
-    if (this.props.lonLatLabel === "") {
+    if (this.props.lonLatLabel === "" && !this.props.lonLatEnable) {
       return null;
     }
     return (

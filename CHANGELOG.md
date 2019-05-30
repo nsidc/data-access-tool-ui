@@ -1,3 +1,7 @@
+# v0.15.0 (Unreleased)
+
+* Ensure that the latlon box remains visible while editing.
+
 # v0.14.0 (2019-05-28)
 
 * On the Order History page make sure URLs wrap correctly.
