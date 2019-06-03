@@ -8,7 +8,6 @@ import { LoadingIcon } from "./LoadingIcon";
 interface IOrderDetailsProps {
   environment: IEnvironment;
   initialLoadComplete?: boolean;
-  orderCount: number;
   orderId?: string;
 }
 
@@ -31,16 +30,23 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   public shouldComponentUpdate(nextProps: IOrderDetailsProps, nextState: IOrderDetailsState) {
     const stateChanged = hasChanged(this.state, nextState, ["order", "loading"]);
-    const propsChanged = hasChanged(this.props, nextProps, ["initialLoadComplete", "orderCount", "orderId"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["initialLoadComplete", "orderId"]);
     return stateChanged || propsChanged;
   }
 
   public render() {
-    if (!this.props.initialLoadComplete || this.state.loading) {
+    const loading = !this.props.initialLoadComplete || this.state.loading;
+    const noOrderSelected = !this.state.order;
+
+    if (loading) {
       return (
-        <LoadingIcon size="5x" />
+        <div id="order-details"><LoadingIcon size="5x" /></div>
       );
-    } else if (this.state.order) {
+    } else if (noOrderSelected) {
+      return (
+        <div id="order-details">{"Select an order from the list at left."}</div>
+      );
+    } else {
       const order: any = this.state.order;
       const dataLinks = this.buildDataLinks(order);
       const zipLinks = this.buildZipLinks(order);
@@ -63,14 +69,6 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
             <ul>{dataLinks}</ul>
           </div>
         </div>
-      );
-    } else if (this.props.orderCount > 0) {
-      return (
-        <div id="order-details">{"Select an order from the list at left."}</div>
-      );
-    } else {
-      return (
-        <div id="order-details">{"You have no orders."}</div>
       );
     }
   }

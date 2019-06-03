@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
@@ -11,7 +12,7 @@ interface IEverestProps {
 
 interface IEverestProfileState {
   initialLoadComplete: boolean;
-  orderCount: number;
+  orderList: object[];
   selectedOrder?: string;
 }
 
@@ -21,46 +22,67 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
 
     this.state = {
       initialLoadComplete: false,
-      orderCount: 0,
+      orderList: [],
       selectedOrder: undefined,
     };
   }
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestProfileState) {
     const propsChanged = hasChanged(this.props, nextProps, ["environment"]);
-    const stateChanged = hasChanged(this.state, nextState, ["initialLoadComplete", "orderCount", "selectedOrder"]);
+    const stateChanged = hasChanged(this.state, nextState, ["initialLoadComplete", "orderList", "selectedOrder"]);
 
     return propsChanged || stateChanged;
   }
 
+  public componentDidMount() {
+    if (this.props.environment.user) {
+      this.props.environment.hermesAPI.getUserOrders(this.props.environment.user)
+          .then((orders: any) => Object.values(orders).sort((a: any, b: any) => {
+            return moment(b.submitted_timestamp).diff(moment(a.submitted_timestamp));
+          }))
+        .then((orderList: any) => {
+          this.setState({orderList, initialLoadComplete: true});
+        });
+    }
+  }
+
   public render() {
-    return (
-      <div id="profile-container">
-        <OrderList
-          environment={this.props.environment}
-          initialLoadComplete={this.state.initialLoadComplete}
-          onSelectionChange={this.handleOrderSelection}
-          selectedOrder={this.state.selectedOrder}
-          updateOrderCount={this.updateOrderCount} />
-        <OrderDetails
-          environment={this.props.environment}
-          initialLoadComplete={this.state.initialLoadComplete}
-          orderCount={this.state.orderCount}
-          orderId={this.state.selectedOrder} />
-      </div>
-    );
+    const userLoggedOut = !this.props.environment.user;
+    const userHasNoOrders = this.state.orderList.length === 0;
+
+    if (userLoggedOut) {
+      return (
+        <div id="profile-container">
+          <div id="order-details">{"You must be logged in to view your orders."}</div>
+        </div>
+      );
+    } else if (userHasNoOrders) {
+      return (
+        <div id="profile-container">
+          <div id="order-details">{"You have no orders."}</div>
+        </div>
+      );
+    } else {
+      return (
+        <div id="profile-container">
+          <OrderList
+            environment={this.props.environment}
+            initialLoadComplete={this.state.initialLoadComplete}
+            onSelectionChange={this.handleOrderSelection}
+            orderList={this.state.orderList}
+            selectedOrder={this.state.selectedOrder} />
+          <OrderDetails
+            environment={this.props.environment}
+            initialLoadComplete={this.state.initialLoadComplete}
+            orderId={this.state.selectedOrder} />
+        </div>
+      );
+    }
   }
 
   private handleOrderSelection = (orderId: string) => {
     this.setState({
       selectedOrder: orderId,
-    });
-  }
-
-  private updateOrderCount = (count: number) => {
-    this.setState({
-      initialLoadComplete: true,
-      orderCount: count,
     });
   }
 }
