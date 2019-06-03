@@ -1,6 +1,10 @@
-# v0.16.0 (Unreleased)
+# v0.17.0 (Unreleased)
 
 * Change default granule sorting to ascending by date.
+
+# v0.16.0 (2019-06-03)
+
+* Display message in profile page when user is logged out.
 
 # v0.15.0 (2019-05-30)
 
