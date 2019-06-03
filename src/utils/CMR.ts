@@ -17,7 +17,7 @@ const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_E
   + "&page_size=500&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?provider=NSIDC_ECS"
-  + `&page_size=${CMR_PAGE_SIZE}&sort_key=short_name`;
+  + `&page_size=${CMR_PAGE_SIZE}&sort_key\[\]=start_date&sort_key\[\]=producer_granule_id`;
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";

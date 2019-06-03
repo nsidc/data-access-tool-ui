@@ -1,3 +1,7 @@
+# v0.16.0 (Unreleased)
+
+* Change default granule sorting to ascending by date.
+
 # v0.15.0 (2019-05-30)
 
 * Ensure that the latlon box remains visible while editing.
