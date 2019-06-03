@@ -35,11 +35,14 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   public render() {
-    if (!this.props.initialLoadComplete || this.state.loading) {
+    const loading = !this.props.initialLoadComplete || this.state.loading;
+    const noOrderSelected = !this.state.order;
+
+    if (loading) {
       return (
         <div id="order-details"><LoadingIcon size="5x" /></div>
       );
-    } else if (!this.state.order) {
+    } else if (noOrderSelected) {
       return (
         <div id="order-details">{"Select an order from the list at left."}</div>
       );
