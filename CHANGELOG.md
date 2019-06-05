@@ -1,4 +1,4 @@
-# v0.17.0 (Unreleased)
+# v0.17.0 (2019-06-05)
 
 * Change default granule sorting to ascending by date.
 
