@@ -3,6 +3,7 @@ import { List, Map } from "immutable";
 import * as moment from "moment";
 
 import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
+import { GranuleSorting } from "../types/OrderParameters";
 import { getEnvironment } from "./environment";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
@@ -17,7 +18,7 @@ const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_E
   + "&page_size=500&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json?provider=NSIDC_ECS"
-  + `&page_size=${CMR_PAGE_SIZE}&sort_key\[\]=start_date&sort_key\[\]=producer_granule_id`;
+  + `&page_size=${CMR_PAGE_SIZE}`;
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
 export const CMR_STATUS_URL = CMR_URL + "/search/health";
@@ -25,6 +26,14 @@ export const CMR_STATUS_URL = CMR_URL + "/search/health";
 const CMR_DEFAULT_HEADERS = Map({
   "Client-Id": `nsidc-everest-${getEnvironment()}`,
 });
+
+const granuleSortParameter = (granuleSorting: GranuleSorting) => {
+  let secondarySort = GranuleSorting.FilenameUp;
+  if (granuleSorting === GranuleSorting.FilenameDown || granuleSorting === GranuleSorting.FilenameUp) {
+    secondarySort = GranuleSorting.StartTimeUp;
+  }
+  return "&sort_key\[\]=" + granuleSorting + "&sort_key\[\]=" + secondarySort;
+};
 
 // NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
 export const spatialParameter = (spatialSelection: IGeoJsonPolygon | null,
@@ -139,8 +148,10 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment,
                                   cmrGranuleFilter: string,
+                                  granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
   let URL = CMR_GRANULE_URL
+    + `&${granuleSortParameter(granuleSorting)}`
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`

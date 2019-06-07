@@ -316,6 +316,14 @@
     width: 100%;
   }
 
+  .sort-icon {
+    opacity: 0;
+  }
+
+  .sortColumn:hover .sort-icon {
+    opacity: 1;
+  }
+
   #granule-table {
     display: table;
     border-collapse: collapse;
@@ -409,19 +417,23 @@
   }
 
   .granule-id-col {
-    width: 50%;
+    width: 46%;
+    cursor: pointer;
   }
 
   .size-col {
-    width: 10%;
+    width: 14%;
+    cursor: pointer;
   }
 
   .start-time-col {
     width: 20%;
+    cursor: pointer;
   }
 
   .end-time-col {
     width: 20%;
+    cursor: pointer;
   }
 
   &-profile {

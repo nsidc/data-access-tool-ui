@@ -4,9 +4,10 @@ import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
 import { CSSTransition } from "react-transition-group";
 
-import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSort, faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CmrGranule } from "../types/CmrGranule";
+import { GranuleSorting } from "../types/OrderParameters";
 import { formatBytes } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
@@ -17,7 +18,9 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranules: boolean;
+  granuleSorting: GranuleSorting;
   updateGranuleFilter: any;
+  updateGranuleSorting: any;
   fireGranuleFilter: any;
   totalSize: number;
 }
@@ -29,7 +32,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     const propsChanged = hasChanged(this.props, nextProps,
-      ["cmrGranules", "cmrGranuleFilter", "cmrLoadingGranules"]);
+      ["cmrGranules", "cmrGranuleFilter", "cmrLoadingGranules", "granuleSorting"]);
     return propsChanged;
   }
 
@@ -111,6 +114,55 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       );
     });
 
+    const up = <FontAwesomeIcon icon={faSortUp} />;
+    const down = <FontAwesomeIcon icon={faSortDown} />;
+    const updown = <FontAwesomeIcon icon={faSort} className="sort-icon" />;
+    let fileSort = updown;
+    let sizeSort = updown;
+    let startTimeSort = updown;
+    let endTimeSort = updown;
+    let fileClass = "granule-id-col";
+    let sizeClass = "size-col";
+    let startTimeClass = "start-time-col";
+    let endTimeClass = "end-time-col";
+
+    switch (this.props.granuleSorting) {
+      case GranuleSorting.FilenameUp:
+        fileSort = up;
+        fileClass += " enabled";
+        break;
+      case GranuleSorting.FilenameDown:
+        fileSort = down;
+        fileClass += " enabled";
+        break;
+      case GranuleSorting.SizeUp:
+        sizeSort = up;
+        sizeClass += " enabled";
+        break;
+      case GranuleSorting.SizeDown:
+        sizeSort = down;
+        sizeClass += " enabled";
+        break;
+      case GranuleSorting.StartTimeUp:
+        startTimeSort = up;
+        startTimeClass += " enabled";
+        break;
+      case GranuleSorting.StartTimeDown:
+        startTimeSort = down;
+        startTimeClass += " enabled";
+        break;
+      case GranuleSorting.EndTimeUp:
+        endTimeSort = up;
+        endTimeClass += " enabled";
+        break;
+      case GranuleSorting.EndTimeDown:
+        endTimeSort = down;
+        endTimeClass += " enabled";
+        break;
+      default:
+        break;
+    }
+
     return (
       <CSSTransition in
                      appear
@@ -119,10 +171,22 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <table id="granule-table">
           <thead>
             <tr>
-              <th className="granule-id-col">File Name</th>
-              <th className="size-col">Size&nbsp;(MB)</th>
-              <th className="start-time-col">Start Time</th>
-              <th className="end-time-col">End Time</th>
+              <th className={fileClass}><div className="sortColumn" onClick={(e: any) => {
+                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.FilenameUp ?
+                  GranuleSorting.FilenameDown : GranuleSorting.FilenameUp);
+              }}>File Name&nbsp;{fileSort}</div></th>
+              <th className={sizeClass}><div className="sortColumn" onClick={(e: any) => {
+                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.SizeUp ?
+                  GranuleSorting.SizeDown : GranuleSorting.SizeUp);
+              }}>Size (<small>MB</small>)&nbsp;{sizeSort}</div></th>
+              <th className={startTimeClass}><div className="sortColumn" onClick={(e: any) => {
+                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.StartTimeUp ?
+                  GranuleSorting.StartTimeDown : GranuleSorting.StartTimeUp);
+              }}>Start Time&nbsp;{startTimeSort}</div></th>
+              <th className={endTimeClass}><div className="sortColumn" onClick={(e: any) => {
+                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.EndTimeUp ?
+                  GranuleSorting.EndTimeDown : GranuleSorting.EndTimeUp);
+              }}>End Time&nbsp;{endTimeSort}</div></th>
             </tr>
           </thead>
           <tbody>
