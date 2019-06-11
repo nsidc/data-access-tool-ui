@@ -97,6 +97,21 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     this.timeout = window.setTimeout(this.props.fireGranuleFilter, 600);
   }
 
+  private columnHeader = (header: string, className: string,
+                          columnSortUp: GranuleSorting, columnSortDown: GranuleSorting) => {
+    let icon = <FontAwesomeIcon icon={faSort} className="sort-icon" />;
+    let newColumnSortOrder = columnSortUp;
+    if (this.props.granuleSorting === columnSortUp) {
+      icon = <FontAwesomeIcon icon={faSortUp} />;
+      newColumnSortOrder = columnSortDown;
+    } else if (this.props.granuleSorting === columnSortDown) {
+      icon = <FontAwesomeIcon icon={faSortDown} />;
+    }
+    return <th className={className}><div className="sortColumn" onClick={(e: any) => {
+      this.props.updateGranuleSorting(newColumnSortOrder);
+    }}>{header}&nbsp;{icon}</div></th>;
+  }
+
   private renderContent = () => {
     if (this.props.cmrLoadingGranules) {
       return (<LoadingIcon size="5x" />);
@@ -114,55 +129,6 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       );
     });
 
-    const up = <FontAwesomeIcon icon={faSortUp} />;
-    const down = <FontAwesomeIcon icon={faSortDown} />;
-    const updown = <FontAwesomeIcon icon={faSort} className="sort-icon" />;
-    let fileSort = updown;
-    let sizeSort = updown;
-    let startTimeSort = updown;
-    let endTimeSort = updown;
-    let fileClass = "granule-id-col";
-    let sizeClass = "size-col";
-    let startTimeClass = "start-time-col";
-    let endTimeClass = "end-time-col";
-
-    switch (this.props.granuleSorting) {
-      case GranuleSorting.FilenameUp:
-        fileSort = up;
-        fileClass += " enabled";
-        break;
-      case GranuleSorting.FilenameDown:
-        fileSort = down;
-        fileClass += " enabled";
-        break;
-      case GranuleSorting.SizeUp:
-        sizeSort = up;
-        sizeClass += " enabled";
-        break;
-      case GranuleSorting.SizeDown:
-        sizeSort = down;
-        sizeClass += " enabled";
-        break;
-      case GranuleSorting.StartTimeUp:
-        startTimeSort = up;
-        startTimeClass += " enabled";
-        break;
-      case GranuleSorting.StartTimeDown:
-        startTimeSort = down;
-        startTimeClass += " enabled";
-        break;
-      case GranuleSorting.EndTimeUp:
-        endTimeSort = up;
-        endTimeClass += " enabled";
-        break;
-      case GranuleSorting.EndTimeDown:
-        endTimeSort = down;
-        endTimeClass += " enabled";
-        break;
-      default:
-        break;
-    }
-
     return (
       <CSSTransition in
                      appear
@@ -171,22 +137,14 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <table id="granule-table">
           <thead>
             <tr>
-              <th className={fileClass}><div className="sortColumn" onClick={(e: any) => {
-                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.FilenameUp ?
-                  GranuleSorting.FilenameDown : GranuleSorting.FilenameUp);
-              }}>File Name&nbsp;{fileSort}</div></th>
-              <th className={sizeClass}><div className="sortColumn" onClick={(e: any) => {
-                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.SizeUp ?
-                  GranuleSorting.SizeDown : GranuleSorting.SizeUp);
-              }}>Size (<small>MB</small>)&nbsp;{sizeSort}</div></th>
-              <th className={startTimeClass}><div className="sortColumn" onClick={(e: any) => {
-                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.StartTimeUp ?
-                  GranuleSorting.StartTimeDown : GranuleSorting.StartTimeUp);
-              }}>Start Time&nbsp;{startTimeSort}</div></th>
-              <th className={endTimeClass}><div className="sortColumn" onClick={(e: any) => {
-                this.props.updateGranuleSorting(this.props.granuleSorting === GranuleSorting.EndTimeUp ?
-                  GranuleSorting.EndTimeDown : GranuleSorting.EndTimeUp);
-              }}>End Time&nbsp;{endTimeSort}</div></th>
+              {this.columnHeader("File Name", "granule-id-col",
+                GranuleSorting.FilenameUp, GranuleSorting.FilenameDown)}
+              {this.columnHeader("Size (MB)", "size-col",
+                GranuleSorting.SizeUp, GranuleSorting.SizeDown)}
+              {this.columnHeader("Start Time", "start-time-col",
+                GranuleSorting.StartTimeUp, GranuleSorting.StartTimeDown)}
+              {this.columnHeader("End Time", "end-time-col",
+                GranuleSorting.EndTimeUp, GranuleSorting.EndTimeDown)}
             </tr>
           </thead>
           <tbody>
