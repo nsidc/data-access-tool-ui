@@ -97,7 +97,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     this.timeout = window.setTimeout(this.props.fireGranuleFilter, 600);
   }
 
-  private columnHeader = (header: string, className: string,
+  private columnHeader = (header: JSX.Element | string, className: string,
                           columnSortUp: GranuleSorting, columnSortDown: GranuleSorting) => {
     let icon = <FontAwesomeIcon icon={faSort} className="sort-icon" />;
     let newColumnSortOrder = columnSortUp;
@@ -139,7 +139,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
             <tr>
               {this.columnHeader("File Name", "granule-id-col",
                 GranuleSorting.FilenameUp, GranuleSorting.FilenameDown)}
-              {this.columnHeader("Size (MB)", "size-col",
+              {this.columnHeader(<span>Size (<small>MB</small>)</span>, "size-col",
                 GranuleSorting.SizeUp, GranuleSorting.SizeDown)}
               {this.columnHeader("Start Time", "start-time-col",
                 GranuleSorting.StartTimeUp, GranuleSorting.StartTimeDown)}
