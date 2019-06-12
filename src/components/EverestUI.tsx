@@ -1,6 +1,7 @@
 import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
+import SplitPane from "react-split-pane";
 import * as ReactTooltip from "react-tooltip";
 
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
@@ -148,7 +149,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="collection-list">
           {collectionDropdown}
         </div>
-        <div id="columns">
+        <div id="columnsxxx">
+          <SplitPane split="vertical" minSize={200} defaultSize="50%">
           <div id="left-side">
             <OrderParameterInputs
               cmrStatusOk={this.state.cmrStatusOk}
@@ -176,6 +178,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               orderSubmissionParameters={this.state.orderSubmissionParameters}
               totalSize={this.state.totalSize} />
           </div>
+          </SplitPane>
         </div>
       </div>
     );
