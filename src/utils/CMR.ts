@@ -151,7 +151,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
   let URL = CMR_GRANULE_URL
-    + `&${granuleSortParameter(granuleSorting)}`
+    + `${granuleSortParameter(granuleSorting)}`
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`

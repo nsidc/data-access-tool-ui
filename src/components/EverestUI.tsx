@@ -118,7 +118,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       "cmrStatusChecked",
       "cmrStatusMessage",
       "cmrStatusOk",
-      "granuleSorting",
       "orderParameters",
       "orderSubmissionParameters",
       "totalSize",

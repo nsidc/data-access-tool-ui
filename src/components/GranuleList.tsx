@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
 import { CSSTransition } from "react-transition-group";
 
-import { faSort, faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CmrGranule } from "../types/CmrGranule";
 import { GranuleSorting } from "../types/OrderParameters";
@@ -99,17 +99,20 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   private columnHeader = (header: JSX.Element | string, className: string,
                           columnSortUp: GranuleSorting, columnSortDown: GranuleSorting) => {
-    let icon = <FontAwesomeIcon icon={faSort} className="sort-icon" />;
     let newColumnSortOrder = columnSortUp;
+    let classSortUp = "fa-stack-1x sort-icon";
+    let classSortDown = "fa-stack-1x sort-icon";
     if (this.props.granuleSorting === columnSortUp) {
-      icon = <FontAwesomeIcon icon={faSortUp} />;
+      classSortUp += " sort-active";
       newColumnSortOrder = columnSortDown;
     } else if (this.props.granuleSorting === columnSortDown) {
-      icon = <FontAwesomeIcon icon={faSortDown} />;
+      classSortDown += " sort-active";
     }
+    const iconUp = <FontAwesomeIcon icon={faSortUp} className={classSortUp} />;
+    const iconDown = <FontAwesomeIcon icon={faSortDown} className={classSortDown} />;
     return <th className={className}><div className="sortColumn" onClick={(e: any) => {
       this.props.updateGranuleSorting(newColumnSortOrder);
-    }}>{header}&nbsp;{icon}</div></th>;
+    }}>{header}<span className="fa-stack sort-icon-stack">{iconUp}{iconDown}</span></div></th>;
   }
 
   private renderContent = () => {
