@@ -6,7 +6,7 @@ import * as ReactTooltip from "react-tooltip";
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
-import { IOrderParameters, OrderParameters } from "../types/OrderParameters";
+import { GranuleSorting, IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { CMR_COUNT_HEADER,
          cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrGranuleRequest,
@@ -163,8 +163,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
               cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
               cmrGranules={this.state.cmrGranules}
               cmrLoadingGranules={this.state.cmrLoadingGranules}
+              granuleSorting={this.state.orderParameters.granuleSorting}
               totalSize={this.state.totalSize}
               updateGranuleFilter={this.updateGranuleFilter}
+              updateGranuleSorting={this.updateGranuleSorting}
               fireGranuleFilter={this.fireGranuleFilter} />
             <OrderButtons
               cmrGranuleCount={this.state.cmrGranuleCount}
@@ -225,6 +227,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.orderParameters.temporalFilterLowerBound,
       this.state.orderParameters.temporalFilterUpperBound,
       this.state.orderParameters.cmrGranuleFilter,
+      this.state.orderParameters.granuleSorting,
     ).then(this.handleCmrGranuleResponse, this.onCmrRequestFailure)
      .then(this.handleCmrGranuleResponseJSON)
      .catch((err) => { err = null; })
@@ -286,6 +289,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private fireGranuleFilter = () => {
     this.handleOrderParameterChange({ cmrGranuleFilter: this.state.orderParameters.cmrGranuleFilter });
+  }
+
+  private updateGranuleSorting = (granuleSorting: GranuleSorting) => {
+    this.handleOrderParameterChange({ granuleSorting });
   }
 
   private handleOrderParameterChange = (newOrderParameters: Partial<IOrderParameters>) => {

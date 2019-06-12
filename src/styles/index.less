@@ -316,6 +316,29 @@
     width: 100%;
   }
 
+  .sortColumn {
+    .sort-icon-stack {
+      font-size: 1em;
+      height: 1em;
+      width: 1em;
+      margin-left: 0.25em;
+      vertical-align: middle;
+      margin-bottom: 2px;
+    }
+
+    .sort-icon {
+      opacity: 0.25;
+    }
+
+    .sort-active {
+      opacity: 1;
+    }
+
+    &:hover .sort-icon {
+      opacity: 1;
+    }
+  }
+
   #granule-table {
     display: table;
     border-collapse: collapse;
@@ -409,19 +432,23 @@
   }
 
   .granule-id-col {
-    width: 50%;
+    width: 47%;
+    cursor: pointer;
   }
 
   .size-col {
-    width: 10%;
+    width: 13%;
+    cursor: pointer;
   }
 
   .start-time-col {
     width: 20%;
+    cursor: pointer;
   }
 
   .end-time-col {
     width: 20%;
+    cursor: pointer;
   }
 
   &-profile {
