@@ -316,12 +316,27 @@
     width: 100%;
   }
 
-  .sort-icon {
-    opacity: 0;
-  }
+  .sortColumn {
+    .sort-icon-stack {
+      font-size: 1em;
+      height: 1em;
+      width: 1em;
+      margin-left: 0.25em;
+      vertical-align: middle;
+      margin-bottom: 2px;
+    }
 
-  .sortColumn:hover .sort-icon {
-    opacity: 1;
+    .sort-icon {
+      opacity: 0.25;
+    }
+
+    .sort-active {
+      opacity: 1;
+    }
+
+    &:hover .sort-icon {
+      opacity: 1;
+    }
   }
 
   #granule-table {
