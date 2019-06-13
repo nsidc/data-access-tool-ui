@@ -60,7 +60,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
     const url = this.buildUrl(conceptId, spatialSelection, temporalStart, temporalEnd, textFilter);
 
     // TODO: Redirect user
-    return url;
+    console.log(url);
   }
 
   private buildUrl = (conceptId: CmrCollection["id"],
@@ -68,7 +68,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
                       temporalStart: OrderParameters["temporalFilterLowerBound"],
                       temporalEnd: OrderParameters["temporalFilterUpperBound"],
                       textFilter: OrderParameters["cmrGranuleFilter"]) => {
-    let url = `https://search.earthdata.nasa.gov/search?` +
+    let url = `https://search.earthdata.nasa.gov/search/granules?` +
       `p=${conceptId}` +  // TODO: Is &p= the correct param? It's not working.
       `&pg[0][qt]=${temporalStart.toISOString()},${temporalEnd.toISOString()}`;
 
