@@ -1,7 +1,9 @@
 import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
 
+import { CmrCollection } from "../types/CmrCollection";
 import { OrderParameters } from "../types/OrderParameters";
+import { filterAddWildcards } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IHandoffButtonProps {
@@ -49,22 +51,34 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
   }
 
   private earthdataRedirect = (orderParameters: OrderParameters) => {
-    debugger;
-    // Fetch collection unique identifier from CMR by shortname/version
+    const conceptId = orderParameters.collection.id;
+    const textFilter = orderParameters.cmrGranuleFilter;
+    const spatialSelection = orderParameters.spatialSelection;
+    const temporalStart = orderParameters.temporalFilterLowerBound;
+    const temporalEnd = orderParameters.temporalFilterUpperBound;
 
-    // Add asterisks to the filter, if there is a filter
+    const url = this.buildUrl(conceptId, spatialSelection, temporalStart, temporalEnd, textFilter);
 
-    // Spatial filter: urlencode
+    // TODO: Redirect user
+    return url;
+  }
 
-    // Temporalfilter: urlencode
+  private buildUrl = (conceptId: CmrCollection["id"],
+                      spatialSelection: OrderParameters["spatialSelection"],
+                      temporalStart: OrderParameters["temporalFilterLowerBound"],
+                      temporalEnd: OrderParameters["temporalFilterUpperBound"],
+                      textFilter: OrderParameters["cmrGranuleFilter"]) => {
+    let url = `https://search.earthdata.nasa.gov/search?` +
+      `p=${conceptId}` +  // TODO: Is &p= the correct param? It's not working.
+      `&pg[0][qt]=${temporalStart.toISOString()},${temporalEnd.toISOString()}`;
 
-    // Build URL:
-    // https://search.earthdata.nasa.gov/search?p={collection_unique_id}
-    // &polygon={polygon}
-    // &pg[0][id]={textfilter}
-    // &pg[0][qt]={temporal_start},{temporal_end}
+    if (spatialSelection) {
+      url = url + `&polygon=${spatialSelection.geometry.coordinates.join(",")}`;
+    }
+    if (textFilter) {
+      url = url + `&pg[0][id]=${filterAddWildcards(textFilter)}`;
+    }
 
-    // Redirect user
-    return;
+    return url;
   }
 }
