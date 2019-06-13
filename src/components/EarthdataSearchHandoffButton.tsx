@@ -43,14 +43,14 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
         <button
           type="button"
           className="handoff-button eui-btn--blue"
-          onClick={() => this.earthdataRedirect(this.props.orderParameters)}>
+          onClick={() => this.edscRedirect(this.props.orderParameters)}>
           Brave Sir Robin ran away, away!
         </button>
       </div>
     );
   }
 
-  private earthdataRedirect = (orderParameters: OrderParameters) => {
+  private edscRedirect = (orderParameters: OrderParameters) => {
     const conceptId = orderParameters.collection.id;
     const textFilter = orderParameters.cmrGranuleFilter;
     const spatialSelection = orderParameters.spatialSelection;
@@ -59,8 +59,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
 
     const url = this.buildUrl(conceptId, spatialSelection, temporalStart, temporalEnd, textFilter);
 
-    // TODO: Redirect user
-    console.log(url);
+    window.open(url, "_blank");
   }
 
   private buildUrl = (conceptId: CmrCollection["id"],
