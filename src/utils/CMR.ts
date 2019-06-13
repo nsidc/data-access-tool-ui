@@ -125,10 +125,6 @@ export const cmrEcsCollectionsRequest = () => {
   return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
 };
 
-export const cmrCollectionRequest = () => {
-  return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
-};
-
 export const cmrCollectionRequest = (shortName: string, version: number) => {
   const collectionUrl = CMR_COLLECTION_URL
     + `&short_name=${shortName}`
