@@ -11,6 +11,9 @@ deploying the application to QA.
 
 ## Development as a standalone application (not integrated into a Drupal page)
 
+This is not recommended. For best dev results, see "Development with Drupal
+integration".
+
 ### Use the version of NodeJS set in the project's .nvmrc file:
 
         $ nvm use
