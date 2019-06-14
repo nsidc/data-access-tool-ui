@@ -1,13 +1,11 @@
 import * as React from "react";
 
 import { CMR_MAX_GRANULES, formatBytes } from "../../utils/CMR";
-import { IEnvironment } from "../../utils/environment";
 import { GranuleLimitWarning } from "../GranuleLimitWarning";
 
 interface ISmallOrderConfirmationProps {
   cmrGranuleCount?: number;
   totalSize: number;
-  environment: IEnvironment;
   onCancel: () => void;
   onOK: () => void;
 }

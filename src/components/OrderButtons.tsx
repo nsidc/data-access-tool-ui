@@ -67,6 +67,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           cmrGranuleCount={this.props.cmrGranuleCount}
           environment={this.props.environment}
           onRequestClose={this.closeConfirmationFlow}
+          orderParameters={this.props.orderParameters}
           orderSubmissionParameters={this.props.orderSubmissionParameters}
           show={this.state.showConfirmationFlow}
           totalSize={this.props.totalSize} />
