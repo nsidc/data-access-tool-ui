@@ -5,7 +5,6 @@ import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { ConfirmationFlow } from "./ConfirmationFlow";
-import { EarthdataSearchHandoffButton } from "./EarthdataSearchHandoffButton";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 
@@ -48,8 +47,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     return (
       <div>
       <div id="order-buttons">
-        <EarthdataSearchHandoffButton
-          orderParameters={this.props.orderParameters} />
         <ScriptButton
           disabled={scriptButtonDisabled}
           environment={this.props.environment}
