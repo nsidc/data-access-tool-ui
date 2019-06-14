@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { CMR_MAX_GRANULES, formatBytes } from "../../utils/CMR";
-import { GranuleLimitWarning } from "../GranuleLimitWarning";
 
 interface ISmallOrderConfirmationProps {
   cmrGranuleCount?: number;
@@ -11,11 +10,9 @@ interface ISmallOrderConfirmationProps {
 }
 
 export const SmallOrderConfirmation = (props: ISmallOrderConfirmationProps) => {
-  let showWarning: boolean = false;
   let cmrGranuleCount = props.cmrGranuleCount ? props.cmrGranuleCount : 0;
   let totalSize = props.totalSize;
   if (cmrGranuleCount > CMR_MAX_GRANULES) {
-    showWarning = true;
     totalSize = totalSize / cmrGranuleCount * CMR_MAX_GRANULES;
     cmrGranuleCount = CMR_MAX_GRANULES;
   }
@@ -38,7 +35,6 @@ export const SmallOrderConfirmation = (props: ISmallOrderConfirmationProps) => {
               onClick={props.onCancel}>
         Cancel
       </button>
-      <GranuleLimitWarning show={showWarning}/>
     </div>
   );
 };
