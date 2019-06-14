@@ -148,8 +148,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="collection-list">
           {collectionDropdown}
         </div>
-        <div id="columnsxxx">
-          <SplitPane split="vertical" minSize={200} defaultSize="50%">
+        <div id="columns">
+          <SplitPane split="vertical" minSize={300} defaultSize="50%">
           <div id="left-side">
             <OrderParameterInputs
               cmrStatusOk={this.state.cmrStatusOk}

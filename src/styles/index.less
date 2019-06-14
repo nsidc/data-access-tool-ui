@@ -53,32 +53,20 @@
     position: relative;
   }
 
-  #columnsxxx {
-    height: 750px;
+  #columns {
+    --columnHeight: 750px;
+
+    height: var(--columnHeight);
 
     #left-side {
+      border: none;
       padding-right: 35px;
     }
 
     #right-side {
       padding-left: 35px;
-    }
-  }
-
-  #columns {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-
-    #left-side {
-      grid-column: 1;
-      border: none;
-      padding: 0;
-    }
-
-    #right-side {
-      grid-column: 2;
+      padding-right: 1em;
       overflow-x: hidden;
-      padding: 0 0 0 1em;
     }
   }
 
@@ -323,66 +311,88 @@
   }
 
   #granule-list-container {
-    height: 700px;
-    overflow: auto;
+    height: calc(var(--columnHeight) - 50px);
+    overflow-x: auto;
+    overflow-y: scroll;
     width: 100%;
-  }
 
-  .sortColumn {
-    .sort-icon-stack {
-      font-size: 1em;
-      height: 1em;
-      width: 1em;
-      margin-left: 0.25em;
-      vertical-align: middle;
-      margin-bottom: 2px;
-    }
-
-    .sort-icon {
-      opacity: 0.25;
-    }
-
-    .sort-active {
-      opacity: 1;
-    }
-
-    &:hover .sort-icon {
-      opacity: 1;
-    }
-  }
-
-  #granule-table {
-    display: table;
-    border-collapse: collapse;
-    table-layout: fixed;
-    padding: 0;
-    font-size: 95%;
-
-    td,
-    th {
-      border: 1px solid #999;
-      padding: 0.5rem;
-      text-align: left;
-      word-wrap: break-word;
-    }
-
-    th {
-      color: white;
-      position: sticky;
-      position: -webkit-sticky;
-      top: 0;
-      z-index: 9;
-      border-top: 2px;
-      background: #7ab5da; /* EUI Sky Blue */
-    }
-
-    tr {
-      &:nth-child(odd) {
-        background: #ebebeb; /* EUI Light Gray */
+    .sortColumn {
+      .sort-icon-stack {
+        font-size: 1em;
+        height: 1em;
+        width: 1em;
+        margin-left: 0.25em;
+        vertical-align: middle;
+        margin-bottom: 2px;
       }
 
-      &:hover {
-        background: #b5cede; /* EUI Medium Blue */
+      .sort-icon {
+        opacity: 0.25;
+      }
+
+      .sort-active {
+        opacity: 1;
+      }
+
+      &:hover .sort-icon {
+        opacity: 1;
+      }
+    }
+
+    #granule-table {
+      overflow-y: scroll;
+      display: table;
+      border-collapse: collapse;
+      table-layout: auto;
+      padding: 0;
+      font-size: 95%;
+      width: 100%;
+
+      .granule-id-col {
+        width: 47%;
+      }
+
+      .size-col {
+        width: 13%;
+        text-align: center;
+      }
+
+      .start-time-col {
+        width: 20%;
+      }
+
+      .end-time-col {
+        width: 20%;
+      }
+
+      td,
+      th {
+        border: 1px solid #999;
+        padding: 0.5rem;
+        text-align: left;
+        word-wrap: break-word;
+      }
+
+      th {
+        color: white;
+        cursor: pointer;
+        position: sticky;
+        position: -webkit-sticky;
+        top: 0;
+        padding: 0.5rem 0 0.5rem 0.5rem;
+        z-index: 9;
+        border-top: 2px;
+        background: #7ab5da; /* EUI Sky Blue */
+      }
+
+      tr {
+        &:nth-child(odd) {
+          background: #ebebeb; /* EUI Light Gray */
+        }
+
+        &:hover {
+          background: #b5cede; /* EUI Medium Blue */
+        }
       }
     }
   }
@@ -441,26 +451,6 @@
       background-color: lightgray;
       border-color: black;
     }
-  }
-
-  .granule-id-col {
-    width: 47%;
-    cursor: pointer;
-  }
-
-  .size-col {
-    width: 13%;
-    cursor: pointer;
-  }
-
-  .start-time-col {
-    width: 20%;
-    cursor: pointer;
-  }
-
-  .end-time-col {
-    width: 20%;
-    cursor: pointer;
   }
 
   &-profile {
@@ -597,8 +587,8 @@
   }
 
   .Resizer:hover {
-    -webkit-transition: all 2s ease;
-    transition: all 2s ease;
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
   }
 
   .Resizer.horizontal {
@@ -616,16 +606,19 @@
   }
 
   .Resizer.vertical {
-    width: 11px;
-    margin: 0 -5px;
-    border-left: 5px solid rgba(255, 255, 255, 0);
-    border-right: 5px solid rgba(255, 255, 255, 0);
+    width: 5px;
+    height: 60px;
+    background: #fff;
+    margin-top: calc((var(--columnHeight) - 30px) / 2);
+    margin-left: 0;
+    opacity: 0.5;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
     cursor: col-resize;
   }
 
   .Resizer.vertical:hover {
-    border-left: 5px solid rgba(0, 0, 0, 0.5);
-    border-right: 5px solid rgba(0, 0, 0, 0.5);
+    opacity: 1;
   }
 
   .Resizer.disabled {

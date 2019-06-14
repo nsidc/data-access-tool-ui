@@ -2,7 +2,6 @@ import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
-import { CSSTransition } from "react-transition-group";
 
 import { faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -116,45 +115,42 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private renderContent = () => {
+    let granuleList: any = null;
+
     if (this.props.cmrLoadingGranules) {
-      return (<LoadingIcon size="5x" />);
+      granuleList = (<tr><td colSpan={4}><LoadingIcon size="5x" /></td></tr>);
+    } else {
+      granuleList = this.props.cmrGranules.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
+        const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
+        return (
+          <tr key={i}>
+            <td>{granule.producer_granule_id}</td>
+            <td className="size-col">{granuleSize}</td>
+            <td>{moment.utc(granule.time_start).format(GranuleList.timeFormat)}</td>
+            <td>{moment.utc(granule.time_end).format(GranuleList.timeFormat)}</td>
+          </tr>
+        );
+      });
     }
 
-    const granuleList = this.props.cmrGranules.map((granule: CmrGranule = new CmrGranule(), i?: number) => {
-      const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
-      return (
-        <tr key={i}>
-          <td>{granule.producer_granule_id}</td>
-          <td>{granuleSize}</td>
-          <td>{moment.utc(granule.time_start).format(GranuleList.timeFormat)}</td>
-          <td>{moment.utc(granule.time_end).format(GranuleList.timeFormat)}</td>
-        </tr>
-      );
-    });
-
     return (
-      <CSSTransition in
-                     appear
-                     classNames="fade"
-                     timeout={500}>
-        <table id="granule-table">
-          <thead>
-            <tr>
-              {this.columnHeader("File Name", "granule-id-col",
-                GranuleSorting.FilenameUp, GranuleSorting.FilenameDown)}
-              {this.columnHeader(<span>Size (<small>MB</small>)</span>, "size-col",
-                GranuleSorting.SizeUp, GranuleSorting.SizeDown)}
-              {this.columnHeader("Start Time", "start-time-col",
-                GranuleSorting.StartTimeUp, GranuleSorting.StartTimeDown)}
-              {this.columnHeader("End Time", "end-time-col",
-                GranuleSorting.EndTimeUp, GranuleSorting.EndTimeDown)}
-            </tr>
-          </thead>
-          <tbody>
-            {granuleList}
-          </tbody>
-        </table>
-      </CSSTransition>
+      <table id="granule-table">
+        <thead>
+          <tr>
+            {this.columnHeader("File Name", "granule-id-col",
+              GranuleSorting.FilenameUp, GranuleSorting.FilenameDown)}
+            {this.columnHeader(<span>Size (<small>MB</small>)</span>, "size-col",
+              GranuleSorting.SizeUp, GranuleSorting.SizeDown)}
+            {this.columnHeader("Start Time", "start-time-col",
+              GranuleSorting.StartTimeUp, GranuleSorting.StartTimeDown)}
+            {this.columnHeader("End Time", "end-time-col",
+              GranuleSorting.EndTimeUp, GranuleSorting.EndTimeDown)}
+          </tr>
+        </thead>
+        <tbody>
+          {granuleList}
+        </tbody>
+      </table>
     );
   }
 }

@@ -1,6 +1,7 @@
 # v0.18.0 (Unreleased)
 
 * Add ability to sort granule columns.
+* Add gutter between main columns, and add a resize handle.
 
 # v0.17.0 (2019-06-05)
 
