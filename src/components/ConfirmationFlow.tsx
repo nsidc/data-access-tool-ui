@@ -4,8 +4,9 @@ import * as ReactModal from "react-modal";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
-import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from "./ConfirmationContent";
 import { LoadingIcon } from "./LoadingIcon";
+import { OrderErrorContent, OrderSuccessContent } from "./ModalContent/OrderSubmitResponse";
+import { SmallOrderConfirmation } from "./ModalContent/SmallOrderConfirmation";
 
 interface IConfirmationFlowProps {
   cmrGranuleCount?: number;
@@ -67,11 +68,11 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
 
   private orderConfirmationContent = () => {
     return (
-      <OrderConfirmationContent onOK={this.handleConfirmationClick}
-                                onCancel={this.props.onRequestClose}
-                                cmrGranuleCount={this.props.cmrGranuleCount}
-                                totalSize={this.props.totalSize}
-                                environment={this.props.environment} />
+      <SmallOrderConfirmation onOK={this.handleConfirmationClick}
+                              onCancel={this.props.onRequestClose}
+                              cmrGranuleCount={this.props.cmrGranuleCount}
+                              totalSize={this.props.totalSize}
+                              environment={this.props.environment} />
     );
   }
 
