@@ -3,8 +3,9 @@ import * as fetchMock from "fetch-mock";
 import { shim } from "promise.prototype.finally";
 import * as React from "react";
 
-import { OrderConfirmationContent } from "../src/components/ConfirmationContent";
 import { ConfirmationFlow } from "../src/components/ConfirmationFlow";
+import { LoadingIcon } from "../src/components/LoadingIcon";
+import { OrderParameters } from "../src/types/OrderParameters";
 import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
 import setupEnvironment from "../src/utils/environment";
 
@@ -17,6 +18,7 @@ const setup = (props = {}) => {
     environment,
     // tslint:disable-next-line:no-empty
     onRequestClose: () => {},  // set props.show to false
+    orderParameters: new OrderParameters(),
     orderSubmissionParameters: undefined,
     show: true,
     totalSize: 0,
@@ -28,10 +30,10 @@ const setup = (props = {}) => {
 };
 
 describe("ConfirmationFlow", () => {
-  test("Default child is OrderConfirmationContent", () => {
+  test("Default child is LoadingIcon", () => {
     const component = setup();
 
-    expect(component.find(OrderConfirmationContent).length).toEqual(1);
+    expect(component.find(LoadingIcon).length).toEqual(1);
   });
 
   describe("with a submit order request", () => {
