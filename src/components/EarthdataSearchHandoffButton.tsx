@@ -1,5 +1,6 @@
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import * as ReactTooltip from "react-tooltip";
 
 import { CmrCollection } from "../types/CmrCollection";
 import { OrderParameters } from "../types/OrderParameters";
@@ -28,25 +29,19 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
   public render() {
     return (
       <span>
-        {this.renderScriptButton()}
+        {this.renderButton()}
       </span>
     );
   }
 
-  private renderScriptButton = () => {
-    const tooltip = <div><span>Is the grass greener on the other side?</span></div>;
-
+  private renderButton = () => {
     return (
-      <div className="tooltip" data-tip data-for="handoffbutton">
-        <ReactTooltip id="handoffbutton" className="reactTooltip"
-          effect="solid" delayShow={500}>{tooltip}</ReactTooltip>
-        <button
-          type="button"
-          className="handoff-button eui-btn--blue"
-          onClick={() => this.edscRedirect(this.props.orderParameters)}>
-          Brave Sir Robin ran away, away!
-        </button>
-      </div>
+      <button
+        type="button"
+        className="handoff-button eui-btn--blue"
+        onClick={() => this.edscRedirect(this.props.orderParameters)}>
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> OK
+      </button>
     );
   }
 
