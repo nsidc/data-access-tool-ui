@@ -4,9 +4,10 @@ import * as React from "react";
 import * as ReactTooltip from "react-tooltip";
 import { CSSTransition } from "react-transition-group";
 
-import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CmrGranule } from "../types/CmrGranule";
+import { GranuleSorting } from "../types/OrderParameters";
 import { formatBytes } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 import { GranuleCount } from "./GranuleCount";
@@ -17,7 +18,9 @@ interface IGranuleListProps {
   cmrGranuleCount?: number;
   cmrGranules: List<CmrGranule>;
   cmrLoadingGranules: boolean;
+  granuleSorting: GranuleSorting;
   updateGranuleFilter: any;
+  updateGranuleSorting: any;
   fireGranuleFilter: any;
   totalSize: number;
 }
@@ -29,7 +32,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     const propsChanged = hasChanged(this.props, nextProps,
-      ["cmrGranules", "cmrGranuleFilter", "cmrLoadingGranules"]);
+      ["cmrGranules", "cmrGranuleFilter", "cmrLoadingGranules", "granuleSorting"]);
     return propsChanged;
   }
 
@@ -94,6 +97,24 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     this.timeout = window.setTimeout(this.props.fireGranuleFilter, 600);
   }
 
+  private columnHeader = (header: JSX.Element | string, className: string,
+                          columnSortUp: GranuleSorting, columnSortDown: GranuleSorting) => {
+    let newColumnSortOrder = columnSortUp;
+    let classSortUp = "fa-stack-1x sort-icon";
+    let classSortDown = "fa-stack-1x sort-icon";
+    if (this.props.granuleSorting === columnSortUp) {
+      classSortUp += " sort-active";
+      newColumnSortOrder = columnSortDown;
+    } else if (this.props.granuleSorting === columnSortDown) {
+      classSortDown += " sort-active";
+    }
+    const iconUp = <FontAwesomeIcon icon={faSortUp} className={classSortUp} />;
+    const iconDown = <FontAwesomeIcon icon={faSortDown} className={classSortDown} />;
+    return <th className={className}><div className="sortColumn" onClick={(e: any) => {
+      this.props.updateGranuleSorting(newColumnSortOrder);
+    }}>{header}<span className="fa-stack sort-icon-stack">{iconUp}{iconDown}</span></div></th>;
+  }
+
   private renderContent = () => {
     if (this.props.cmrLoadingGranules) {
       return (<LoadingIcon size="5x" />);
@@ -119,10 +140,14 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <table id="granule-table">
           <thead>
             <tr>
-              <th className="granule-id-col">File Name</th>
-              <th className="size-col">Size&nbsp;(MB)</th>
-              <th className="start-time-col">Start Time</th>
-              <th className="end-time-col">End Time</th>
+              {this.columnHeader("File Name", "granule-id-col",
+                GranuleSorting.FilenameUp, GranuleSorting.FilenameDown)}
+              {this.columnHeader(<span>Size (<small>MB</small>)</span>, "size-col",
+                GranuleSorting.SizeUp, GranuleSorting.SizeDown)}
+              {this.columnHeader("Start Time", "start-time-col",
+                GranuleSorting.StartTimeUp, GranuleSorting.StartTimeDown)}
+              {this.columnHeader("End Time", "end-time-col",
+                GranuleSorting.EndTimeUp, GranuleSorting.EndTimeDown)}
             </tr>
           </thead>
           <tbody>
