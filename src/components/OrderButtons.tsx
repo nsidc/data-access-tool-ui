@@ -53,9 +53,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderParameters={this.props.orderParameters} />
         <SubmitButton
           buttonText={"Order Files"}
+          cmrGranuleCount={this.props.cmrGranuleCount}
           disabled={orderButtonDisabled}
-          hoverText={`Once processed, your Order page will contain links to one or more zip files,
-          as well as to the individual file URLs.`}
           loggedOut={loggedOut}
           onSubmitOrder={this.handleSubmitOrder} />
         <ConfirmationFlow
