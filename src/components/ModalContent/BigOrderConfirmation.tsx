@@ -19,7 +19,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => (
       exactly the files you specified here.</p>
 
       <p>Alternatively, you can <a href="I should be a React component">download
-      a Python script</a> which has no file limits to retrieve your files.</p>
+      a Python script</a>, which has no file limits, to retrieve your files.</p>
 
       <div style={{display: "flex"}}>
 
