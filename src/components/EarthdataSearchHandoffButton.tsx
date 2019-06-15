@@ -46,13 +46,11 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
   }
 
   private edscRedirect = (orderParameters: OrderParameters) => {
-    const conceptId = orderParameters.collection.id;
-    const textFilter = orderParameters.cmrGranuleFilter;
-    const spatialSelection = orderParameters.spatialSelection;
-    const temporalStart = orderParameters.temporalFilterLowerBound;
-    const temporalEnd = orderParameters.temporalFilterUpperBound;
-
-    const url = this.buildUrl(conceptId, spatialSelection, temporalStart, temporalEnd, textFilter);
+    const url = this.buildUrl(orderParameters.collection.id,
+                              orderParameters.spatialSelection,
+                              orderParameters.temporalFilterLowerBound,
+                              orderParameters.temporalFilterUpperBound,
+                              orderParameters.cmrGranuleFilter);
 
     window.open(url, "_blank");
   }
@@ -63,7 +61,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
                       temporalEnd: OrderParameters["temporalFilterUpperBound"],
                       textFilter: OrderParameters["cmrGranuleFilter"]) => {
     let url = `https://search.earthdata.nasa.gov/search/granules?` +
-      `p=${conceptId}` +  // TODO: Is &p= the correct param? It's not working.
+      `p=${conceptId}` +
       `&pg[0][qt]=${temporalStart.toISOString()},${temporalEnd.toISOString()}`;
 
     if (spatialSelection) {
