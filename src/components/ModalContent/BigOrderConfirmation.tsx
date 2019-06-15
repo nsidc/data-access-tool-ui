@@ -10,18 +10,38 @@ interface IBigOrderConfirmationProps {
 }
 
 export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => (
-  <div>
-    <h2>YEET</h2>
+  <div style={{display: "flex"}}>
+    <span style={{width: "50%"}}>
+      <h2>IMPORTANT: Your order will be redirected</h2>
 
-    <p>Your order is larger than 2000 granules</p>
+      <p>Because your order is larger than 2000 files, you will be redirected to
+      Earthdata Search for fulfillment (see illustration). The order will contain
+      exactly the files you specified here.</p>
 
-    <EarthdataSearchHandoffButton
-      orderParameters={props.orderParameters} />
+      <p>Alternatively, you can <a href="I should be a React component">download
+      a Python script</a> which has no file limits to retrieve your files.</p>
 
-    <button className="cancel-button eui-btn--red"
-            onClick={props.onCancel}>
-      Cancel
-    </button>
+      <div style={{display: "flex"}}>
+
+        <EarthdataSearchHandoffButton
+          orderParameters={props.orderParameters} />
+
+        <button className="cancel-button eui-btn--red"
+                onClick={props.onCancel}>
+          Cancel
+        </button>
+
+      </div>
+    </span>
+
+    <span style={{width: "50%"}}>
+      <div>
+        <img src={"https://nsidc.org/jira/secure/attachment/77302/Earthdata%20Screenshot.png"} />
+        <div style={{textAlign: "center"}}>
+          <em>Earthdata Search interface</em>
+        </div>
+      </div>
+    </span>
   </div>
 );
 
