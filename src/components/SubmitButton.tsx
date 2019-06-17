@@ -35,8 +35,8 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
           here. {loggedOutSpan}
         </div>
         <div>
-          Alternatively, you can <span style={{color: "blue"}}>download a Python
-          script</span>, which has no file limits, to retrieve your files.
+          Alternatively, you can download a Python script (at left), which has
+          no file limits, to retrieve your files.
         </div>
       </div>
     ) : (
