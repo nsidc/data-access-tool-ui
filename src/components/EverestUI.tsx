@@ -25,6 +25,7 @@ import { OrderParameterInputs } from "./OrderParameterInputs";
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
 const LOCAL_STORAGE_KEY = "nsidcDataOrderParams";
+const LOCAL_STORAGE_UI_KEY = "nsidcLandingPageUI";
 
 interface IEverestProps {
   environment: IEnvironment;
@@ -136,8 +137,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           onCollectionChange={this.handleCollectionChange} />
       );
     }
+
+    let everestContainer: any;
+
     return (
-      <div id="everest-container">
+      <div id="everest-container" ref={(n) => everestContainer = n}>
         <ReactTooltip effect="solid" delayShow={500} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
@@ -149,7 +153,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           {collectionDropdown}
         </div>
         <div id="columns">
-          <SplitPane split="vertical" minSize={300} defaultSize="50%">
+          <SplitPane split="vertical" minSize={300} maxSize={-300}
+            defaultSize={this.getLocalStorageUIKey("splitPosition", "50%")}
+            onDragFinished={(size) => {
+              let ratio = 100 * (size / everestContainer.getBoundingClientRect().width);
+              ratio = Math.max(Math.min(ratio, 85), 15);
+              const percentSize = String(Math.round(ratio)) + "%";
+              this.setLocalStorageUIKey("splitPosition", percentSize);
+            }}
+          >
           <div id="left-side">
             <OrderParameterInputs
               cmrStatusOk={this.state.cmrStatusOk}
@@ -405,5 +417,29 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   private clearLocalStorage = () => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
+  }
+
+  private getLocalStorageUI = () => {
+    const uiSettings: string | null = localStorage.getItem(LOCAL_STORAGE_UI_KEY);
+    if (uiSettings) {
+      try {
+        return JSON.parse(uiSettings);
+      } catch (error) {
+        error = null;
+      }
+    }
+    return {};
+  }
+
+  private getLocalStorageUIKey = (key: string, defaultValue: string) => {
+    const settings = this.getLocalStorageUI();
+    const value = (settings[key]) ? settings[key] : defaultValue;
+    return value;
+  }
+
+  private setLocalStorageUIKey = (key: string, value: string) => {
+    const settings = this.getLocalStorageUI();
+    settings[key] = value;
+    localStorage.setItem(LOCAL_STORAGE_UI_KEY, JSON.stringify(settings));
   }
 }
