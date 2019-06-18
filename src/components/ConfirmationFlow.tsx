@@ -14,6 +14,7 @@ interface IConfirmationFlowProps {
   cmrGranuleCount?: number;
   environment: IEnvironment;
   onRequestClose: () => void;
+  onScriptDownloadClick: () => void;
   orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
   show: boolean;
@@ -76,6 +77,7 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       return (
         <BigOrderConfirmation cmrGranuleCount={this.props.cmrGranuleCount}
                               onCancel={this.props.onRequestClose}
+                              onScriptDownloadClick={this.props.onScriptDownloadClick}
                               orderParameters={this.props.orderParameters} />
       );
     } else {

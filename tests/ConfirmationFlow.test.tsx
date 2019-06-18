@@ -18,6 +18,7 @@ const setup = (props = {}) => {
     environment,
     // tslint:disable-next-line:no-empty
     onRequestClose: () => {},  // set props.show to false
+    onScriptDownloadClick: () => {},
     orderParameters: new OrderParameters(),
     orderSubmissionParameters: undefined,
     show: true,
