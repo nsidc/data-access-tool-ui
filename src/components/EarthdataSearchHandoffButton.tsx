@@ -1,5 +1,3 @@
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
@@ -40,7 +38,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
         type="button"
         className="handoff-button eui-btn--blue"
         onClick={() => this.edscRedirect(this.props.orderParameters)}>
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> OK
+        OK
       </button>
     );
   }
