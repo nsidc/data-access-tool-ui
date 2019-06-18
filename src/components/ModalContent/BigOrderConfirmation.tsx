@@ -43,7 +43,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
 
       <span style={{width: "50%"}}>
         <div>
-          <img src={"https://nsidc.org/jira/secure/attachment/77302/Earthdata%20Screenshot.png"} />
+          <img src={"https://nsidc.org/sites/default/files/Earthdata_Screenshot.png"} />
           <div style={{textAlign: "center"}}>
             <em>Earthdata Search interface</em>
           </div>
