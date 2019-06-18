@@ -153,7 +153,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           {collectionDropdown}
         </div>
         <div id="columns">
-          <SplitPane split="vertical" minSize={300} maxSize={-300}
+          <SplitPane split="vertical" minSize={300} maxSize={-600}
             defaultSize={this.getLocalStorageUIKey("splitPosition", "50%")}
             onDragFinished={(size) => {
               let ratio = 100 * (size / everestContainer.getBoundingClientRect().width);
