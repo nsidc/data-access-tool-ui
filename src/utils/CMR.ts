@@ -130,7 +130,7 @@ export const cmrStatusRequest = () => {
   return fetchResult;
 };
 
-export const collectionsRequest = () => {
+export const cmrEcsCollectionsRequest = () => {
   return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
 };
 

@@ -1,5 +1,6 @@
-# v0.18.0 (Unreleased)
+# v0.18.0 (2019-06-18)
 
+* New Earthdata Search handoff functionality for orders >2000 granules
 * Add ability to sort granule columns.
 
 # v0.17.0 (2019-06-05)

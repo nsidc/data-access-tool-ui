@@ -5,8 +5,8 @@ import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   buttonText: string;
+  cmrGranuleCount?: number;
   disabled: boolean;
-  hoverText: string;
   loggedOut: boolean;
   onSubmitOrder: any;
 }
@@ -18,18 +18,34 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
   }
 
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
-    return hasChanged(this.props, nextProps, ["buttonText", "disabled"]);
+    return hasChanged(this.props, nextProps, ["buttonText", "cmrGranuleCount", "disabled"]);
   }
 
   public render() {
-    const tooltipSpan = <span>{this.props.hoverText}</span>;
     const loggedOutSpan = (this.props.loggedOut) ? (
-      <span>
-        <br />
-        <span className="must-be-logged-in">You must be logged in.</span>
+      <span className="must-be-logged-in">
+        You must be logged in to place an order.
       </span>
     ) : null;
-    const tooltip = <div>{tooltipSpan}{loggedOutSpan}</div>;
+    const tooltip = (this.props.cmrGranuleCount && this.props.cmrGranuleCount > 2000) ? (
+      <div>
+        <div>
+          Orders for >2000 files will be rerouted to Earthdata Search for
+          fulfillment. The order will contain exactly the files you specified
+          here. {loggedOutSpan}
+        </div>
+        <div>
+          Alternatively, you can download a Python script (at left), which has
+          no file limits, to retrieve your files.
+        </div>
+      </div>
+    ) : (
+      <div>
+        <div>Once processed, your Order page will contain links to one or more
+        zip files, as well as to the individual file URLs.</div>
+        <div>{loggedOutSpan}</div>
+      </div>
+    );
 
     return (
       <div className="tooltip" data-tip data-for={this.props.buttonText}>

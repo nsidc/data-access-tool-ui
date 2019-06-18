@@ -2,7 +2,7 @@ import { List } from "immutable";
 import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
-import { collectionsRequest } from "../utils/CMR";
+import { cmrEcsCollectionsRequest } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
@@ -131,7 +131,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
       });
     };
 
-    collectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
+    cmrEcsCollectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
   }
 
   private handleChange = (e: any) => {

@@ -1,16 +1,21 @@
 import * as React from "react";
 import * as ReactModal from "react-modal";
 
+import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
-import { OrderConfirmationContent, OrderErrorContent, OrderSuccessContent } from "./ConfirmationContent";
 import { LoadingIcon } from "./LoadingIcon";
+import { BigOrderConfirmation } from "./ModalContent/BigOrderConfirmation";
+import { OrderErrorContent, OrderSuccessContent } from "./ModalContent/OrderSubmitResponse";
+import { SmallOrderConfirmation } from "./ModalContent/SmallOrderConfirmation";
 
 interface IConfirmationFlowProps {
   cmrGranuleCount?: number;
   environment: IEnvironment;
   onRequestClose: () => void;
+  onScriptDownloadClick: () => void;
+  orderParameters: OrderParameters;
   orderSubmissionParameters?: OrderSubmissionParameters;
   show: boolean;
   totalSize: number;
@@ -66,13 +71,23 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   private orderConfirmationContent = () => {
-    return (
-      <OrderConfirmationContent onOK={this.handleConfirmationClick}
+    if (!this.props.cmrGranuleCount) {
+      return (<LoadingIcon size="5x" />);
+    } else if (this.props.cmrGranuleCount > 2000) {
+      return (
+        <BigOrderConfirmation cmrGranuleCount={this.props.cmrGranuleCount}
+                              onCancel={this.props.onRequestClose}
+                              onScriptDownloadClick={this.props.onScriptDownloadClick}
+                              orderParameters={this.props.orderParameters} />
+      );
+    } else {
+      return (
+        <SmallOrderConfirmation onOK={this.handleConfirmationClick}
                                 onCancel={this.props.onRequestClose}
                                 cmrGranuleCount={this.props.cmrGranuleCount}
-                                totalSize={this.props.totalSize}
-                                environment={this.props.environment} />
-    );
+                                totalSize={this.props.totalSize} />
+      );
+    }
   }
 
   private submitOrder = () => {
