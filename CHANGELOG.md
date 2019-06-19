@@ -1,3 +1,7 @@
+# v0.20.0 (2019-06-19)
+
+* UI tweaks, add table border.
+
 # v0.19.0 (2019-06-19)
 
 * Add gutter between main columns, and add a resize handle.
