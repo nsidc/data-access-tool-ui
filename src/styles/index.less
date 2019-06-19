@@ -54,19 +54,19 @@
   }
 
   #columns {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    --columnHeight: 750px;
+
+    height: var(--columnHeight);
 
     #left-side {
-      grid-column: 1;
       border: none;
-      padding: 0;
+      padding-right: 35px;
     }
 
     #right-side {
-      grid-column: 2;
+      padding-left: 35px;
+      padding-right: 1em;
       overflow-x: hidden;
-      padding: 0 0 0 1em;
     }
   }
 
@@ -80,6 +80,7 @@
     padding: 8px;
     margin-top: 12px;
     color: black;
+    text-align: center;
   }
 
   h3 {
@@ -312,66 +313,90 @@
   }
 
   #granule-list-container {
-    height: 700px;
-    overflow: auto;
+    height: calc(var(--columnHeight) - 150px);
+    overflow-x: auto;
+    overflow-y: scroll;
     width: 100%;
-  }
 
-  .sortColumn {
-    .sort-icon-stack {
-      font-size: 1em;
-      height: 1em;
-      width: 1em;
-      margin-left: 0.25em;
-      vertical-align: middle;
-      margin-bottom: 2px;
-    }
-
-    .sort-icon {
-      opacity: 0.25;
-    }
-
-    .sort-active {
-      opacity: 1;
-    }
-
-    &:hover .sort-icon {
-      opacity: 1;
-    }
-  }
-
-  #granule-table {
-    display: table;
-    border-collapse: collapse;
-    table-layout: fixed;
-    padding: 0;
-    font-size: 95%;
-
-    td,
-    th {
-      border: 1px solid #999;
-      padding: 0.5rem;
-      text-align: left;
-      word-wrap: break-word;
-    }
-
-    th {
-      color: white;
-      position: sticky;
-      position: -webkit-sticky;
-      top: 0;
-      z-index: 9;
-      border-top: 2px;
-      background: #7ab5da; /* EUI Sky Blue */
-    }
-
-    tr {
-      &:nth-child(odd) {
-        background: #ebebeb; /* EUI Light Gray */
+    .sortColumn {
+      .sort-icon-stack {
+        font-size: 1.5em;
+        padding-top: -0.25em;
+        padding-bottom: -0.25em;
+        height: 1em;
+        width: 1em;
+        margin-left: 0.25em;
+        vertical-align: middle;
+        margin-bottom: 2px;
       }
 
-      &:hover {
-        background: #b5cede; /* EUI Medium Blue */
+      .sort-icon {
+        opacity: 0.25;
+      }
+
+      .sort-active {
+        opacity: 1;
+      }
+
+      &:hover .sort-icon {
+        opacity: 1;
+      }
+    }
+
+    #granule-table {
+      overflow-y: scroll;
+      display: table;
+      border-collapse: collapse;
+      table-layout: auto;
+      padding: 0;
+      font-size: 95%;
+      width: 100%;
+
+      .granule-id-col {
+        width: 47%;
+      }
+
+      .size-col {
+        width: 13%;
+        text-align: center;
+      }
+
+      .start-time-col {
+        width: 20%;
+      }
+
+      .end-time-col {
+        width: 20%;
+      }
+
+      td,
+      th {
+        border: 1px solid #999;
+        padding: 0.5rem;
+        text-align: left;
+        word-wrap: break-word;
+      }
+
+      th {
+        color: white;
+        cursor: pointer;
+        position: sticky;
+        position: -webkit-sticky;
+        top: 0;
+        padding: 0.5rem 0 0.5rem 0.5rem;
+        z-index: 9;
+        border-top: 2px;
+        background: #7ab5da; /* EUI Sky Blue */
+      }
+
+      tr {
+        &:nth-child(odd) {
+          background: #ebebeb; /* EUI Light Gray */
+        }
+
+        &:hover {
+          background: #b5cede; /* EUI Medium Blue */
+        }
       }
     }
   }
@@ -430,26 +455,6 @@
       background-color: lightgray;
       border-color: black;
     }
-  }
-
-  .granule-id-col {
-    width: 47%;
-    cursor: pointer;
-  }
-
-  .size-col {
-    width: 13%;
-    cursor: pointer;
-  }
-
-  .start-time-col {
-    width: 20%;
-    cursor: pointer;
-  }
-
-  .end-time-col {
-    width: 20%;
-    cursor: pointer;
   }
 
   &-profile {
@@ -571,6 +576,62 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .Resizer {
+    background: #000;
+    opacity: 0.1;
+    z-index: 1;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding;
+    background-clip: padding-box;
+  }
+
+  .Resizer:hover {
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+  }
+
+  .Resizer.horizontal {
+    height: 11px;
+    margin: -5px 0;
+    border-top: 5px solid rgba(255, 255, 255, 0);
+    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    cursor: row-resize;
+    width: 100%;
+  }
+
+  .Resizer.horizontal:hover {
+    border-top: 5px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 5px solid rgba(0, 0, 0, 0.5);
+  }
+
+  .Resizer.vertical {
+    width: 5px;
+    height: 60px;
+    background: #fff;
+    margin-top: calc((var(--columnHeight) - 30px) / 2);
+    margin-left: 0;
+    opacity: 0.5;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    cursor: col-resize;
+    flex-shrink: 0;
+  }
+
+  .Resizer.vertical:hover {
+    opacity: 1;
+  }
+
+  .Resizer.disabled {
+    cursor: not-allowed;
+  }
+
+  .Resizer.disabled:hover {
+    border-color: transparent;
   }
 
   .ReactModal__Overlay {

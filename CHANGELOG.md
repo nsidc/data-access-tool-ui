@@ -2,6 +2,7 @@
 
 * New Earthdata Search handoff functionality for orders >2000 granules
 * Add ability to sort granule columns.
+* Add gutter between main columns, and add a resize handle.
 
 # v0.17.0 (2019-06-05)
 
