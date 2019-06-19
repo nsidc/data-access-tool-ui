@@ -138,10 +138,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       );
     }
 
-    let everestContainer: any;
+    let columnContainer: any;
 
     return (
-      <div id="everest-container" ref={(n) => everestContainer = n}>
+      <div id="everest-container">
         <ReactTooltip effect="solid" delayShow={500} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
@@ -152,43 +152,43 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="collection-list">
           {collectionDropdown}
         </div>
-        <div id="columns">
+        <div id="columns" ref={(n) => columnContainer = n}>
           <SplitPane split="vertical" minSize={300} maxSize={-600}
-            defaultSize={this.getLocalStorageUIKey("splitPosition", "50%")}
+            defaultSize={this.getLocalStorageUIByKey("splitPosition", "50%")}
             onDragFinished={(size) => {
-              let ratio = 100 * (size / everestContainer.getBoundingClientRect().width);
+              let ratio = 100 * (size / columnContainer.getBoundingClientRect().width);
               ratio = Math.max(Math.min(ratio, 85), 15);
               const percentSize = String(Math.round(ratio)) + "%";
-              this.setLocalStorageUIKey("splitPosition", percentSize);
+              this.setLocalStorageUIByKey("splitPosition", percentSize);
             }}
           >
-          <div id="left-side">
-            <OrderParameterInputs
-              cmrStatusOk={this.state.cmrStatusOk}
-              environment={this.props.environment}
-              onChange={this.handleOrderParameterChange}
-              orderParameters={this.state.orderParameters}
-              onTemporalReset={this.handleTemporalReset}
-            />
-          </div>
-          <div id="right-side">
-            <GranuleList
-              cmrGranuleCount={this.state.cmrGranuleCount}
-              cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
-              cmrGranules={this.state.cmrGranules}
-              cmrLoadingGranules={this.state.cmrLoadingGranules}
-              granuleSorting={this.state.orderParameters.granuleSorting}
-              totalSize={this.state.totalSize}
-              updateGranuleFilter={this.updateGranuleFilter}
-              updateGranuleSorting={this.updateGranuleSorting}
-              fireGranuleFilter={this.fireGranuleFilter} />
-            <OrderButtons
-              cmrGranuleCount={this.state.cmrGranuleCount}
-              environment={this.props.environment}
-              orderParameters={this.state.orderParameters}
-              orderSubmissionParameters={this.state.orderSubmissionParameters}
-              totalSize={this.state.totalSize} />
-          </div>
+            <div id="left-side">
+              <OrderParameterInputs
+                cmrStatusOk={this.state.cmrStatusOk}
+                environment={this.props.environment}
+                onChange={this.handleOrderParameterChange}
+                orderParameters={this.state.orderParameters}
+                onTemporalReset={this.handleTemporalReset}
+              />
+            </div>
+            <div id="right-side">
+              <GranuleList
+                cmrGranuleCount={this.state.cmrGranuleCount}
+                cmrGranuleFilter={this.state.orderParameters.cmrGranuleFilter}
+                cmrGranules={this.state.cmrGranules}
+                cmrLoadingGranules={this.state.cmrLoadingGranules}
+                granuleSorting={this.state.orderParameters.granuleSorting}
+                totalSize={this.state.totalSize}
+                updateGranuleFilter={this.updateGranuleFilter}
+                updateGranuleSorting={this.updateGranuleSorting}
+                fireGranuleFilter={this.fireGranuleFilter} />
+              <OrderButtons
+                cmrGranuleCount={this.state.cmrGranuleCount}
+                environment={this.props.environment}
+                orderParameters={this.state.orderParameters}
+                orderSubmissionParameters={this.state.orderSubmissionParameters}
+                totalSize={this.state.totalSize} />
+            </div>
           </SplitPane>
         </div>
       </div>
@@ -431,13 +431,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     return {};
   }
 
-  private getLocalStorageUIKey = (key: string, defaultValue: string) => {
+  private getLocalStorageUIByKey = (key: string, defaultValue: string) => {
     const settings = this.getLocalStorageUI();
     const value = (settings[key]) ? settings[key] : defaultValue;
     return value;
   }
 
-  private setLocalStorageUIKey = (key: string, value: string) => {
+  private setLocalStorageUIByKey = (key: string, value: string) => {
     const settings = this.getLocalStorageUI();
     settings[key] = value;
     localStorage.setItem(LOCAL_STORAGE_UI_KEY, JSON.stringify(settings));
