@@ -54,7 +54,7 @@
   }
 
   #columns {
-    --columnHeight: 750px;
+    --columnHeight: 800px;
 
     height: var(--columnHeight);
 
@@ -317,6 +317,7 @@
     overflow-x: auto;
     overflow-y: scroll;
     width: 100%;
+    border: 1px solid #999;
 
     .sortColumn {
       .sort-icon-stack {
@@ -372,6 +373,7 @@
       td,
       th {
         border: 1px solid #999;
+        border-left-style: none;
         padding: 0.5rem;
         text-align: left;
         word-wrap: break-word;
