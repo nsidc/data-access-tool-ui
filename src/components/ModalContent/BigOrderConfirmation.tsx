@@ -12,7 +12,7 @@ interface IBigOrderConfirmationProps {
 
 export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
   const downloadScriptLink = (
-    <a onClick={props.onScriptDownloadClick} style={{cursor: "pointer"}}>
+    <a onClick={() => { props.onScriptDownloadClick(); props.onCancel(); }} style={{cursor: "pointer"}}>
       download a Python script
     </a>
   );
