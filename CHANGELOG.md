@@ -1,3 +1,7 @@
+# v0.21.0 (2019-06-20)
+
+* Close Earthdata Search dialog when user hits OK.
+
 # v0.20.0 (2019-06-19)
 
 * UI tweaks, add table border.
