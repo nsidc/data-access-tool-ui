@@ -31,6 +31,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
         <div style={{display: "flex"}}>
 
           <EarthdataSearchHandoffButton
+            onClick={props.onCancel}
             orderParameters={props.orderParameters} />
 
           <button className="cancel-button eui-btn--red"
