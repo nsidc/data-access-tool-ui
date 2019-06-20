@@ -1,3 +1,7 @@
+# v0.22.0 (2019-06-20)
+
+* Close Earthdata Search dialog when user downloads the Python script.
+
 # v0.21.0 (2019-06-20)
 
 * Close Earthdata Search dialog when user hits OK.
