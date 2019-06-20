@@ -6,6 +6,7 @@ import { filterAddWildcards } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IHandoffButtonProps {
+  onClick: () => void;
   orderParameters: OrderParameters;
 }
 
@@ -29,7 +30,10 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
       <button
         type="button"
         className="handoff-button eui-btn--blue"
-        onClick={() => this.edscRedirect(this.props.orderParameters)}>
+        onClick={() => {
+          this.edscRedirect(this.props.orderParameters);
+          this.props.onClick();
+          }}>
         OK
       </button>
     );
