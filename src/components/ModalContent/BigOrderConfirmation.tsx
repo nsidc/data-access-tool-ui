@@ -4,7 +4,6 @@ import { OrderParameters } from "../../types/OrderParameters";
 import { EarthdataSearchHandoffButton } from "../EarthdataSearchHandoffButton";
 
 interface IBigOrderConfirmationProps {
-  cmrGranuleCount?: number;
   onCancel: () => void;
   onScriptDownloadClick: () => void;
   orderParameters: OrderParameters;
@@ -19,11 +18,12 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
   return (
     <div style={{display: "flex"}}>
       <span style={{width: "50%"}}>
-        <h2>IMPORTANT: Your order will be redirected</h2>
+        <h2>Your order will be redirected</h2>
 
-        <p>Because your order is larger than 2000 files, you will be redirected
-        to Earthdata Search for fulfillment (see illustration). The order will
-        contain exactly the files you specified here.</p>
+        <p>Because your order is larger than 2000 files,
+          or you would like to apply customizations,
+          you will be redirected to Earthdata Search for fulfillment (see illustration).
+          Your current order will be transferred intact.</p>
 
         <p>Alternatively, you can {downloadScriptLink}, which has no file
         limits, to retrieve your files.</p>
