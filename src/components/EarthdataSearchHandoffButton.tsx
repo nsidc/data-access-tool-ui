@@ -28,6 +28,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
   public render() {
     return (
       <button
+        id="confirmEarthdata"
         type="button"
         className="handoff-button eui-btn--blue"
         onClick={() => {

@@ -2,10 +2,11 @@ import * as React from "react";
 
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { filterAddWildcards } from "../utils/CMR";
+import { CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { ConfirmationFlow } from "./ConfirmationFlow";
+import { EarthdataFlow } from "./EarthdataFlow";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
 
@@ -19,6 +20,7 @@ interface IOrderButtonsProps {
 
 interface IOrderButtonsState {
   showConfirmationFlow: boolean;
+  showEarthdataFlow: boolean;
 }
 
 export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButtonsState> {
@@ -26,6 +28,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     super(props);
     this.state = {
       showConfirmationFlow: false,
+      showEarthdataFlow: false,
     };
   }
 
@@ -35,15 +38,46 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
                                                             "orderParameters",
                                                             "orderSubmissionParameters",
                                                             "totalSize"]);
-    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow"]);
+    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEarthdataFlow"]);
 
     return propsChanged || stateChanged;
   }
 
   public render() {
     const loggedOut = !this.props.environment.user;
-    const orderButtonDisabled = !this.props.orderSubmissionParameters || loggedOut;
-    const scriptButtonDisabled = !this.props.orderSubmissionParameters;
+    const noGranules = !this.props.cmrGranuleCount;
+    const scriptButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
+    const orderTooLarge = this.props.cmrGranuleCount !== undefined &&
+      this.props.cmrGranuleCount > CMR_MAX_GRANULES;
+    const orderButtonDisabled = !this.props.orderSubmissionParameters ||
+      loggedOut || orderTooLarge || noGranules;
+    const earthdataButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
+    const loggedOutSpan = (loggedOut) ? (
+      <span className="must-be-logged-in">
+        You must be logged in to place an order.
+      </span>
+    ) : null;
+    const tooltipOrder = (orderTooLarge) ? (
+        <div>
+        <div>To place a large order (>2000 files), use the button at right.
+          You may also download a Python script, using the button at left.</div>
+          <div>{loggedOutSpan}</div>
+        </div>
+      ) : (
+        <div>
+          <div>Once processed, your Orders page will display one or more zip files
+            and a list of file URLs.</div>
+          <div>{loggedOutSpan}</div>
+        </div>
+      );
+    const tooltipEarthdata = (
+      <div>
+        <div>Orders >2000 files, or that require customization,
+          will be fulfilled via Earthdata.
+          Your current order will be transferred intact for completion.
+        </div>
+      </div>
+    );
 
     return (
       <div>
@@ -55,10 +89,14 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onClick={this.handleScriptDownload} />
         <SubmitButton
           buttonText={"Order Files"}
-          cmrGranuleCount={this.props.cmrGranuleCount}
+          tooltip={tooltipOrder}
           disabled={orderButtonDisabled}
-          loggedOut={loggedOut}
           onSubmitOrder={this.handleSubmitOrder} />
+        <SubmitButton
+          buttonText={"Large/Custom Order"}
+          tooltip={tooltipEarthdata}
+          disabled={earthdataButtonDisabled}
+          onSubmitOrder={this.handleEarthdataOrder} />
         <ConfirmationFlow
           cmrGranuleCount={this.props.cmrGranuleCount}
           environment={this.props.environment}
@@ -68,18 +106,34 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderSubmissionParameters={this.props.orderSubmissionParameters}
           show={this.state.showConfirmationFlow}
           totalSize={this.props.totalSize} />
+        <EarthdataFlow
+          onRequestClose={this.closeEarthdataFlow}
+          onScriptDownloadClick={this.handleScriptDownload}
+          orderParameters={this.props.orderParameters}
+          show={this.state.showEarthdataFlow}
+          totalSize={this.props.totalSize} />
       </div>
       </div>
     );
   }
 
-  public closeConfirmationFlow = () => {
+  private closeConfirmationFlow = () => {
     this.setState({showConfirmationFlow: false});
   }
 
   private handleSubmitOrder = () => {
     this.setState({
       showConfirmationFlow: true,
+    });
+  }
+
+  private closeEarthdataFlow = () => {
+    this.setState({ showEarthdataFlow: false });
+  }
+
+  private handleEarthdataOrder = () => {
+    this.setState({
+      showEarthdataFlow: true,
     });
   }
 

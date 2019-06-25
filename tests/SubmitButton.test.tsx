@@ -7,6 +7,7 @@ import { SubmitButton } from "../src/components/SubmitButton";
 const setup = () => {
   const props = {
     buttonText: "Order List of Links",
+    tooltip: <span></span>,
     disabled: false,
     collectionId: "abcd123",
     hoverText: "Once the order is processed, go to the Order page for a list of links to your files.",

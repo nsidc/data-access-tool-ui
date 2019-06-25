@@ -6,7 +6,6 @@ import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { LoadingIcon } from "./LoadingIcon";
-import { BigOrderConfirmation } from "./ModalContent/BigOrderConfirmation";
 import { OrderErrorContent, OrderSuccessContent } from "./ModalContent/OrderSubmitResponse";
 import { SmallOrderConfirmation } from "./ModalContent/SmallOrderConfirmation";
 
@@ -71,23 +70,12 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
   }
 
   private orderConfirmationContent = () => {
-    if (!this.props.cmrGranuleCount) {
-      return (<LoadingIcon size="5x" />);
-    } else if (this.props.cmrGranuleCount > 2000) {
-      return (
-        <BigOrderConfirmation cmrGranuleCount={this.props.cmrGranuleCount}
+    return (
+      <SmallOrderConfirmation onOK={this.handleConfirmationClick}
                               onCancel={this.props.onRequestClose}
-                              onScriptDownloadClick={this.props.onScriptDownloadClick}
-                              orderParameters={this.props.orderParameters} />
-      );
-    } else {
-      return (
-        <SmallOrderConfirmation onOK={this.handleConfirmationClick}
-                                onCancel={this.props.onRequestClose}
-                                cmrGranuleCount={this.props.cmrGranuleCount}
-                                totalSize={this.props.totalSize} />
-      );
-    }
+                              cmrGranuleCount={this.props.cmrGranuleCount}
+                              totalSize={this.props.totalSize} />
+    );
   }
 
   private submitOrder = () => {
