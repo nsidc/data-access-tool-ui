@@ -14,10 +14,6 @@ interface IEarthdataFlowProps {
 }
 
 export class EarthdataFlow extends React.Component<IEarthdataFlowProps, {}> {
-  public constructor(props: IEarthdataFlowProps) {
-    super(props);
-  }
-
   public shouldComponentUpdate(nextProps: IEarthdataFlowProps) {
     const propsChanged = hasChanged(this.props, nextProps, ["show"]);
     return propsChanged;
