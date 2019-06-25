@@ -1,3 +1,7 @@
+# v1.0.0 (2019-06-25)
+
+* Add a third button to take user to Earthdata.
+
 # v0.22.0 (2019-06-20)
 
 * Close Earthdata Search dialog when user downloads the Python script.

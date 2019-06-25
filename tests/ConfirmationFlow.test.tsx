@@ -4,7 +4,6 @@ import { shim } from "promise.prototype.finally";
 import * as React from "react";
 
 import { ConfirmationFlow } from "../src/components/ConfirmationFlow";
-import { LoadingIcon } from "../src/components/LoadingIcon";
 import { OrderParameters } from "../src/types/OrderParameters";
 import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
 import setupEnvironment from "../src/utils/environment";
@@ -31,12 +30,6 @@ const setup = (props = {}) => {
 };
 
 describe("ConfirmationFlow", () => {
-  test("Default child is LoadingIcon", () => {
-    const component = setup();
-
-    expect(component.find(LoadingIcon).length).toEqual(1);
-  });
-
   describe("with a submit order request", () => {
     let mockShowLoadingIcon: any;
     let mockHandleOrderError: any;

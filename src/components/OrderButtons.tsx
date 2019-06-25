@@ -61,7 +61,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
         <div>
         <div>To place a large order (>2000 files), use the button at right.
           You may also download a Python script, using the button at left.</div>
-          <div>{loggedOutSpan}</div>
         </div>
       ) : (
         <div>
@@ -72,8 +71,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       );
     const tooltipEarthdata = (
       <div>
-        <div>Orders >2000 files, or that require customization,
-          will be fulfilled via Earthdata.
+        <div>Orders >2000 files will be fulfilled via Earthdata.
+          Also use this option to apply customizations (e.g. subset, reformat).
           Your current order will be transferred intact for completion.
         </div>
       </div>
