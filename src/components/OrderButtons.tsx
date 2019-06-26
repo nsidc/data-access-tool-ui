@@ -71,7 +71,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       );
     const tooltipEarthdata = (
       <div>
-        <div>Orders >2000 files will be fulfilled via Earthdata.
+        <div>Orders >2000 files will be fulfilled via Earthdata Search.
           Also use this option to apply customizations (e.g. subset, reformat).
           Your current order will be transferred intact for completion.
         </div>
