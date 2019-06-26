@@ -59,7 +59,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     ) : null;
     const tooltipOrder = (orderTooLarge) ? (
         <div>
-        <div>To place a large order (>2000 files), use the button at right.
+          <div>To place a large order (>2000 files), use the button at right.
           You may also download a Python script, using the button at left.</div>
         </div>
       ) : (
