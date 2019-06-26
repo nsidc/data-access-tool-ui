@@ -1,3 +1,7 @@
+# v1.0.1 (2019-06-26)
+
+* Tweaks to Earthdata Search tooltip and dialog text.
+
 # v1.0.0 (2019-06-25)
 
 * Add a third button to take user to Earthdata.
