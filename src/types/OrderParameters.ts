@@ -31,7 +31,7 @@ const defaultOrderParameters: IOrderParameters = {
   cmrGranuleFilter: "",
   collection: new CmrCollection(),
   collectionSpatialCoverage: null,
-  granuleSorting: GranuleSorting.StartTimeUp,
+  granuleSorting: GranuleSorting.StartTimeDown,
   spatialSelection: null,
   temporalFilterLowerBound: moment.utc("20100101"),
   temporalFilterUpperBound: moment.utc(),

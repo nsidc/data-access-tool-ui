@@ -1,3 +1,7 @@
+# v1.0.2 (2019-07-29)
+
+* Change default granule sort order to start-time-descending (latest at top).
+
 # v1.0.1 (2019-06-26)
 
 * Tweaks to Earthdata Search tooltip and dialog text.

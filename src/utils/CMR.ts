@@ -30,7 +30,7 @@ const CMR_DEFAULT_HEADERS = Map({
 const granuleSortParameter = (granuleSorting: GranuleSorting) => {
   let secondarySort = GranuleSorting.FilenameUp;
   if (granuleSorting === GranuleSorting.FilenameDown || granuleSorting === GranuleSorting.FilenameUp) {
-    secondarySort = GranuleSorting.StartTimeUp;
+    secondarySort = GranuleSorting.StartTimeDown;
   }
   return "&sort_key\[\]=" + granuleSorting + "&sort_key\[\]=" + secondarySort;
 };
