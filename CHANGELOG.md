@@ -1,3 +1,12 @@
+# v1.0.3 (2019-08-08)
+
+* Fix how bounding box coordinates from CMR are rounded; western and southern
+  coordinates are rounded down to 2 decimals (for example, 23.125263 becomes
+  23.12), while eastern and northern coordinates are rounded up (for example,
+  75.000824923 becomes 75.01). This ensures that our bounding box encompasses
+  the data, fixing a bug where all of the HMA_Snowfield point data was excluded
+  by our box.
+
 # v1.0.2 (2019-07-29)
 
 * Change default granule sort order to start-time-descending (latest at top).
