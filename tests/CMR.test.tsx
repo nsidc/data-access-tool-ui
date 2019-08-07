@@ -98,4 +98,17 @@ describe("cmrBoxArrToSpatialSelection", () => {
     expect(cmrBoxArrToSpatialSelection([])).toBe(globalSpatialSelection);
     expect(cmrBoxArrToSpatialSelection(List([]))).toBe(globalSpatialSelection);
   });
+
+  it("returns the smallest box that encompasses all given boxes", () => {
+    const inputBoxes = [
+      "59 -75 83 -14",
+      "60 -76 83 -14",
+      "60 -75 84 -14",
+      "60 -75 83 -13",
+    ];
+
+    const expected = [-76, 59, -13, 84];
+
+    expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
+  });
 });
