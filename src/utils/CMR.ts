@@ -194,8 +194,7 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGe
   const boxesList: List<string> = boxes instanceof Array ? List(boxes) : boxes;
 
   boxesList.forEach((box: string = "-90 -180 90 180") => {
-    const coords: number[] = box.split(" ")
-                                .map(parseFloat);
+    const coords: number[] = box.split(" ").map(parseFloat);
     souths.push(coords[0]);
     wests.push(coords[1]);
     norths.push(coords[2]);
