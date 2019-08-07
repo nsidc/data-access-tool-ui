@@ -182,7 +182,7 @@ export const globalSpatialSelection: IGeoJsonBbox = {
 // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
 // encompassing them all
 export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGeoJsonBbox => {
-  if (!boxes) {
+  if (((boxes as string[]).length === 0) || ((boxes as List<string>).size === 0)) {
     return globalSpatialSelection;
   }
 

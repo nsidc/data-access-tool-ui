@@ -1,5 +1,8 @@
+import { List } from "immutable";
+
 import { IGeoJsonPolygon } from "../src/types/GeoJson";
-import { spatialParameter, versionParameters } from "../src/utils/CMR";
+import { cmrBoxArrToSpatialSelection, globalSpatialSelection,
+         spatialParameter, versionParameters } from "../src/utils/CMR";
 
 describe("CMR version_id query parameters", () => {
   it("should be correctly generated for one-digit version_ids", () => {
@@ -87,5 +90,12 @@ describe("CMR spatial parameters", () => {
       const expected = "bounding_box=-180,-90,180,90";
       expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
     });
+  });
+});
+
+describe("cmrBoxArrToSpatialSelection", () => {
+  it("returns a global box for an empty array", () => {
+    expect(cmrBoxArrToSpatialSelection([])).toBe(globalSpatialSelection);
+    expect(cmrBoxArrToSpatialSelection(List([]))).toBe(globalSpatialSelection);
   });
 });
