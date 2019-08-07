@@ -195,8 +195,6 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGe
 
   boxesList.forEach((box: string = "-90 -180 90 180") => {
     const coords: number[] = box.split(" ")
-                                .map(parseFloat)
-                                .map((f) => f.toFixed(2))
                                 .map(parseFloat);
     souths.push(coords[0]);
     wests.push(coords[1]);
@@ -204,10 +202,14 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGe
     easts.push(coords[3]);
   });
 
-  const finalWest: number = Math.min.apply(null, wests);
-  const finalSouth: number = Math.min.apply(null, souths);
-  const finalEast: number = Math.max.apply(null, easts);
-  const finalNorth: number = Math.max.apply(null, norths);
+  // make sure decimal rounding doesn't shrink the box; for example, if the
+  // north side of the box is at 75.001 degrees N, our box 75.01 instead of
+  // 75.00 so that data at 75.001 is still encompassed; this is particularly
+  // important for handling point data
+  const finalWest: number = Math.floor(Math.min.apply(null, wests) * 100) / 100;
+  const finalSouth: number = Math.floor(Math.min.apply(null, souths) * 100) / 100;
+  const finalEast: number = Math.ceil(Math.max.apply(null, easts) * 100) / 100;
+  const finalNorth: number = Math.ceil(Math.max.apply(null, norths) * 100) / 100;
 
   return {
     bbox: [finalWest, finalSouth, finalEast, finalNorth],
