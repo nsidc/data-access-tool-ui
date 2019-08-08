@@ -1,5 +1,8 @@
+import { List } from "immutable";
+
 import { IGeoJsonPolygon } from "../src/types/GeoJson";
-import { spatialParameter, versionParameters } from "../src/utils/CMR";
+import { cmrBoxArrToSpatialSelection, globalSpatialSelection,
+         spatialParameter, versionParameters } from "../src/utils/CMR";
 
 describe("CMR version_id query parameters", () => {
   it("should be correctly generated for one-digit version_ids", () => {
@@ -87,5 +90,37 @@ describe("CMR spatial parameters", () => {
       const expected = "bounding_box=-180,-90,180,90";
       expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
     });
+  });
+});
+
+describe("cmrBoxArrToSpatialSelection", () => {
+  it("returns a global box for an empty array", () => {
+    expect(cmrBoxArrToSpatialSelection([])).toBe(globalSpatialSelection);
+    expect(cmrBoxArrToSpatialSelection(List([]))).toBe(globalSpatialSelection);
+  });
+
+  it("returns the smallest box that encompasses all given boxes", () => {
+    const inputBoxes = [
+      "59 -75 83 -14",
+      "60 -76 83 -14",
+      "60 -75 84 -14",
+      "60 -75 83 -13",
+    ];
+
+    const expected = [-76, 59, -13, 84];
+
+    expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
+  });
+
+  it("it returns the smallest box that encompasses all given boxes with no rounding", () => {
+    const inputBoxes = [
+      "28.23467 85.60915 28.23467 85.60915",
+      "28.23464 85.60918 28.23464 85.60918",
+      "28.21502 85.60986 28.21502 85.60986",
+    ];
+
+    const expected = [85.60915, 28.21502, 85.60986, 28.23467];
+
+    expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
   });
 });

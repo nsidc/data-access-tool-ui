@@ -181,8 +181,11 @@ export const globalSpatialSelection: IGeoJsonBbox = {
 // take the list of bounding boxes from a CMR response
 // (e.g., ["-90 -180 90 180"]) and return a geoJSON SpatialSelection
 // encompassing them all
+//
+// TODO: Kevin's ideas for refactoring
+// https://bitbucket.org/nsidc/everest-ui/pull-requests/179/hermes-92-point-data/activity#comment-112353646
 export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGeoJsonBbox => {
-  if (!boxes) {
+  if (((boxes as string[]).length === 0) || ((boxes as List<string>).size === 0)) {
     return globalSpatialSelection;
   }
 
@@ -194,14 +197,12 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGe
   const boxesList: List<string> = boxes instanceof Array ? List(boxes) : boxes;
 
   boxesList.forEach((box: string = "-90 -180 90 180") => {
-    const coords: number[] = box.split(" ")
-                                .map(parseFloat)
-                                .map((f) => f.toFixed(2))
-                                .map(parseFloat);
-    souths.push(coords[0]);
-    wests.push(coords[1]);
-    norths.push(coords[2]);
-    easts.push(coords[3]);
+    const [south, west, north, east]: number[] = box.split(" ").map(parseFloat);
+
+    souths.push(south);
+    wests.push(west);
+    norths.push(north);
+    easts.push(east);
   });
 
   const finalWest: number = Math.min.apply(null, wests);
