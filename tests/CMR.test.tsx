@@ -112,14 +112,14 @@ describe("cmrBoxArrToSpatialSelection", () => {
     expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
   });
 
-  it("rounds up/down (instead of to closest) to 2 decimals such that it returns the smallest box that encompasses all given boxes", () => {
+  it("it returns the smallest box that encompasses all given boxes with no rounding", () => {
     const inputBoxes = [
       "28.23467 85.60915 28.23467 85.60915",
       "28.23464 85.60918 28.23464 85.60918",
       "28.21502 85.60986 28.21502 85.60986",
     ];
 
-    const expected = [85.60, 28.21, 85.61, 28.24];
+    const expected = [85.60915, 28.21502, 85.60986, 28.23467];
 
     expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
   });
