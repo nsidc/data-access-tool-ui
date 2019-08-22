@@ -1,6 +1,6 @@
 # v1.0.4 (2019-08-22)
 
-* Include credentials in `getOrder` function, which access the hermes-api
+* Include credentials in `getOrder` function, which accesses the hermes-api
   endpoint `/api/orders/<order_id>`. If credentials are not explicitly included,
   some browsers (e.g., Firefox 60.8.0esr) do not include cookies in the request,
   resulting in a 401 Unauthorized response.
