@@ -15,7 +15,7 @@ export interface IHermesAPI {
 // of this function
 export function constructAPI(urls: any): IHermesAPI {
   const getOrder = (orderId: string) => {
-    return fetch(`${urls.hermesApiUrl}/orders/${orderId}`)
+    return fetch(`${urls.hermesApiUrl}/orders/${orderId}`, {credentials: "include"})
       .then((response) => response.json());
   };
 
