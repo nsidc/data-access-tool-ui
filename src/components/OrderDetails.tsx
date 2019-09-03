@@ -43,8 +43,20 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
         <div id="order-details"><LoadingIcon size="5x" /></div>
       );
     } else if (noOrderSelected) {
+      const orderList = (<tr><td colSpan={4}><LoadingIcon size="5x" /></td></tr>);
       return (
-        <div id="order-details">{"Select an order from the list at left."}</div>
+        <table id="granule-table">
+          <thead>
+            <tr>
+              <th>Order Time</th>
+              <th>Order ID</th>
+              <th>Size (MB)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderList}
+          </tbody>
+        </table>
       );
     } else {
       const order: any = this.state.order;
