@@ -52,25 +52,26 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
 
     if (userLoggedOut) {
       return (
-        <div id="profile-container">
+        <div>
           <div id="order-details">{"You must be logged in to view your orders."}</div>
         </div>
       );
     } else if (userHasNoOrders) {
       return (
-        <div id="profile-container">
+        <div>
           <div id="order-details">{"You have no orders."}</div>
         </div>
       );
     } else {
       return (
-        <div id="profile-container">
+        <div>
           <OrderList
             environment={this.props.environment}
             initialLoadComplete={this.state.initialLoadComplete}
             onSelectionChange={this.handleOrderSelection}
             orderList={this.state.orderList}
             selectedOrder={this.state.selectedOrder} />
+          <hr />
           <OrderDetails
             environment={this.props.environment}
             initialLoadComplete={this.state.initialLoadComplete}

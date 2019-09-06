@@ -40,23 +40,11 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
     if (loading) {
       return (
-        <div id="order-details"><LoadingIcon size="5x" /></div>
+        <div id="order-details"><LoadingIcon size="lg" /></div>
       );
     } else if (noOrderSelected) {
-      const orderList = (<tr><td colSpan={4}><LoadingIcon size="5x" /></td></tr>);
       return (
-        <table id="granule-table">
-          <thead>
-            <tr>
-              <th>Order Time</th>
-              <th>Order ID</th>
-              <th>Size (MB)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderList}
-          </tbody>
-        </table>
+        <div id="order-details">{"Select an order from the list above to see details."}</div>
       );
     } else {
       const order: any = this.state.order;
@@ -66,17 +54,11 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
       return (
         <div id="order-details">
-          <div>Order ID: {order.order_id}</div>
-          <div>Placed: {orderPlacedDate.format(OrderDetails.timeFormat)}</div>
+          <div>Order ID: {order.order_id} &nbsp; Status: {order.status}</div>
           <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
-          <div>Status: {order.status}</div>
-          <div>Fulfillment method: {order.fulfillment}</div>
-          <div>Delivery method: {order.delivery}</div>
-          <hr />
-          <div>Zip links (Note: download may take a moment to start):
+          <div>Zip links (download may take a moment to start):
             <ul>{zipLinks}</ul>
           </div>
-
           <div>File links:
             <ul>{dataLinks}</ul>
           </div>
