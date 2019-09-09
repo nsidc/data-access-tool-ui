@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import * as React from "react";
 
 import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
@@ -19,14 +20,20 @@ interface IOrderListState {
 }
 
 export enum OrderSorting {
-  OrderTimeUp = "start_date",
-  OrderTimeDown = "-start_date",
-  EndTimeUp = "end_date",
-  EndTimeDown = "-end_date",
-  FilenameUp = "producer_granule_id",
-  FilenameDown = "-producer_granule_id",
-  SizeUp = "data_size",
-  SizeDown = "-data_size",
+  OrderTimeUp,
+  OrderTimeDown,
+  IDUp,
+  IDDown,
+  FilesUp,
+  FilesDown,
+  SizeUp,
+  SizeDown,
+  StatusUp,
+  StatusDown,
+  DeliveryUp,
+  DeliveryDown,
+  DeliverTimeUp,
+  DeliverTimeDown,
 }
 
 export class OrderList extends React.Component<IOrderListProps, IOrderListState> {
@@ -50,6 +57,53 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
 
     if (!this.props.initialLoadComplete) { return null; }
 
+    orderList = orderList.sort((o1: any, o2: any) => {
+      let sign = 1;
+      // For columns other than Order Time or Order ID, if there is a tie,
+      // always return the tied orders in descending Order Time.
+      const order1isBeforeOrder2 = moment(o1.submitted_timestamp).isBefore(o2.submitted_timestamp);
+      switch (this.state.orderSorting) {
+        case OrderSorting.OrderTimeUp: sign = -1;
+        case OrderSorting.OrderTimeDown:
+          return order1isBeforeOrder2 ? sign : -sign;
+          break;
+        case OrderSorting.IDUp: sign = -1;
+        case OrderSorting.IDDown:
+          return (o1.order_id < o2.order_id) ? sign : -sign;
+          break;
+        case OrderSorting.FilesUp: sign = -1;
+        case OrderSorting.FilesDown:
+          if (o1.granule_count < o2.granule_count) {
+            return sign;
+          } else if (o1.granule_count > o2.granule_count) {
+            return -sign;
+          }
+          return order1isBeforeOrder2 ? 1 : -1;
+          break;
+        case OrderSorting.StatusUp: sign = -1;
+        case OrderSorting.StatusDown:
+          if (o1.status < o2.status) {
+            return sign;
+          } else if (o1.status > o2.status) {
+            return -sign;
+          }
+          return order1isBeforeOrder2 ? 1 : -1;
+          break;
+        case OrderSorting.DeliveryUp: sign = -1;
+        case OrderSorting.DeliveryDown:
+          if (o1.delivery < o2.delivery) {
+            return sign;
+          } else if (o1.delivery > o2.delivery) {
+            return -sign;
+          }
+          return order1isBeforeOrder2 ? 1 : -1;
+          break;
+        default:
+          break;
+      }
+      return 0;
+    });
+
     orderList = orderList.map((order: any, index: number) => {
       let selected: boolean = false;
       if (order.order_id === this.props.selectedOrder) {
@@ -71,12 +125,18 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
             <tr>
               {this.columnHeader("Order Time",
                 OrderSorting.OrderTimeUp, OrderSorting.OrderTimeDown)}
-              <th className="order-list-header">Order ID</th>
-              <th className="order-list-header"># Files</th>
-              <th className="order-list-header">Size (MB)</th>
-              <th className="order-list-header">Status</th>
-              <th className="order-list-header">Delivery</th>
-              <th className="order-list-header">Deliver Time</th>
+              {this.columnHeader("Order ID",
+                OrderSorting.IDUp, OrderSorting.IDDown)}
+              {this.columnHeader("# Files",
+                OrderSorting.FilesUp, OrderSorting.FilesDown)}
+              {this.columnHeader("Size (MB)",
+                OrderSorting.SizeUp, OrderSorting.SizeDown)}
+              {this.columnHeader("Status",
+                OrderSorting.StatusUp, OrderSorting.StatusDown)}
+              {this.columnHeader("Delivery",
+                OrderSorting.DeliveryUp, OrderSorting.DeliveryDown)}
+              {this.columnHeader("Deliver Time",
+                OrderSorting.DeliverTimeUp, OrderSorting.DeliverTimeDown)}
             </tr>
           </thead>
           <tbody>
@@ -88,7 +148,6 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
   }
 
   private updateOrderSorting = (orderSorting: OrderSorting) => {
-    //    this.handleOrderParameterChange({ granuleSorting });
     this.setState({
       orderSorting,
     });
