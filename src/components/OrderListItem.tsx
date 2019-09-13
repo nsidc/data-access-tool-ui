@@ -1,8 +1,8 @@
 import * as moment from "moment";
 import * as React from "react";
 
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faCheck, faClock, faEllipsisH,
+  faExclamationTriangle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -24,16 +24,39 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
     if (this.props.selected) {
       style += " order-list-item-selected";
     }
+    const orderPlacedDate = moment(this.props.order.submitted_timestamp);
+    const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
+    if (moment(orderExpirationDate).isBefore(moment.now())) {
+      style += " order-list-item-expired";
+    }
     const delivery = (this.props.order.delivery === "ESI") ?
       "Zip" : this.props.order.delivery;
     const submitted = moment(this.props.order.submitted_timestamp).format(OrderListItem.timeFormat);
     let status = null;
     switch (this.props.order.status) {
-      case "pending":
-        status = <FontAwesomeIcon icon={faEllipsisH} className="order-warning" />;
+      case "cancelrequested":
+      case "cancelled":
+        status = <FontAwesomeIcon icon={faBan} className="order-error" />;
         break;
       case "complete":
         status = <FontAwesomeIcon icon={faCheck} className="order-success" />;
+        break;
+      case "error":
+        status = <FontAwesomeIcon icon={faExclamationTriangle} className="order-error" />;
+        break;
+      case "expired":
+        status = <FontAwesomeIcon icon={faClock} />;
+        break;
+      case "failed":
+        status = <FontAwesomeIcon icon={faTimesCircle} className="order-error" />;
+        break;
+      case "inprogress":
+      case "pending":
+        status = <FontAwesomeIcon icon={faEllipsisH} className="order-success" />;
+        break;
+      case "warning":
+        status = <FontAwesomeIcon icon={faExclamationTriangle} className="order-warning" />;
+        break;
       default:
         break;
     }

@@ -48,20 +48,28 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else {
       const order: any = this.state.order;
-      const dataLinks = this.buildDataLinks(order);
-      const zipLinks = this.buildZipLinks(order);
       const orderPlacedDate = moment(order.submitted_timestamp);
-      const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
+      const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
+      let links = null;
+      if (moment(orderExpirationDate).isAfter(moment.now())) {
+        const dataLinks = this.buildDataLinks(order);
+        const zipLinks = this.buildZipLinks(order);
+        links = <div>
+          <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
+            <div>Zip links (download may take a moment to start):
+              <ul>{zipLinks}</ul>
+            </div>
+            <div>File links:
+              <ul>{dataLinks}</ul>
+            </div>
+          </div>;
+      } else {
+        links = <div>Expired: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>;
+      }
       return (
         <div id="order-details">
           <div>Order ID: {order.order_id} &nbsp; Status: {order.status}</div>
-          <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
-          <div>Zip links (download may take a moment to start):
-            <ul>{zipLinks}</ul>
-          </div>
-          <div>File links:
-            <ul>{dataLinks}</ul>
-          </div>
+          {links}
         </div>
       );
     }
