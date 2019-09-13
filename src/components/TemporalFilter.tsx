@@ -1,6 +1,6 @@
 import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Moment } from "moment";
+import * as moment from "moment";
 import * as React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,10 +8,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ITemporalFilterProps {
-  fromDate: Moment;
-  onFromDateChange: (date: Moment) => void;
-  toDate: Moment;
-  onToDateChange: (date: Moment) => void;
+  fromDate: moment.Moment;
+  onFromDateChange: (date: moment.Moment) => void;
+  toDate: moment.Moment;
+  onToDateChange: (date: moment.Moment) => void;
   timeErrorLowerBound: string;
   timeErrorUpperBound: string;
   onClick: any;
@@ -44,14 +44,16 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           className={(this.props.timeErrorLowerBound === "") ? "" : "error"}
           selected={this.props.fromDate.utc()}
           dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
-          onChange={(d: Moment) => this.props.onFromDateChange(d.utc())} />
+          onChange={(d: moment.Moment) =>
+            this.props.onFromDateChange(moment(d.format("YYYYMMDD")).utc().startOf("day"))} />
         <label className="to">To</label>
         <DatePicker
           id="to"
           className={(this.props.timeErrorUpperBound === "") ? "" : "error"}
           selected={this.props.toDate.utc()}
           dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
-          onChange={(d: Moment) => this.props.onToDateChange(d.utc())} />
+          onChange={(d: moment.Moment) =>
+            this.props.onToDateChange(moment(d.format("YYYYMMDD")).utc().endOf("day"))} />
         <div onClick={this.props.onClick}>
           <button className="buttonReset" data-tip="Reset dates to defaults">
             <FontAwesomeIcon icon={faUndoAlt} size="lg" />
