@@ -1,3 +1,8 @@
+# v1.0.5 (2019-09-16)
+
+* Force start/end dates to the beginning and end of the day,
+  to get all of the granules.
+
 # v1.0.4 (2019-08-22)
 
 * Include credentials in `getOrder` function, which accesses the hermes-api
