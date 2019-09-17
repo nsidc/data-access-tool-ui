@@ -4,6 +4,7 @@ import * as React from "react";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { LoadingIcon } from "./LoadingIcon";
+import { getOrderStatus } from "./OrderListItem";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
@@ -55,20 +56,21 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
         const dataLinks = this.buildDataLinks(order);
         const zipLinks = this.buildZipLinks(order);
         links = <div>
-          <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
-            <div>Zip links (download may take a moment to start):
+          <div><b>Expires:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
+            <div><b>Zip links:</b> (download may take a moment to start)
               <ul>{zipLinks}</ul>
             </div>
-            <div>File links:
+            <div><b>File links:</b>
               <ul>{dataLinks}</ul>
             </div>
           </div>;
       } else {
-        links = <div>Expired: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>;
+        links = <div><b>Expired:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>;
       }
       return (
         <div id="order-details">
-          <div>Order ID: {order.order_id} &nbsp; Status: {order.status}</div>
+          <div><b>Order ID:</b> {order.order_id}</div>
+          <div><b>Status:</b> {getOrderStatus(order.status)}</div>
           {links}
         </div>
       );

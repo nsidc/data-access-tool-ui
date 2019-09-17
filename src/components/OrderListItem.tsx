@@ -32,7 +32,7 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
     const delivery = (this.props.order.delivery === "ESI") ?
       "Zip" : this.props.order.delivery;
     const submitted = moment(this.props.order.submitted_timestamp).format(OrderListItem.timeFormat);
-    const status = this.getStatus(this.props.order.status);
+    const status = getOrderStatus(this.props.order.status);
     return (
       <tr onClick={this.handleOrderSelection} className={style}>
         <td>{submitted}</td>
@@ -47,36 +47,36 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
   private handleOrderSelection = () => {
     this.props.onOrderSelection(this.props.order.order_id);
   }
+}
 
-  private getStatus(orderStatus: string) {
-    let status = null;
-    switch (orderStatus) {
-      case "cancelrequested":
-      case "cancelled":
-        status = <FontAwesomeIcon icon={faBan} className="order-error" />;
-        break;
-      case "complete":
-        status = <FontAwesomeIcon icon={faCheck} className="order-success" />;
-        break;
-      case "error":
-        status = <FontAwesomeIcon icon={faExclamationTriangle} className="order-error" />;
-        break;
-      case "expired":
-        status = <FontAwesomeIcon icon={faClock} />;
-        break;
-      case "failed":
-        status = <FontAwesomeIcon icon={faTimesCircle} className="order-error" />;
-        break;
-      case "inprogress":
-      case "pending":
-        status = <FontAwesomeIcon icon={faEllipsisH} className="order-success" />;
-        break;
-      case "warning":
-        status = <FontAwesomeIcon icon={faExclamationTriangle} className="order-warning" />;
-        break;
-      default:
-        break;
-    }
-    return <div>{status} {orderStatus}</div>;
+export function getOrderStatus(orderStatus: string): any {
+  let status = null;
+  switch (orderStatus) {
+    case "cancelrequested":
+    case "cancelled":
+      status = <FontAwesomeIcon icon={faBan} className="order-error" />;
+      break;
+    case "complete":
+      status = <FontAwesomeIcon icon={faCheck} className="order-success" />;
+      break;
+    case "error":
+      status = <FontAwesomeIcon icon={faExclamationTriangle} className="order-error" />;
+      break;
+    case "expired":
+      status = <FontAwesomeIcon icon={faClock} />;
+      break;
+    case "failed":
+      status = <FontAwesomeIcon icon={faTimesCircle} className="order-error" />;
+      break;
+    case "inprogress":
+    case "pending":
+      status = <FontAwesomeIcon icon={faEllipsisH} className="order-success" />;
+      break;
+    case "warning":
+      status = <FontAwesomeIcon icon={faExclamationTriangle} className="order-warning" />;
+      break;
+    default:
+      break;
   }
+  return <span>{status} {orderStatus}</span>;
 }
