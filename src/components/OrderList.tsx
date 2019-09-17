@@ -118,25 +118,25 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
       );
     });
 
+    // {this.columnHeader("Size (MB)", "order-list-right",
+    //   OrderSorting.SizeUp, OrderSorting.SizeDown)}
+    // {this.columnHeader("Deliver Time", "",
+    //   OrderSorting.DeliverTimeUp, OrderSorting.DeliverTimeDown)}
     return (
       <div id="order-list">
         <table id="order-table">
           <thead>
             <tr>
-              {this.columnHeader("Order Time",
+              {this.columnHeader("Order Time", "",
                 OrderSorting.OrderTimeUp, OrderSorting.OrderTimeDown)}
-              {this.columnHeader("Order ID",
+              {this.columnHeader("Order ID", "",
                 OrderSorting.IDUp, OrderSorting.IDDown)}
-              {this.columnHeader("# Files",
+              {this.columnHeader("# Files", "order-list-right",
                 OrderSorting.FilesUp, OrderSorting.FilesDown)}
-              {this.columnHeader("Size (MB)",
-                OrderSorting.SizeUp, OrderSorting.SizeDown)}
-              {this.columnHeader("Status",
+              {this.columnHeader("Status", "",
                 OrderSorting.StatusUp, OrderSorting.StatusDown)}
-              {this.columnHeader("Delivery",
+              {this.columnHeader("Delivery", "",
                 OrderSorting.DeliveryUp, OrderSorting.DeliveryDown)}
-              {this.columnHeader("Deliver Time",
-                OrderSorting.DeliverTimeUp, OrderSorting.DeliverTimeDown)}
             </tr>
           </thead>
           <tbody>
@@ -153,7 +153,7 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
     });
   }
 
-  private columnHeader = (header: JSX.Element | string,
+  private columnHeader = (header: JSX.Element | string, style: string,
                           columnSortUp: OrderSorting, columnSortDown: OrderSorting) => {
     let newColumnSortOrder = columnSortUp;
     let classSortUp = "fa-stack-1x sort-icon";
@@ -164,9 +164,10 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
     } else if (this.state.orderSorting === columnSortDown) {
       classSortDown += " sort-active";
     }
+    const colStyle = "order-list-header" + (style ? " " + style : "");
     const iconUp = <FontAwesomeIcon icon={faSortUp} className={classSortUp} />;
     const iconDown = <FontAwesomeIcon icon={faSortDown} className={classSortDown} />;
-    return <th className="order-list-header"><div className="sortColumn" onClick={(e: any) => {
+    return <th className={colStyle}><div className="sortColumn" onClick={(e: any) => {
       this.updateOrderSorting(newColumnSortOrder);
     }}>{header}<span className="fa-stack sort-icon-stack">{iconUp}{iconDown}</span></div></th>;
   }

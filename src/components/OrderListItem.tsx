@@ -32,8 +32,25 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
     const delivery = (this.props.order.delivery === "ESI") ?
       "Zip" : this.props.order.delivery;
     const submitted = moment(this.props.order.submitted_timestamp).format(OrderListItem.timeFormat);
+    const status = this.getStatus(this.props.order.status);
+    return (
+      <tr onClick={this.handleOrderSelection} className={style}>
+        <td>{submitted}</td>
+        <td>{this.props.order.order_id}</td>
+        <td className="order-list-right">{this.props.order.granule_count}</td>
+        <td>{status}</td>
+        <td>{delivery}</td>
+      </tr>
+    );
+  }
+
+  private handleOrderSelection = () => {
+    this.props.onOrderSelection(this.props.order.order_id);
+  }
+
+  private getStatus(orderStatus: string) {
     let status = null;
-    switch (this.props.order.status) {
+    switch (orderStatus) {
       case "cancelrequested":
       case "cancelled":
         status = <FontAwesomeIcon icon={faBan} className="order-error" />;
@@ -60,20 +77,6 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
       default:
         break;
     }
-    return (
-      <tr onClick={this.handleOrderSelection} className={style}>
-        <td>{submitted}</td>
-        <td>{this.props.order.order_id}</td>
-        <td>{this.props.order.granule_count}</td>
-        <td>----</td>
-        <td>{status} {this.props.order.status}</td>
-        <td>{delivery}</td>
-        <td>----</td>
-      </tr>
-    );
-  }
-
-  private handleOrderSelection = () => {
-    this.props.onOrderSelection(this.props.order.order_id);
+    return <div>{status} {orderStatus}</div>;
   }
 }

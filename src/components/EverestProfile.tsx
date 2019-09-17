@@ -71,7 +71,6 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
             onSelectionChange={this.handleOrderSelection}
             orderList={this.state.orderList}
             selectedOrder={this.state.selectedOrder} />
-          <hr />
           <OrderDetails
             environment={this.props.environment}
             initialLoadComplete={this.state.initialLoadComplete}
