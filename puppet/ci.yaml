@@ -36,11 +36,13 @@ nsidc_jenkins::jobs:
     command: |
       #!/bin/bash
 
+      set -e
+
       git checkout $ref
 
       source ~/.nvm/nvm.sh
 
-      set -ex
+      set -x
 
       npm install
       npm run build-drupal
