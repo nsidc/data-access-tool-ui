@@ -167,9 +167,19 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
     const colStyle = "order-list-header" + (style ? " " + style : "");
     const iconUp = <FontAwesomeIcon icon={faSortUp} className={classSortUp} />;
     const iconDown = <FontAwesomeIcon icon={faSortDown} className={classSortDown} />;
-    return <th className={colStyle}><div className="sortColumn" onClick={(e: any) => {
+    const sortOnClick = (e: any) => {
       this.updateOrderSorting(newColumnSortOrder);
-    }}>{header}<span className="fa-stack sort-icon-stack">{iconUp}{iconDown}</span></div></th>;
+    };
+    return (
+      <th className={colStyle}>
+        <div className="sortColumn" onClick={sortOnClick}>
+          {header}
+          <span className="fa-stack sort-icon-stack">
+            {iconUp}{iconDown}
+          </span>
+        </div>
+      </th>
+    );
   }
 
 }
