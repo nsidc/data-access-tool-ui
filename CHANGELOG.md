@@ -1,3 +1,7 @@
+# v1.0.6 (2019-09-17)
+
+* Change Order History page to a table of orders.
+
 # v1.0.5 (2019-09-16)
 
 * Force start/end dates to the beginning and end of the day,

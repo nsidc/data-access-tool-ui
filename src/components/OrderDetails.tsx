@@ -4,6 +4,7 @@ import * as React from "react";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { LoadingIcon } from "./LoadingIcon";
+import { getOrderStatus } from "./OrderListItem";
 
 interface IOrderDetailsProps {
   environment: IEnvironment;
@@ -40,34 +41,37 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
     if (loading) {
       return (
-        <div id="order-details"><LoadingIcon size="5x" /></div>
+        <div id="order-details"><LoadingIcon size="lg" /></div>
       );
     } else if (noOrderSelected) {
       return (
-        <div id="order-details">{"Select an order from the list at left."}</div>
+        <div id="order-details">{"Select an order from the list above to see details."}</div>
       );
     } else {
       const order: any = this.state.order;
-      const dataLinks = this.buildDataLinks(order);
-      const zipLinks = this.buildZipLinks(order);
       const orderPlacedDate = moment(order.submitted_timestamp);
-      const orderExpirationDate = orderPlacedDate.clone().add(5, "days");
+      const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
+      let links = null;
+      if (moment(orderExpirationDate).isAfter(moment.now())) {
+        const dataLinks = this.buildDataLinks(order);
+        const zipLinks = this.buildZipLinks(order);
+        links = <div>
+          <div><b>Expires:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
+            <div><b>Zip links:</b> (download may take a moment to start)
+              <ul>{zipLinks}</ul>
+            </div>
+            <div><b>File links:</b>
+              <ul>{dataLinks}</ul>
+            </div>
+          </div>;
+      } else {
+        links = <div><b>Expired:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>;
+      }
       return (
         <div id="order-details">
-          <div>Order ID: {order.order_id}</div>
-          <div>Placed: {orderPlacedDate.format(OrderDetails.timeFormat)}</div>
-          <div>Expires: {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
-          <div>Status: {order.status}</div>
-          <div>Fulfillment method: {order.fulfillment}</div>
-          <div>Delivery method: {order.delivery}</div>
-          <hr />
-          <div>Zip links (Note: download may take a moment to start):
-            <ul>{zipLinks}</ul>
-          </div>
-
-          <div>File links:
-            <ul>{dataLinks}</ul>
-          </div>
+          <div><b>Order ID:</b> {order.order_id}</div>
+          <div><b>Status:</b> {getOrderStatus(order.status)}</div>
+          {links}
         </div>
       );
     }
