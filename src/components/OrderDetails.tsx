@@ -55,11 +55,15 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       if (moment(orderExpirationDate).isAfter(moment.now())) {
         const dataLinks = this.buildDataLinks(order);
         const zipLinks = this.buildZipLinks(order);
+        const textFileLinks: any = this.buildTextFileLink(order);
         links = <div>
           <div><b>Expires:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
-            <div><b>Zip links:</b> (download may take a moment to start)
-              <ul>{zipLinks}</ul>
-            </div>
+          <div><b>Zip links:</b> (download may take a moment to start)
+            <ul>{zipLinks}</ul>
+          </div>
+          <div><b>File list:</b>
+            <ul>{textFileLinks}</ul>
+          </div>
             <div><b>File links:</b>
               <ul>{dataLinks}</ul>
             </div>
@@ -98,6 +102,21 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       return ( <li key={index}><a href={link}>{link}</a></li> );
     });
     return html;
+  }
+
+  private buildTextFileLink(order: any): JSX.Element {
+    const textLinks = order.file_urls.data.map((link: any, index: number) => {
+      return (link + "\n");
+    });
+    if (textLinks.length > 0) {
+      const orderId = this.props.orderId ? this.props.orderId.substring(0, 8) : "";
+      const fileName = "nsidc-download_" + orderId + ".txt";
+      const file = new Blob(textLinks, { type: "text/plain" });
+      const fileList = <li><a href={URL.createObjectURL(file)}
+        download={fileName}>{fileName}</a></li>;
+      return fileList;
+    }
+    return <span></span>;
   }
 
   private buildZipLinks(order: any): JSX.Element {
