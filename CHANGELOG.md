@@ -1,4 +1,4 @@
-# v1.0.6 (unreleased)
+# v1.0.6 (2019-09-19)
 
 * Change Order History page to a table of orders.
 * Add text file list to the order details.

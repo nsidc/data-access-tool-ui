@@ -112,8 +112,11 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       const orderId = this.props.orderId ? this.props.orderId.substring(0, 8) : "";
       const fileName = "nsidc-download_" + orderId + ".txt";
       const file = new Blob(textLinks, { type: "text/plain" });
-      const fileList = <li><a href={URL.createObjectURL(file)}
-        download={fileName}>{fileName}</a></li>;
+      const fileList = (
+        <li>
+          <a href={URL.createObjectURL(file)} download={fileName}>{fileName}</a>
+        </li>
+      );
       return fileList;
     }
     return <span></span>;
