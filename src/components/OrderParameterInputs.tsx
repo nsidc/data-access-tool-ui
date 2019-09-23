@@ -41,6 +41,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
         />
         <BoundingBoxFilter
           onClick={this.props.onTemporalReset}
+          boundingBox={this.props.orderParameters.boundingBox}
+          updateBoundingBox={this.updateBoundingBox}
         />
         <Globe
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
@@ -52,5 +54,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
       </div>
     );
+  }
+
+  private updateBoundingBox = (boundingBox: number[]) => {
+    this.props.onChange({ boundingBox });
   }
 }

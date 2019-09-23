@@ -6,24 +6,39 @@ import { hasChanged } from "../utils/hasChanged";
 
 interface IBoundingBoxFilterProps {
   onClick: any;
+  boundingBox: number[];
+  updateBoundingBox: any;
 }
 
-export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, {}> {
-  public shouldComponentUpdate(nextProps: IBoundingBoxFilterProps) {
-    return hasChanged(this.props, nextProps, ["fromDate", "toDate",
-      "timeErrorLowerBound", "timeErrorUpperBound"]);
+interface IBoundingBoxFilterState {
+  boundingBox: number[];
+}
+
+export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, IBoundingBoxFilterState> {
+  public constructor(props: IBoundingBoxFilterProps) {
+    super(props);
+
+    this.state = {
+      boundingBox: [-180, -90, 180, 90],
+    };
+  }
+
+  public shouldComponentUpdate(nextProps: IBoundingBoxFilterProps, nextState: IBoundingBoxFilterState) {
+    const propsChanged = hasChanged(this.props, nextProps, ["boundingBox"]);
+    const stateChanged = hasChanged(this.state, nextState, ["boundingBox"]);
+    return propsChanged || stateChanged;
   }
 
   public render() {
-    // Notes for future CSS warriors: As of this writing, React responds to an
-    // attempt to add a container around the labels and DatePicker (i.e., by
-    // enclosing them in a div or section) by adding additional markup which
-    // makes it really tricky to render the labels and input fields as inline
-    // items, while still showing the calendar popups correctly.
     return (
       <div id="temporal-selection">
         <h3>Filter by bounding box:</h3>
-        <label className="from">From</label>
+        <label className="from">Left</label>
+        <input type="text"
+          value={this.state.boundingBox[0]}
+          onChange={this.leftLongitudeChange}
+          onKeyPress={this.leftLongitudeEnter}>
+        </input>
         <div onClick={this.props.onClick}>
           <button className="buttonReset" data-tip="Reset bounding box to default">
             <FontAwesomeIcon icon={faUndoAlt} size="lg" />
@@ -31,5 +46,20 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
         </div>
       </div>
     );
+  }
+
+  private leftLongitudeChange = (e: any) => {
+    const boundingBox = this.state.boundingBox;
+    boundingBox[0] = e.target.value;
+    this.setState({ boundingBox });
+  }
+
+  private leftLongitudeEnter = (e: any) => {
+    if (e.key === "Enter") {
+      if (e.target.value === this.state.boundingBox[0]) { return; }
+      const boundingBox = this.props.boundingBox;
+      boundingBox[0] = e.target.value;
+      this.props.updateBoundingBox(boundingBox);
+    }
   }
 }

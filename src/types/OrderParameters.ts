@@ -16,6 +16,7 @@ export enum GranuleSorting {
 }
 
 export interface IOrderParameters {
+  boundingBox: number[];
   cmrGranuleFilter: string;
   collection: CmrCollection;
   collectionSpatialCoverage: IGeoJsonPolygon | null;
@@ -28,6 +29,7 @@ export interface IOrderParameters {
 }
 
 const defaultOrderParameters: IOrderParameters = {
+  boundingBox: [-180, -90, 180, 90],
   cmrGranuleFilter: "",
   collection: new CmrCollection(),
   collectionSpatialCoverage: null,
@@ -41,6 +43,7 @@ const defaultOrderParameters: IOrderParameters = {
 const OrderParametersRecord = Record(defaultOrderParameters);
 
 export class OrderParameters extends OrderParametersRecord implements IOrderParameters {
+  public boundingBox: number[];
   public cmrGranuleFilter: string;
   public collection: CmrCollection;
   public collectionSpatialCoverage: IGeoJsonPolygon | null;
