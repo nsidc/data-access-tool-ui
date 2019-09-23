@@ -6,6 +6,7 @@ import { IGeoJsonPolygon } from "../types/GeoJson";
 import { OrderParameters } from "../types/OrderParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { BoundingBoxFilter } from "./BoundingBoxFilter";
 import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
 
@@ -36,6 +37,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
             this.props.onChange({temporalFilterUpperBound})}
           timeErrorLowerBound={this.props.orderParameters.timeErrorLowerBound}
           timeErrorUpperBound={this.props.orderParameters.timeErrorUpperBound}
+          onClick={this.props.onTemporalReset}
+        />
+        <BoundingBoxFilter
           onClick={this.props.onTemporalReset}
         />
         <Globe
