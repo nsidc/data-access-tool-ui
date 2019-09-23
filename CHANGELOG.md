@@ -1,3 +1,7 @@
+# v1.0.7 (unreleased)
+
+* Add order size to the bottom of the table.
+
 # v1.0.6 (2019-09-24)
 
 * Change Order History page to a table of orders.
