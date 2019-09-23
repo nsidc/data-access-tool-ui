@@ -105,13 +105,11 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   private buildTextFileLink(order: any): JSX.Element {
-    const textLinks = order.file_urls.data.map((link: any, index: number) => {
-      return (link + "\n");
-    });
+    const textLinks = order.file_urls.data.join("\n");
     if (textLinks.length > 0) {
       const orderId = this.props.orderId ? this.props.orderId.substring(0, 8) : "";
       const fileName = "nsidc-download_" + orderId + ".txt";
-      const file = new Blob(textLinks, { type: "text/plain" });
+      const file = new Blob([textLinks], { type: "text/plain" });
       const fileList = (
         <li>
           <a href={URL.createObjectURL(file)} download={fileName}>{fileName}</a>

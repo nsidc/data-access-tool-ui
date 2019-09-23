@@ -35,15 +35,9 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
   }
 
   public componentDidMount() {
-    if (this.props.environment.user) {
-      this.props.environment.hermesAPI.getUserOrders(this.props.environment.user)
-          .then((orders: any) => Object.values(orders).sort((a: any, b: any) => {
-            return moment(b.submitted_timestamp).diff(moment(a.submitted_timestamp));
-          }))
-        .then((orderList: any) => {
-          this.setState({orderList, initialLoadComplete: true});
-        });
-    }
+    this.props.environment.hermesAPI.openNotificationConnection(this.props.environment.user,
+      this.handleNotification);
+    this.updateOrderList();
   }
 
   public render() {
@@ -77,6 +71,22 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
             orderId={this.state.selectedOrder} />
         </div>
       );
+    }
+  }
+
+  private handleNotification = (event: any) => {
+    this.updateOrderList();
+  }
+
+  private updateOrderList = () => {
+    if (this.props.environment.user) {
+      this.props.environment.hermesAPI.getUserOrders(this.props.environment.user)
+        .then((orders: any) => Object.values(orders).sort((a: any, b: any) => {
+          return moment(b.submitted_timestamp).diff(moment(a.submitted_timestamp));
+        }))
+        .then((orderList: any) => {
+          this.setState({ orderList, initialLoadComplete: true });
+        });
     }
   }
 
