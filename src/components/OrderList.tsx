@@ -147,6 +147,15 @@ export class OrderList extends React.Component<IOrderListProps, IOrderListState>
     );
   }
 
+  public componentDidMount() {
+    this.props.environment.hermesAPI.openNotificationConnection(this.props.environment.user,
+      this.handleNotification);
+  }
+
+  private handleNotification = (event: any) => {
+    this.forceUpdate();
+  }
+
   private updateOrderSorting = (orderSorting: OrderSorting) => {
     this.setState({
       orderSorting,
