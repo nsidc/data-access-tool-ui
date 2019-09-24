@@ -25,6 +25,9 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
 
   public shouldComponentUpdate(nextProps: IBoundingBoxFilterProps, nextState: IBoundingBoxFilterState) {
     const propsChanged = hasChanged(this.props, nextProps, ["boundingBox"]);
+    if (propsChanged) {
+      this.setState({ boundingBox: [...nextProps.boundingBox] });
+    }
     const stateChanged = hasChanged(this.state, nextState, ["boundingBox"]);
     return propsChanged || stateChanged;
   }
@@ -49,17 +52,25 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
   }
 
   private leftLongitudeChange = (e: any) => {
-    const boundingBox = this.state.boundingBox;
-    boundingBox[0] = e.target.value;
-    this.setState({ boundingBox });
+    if (RegExp("^[+-]?[0-9]*\.?[0-9]*").test(e.target.value)) {
+      const boundingBox = [...this.state.boundingBox];
+      boundingBox[0] = e.target.value;
+      this.setState({ boundingBox });
+    }
   }
 
   private leftLongitudeEnter = (e: any) => {
     if (e.key === "Enter") {
-      if (e.target.value === this.state.boundingBox[0]) { return; }
-      const boundingBox = this.props.boundingBox;
+      if (e.target.value === this.props.boundingBox[0]) { return; }
+      const boundingBox = [...this.state.boundingBox];
       boundingBox[0] = e.target.value;
       this.props.updateBoundingBox(boundingBox);
+    } else if (RegExp("^[+-]?[0-9]*\.?[0-9]*").test(e.target.value)) {
+      const boundingBox = [...this.state.boundingBox];
+      boundingBox[0] = e.target.value;
+      this.setState({ boundingBox });
+    } else {
+      e.preventDefault();
     }
   }
 }
