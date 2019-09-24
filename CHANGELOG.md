@@ -1,6 +1,7 @@
-# v1.0.6 (2019-09-17)
+# v1.0.6 (2019-09-24)
 
 * Change Order History page to a table of orders.
+* Add text file list to the order details.
 
 # v1.0.5 (2019-09-16)
 
