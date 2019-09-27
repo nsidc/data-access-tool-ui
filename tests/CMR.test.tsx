@@ -42,53 +42,53 @@ describe("CMR spatial parameters", () => {
     };
 
   let spatialSelection: IGeoJsonPolygon | null = defaultSpatialSelection;
-  let collectionSpatialCoverage: IGeoJsonPolygon | null = defaultCollectionSpatialCoverage;
+  let boundingBox: number[] = defaultCollectionSpatialCoverage.bbox;
 
   describe("with a user-defined spatial selection", () => {
     beforeEach(() => {
       spatialSelection = defaultSpatialSelection;
-      collectionSpatialCoverage = defaultCollectionSpatialCoverage;
+      boundingBox = defaultCollectionSpatialCoverage.bbox;
     });
 
     it("should use the user's polygon", () => {
       const expected = "polygon=-41.4,75.1,-76.5,76.4,-58.5,70.9,-41.4,75.1";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 
   describe("with a user-defined spatial selection, and no collection coverage", () => {
     beforeEach(() => {
       spatialSelection = defaultSpatialSelection;
-      collectionSpatialCoverage = null;
+      boundingBox = [-180, -90, 180, 90];
     });
 
     it("should use the user's polygon", () => {
       const expected = "polygon=-41.4,75.1,-76.5,76.4,-58.5,70.9,-41.4,75.1";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 
   describe("with no user-defined spatial selection, but with a collection coverage", () => {
     beforeEach(() => {
       spatialSelection = null;
-      collectionSpatialCoverage = defaultCollectionSpatialCoverage;
+      boundingBox = defaultCollectionSpatialCoverage.bbox;
     });
 
     it("should use the collection's bounding box", () => {
       const expected = "bounding_box=60,-75,83,-14";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 
   describe("with no user-defined spatial selection, nor collection coverage", () => {
     beforeEach(() => {
       spatialSelection = null;
-      collectionSpatialCoverage = null;
+      boundingBox = [-180, -90, 180, 90];
     });
 
     it("should use the global bounding box", () => {
       const expected = "bounding_box=-180,-90,180,90";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 });

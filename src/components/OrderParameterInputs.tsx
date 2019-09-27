@@ -40,11 +40,13 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onClick={this.props.onTemporalReset}
         />
         <BoundingBoxFilter
-          onClick={this.props.onTemporalReset}
+          onClick={this.onBoundingBoxReset}
+          hasPolygon={this.props.orderParameters.spatialSelection !== null}
           boundingBox={this.props.orderParameters.boundingBox}
           updateBoundingBox={this.updateBoundingBox}
         />
         <Globe
+          boundingBox={this.props.orderParameters.boundingBox}
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
@@ -54,6 +56,12 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
       </div>
     );
+  }
+
+  private onBoundingBoxReset = () => {
+    const boundingBox = this.props.orderParameters.collectionSpatialCoverage ?
+      this.props.orderParameters.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+    this.props.onChange({ boundingBox });
   }
 
   private updateBoundingBox = (boundingBox: number[]) => {

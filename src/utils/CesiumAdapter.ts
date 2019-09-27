@@ -16,6 +16,7 @@ enum Circumpolar {
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
+  private static boundingBoxColor = new Cesium.Color(0.0, 1.0, 1.0, 0.6);
   private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public polygonMode: PolygonMode;
@@ -111,6 +112,38 @@ export class CesiumAdapter {
         }),
       }));
     }
+  }
+
+  public renderBoundingBox(collectionSpatialCoverage: IGeoJsonPolygon | null,
+                           boundingBox: number[], hasSpatialSelection: boolean): void {
+    const ENTITY_ID = "boundingBox";
+
+    const collectionBoundingBox = collectionSpatialCoverage ?
+      collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+
+    if (JSON.stringify(boundingBox) !== JSON.stringify(collectionBoundingBox) && !hasSpatialSelection) {
+      const rectangleRadians = Cesium.Rectangle.fromDegrees(...boundingBox);
+      const entity = this.viewer.entities.getById(ENTITY_ID);
+      if (Cesium.defined(entity) && Cesium.defined(entity.rectangle)) {
+        entity.rectangle.coordinates = (rectangleRadians as any);
+      } else {
+        this.viewer.entities.add(new Cesium.Entity({
+          id: ENTITY_ID,
+          name: ENTITY_ID,
+          rectangle: new Cesium.RectangleGraphics({
+            // Cesium docs (and @types/cesium) show that `coordinates` and
+            // `material` must be of type `Property`, yet they have examples using
+            // the same types we use here (`Rectangle` and `Color`)
+            coordinates: (rectangleRadians as any),
+            material: (CesiumAdapter.boundingBoxColor as any),
+          }),
+        }));
+      }
+    } else {
+      this.viewer.entities.removeById(ENTITY_ID);
+    }
+
+    this.viewer.scene.requestRender();
   }
 
   public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {

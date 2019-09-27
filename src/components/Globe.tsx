@@ -10,6 +10,7 @@ import { LonLatInput } from "./LonLatInput";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
+  boundingBox: number[];
   collectionSpatialCoverage: IGeoJsonPolygon | null;
   spatialSelection: IGeoJsonPolygon | null;
   onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
@@ -43,6 +44,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       flyToCollectionCoverage = true;
     }
 
+    this.cesiumAdapter.renderBoundingBox(this.props.collectionSpatialCoverage, this.props.boundingBox,
+      this.props.spatialSelection !== null);
+
     if (this.props.spatialSelection !== null) {
       this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
       flyToSpatialSelection = true;
@@ -56,7 +60,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   public shouldComponentUpdate(nextProps: IGlobeProps, nextState: IGlobeState) {
-    const propsChanged = hasChanged(this.props, nextProps, ["spatialSelection", "collectionSpatialCoverage"]);
+    const propsChanged = hasChanged(this.props, nextProps, ["boundingBox",
+      "spatialSelection", "collectionSpatialCoverage"]);
     const stateChanged = hasChanged(this.state, nextState, ["lonLatEnable", "lonLatLabel"]);
     return propsChanged || stateChanged;
   }
@@ -67,6 +72,10 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
         this.cesiumAdapter.flyToCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
       }
+    }
+    if (hasChanged(prevProps, this.props, ["boundingBox"])) {
+      this.cesiumAdapter.renderBoundingBox(this.props.collectionSpatialCoverage, this.props.boundingBox,
+        this.props.spatialSelection !== null);
     }
     if (hasChanged(prevProps, this.props, ["spatialSelection"])) {
       if (this.props.spatialSelection === null) {

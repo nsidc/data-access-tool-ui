@@ -6,7 +6,7 @@ import { Globe } from "../src/components/Globe";
 
 const setup = () => {
   const props = {
-    onSpatialSelectionChange: jest.fn(),
+    boundingBox: [-180, -90, 180, 90],
     collectionSpatialCoverage: {
       bbox: [0, 0, 0, 0],
       geometry: {
@@ -21,6 +21,7 @@ const setup = () => {
       },
       type: "Feature",
     },
+    onSpatialSelectionChange: jest.fn(),
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {

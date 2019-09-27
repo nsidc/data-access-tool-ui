@@ -61,7 +61,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
             {granuleDisplayed}
             .
           </div>
-          <div id="granule-list-filter" data-tip data-for="granuleFilter">
+          <div data-tip data-for="granuleFilter">
             <ReactTooltip id="granuleFilter" className="reactTooltip"
               disable={this.props.cmrGranuleFilter !== ""}
               effect="solid" delayShow={1000}>

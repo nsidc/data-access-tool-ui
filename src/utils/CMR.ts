@@ -37,26 +37,16 @@ const granuleSortParameter = (granuleSorting: GranuleSorting) => {
 
 // NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
 export const spatialParameter = (spatialSelection: IGeoJsonPolygon | null,
-                                 collectionSpatialCoverage: IGeoJsonPolygon | null): string => {
-  const geoJSON = List([
-    spatialSelection,
-    collectionSpatialCoverage,
-    globalSpatialSelection,
-  ]).find((geoJsonPoly) => geoJsonPoly !== null);
-
+                                 boundingBox: number[]): string => {
   let param: string;
   let value: string;
 
-  if (geoJSON && geoJSON.hasOwnProperty("bbox")) {
-    param = "bounding_box";
-    value = geoJSON.bbox.join(",");
-
-  } else if (geoJSON && geoJSON.geometry && (geoJSON.geometry.type === "Polygon")) {
+  if (spatialSelection !== null) {
     param = "polygon";
-    value = geoJSON.geometry.coordinates.join(",");
-
+    value = spatialSelection.geometry.coordinates.join(",");
   } else {
-    return "";
+    param = "bounding_box";
+    value = boundingBox.join(",");
   }
 
   return `${param}=${value}`;
@@ -144,7 +134,7 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
 export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionVersionId: number,
                                   spatialSelection: IGeoJsonPolygon | null,
-                                  collectionSpatialCoverage: IGeoJsonPolygon | null,
+                                  boundingBox: number[],
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment,
                                   cmrGranuleFilter: string,
@@ -155,7 +145,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
+    + `&${spatialParameter(spatialSelection, boundingBox)}`;
 
   if (cmrGranuleFilter !== "") {
     URL += `&${granuleFilterParameters(cmrGranuleFilter)}`;

@@ -102,7 +102,7 @@
     }
 
     label.from {
-      margin-left: 0.5em;
+      margin-left: 1em;
     }
 
     label.to {
@@ -110,7 +110,7 @@
     }
 
     #to {
-      margin-right: 1.5em;
+      margin-right: 0;
     }
 
     div.timeError {
@@ -136,10 +136,45 @@
     }
   }
 
+  #boundingbox {
+    margin-top: 0.5em;
+
+    h3 {
+      display: inline;
+    }
+
+    > div {
+      display: inline;
+    }
+
+    label {
+      margin-left: 0.75em;
+    }
+
+    label.disabled {
+      color: gray;
+    }
+
+    .bbox {
+      width: 50px;
+      margin: 2px 2px 5px 2px;
+      padding: 2px 5px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: darkgray;
+      border-radius: 4px;
+
+      &:disabled {
+        color: gray;
+      }
+    }
+  }
+
   .buttonReset {
     cursor: pointer;
     background-color: inherit;
     border-style: none;
+    margin-left: 1em;
     padding-left: 4px;
     padding-right: 4px;
     padding-top: 0;
@@ -299,7 +334,10 @@
     input {
       width: 200px;
       font-size: 90%;
-      margin: 2px 2px 5px 2px;
+      margin-top: 2px;
+      margin-right: 0;
+      margin-bottom: 5px;
+      margin-left: 2px;
       padding: 2px 5px;
       border-style: solid;
       border-width: 1px;
