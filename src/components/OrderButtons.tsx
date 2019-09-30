@@ -148,13 +148,22 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     const filenameFilter = filterAddWildcards(params.cmrGranuleFilter);
 
+    let boundingBox = "";
     let polygon = "";
     if (params.spatialSelection && params.spatialSelection.geometry
       && (params.spatialSelection.geometry.type === "Polygon")) {
       polygon = params.spatialSelection.geometry.coordinates.join(",");
+    } else {
+      const collectionBoundingBox = this.props.orderParameters.collectionSpatialCoverage ?
+          this.props.orderParameters.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+      if (JSON.stringify(this.props.orderParameters.boundingBox) !==
+        JSON.stringify(collectionBoundingBox)) {
+        boundingBox = this.props.orderParameters.boundingBox.join(",");
+      }
     }
 
     const body: object = {
+      bounding_box: boundingBox,
       dataset_short_name: params.collection.short_name,
       dataset_version: params.collection.version_id,
       filename_filter: filenameFilter,
