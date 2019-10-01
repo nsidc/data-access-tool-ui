@@ -2,6 +2,7 @@ import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 
+import * as ReactTooltip from "react-tooltip";
 import { boundingBoxMatch } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -17,9 +18,11 @@ interface IBoundingBoxFilterState {
 }
 
 export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, IBoundingBoxFilterState> {
+  private boxRefs: any[];
+
   public constructor(props: IBoundingBoxFilterProps) {
     super(props);
-
+    this.boxRefs = [React.createRef(), React.createRef(), React.createRef(), React.createRef()];
     this.state = {
       boundingBox: this.props.boundingBox,
     };
@@ -37,7 +40,7 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
   public render() {
     return (
       <div id="boundingbox">
-        <h3>Filter by bounding box:</h3>
+        <h3>Filter by bounding box:</h3>&nbsp;
         {this.inputBoundingBox("Left", 0, this.props.hasPolygon)}
         {this.inputBoundingBox("Bottom", 1, this.props.hasPolygon)}
         {this.inputBoundingBox("Right", 2, this.props.hasPolygon)}
@@ -52,12 +55,17 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
   }
 
   private inputBoundingBox = (label: string, index: number, disabled: boolean) => {
-    const isDisabled = disabled ? "disabled" : "";
+    const tooltip = label + "Tooltip";
     return (
-      <div>
-        <label className={isDisabled}>{label}</label>
+      <div data-tip data-for={tooltip} ref={(ref) => {this.boxRefs[index] = ref; }}>
+        <ReactTooltip id={tooltip} className="reactTooltip"
+          effect="solid" delayShow={500}>
+          {label}</ReactTooltip>
         <input type="text" className="bbox" disabled={disabled}
           value={this.state.boundingBox[index]}
+          onFocus={(e: any) => {
+            ReactTooltip.hide(this.boxRefs[index]);
+          }}
           onBlur={(e: any) => this.boundingBoxOnBlur(e, index)}
           onChange={(e: any) => this.boundingBoxChange(e, index)}
           onKeyPress={(e: any) => this.boundingBoxEnter(e, index)}>
