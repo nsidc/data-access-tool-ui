@@ -230,3 +230,8 @@ export const formatBytes = (bytes: number): string => {
   // Use parseFloat to get rid of scientific notation from toPrecision
   return parseFloat(value.toPrecision(2)) + " " + sizes[i];
 };
+
+export const boundingBoxMatch = (bbox1: number[], bbox2: number[]) => {
+  const bboxMatch = JSON.stringify(bbox1) === JSON.stringify(bbox2);
+  return bboxMatch;
+};

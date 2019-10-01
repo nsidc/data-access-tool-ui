@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { ConfirmationFlow } from "./ConfirmationFlow";
@@ -156,8 +156,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     } else {
       const collectionBoundingBox = this.props.orderParameters.collectionSpatialCoverage ?
           this.props.orderParameters.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
-      if (JSON.stringify(this.props.orderParameters.boundingBox) !==
-        JSON.stringify(collectionBoundingBox)) {
+      if (!boundingBoxMatch(this.props.orderParameters.boundingBox, collectionBoundingBox)) {
         boundingBox = this.props.orderParameters.boundingBox.join(",");
       }
     }

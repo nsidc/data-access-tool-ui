@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
 import { OrderParameters } from "../types/OrderParameters";
-import { filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IHandoffButtonProps {
@@ -42,6 +42,8 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
 
   private edscRedirect = (orderParameters: OrderParameters) => {
     const url = this.buildUrl(orderParameters.collection.id,
+                              orderParameters.boundingBox,
+                              orderParameters.collectionSpatialCoverage,
                               orderParameters.spatialSelection,
                               orderParameters.temporalFilterLowerBound,
                               orderParameters.temporalFilterUpperBound,
@@ -51,6 +53,8 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
   }
 
   private buildUrl = (conceptId: CmrCollection["id"],
+                      boundingBox: OrderParameters["boundingBox"],
+                      collectionSpatialCoverage: OrderParameters["collectionSpatialCoverage"],
                       spatialSelection: OrderParameters["spatialSelection"],
                       temporalStart: OrderParameters["temporalFilterLowerBound"],
                       temporalEnd: OrderParameters["temporalFilterUpperBound"],
@@ -61,6 +65,12 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
 
     if (spatialSelection) {
       url = url + `&polygon=${spatialSelection.geometry.coordinates.join(",")}`;
+    } else {
+      const collectionBoundingBox = collectionSpatialCoverage ?
+        collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+      if (!boundingBoxMatch(boundingBox, collectionBoundingBox)) {
+        url = url + `&bounding_box=${boundingBox.join(",")}`;
+      }
     }
     if (textFilter) {
       url = url + `&pg[0][id]=${filterAddWildcards(textFilter)}`;

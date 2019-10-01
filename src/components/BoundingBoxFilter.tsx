@@ -2,6 +2,7 @@ import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 
+import { boundingBoxMatch } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IBoundingBoxFilterProps {
@@ -103,7 +104,7 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
       [boundingBox[1], boundingBox[3]] = [boundingBox[3], boundingBox[1]];
     }
     this.setState({ boundingBox });
-    if (JSON.stringify(boundingBox) !== JSON.stringify(this.props.boundingBox)) {
+    if (!boundingBoxMatch(boundingBox, this.props.boundingBox)) {
       this.props.updateBoundingBox(boundingBox);
     }
   }

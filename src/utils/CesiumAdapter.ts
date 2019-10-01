@@ -5,6 +5,7 @@ import { List } from "immutable";
 
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
+import { boundingBoxMatch } from "../utils/CMR";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
@@ -15,8 +16,8 @@ enum Circumpolar {
 }
 
 export class CesiumAdapter {
-  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.4);
-  private static boundingBoxColor = new Cesium.Color(0.0, 1.0, 1.0, 0.6);
+  private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.3);
+  private static boundingBoxColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
   private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public polygonMode: PolygonMode;
@@ -121,7 +122,7 @@ export class CesiumAdapter {
     const collectionBoundingBox = collectionSpatialCoverage ?
       collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
 
-    if (JSON.stringify(boundingBox) !== JSON.stringify(collectionBoundingBox) && !hasSpatialSelection) {
+    if (!boundingBoxMatch(boundingBox, collectionBoundingBox) && !hasSpatialSelection) {
       const rectangleRadians = Cesium.Rectangle.fromDegrees(...boundingBox);
       const entity = this.viewer.entities.getById(ENTITY_ID);
       if (Cesium.defined(entity) && Cesium.defined(entity.rectangle)) {
