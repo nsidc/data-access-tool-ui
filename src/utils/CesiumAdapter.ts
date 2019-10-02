@@ -17,7 +17,7 @@ enum Circumpolar {
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.3);
-  private static boundingBoxColor = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
+  private static boundingBoxColor = new Cesium.Color(0.0, 1.0, 0.7, 0.5);
   private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public polygonMode: PolygonMode;
