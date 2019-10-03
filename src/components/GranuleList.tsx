@@ -50,17 +50,20 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     }
 
     const totalSize = this.props.cmrLoadingGranules ? 0 : this.props.totalSize;
+    const granuleListCount = (
+      <div id="granule-list-count-header" className="views-field">
+        <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />
+        {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
+        selected (~{formatBytes(totalSize)})
+        {granuleDisplayed}
+        .
+      </div>
+    );
 
     return (
       <div>
         <div id="granule-list-header">
-          <div id="granule-list-count-header" className="views-field">
-            <GranuleCount loading={this.props.cmrLoadingGranules} count={this.props.cmrGranuleCount} />
-            {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
-            selected (~{formatBytes(totalSize)})
-            {granuleDisplayed}
-            .
-          </div>
+          {granuleListCount}
           <div data-tip data-for="granuleFilter">
             <ReactTooltip id="granuleFilter" className="reactTooltip"
               disable={this.props.cmrGranuleFilter !== ""}
@@ -84,6 +87,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         <div id={this.containerId}>
           {this.renderContent()}
         </div>
+        {granuleListCount}
       </div>
     );
   }
