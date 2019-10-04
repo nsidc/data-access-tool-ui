@@ -171,9 +171,9 @@ export class CesiumAdapter {
     this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
   }
 
-  public flyToCollectionCoverage(collectionBbox: number[]): void {
+  public flyToRectangle(bbox: number[]): void {
     const boulderCO = [-135, 10, -75, 70];
-    const flyToRectangle = this.collectionCoverageIsGlobal(collectionBbox) ? boulderCO : collectionBbox;
+    const flyToRectangle = this.collectionCoverageIsGlobal(bbox) ? boulderCO : bbox;
 
     // Fly to the chosen position (collection's coverage *or* Boulder, CO) with a top-down view
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;

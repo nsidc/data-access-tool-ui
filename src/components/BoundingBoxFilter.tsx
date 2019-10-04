@@ -2,7 +2,6 @@ import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 
-import * as ReactTooltip from "react-tooltip";
 import { boundingBoxMatch } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -18,11 +17,9 @@ interface IBoundingBoxFilterState {
 }
 
 export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, IBoundingBoxFilterState> {
-  private boxRefs: any[];
 
   public constructor(props: IBoundingBoxFilterProps) {
     super(props);
-    this.boxRefs = [React.createRef(), React.createRef(), React.createRef(), React.createRef()];
     this.state = {
       boundingBox: this.props.boundingBox,
     };
@@ -41,31 +38,27 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     return (
       <div id="boundingbox">
         <h3>Filter by bounding box:</h3>&nbsp;
-        {this.inputBoundingBox("Left", 0, this.props.hasPolygon)}
-        {this.inputBoundingBox("Bottom", 1, this.props.hasPolygon)}
-        {this.inputBoundingBox("Right", 2, this.props.hasPolygon)}
-        {this.inputBoundingBox("Top", 3, this.props.hasPolygon)}
-        <div onClick={this.props.onClick}>
-          <button className="buttonReset" data-tip="Reset bounding box to default">
-            <FontAwesomeIcon icon={faUndoAlt} size="lg" />
-          </button>
-        </div>
+        {this.inputBoundingBox("W", 0, this.props.hasPolygon)}
+        {this.inputBoundingBox("S", 1, this.props.hasPolygon)}
+        {this.inputBoundingBox("E", 2, this.props.hasPolygon)}
+        {this.inputBoundingBox("N", 3, this.props.hasPolygon)}
+        <button className="buttonReset"
+          onClick={this.props.onClick}
+          data-tip="Reset bounding box to default"
+          disabled={this.props.hasPolygon}>
+          <FontAwesomeIcon icon={faUndoAlt} size="lg" />
+        </button>
       </div>
     );
   }
 
   private inputBoundingBox = (label: string, index: number, disabled: boolean) => {
-    const tooltip = label + "Tooltip";
+    const isDisabled = disabled ? "disabled" : "";
     return (
-      <div data-tip data-for={tooltip} ref={(ref) => {this.boxRefs[index] = ref; }}>
-        <ReactTooltip id={tooltip} className="reactTooltip"
-          effect="solid" delayShow={500}>
-          {label}</ReactTooltip>
+      <div>
+        <label className={isDisabled}>{label}</label>
         <input type="text" className="bbox" disabled={disabled}
           value={this.state.boundingBox[index]}
-          onFocus={(e: any) => {
-            ReactTooltip.hide(this.boxRefs[index]);
-          }}
           onBlur={(e: any) => this.boundingBoxOnBlur(e, index)}
           onChange={(e: any) => this.boundingBoxChange(e, index)}
           onKeyPress={(e: any) => this.boundingBoxEnter(e, index)}>

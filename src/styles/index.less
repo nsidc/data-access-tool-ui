@@ -165,7 +165,7 @@
       border-radius: 4px;
 
       &:disabled {
-        color: gray;
+        color: lightgray;
       }
     }
   }
@@ -181,6 +181,11 @@
     padding-bottom: 3px;
     vertical-align: middle;
     color: #555;
+
+    &:disabled {
+      color: lightgray;
+      pointer-events: none;
+    }
 
     &:hover {
       color: #48b;
