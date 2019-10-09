@@ -22,7 +22,8 @@ export function constructAPI(urls: any): IHermesAPI {
   const getUserOrders = (user: any) => {
     const url = `${urls.hermesApiUrl}/users/${user.uid}/orders/`;
     return fetch(url, {credentials: "include"})
-      .then((response) => response.json());
+      .then((response) => response.json())
+      .then((orders) => orders.filter((order: any) => order.source_client === "Everest"));
   };
 
   const openNotificationConnection = (user: any, callback: any) => {

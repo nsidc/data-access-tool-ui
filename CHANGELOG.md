@@ -1,5 +1,13 @@
-# v1.0.7 (unreleased)
+# v1.1.0 (unreleased)
 
+* *Note*: v1.0.6 contains new feature-like functionality, so it probably
+  should have been released as v1.1.0
+
+* Select only "Everest" orders from the Hermes API response. This prevents
+  orders made via the IceBridge Portal (or any other source) from being rendered
+  on the landing page's order history. (Currently, IceBridge orders are stored
+  in the hermes1 backend, while the landing page uses hermes2, but IceBridge
+  will be upgraded to hermes2 soon).
 * Add order size to the bottom of the table.
 
 # v1.0.6 (2019-09-24)
