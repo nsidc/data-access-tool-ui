@@ -1,4 +1,4 @@
-# v1.1.0 (unreleased)
+# v1.1.0 (2019-10-09)
 
 * *Note*: v1.0.6 contains new feature-like functionality, so it probably
   should have been released as v1.1.0
