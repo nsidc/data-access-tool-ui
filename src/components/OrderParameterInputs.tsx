@@ -47,6 +47,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
         />
         <Globe
           boundingBox={this.props.orderParameters.boundingBox}
+          onBoundingBoxChange={(boundingBox: number[]) =>
+            this.props.onChange({ boundingBox })}
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}

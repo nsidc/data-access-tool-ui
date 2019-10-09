@@ -12,6 +12,7 @@ import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
   boundingBox: number[];
+  onBoundingBoxChange: (s: number[]) => void;
   collectionSpatialCoverage: IGeoJsonPolygon | null;
   spatialSelection: IGeoJsonPolygon | null;
   onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
@@ -31,7 +32,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       lonLatEnable: false,
       lonLatLabel: "",
     };
-    this.cesiumAdapter = new CesiumAdapter(this.updateSpatialSelection, this.enableLonLat, this.updateLonLat);
+    this.cesiumAdapter = new CesiumAdapter(this.updateBoundingBox, this.updateSpatialSelection,
+      this.enableLonLat, this.updateLonLat);
   }
 
   public componentDidMount() {
@@ -51,7 +53,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       const collectionBoundingBox = this.props.collectionSpatialCoverage ?
         this.props.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
       if (!boundingBoxMatch(this.props.boundingBox, collectionBoundingBox)) {
-        this.cesiumAdapter.renderBoundingBox(this.props.collectionSpatialCoverage,
+        this.cesiumAdapter.displayBoundingBox(this.props.collectionSpatialCoverage,
           this.props.boundingBox, this.props.spatialSelection !== null);
         flyToRectangle = this.props.boundingBox;
       }
@@ -76,7 +78,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       }
     }
     if (hasChanged(prevProps, this.props, ["boundingBox"])) {
-      this.cesiumAdapter.renderBoundingBox(this.props.collectionSpatialCoverage, this.props.boundingBox,
+      this.cesiumAdapter.displayBoundingBox(this.props.collectionSpatialCoverage, this.props.boundingBox,
         this.props.spatialSelection !== null);
       this.cesiumAdapter.flyToRectangle(this.props.boundingBox);
     }
@@ -99,6 +101,10 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             updateLonLat={this.updateLonLat}
           />
           <SpatialSelectionToolbar
+            onClickBoundingBox={() => {
+              this.cesiumAdapter.clearBoundingBox();
+              window.setTimeout(this.startBoundingBox, 0);
+            }}
             onClickHome={() => {
               this.cesiumAdapter.flyHome();
             }}
@@ -113,6 +119,16 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         </div>
       </div>
     );
+  }
+
+  private startBoundingBox = () => {
+    this.cesiumAdapter.startBoundingBox();
+    CesiumUtils.setCursorCrosshair();
+  }
+
+  private updateBoundingBox = (boundingBox: number[]) => {
+    this.props.onBoundingBoxChange(boundingBox);
+    CesiumUtils.unsetCursorCrosshair();
   }
 
   private startSpatialSelection = () => {

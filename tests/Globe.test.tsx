@@ -7,6 +7,7 @@ import { Globe } from "../src/components/Globe";
 const setup = () => {
   const props = {
     boundingBox: [-180, -90, 180, 90],
+    onBoundingBoxChange: jest.fn(),
     collectionSpatialCoverage: {
       bbox: [0, 0, 0, 0],
       geometry: {
