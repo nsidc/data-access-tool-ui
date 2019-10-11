@@ -114,6 +114,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
+              setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
             }} />
           <div id="credit" />
         </div>
@@ -127,7 +128,16 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   }
 
   private updateBoundingBox = (boundingBox: number[]) => {
-    this.props.onBoundingBoxChange(boundingBox);
+    if (this.props.collectionSpatialCoverage) {
+      const bbox = this.props.collectionSpatialCoverage.bbox;
+      boundingBox[0] = Math.max(bbox[0], boundingBox[0]);
+      boundingBox[1] = Math.max(bbox[1], boundingBox[1]);
+      boundingBox[2] = Math.min(bbox[2], boundingBox[2]);
+      boundingBox[3] = Math.min(bbox[3], boundingBox[3]);
+    }
+    if (!boundingBoxMatch(boundingBox, this.props.boundingBox)) {
+      this.props.onBoundingBoxChange(boundingBox);
+    }
     CesiumUtils.unsetCursorCrosshair();
   }
 

@@ -4,6 +4,12 @@ import { CesiumUtils } from "./CesiumUtils";
 
 export const MIN_VERTICES = 3;
 
+enum BoundingBoxState {
+  startDrawing,
+  movePoint2,
+  doneDrawing,
+}
+
 export class BoundingBoxMode {
 
   private ellipsoid: Cesium.Ellipsoid;
@@ -12,13 +18,13 @@ export class BoundingBoxMode {
   private mouseHandler: any;
   private point1: Cesium.Cartesian3 | null;
   private point2: Cesium.Cartesian3 | null;
-  private isMovingPoint2: boolean;
-  private doneDrawing: boolean;
-  private scene: any;
+  private state: BoundingBoxState;
+  private tooltip: any;
+  private viewer: any;
 
-  public constructor(scene: any, ellipsoid: Cesium.Ellipsoid,
+  public constructor(viewer: any, ellipsoid: Cesium.Ellipsoid,
                      renderBoundingBox: any, finishedDrawingCallback: any) {
-    this.scene = scene;
+    this.viewer = viewer;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
     this.renderBoundingBox = renderBoundingBox;
@@ -26,22 +32,36 @@ export class BoundingBoxMode {
 
   public start = () => {
     this.initializeMouseHandler();
-    this.isMovingPoint2 = false;
-    this.doneDrawing = false;
+    this.state = BoundingBoxState.startDrawing;
+    this.point1 = this.point2 = null;
+    const labels = this.viewer.scene.primitives.add(new Cesium.LabelCollection());
+    this.tooltip = labels.add({
+      backgroundColor: Cesium.Color.fromAlpha(Cesium.Color.BLACK, 0.4),
+      font: "11pt sans-serif",
+      horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+      pixelOffset: new Cesium.Cartesian2(-10, -10),
+      show: false,
+      showBackground: true,
+      text: "Click to set first corner",
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    });
   }
 
   public reset = () => {
-    this.scene.primitives.removeAll();
+    this.viewer.scene.primitives.removeAll();
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();
       this.mouseHandler = null;
     }
-    this.scene.requestRender();
+    this.tooltip = null;
+    this.point1 = this.point2 = null;
+    this.finishedDrawingCallback(this.getBoundingBox());
+    this.viewer.scene.requestRender();
   }
 
   private initializeMouseHandler = () => {
     if (!this.mouseHandler) {
-      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
 
       this.mouseHandler.setInputAction(this.onLeftClick,
                                        Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -71,32 +91,49 @@ export class BoundingBoxMode {
   }
 
   private screenPositionToCartesian = (screenPosition: Cesium.Cartesian2): Cesium.Cartesian3 | null => {
-    return CesiumUtils.screenPositionToCartesian(screenPosition, this.scene.camera, this.ellipsoid);
+    return CesiumUtils.screenPositionToCartesian(screenPosition, this.viewer.scene.camera, this.ellipsoid);
   }
 
   private onLeftClick = ({position}: {position: Cesium.Cartesian2}) => {
     const cartesian = this.screenPositionToCartesian(position);
     if (cartesian) {
-      if (!this.isMovingPoint2) {
-        this.isMovingPoint2 = true;
-      } else {
-        this.doneDrawing = true;
+      if (this.state === BoundingBoxState.startDrawing) {
+        this.state = BoundingBoxState.movePoint2;
+        this.tooltip.text = "Click to finish bounding box";
+      } else if (this.state === BoundingBoxState.movePoint2 && this.point2) {
+        this.state = BoundingBoxState.doneDrawing;
+        this.tooltip.show = false;
         this.finishedDrawingCallback(this.getBoundingBox());
       }
     }
   }
 
   private onMouseMove = ({ endPosition }: { endPosition: Cesium.Cartesian2}) => {
-    if (endPosition && !this.doneDrawing) {
+    let showTooltip = false;
+    if (endPosition && this.state !== BoundingBoxState.doneDrawing) {
       const cartesian = this.screenPositionToCartesian(endPosition);
       if (cartesian) {
-        if (this.isMovingPoint2) {
+        showTooltip = true;
+        this.tooltip.position = cartesian;
+        if (this.state === BoundingBoxState.movePoint2) {
           this.point2 = cartesian;
+          if (this.point1) {
+            const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
+            const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
+            this.tooltip.horizontalOrigin = (ll2.lon > ll1.lon) ?
+              Cesium.HorizontalOrigin.LEFT : Cesium.HorizontalOrigin.RIGHT;
+            this.tooltip.verticalOrigin = (ll2.lat > ll1.lat) ?
+              Cesium.VerticalOrigin.BOTTOM : Cesium.VerticalOrigin.TOP;
+            this.tooltip.pixelOffset = new Cesium.Cartesian2(
+              (ll2.lon > ll1.lon) ? 10 : -10, (ll2.lat > ll1.lat) ? -10 : 10);
+          }
         } else {
           this.point1 = cartesian;
         }
         this.interactionRender();
       }
     }
+    this.tooltip.show = showTooltip;
+    this.viewer.scene.requestRender();
   }
 }

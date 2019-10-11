@@ -277,6 +277,12 @@ export class CesiumAdapter {
     return sum > 0;
   }
 
+  private createBoundingBoxMode() {
+    const mode = new BoundingBoxMode(this.viewer, CesiumAdapter.ellipsoid,
+      this.renderBoundingBox, this.updateBoundingBox);
+    return mode;
+  }
+
   private createPolygonMode() {
 
     // when drawing is finished (by double-clicking), this function is called
@@ -316,17 +322,6 @@ export class CesiumAdapter {
 
     const mode = new PolygonMode(this.viewer.scene, this.lonLatEnableCallback,
       this.lonLatLabelCallback, CesiumAdapter.ellipsoid, finishedDrawingCallback);
-    return mode;
-  }
-
-  private createBoundingBoxMode() {
-
-    const finishedDrawingCallback = (boundingBox: number[]) => {
-      this.updateBoundingBox(boundingBox);
-    };
-
-    const mode = new BoundingBoxMode(this.viewer.scene, CesiumAdapter.ellipsoid,
-      this.renderBoundingBox, finishedDrawingCallback);
     return mode;
   }
 }

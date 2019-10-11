@@ -32,7 +32,7 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
         <SpatialSelectionType name="reset"
                               onClick={() => this.props.onClickReset()}
                               img={faTrashAlt}
-                              title="Delete polygon (remove filter)"/>
+                              title="Delete spatial filters"/>
       </div>
     );
   }

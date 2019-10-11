@@ -43,7 +43,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onClick={this.onBoundingBoxReset}
           hasPolygon={this.props.orderParameters.spatialSelection !== null}
           boundingBox={this.props.orderParameters.boundingBox}
-          updateBoundingBox={this.updateBoundingBox}
+          updateBoundingBox={(boundingBox: number[]) =>
+            this.props.onChange({ boundingBox })}
         />
         <Globe
           boundingBox={this.props.orderParameters.boundingBox}
@@ -63,10 +64,6 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   private onBoundingBoxReset = () => {
     const boundingBox = this.props.orderParameters.collectionSpatialCoverage ?
       this.props.orderParameters.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
-    this.props.onChange({ boundingBox });
-  }
-
-  private updateBoundingBox = (boundingBox: number[]) => {
     this.props.onChange({ boundingBox });
   }
 }
