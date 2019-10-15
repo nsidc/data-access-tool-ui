@@ -69,7 +69,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
       const collectionBoundingBox = collectionSpatialCoverage ?
         collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
       if (!boundingBoxMatch(boundingBox, collectionBoundingBox)) {
-        url = url + `&bounding_box=${boundingBox.join(",")}`;
+        url = url + `&sb=${boundingBox.join(",")}`;
       }
     }
     if (textFilter) {
