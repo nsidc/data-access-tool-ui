@@ -102,7 +102,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
           />
           <SpatialSelectionToolbar
             onClickBoundingBox={() => {
-              this.cesiumAdapter.clearBoundingBox();
+              this.cesiumAdapter.clearSpatialSelection();
+              setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
               window.setTimeout(this.startBoundingBox, 0);
             }}
             onClickHome={() => {
@@ -110,6 +111,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             }}
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
+              setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
               window.setTimeout(this.startSpatialSelection, 0);
             }}
             onClickReset={() => {
