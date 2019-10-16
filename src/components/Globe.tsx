@@ -77,10 +77,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         this.cesiumAdapter.flyToRectangle(this.props.collectionSpatialCoverage.bbox);
       }
     }
-    if (hasChanged(prevProps, this.props, ["boundingBox"])) {
+    if (!boundingBoxMatch(prevProps.boundingBox, this.props.boundingBox)) {
       this.cesiumAdapter.displayBoundingBox(this.props.collectionSpatialCoverage, this.props.boundingBox,
         this.props.spatialSelection !== null);
-      this.cesiumAdapter.flyToRectangle(this.props.boundingBox);
     }
     if (hasChanged(prevProps, this.props, ["spatialSelection"])) {
       if (this.props.spatialSelection === null) {

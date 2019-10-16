@@ -9,7 +9,7 @@ interface IBoundingBoxFilterProps {
   onClick: any;
   boundingBox: number[];
   hasPolygon: boolean;
-  updateBoundingBox: any;
+  onBoundingBoxChange: any;
 }
 
 interface IBoundingBoxFilterState {
@@ -106,7 +106,7 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     }
     this.setState({ boundingBox });
     if (!boundingBoxMatch(boundingBox, this.props.boundingBox)) {
-      this.props.updateBoundingBox(boundingBox);
+      this.props.onBoundingBoxChange(boundingBox);
     }
   }
 }

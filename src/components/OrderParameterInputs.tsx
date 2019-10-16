@@ -43,7 +43,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onClick={this.onBoundingBoxReset}
           hasPolygon={this.props.orderParameters.spatialSelection !== null}
           boundingBox={this.props.orderParameters.boundingBox}
-          updateBoundingBox={(boundingBox: number[]) =>
+          onBoundingBoxChange={(boundingBox: number[]) =>
             this.props.onChange({ boundingBox })}
         />
         <Globe
