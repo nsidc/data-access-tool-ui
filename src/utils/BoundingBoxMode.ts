@@ -20,14 +20,17 @@ export class BoundingBoxMode {
   private point2: Cesium.Cartesian3 | null;
   private state: BoundingBoxState;
   private tooltip: any;
+  private updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void;
   private viewer: any;
 
   public constructor(viewer: any, ellipsoid: Cesium.Ellipsoid,
-                     renderBoundingBox: any, finishedDrawingCallback: any) {
+                     renderBoundingBox: any, finishedDrawingCallback: any,
+                     updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void) {
     this.viewer = viewer;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
     this.renderBoundingBox = renderBoundingBox;
+    this.updateLonLatLabel = updateLonLatLabel;
   }
 
   public start = () => {
@@ -55,6 +58,7 @@ export class BoundingBoxMode {
     }
     this.tooltip = null;
     this.point1 = this.point2 = null;
+    this.updateLonLatLabel(null);
     this.finishedDrawingCallback(this.getBoundingBox());
     this.viewer.scene.requestRender();
   }
@@ -108,27 +112,34 @@ export class BoundingBoxMode {
     }
   }
 
+  private updateTooltipLocation = () => {
+    if (this.point1 && this.point2) {
+      const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
+      const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
+      this.tooltip.horizontalOrigin = (ll2.lon > ll1.lon) ?
+        Cesium.HorizontalOrigin.LEFT : Cesium.HorizontalOrigin.RIGHT;
+      this.tooltip.verticalOrigin = (ll2.lat > ll1.lat) ?
+        Cesium.VerticalOrigin.BOTTOM : Cesium.VerticalOrigin.TOP;
+      this.tooltip.pixelOffset = new Cesium.Cartesian2(
+        (ll2.lon > ll1.lon) ? 10 : -10, (ll2.lat > ll1.lat) ? -10 : 10);
+    }
+  }
+
   private onMouseMove = ({ endPosition }: { endPosition: Cesium.Cartesian2}) => {
     let showTooltip = false;
-    if (endPosition && this.state !== BoundingBoxState.doneDrawing) {
+    if (endPosition) {
       const cartesian = this.screenPositionToCartesian(endPosition);
       if (cartesian) {
-        showTooltip = true;
-        this.tooltip.position = cartesian;
-        if (this.state === BoundingBoxState.movePoint2) {
-          this.point2 = cartesian;
-          if (this.point1) {
-            const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
-            const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
-            this.tooltip.horizontalOrigin = (ll2.lon > ll1.lon) ?
-              Cesium.HorizontalOrigin.LEFT : Cesium.HorizontalOrigin.RIGHT;
-            this.tooltip.verticalOrigin = (ll2.lat > ll1.lat) ?
-              Cesium.VerticalOrigin.BOTTOM : Cesium.VerticalOrigin.TOP;
-            this.tooltip.pixelOffset = new Cesium.Cartesian2(
-              (ll2.lon > ll1.lon) ? 10 : -10, (ll2.lat > ll1.lat) ? -10 : 10);
+        this.updateLonLatLabel(cartesian);
+        if (this.state !== BoundingBoxState.doneDrawing) {
+          showTooltip = true;
+          this.tooltip.position = cartesian;
+          if (this.state === BoundingBoxState.movePoint2) {
+            this.point2 = cartesian;
+            this.updateTooltipLocation();
+          } else {
+            this.point1 = cartesian;
           }
-        } else {
-          this.point1 = cartesian;
         }
         this.interactionRender();
       }

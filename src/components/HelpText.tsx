@@ -12,7 +12,7 @@ export class HelpText extends React.Component {
       <div className="help-text">
         <h3>Filter spatially by drawing a polygon:</h3>
         <div className="show-hide-div" id="help-text">
-        <span className="note">Note: Blue-green overlay shows coverage, unless global.</span>
+        <span className="note">Note: Blue-green overlay shows the dataset coverage, unless it is global.</span>
         <section>
           <div>
             Drag/zoom to area of interest, then

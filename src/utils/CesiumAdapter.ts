@@ -18,7 +18,6 @@ enum Circumpolar {
 
 export class CesiumAdapter {
   private static extentColor = new Cesium.Color(0.0, 1.0, 1.0, 0.3);
-  private static boundingBoxColor = new Cesium.Color(0.0, 1.0, 0.7, 0.5);
   private static ellipsoid: Cesium.Ellipsoid = Cesium.Ellipsoid.WGS84;
 
   public boundingBoxMode: BoundingBoxMode;
@@ -179,12 +178,8 @@ export class CesiumAdapter {
     }
 
     if (doRender) {
-      const material = Cesium.Material.fromType("Color", {
-        color: CesiumAdapter.boundingBoxColor,
-      });
       const appearance = new Cesium.EllipsoidSurfaceAppearance({
         aboveGround: false,
-        material,
       });
       const rectangle = new Cesium.RectangleGeometry({
         ellipsoid: Cesium.Ellipsoid.WGS84,
@@ -277,9 +272,25 @@ export class CesiumAdapter {
     return sum > 0;
   }
 
+  private updateLonLatLabel = (cartesian: Cesium.Cartesian3 | null) => {
+    try {
+      if (cartesian) {
+        this.lonLatLabelCallback(CesiumUtils.getLonLatLabel(cartesian));
+      } else {
+        this.lonLatLabelCallback("");
+      }
+    } catch (error) {
+      this.lonLatLabelCallback("");
+    }
+  }
+
   private createBoundingBoxMode() {
+    const finishedDrawingCallback = (s: number[]) => {
+      s = s.map( (s1) => (Math.round(s1 * 100) / 100) );
+      this.updateBoundingBox(s);
+    };
     const mode = new BoundingBoxMode(this.viewer, CesiumAdapter.ellipsoid,
-      this.renderBoundingBox, this.updateBoundingBox);
+      this.renderBoundingBox, finishedDrawingCallback, this.updateLonLatLabel);
     return mode;
   }
 
@@ -321,7 +332,7 @@ export class CesiumAdapter {
     };
 
     const mode = new PolygonMode(this.viewer.scene, this.lonLatEnableCallback,
-      this.lonLatLabelCallback, CesiumAdapter.ellipsoid, finishedDrawingCallback);
+      this.updateLonLatLabel, CesiumAdapter.ellipsoid, finishedDrawingCallback);
     return mode;
   }
 }

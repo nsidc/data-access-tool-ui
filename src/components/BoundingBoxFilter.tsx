@@ -37,14 +37,14 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
   public render() {
     return (
       <div id="boundingbox">
-        <h3>Filter by bounding box:</h3>&nbsp;
+        <h3>Filter spatially by bounding box:</h3>&nbsp;
         {this.inputBoundingBox("W", 0, this.props.hasPolygon)}
         {this.inputBoundingBox("S", 1, this.props.hasPolygon)}
         {this.inputBoundingBox("E", 2, this.props.hasPolygon)}
         {this.inputBoundingBox("N", 3, this.props.hasPolygon)}
         <button className="buttonReset"
           onClick={this.props.onClick}
-          data-tip="Reset bounding box to default"
+          data-tip="Reset bounding box to entire dataset"
           disabled={this.props.hasPolygon}>
           <FontAwesomeIcon icon={faUndoAlt} size="lg" />
         </button>

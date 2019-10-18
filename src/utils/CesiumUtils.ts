@@ -60,6 +60,15 @@ export class CesiumUtils {
     return cartesian;
   }
 
+  public static getLonLatLabel(cartesian: Cesium.Cartesian3) {
+    const ll = CesiumUtils.cartesianToLonLat(cartesian);
+    const lat1 = Math.round(ll.lat * 100) / 100;
+    const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
+    const lon1 = Math.round(ll.lon * 100) / 100;
+    const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
+    return lat + ", " + lon;
+  }
+
   private static removeRoundoffError = (val: number): number => {
     const ival = Math.round(val * 100);
     // Round off tiny trailing 0.99999's or 0.00001's to nearest hundredth.

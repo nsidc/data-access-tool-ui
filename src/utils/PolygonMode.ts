@@ -27,7 +27,7 @@ export class PolygonMode {
   private ellipsoid: Cesium.Ellipsoid;
   private finishedDrawingCallback: any;
   private lonLatEnableCallback: (s: boolean) => void;
-  private lonLatLabelCallback: (s: string) => void;
+  private updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void;
   private mouseHandler: any;
   private points: List<Point> = List<Point>();
   private polygon: any;
@@ -35,11 +35,11 @@ export class PolygonMode {
   private state: PolygonState = PolygonState.donePolygon;
 
   public constructor(scene: any, lonLatEnableCallback: (s: boolean) => void,
-                     lonLatLabelCallback: (s: string) => void,
+                     updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void,
                      ellipsoid: Cesium.Ellipsoid, finishedDrawingCallback: any) {
     this.scene = scene;
     this.lonLatEnableCallback = lonLatEnableCallback;
-    this.lonLatLabelCallback = lonLatLabelCallback;
+    this.updateLonLatLabel = updateLonLatLabel;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
     this.billboards = new Cesium.BillboardCollection();
@@ -56,7 +56,7 @@ export class PolygonMode {
     this.deactivateActivePoint();
     this.scene.primitives.removeAll();
     this.lonLatEnableCallback(false);
-    this.lonLatLabelCallback("");
+    this.updateLonLatLabel(null);
     // Avoid doing a CMR refresh if our polygon was already empty.
     if (didHavePoints) {
       this.finishedDrawingCallback(this.points);
@@ -72,7 +72,7 @@ export class PolygonMode {
   public changeLonLat(sLonLat: string) {
     if (this.activePointIndex !== -1) {
       const point = this.activePoint();
-      if (this.getLonLatLabel(point.cartesian) === sLonLat) {
+      if (CesiumUtils.getLonLatLabel(point.cartesian) === sLonLat) {
         return;
       }
     }
@@ -327,27 +327,6 @@ export class PolygonMode {
       CesiumUtils.setCursorCrosshair();
     } else {
       CesiumUtils.unsetCursorCrosshair();
-    }
-  }
-
-  private getLonLatLabel(cartesian: Cesium.Cartesian3) {
-    const ll = CesiumUtils.cartesianToLonLat(cartesian);
-    const lat1 = Math.round(ll.lat * 100) / 100;
-    const lat = "" + Math.abs(lat1) + ((lat1 > 0) ? "N" : "S");
-    const lon1 = Math.round(ll.lon * 100) / 100;
-    const lon = "" + Math.abs(lon1) + ((lon1 > 0) ? "E" : "W");
-    return lat + ", " + lon;
-  }
-
-  private updateLonLatLabel(cartesian: Cesium.Cartesian3 | null) {
-    try {
-      if (cartesian) {
-        this.lonLatLabelCallback(this.getLonLatLabel(cartesian));
-      } else {
-        this.lonLatLabelCallback("");
-      }
-    } catch (error) {
-      this.lonLatLabelCallback("");
     }
   }
 
