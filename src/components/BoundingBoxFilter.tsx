@@ -99,12 +99,6 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     boundingBox.east = Math.min(Math.max(boundingBox.east, -180), 180);
     boundingBox.south = Math.min(Math.max(boundingBox.south, -90), 90);
     boundingBox.north = Math.min(Math.max(boundingBox.north, -90), 90);
-    // TODO: Fix dateline
-    if (boundingBox.west > boundingBox.east) {
-      const tmp = boundingBox.west;
-      boundingBox.west = boundingBox.east;
-      boundingBox.east = tmp;
-    }
     if (boundingBox.south > boundingBox.north) {
       const tmp = boundingBox.south;
       boundingBox.south = boundingBox.north;

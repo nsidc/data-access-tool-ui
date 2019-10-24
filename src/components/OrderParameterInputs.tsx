@@ -44,13 +44,11 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           onClick={this.onBoundingBoxReset}
           hasPolygon={this.props.orderParameters.spatialSelection !== null}
           boundingBox={this.props.orderParameters.boundingBox}
-          onBoundingBoxChange={(boundingBox: number[]) =>
-            this.props.onChange({ boundingBox })}
+          onBoundingBoxChange={this.onBoundingBoxChange}
         />
         <Globe
           boundingBox={this.props.orderParameters.boundingBox}
-          onBoundingBoxChange={(boundingBox: BoundingBox) =>
-            this.props.onChange({ boundingBox })}
+          onBoundingBoxChange={this.onBoundingBoxChange}
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
@@ -60,6 +58,19 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
       </div>
     );
+  }
+
+  private onBoundingBoxChange = (boundingBox: BoundingBox) => {
+    if (this.props.orderParameters.collectionSpatialCoverage) {
+      const bbox = this.props.orderParameters.collectionSpatialCoverage;
+      boundingBox.west = Math.max(boundingBox.west, bbox.west);
+      boundingBox.south = Math.max(boundingBox.south, bbox.south);
+      boundingBox.south = Math.min(boundingBox.south, bbox.north);
+      boundingBox.east = Math.min(boundingBox.east, bbox.east);
+      boundingBox.north = Math.min(boundingBox.north, bbox.north);
+      boundingBox.north = Math.max(boundingBox.north, bbox.south);
+    }
+    this.props.onChange({boundingBox});
   }
 
   private onBoundingBoxReset = () => {

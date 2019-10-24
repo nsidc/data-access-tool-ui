@@ -104,7 +104,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             onClickBoundingBox={() => {
               this.cesiumAdapter.clearSpatialSelection();
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
-              window.setTimeout(this.startBoundingBox, 0);
+              window.setTimeout(() => { this.cesiumAdapter.startBoundingBox(); }, 0);
             }}
             onClickHome={() => {
               this.cesiumAdapter.flyHome();
@@ -124,23 +124,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     );
   }
 
-  private startBoundingBox = () => {
-    this.cesiumAdapter.startBoundingBox();
-    CesiumUtils.setCursorCrosshair();
-  }
-
   private updateBoundingBox = (boundingBox: BoundingBox) => {
-    if (this.props.collectionSpatialCoverage) {
-      const bbox = this.props.collectionSpatialCoverage;
-      boundingBox.west = Math.max(bbox.west, boundingBox.west);
-      boundingBox.south = Math.max(bbox.south, boundingBox.south);
-      boundingBox.east = Math.min(bbox.east, boundingBox.east);
-      boundingBox.north = Math.min(bbox.north, boundingBox.north);
-    }
-    if (!boundingBoxMatch(boundingBox, this.props.boundingBox)) {
-      this.props.onBoundingBoxChange(boundingBox);
-    }
-    CesiumUtils.unsetCursorCrosshair();
+    this.props.onBoundingBoxChange(boundingBox);
   }
 
   private startSpatialSelection = () => {

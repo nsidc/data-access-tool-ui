@@ -36,6 +36,7 @@ export class BoundingBoxMode {
 
   public start = () => {
     this.initializeMouseHandler();
+    CesiumUtils.setCursorCrosshair();
     this.state = BoundingBoxState.startDrawing;
     this.point1 = this.point2 = null;
     const labels = this.viewer.scene.primitives.add(new Cesium.LabelCollection());
@@ -46,13 +47,14 @@ export class BoundingBoxMode {
       pixelOffset: new Cesium.Cartesian2(-10, -10),
       show: false,
       showBackground: true,
-      text: "Click to set first corner",
+      text: "Click to set southwest corner",
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     });
   }
 
   public reset = () => {
     this.viewer.scene.primitives.removeAll();
+    CesiumUtils.unsetCursorCrosshair();
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();
       this.mouseHandler = null;
@@ -79,12 +81,6 @@ export class BoundingBoxMode {
       const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
       const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
       const bbox = new BoundingBox(ll1.lon, ll1.lat, ll2.lon, ll2.lat);
-      // TODO: Fix dateline
-      if (bbox.west > bbox.east) {
-        const tmp = bbox.west;
-        bbox.west = bbox.east;
-        bbox.east = tmp;
-      }
       if (bbox.south > bbox.north) {
         const tmp = bbox.south;
         bbox.south = bbox.north;
@@ -111,11 +107,13 @@ export class BoundingBoxMode {
     if (cartesian) {
       if (this.state === BoundingBoxState.startDrawing) {
         this.state = BoundingBoxState.movePoint2;
-        this.tooltip.text = "Click to finish bounding box";
+        this.tooltip.text = "Click to set northeast corner";
       } else if (this.state === BoundingBoxState.movePoint2 && this.point2) {
         this.state = BoundingBoxState.doneDrawing;
         this.tooltip.show = false;
-        this.finishedDrawingCallback(this.getBoundingBox());
+        const bbox = this.getBoundingBox();
+        this.reset();
+        this.finishedDrawingCallback(bbox);
       }
     }
   }
