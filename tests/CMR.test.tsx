@@ -90,8 +90,8 @@ describe("CMR spatial parameters", () => {
 describe("cmrBoxArrToSpatialSelection", () => {
   const globalSpatialSelection = BoundingBox.global();
   it("returns a global box for an empty array", () => {
-    expect(cmrBoxArrToSpatialSelection([]).rect).toBe(globalSpatialSelection.rect);
-    expect(cmrBoxArrToSpatialSelection(List([])).rect).toBe(globalSpatialSelection.rect);
+    expect(cmrBoxArrToSpatialSelection([]).rect).toEqual(globalSpatialSelection.rect);
+    expect(cmrBoxArrToSpatialSelection(List([])).rect).toEqual(globalSpatialSelection.rect);
   });
 
   it("returns the smallest box that encompasses all given boxes", () => {
