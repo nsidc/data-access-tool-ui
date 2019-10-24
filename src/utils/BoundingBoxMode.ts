@@ -1,5 +1,6 @@
 import * as Cesium from "cesium";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { CesiumUtils } from "./CesiumUtils";
 
 export const MIN_VERTICES = 3;
@@ -59,8 +60,6 @@ export class BoundingBoxMode {
     this.tooltip = null;
     this.point1 = this.point2 = null;
     this.updateLonLatLabel(null);
-    this.finishedDrawingCallback(this.getBoundingBox());
-    this.viewer.scene.requestRender();
   }
 
   private initializeMouseHandler = () => {
@@ -77,14 +76,23 @@ export class BoundingBoxMode {
 
   private getBoundingBox = () => {
     if (this.point1 && this.point2) {
-    const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
-    const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
-    const bbox = [ll1.lon, ll1.lat, ll2.lon, ll2.lat];
-    if (bbox[0] > bbox[2]) { [bbox[0], bbox[2]] = [bbox[2], bbox[0]]; }
-    if (bbox[1] > bbox[3]) { [bbox[1], bbox[3]] = [bbox[3], bbox[1]]; }
-    return bbox;
+      const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
+      const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
+      const bbox = new BoundingBox(ll1.lon, ll1.lat, ll2.lon, ll2.lat);
+      // TODO: Fix dateline
+      if (bbox.west > bbox.east) {
+        const tmp = bbox.west;
+        bbox.west = bbox.east;
+        bbox.east = tmp;
+      }
+      if (bbox.south > bbox.north) {
+        const tmp = bbox.south;
+        bbox.south = bbox.north;
+        bbox.north = tmp;
+      }
+      return bbox;
     } else {
-      return [-180, -90, 180, 90];
+      return BoundingBox.global();
     }
   }
 

@@ -1,6 +1,7 @@
 import { Record } from "immutable";
 import * as moment from "moment";
 
+import { BoundingBox } from "./BoundingBox";
 import { CmrCollection } from "./CmrCollection";
 import { IGeoJsonPolygon } from "./GeoJson";
 
@@ -16,10 +17,10 @@ export enum GranuleSorting {
 }
 
 export interface IOrderParameters {
-  boundingBox: number[];
+  boundingBox: BoundingBox;
   cmrGranuleFilter: string;
   collection: CmrCollection;
-  collectionSpatialCoverage: IGeoJsonPolygon | null;
+  collectionSpatialCoverage: BoundingBox | null;
   granuleSorting: GranuleSorting;
   spatialSelection: IGeoJsonPolygon | null;
   temporalFilterLowerBound: moment.Moment;
@@ -29,7 +30,7 @@ export interface IOrderParameters {
 }
 
 const defaultOrderParameters: IOrderParameters = {
-  boundingBox: [-180, -90, 180, 90],
+  boundingBox: BoundingBox.global(),
   cmrGranuleFilter: "",
   collection: new CmrCollection(),
   collectionSpatialCoverage: null,
@@ -43,10 +44,10 @@ const defaultOrderParameters: IOrderParameters = {
 const OrderParametersRecord = Record(defaultOrderParameters);
 
 export class OrderParameters extends OrderParametersRecord implements IOrderParameters {
-  public boundingBox: number[];
+  public boundingBox: BoundingBox;
   public cmrGranuleFilter: string;
   public collection: CmrCollection;
-  public collectionSpatialCoverage: IGeoJsonPolygon | null;
+  public collectionSpatialCoverage: BoundingBox | null;
   public granuleSorting: GranuleSorting;
   public spatialSelection: IGeoJsonPolygon | null;
   public temporalFilterLowerBound: moment.Moment;

@@ -3,6 +3,7 @@ import "cesium-widgets/widgets.css";
 import * as GeoJSON from "geojson";
 import { List } from "immutable";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
 import { boundingBoxMatch } from "../utils/CMR";
@@ -25,12 +26,12 @@ export class CesiumAdapter {
 
   private viewer: Cesium.Viewer;
   private bboxPrimitive: any;
-  private updateBoundingBox: (s: number[]) => void;
+  private updateBoundingBox: (s: BoundingBox) => void;
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
 
-  public constructor(updateBoundingBox: (s: number[]) => void,
+  public constructor(updateBoundingBox: (s: BoundingBox) => void,
                      updateSpatialSelection: (s: IGeoJsonPolygon) => void,
                      lonLatEnableCallback: (s: boolean) => void,
                      lonLatLabelCallback: (s: string) => void) {
@@ -84,6 +85,7 @@ export class CesiumAdapter {
 
   public clearBoundingBox() {
     this.boundingBoxMode.reset();
+    this.updateBoundingBox(BoundingBox.global());
   }
 
   public startBoundingBox() {
@@ -104,7 +106,7 @@ export class CesiumAdapter {
     (this.viewer.camera as any).flyHome();
   }
 
-  public renderCollectionCoverage(bbox: number[]): void {
+  public renderCollectionCoverage(bbox: BoundingBox): void {
     const ENTITY_ID = "collectionCoverage";
 
     // remove any already-existing collection coverage (this *should* only exist
@@ -114,7 +116,7 @@ export class CesiumAdapter {
 
     if (!this.collectionCoverageIsGlobal(bbox)) {
       // draw rectangle showing collection's coverage
-      const rectangleRadians = Cesium.Rectangle.fromDegrees(...bbox);
+      const rectangleRadians = Cesium.Rectangle.fromDegrees(...bbox.rect);
       this.viewer.entities.add(new Cesium.Entity({
         id: ENTITY_ID,
         name: ENTITY_ID,
@@ -129,11 +131,15 @@ export class CesiumAdapter {
     }
   }
 
-  public displayBoundingBox(collectionSpatialCoverage: IGeoJsonPolygon | null,
-                            boundingBox: number[], hasSpatialSelection: boolean): void {
+  public displayBoundingBox(collectionSpatialCoverage: BoundingBox | null,
+                            boundingBox: BoundingBox, hasSpatialSelection: boolean): void {
     const collectionBoundingBox = collectionSpatialCoverage ?
-      collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
-    const doRender = !boundingBoxMatch(boundingBox, collectionBoundingBox) && !hasSpatialSelection;
+      collectionSpatialCoverage : BoundingBox.global();
+    const doRender =
+      !boundingBoxMatch(boundingBox, collectionBoundingBox) && !hasSpatialSelection;
+    if (!doRender) {
+      this.boundingBoxMode.reset();
+    }
     this.renderBoundingBox(boundingBox, doRender);
   }
 
@@ -161,20 +167,22 @@ export class CesiumAdapter {
     this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
   }
 
-  public flyToRectangle(bbox: number[]): void {
-    const boulderCO = [-135, 10, -75, 70];
-    const flyToRectangle = this.collectionCoverageIsGlobal(bbox) ? boulderCO : bbox;
+  public flyToRectangle(bbox: BoundingBox): void {
+    const boulderCO = new BoundingBox(-135, 10, -75, 70);
+    const flyTo = this.collectionCoverageIsGlobal(bbox) ? boulderCO : bbox;
 
     // Fly to the chosen position (collection's coverage *or* Boulder, CO) with a top-down view
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
-    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(...flyToRectangle);
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE =
+      Cesium.Rectangle.fromDegrees(...flyTo.rect);
     this.flyHome();
   }
 
-  private renderBoundingBox = (boundingBox: number[], doRender: boolean) => {
+  private renderBoundingBox = (boundingBox: BoundingBox, doRender: boolean) => {
     if (this.bboxPrimitive) {
       this.viewer.scene.primitives.remove(this.bboxPrimitive);
       Cesium.destroyObject(this.bboxPrimitive);
+      this.bboxPrimitive = null;
     }
 
     if (doRender) {
@@ -184,7 +192,7 @@ export class CesiumAdapter {
       const rectangle = new Cesium.RectangleGeometry({
         ellipsoid: Cesium.Ellipsoid.WGS84,
         height: 0,
-        rectangle: Cesium.Rectangle.fromDegrees(...boundingBox),
+        rectangle: Cesium.Rectangle.fromDegrees(...boundingBox.rect),
       });
       const geometry = Cesium.RectangleGeometry.createGeometry(rectangle);
       // The geometry can be undefined if all 3 points are on a line, etc.
@@ -207,9 +215,9 @@ export class CesiumAdapter {
     this.viewer.scene.requestRender();
   }
 
-  private collectionCoverageIsGlobal(bbox: number[]): boolean {
+  private collectionCoverageIsGlobal(bbox: BoundingBox): boolean {
     const globalBbox = [-180, -90, 180, 90];
-    return bbox.every((val: number, i: number) => val === globalBbox[i]);
+    return bbox.rect.every((val: number, i: number) => val === globalBbox[i]);
   }
 
   private fixDatelineCoordinates(lonLatsIn: List<ILonLat>) {
@@ -285,8 +293,11 @@ export class CesiumAdapter {
   }
 
   private createBoundingBoxMode() {
-    const finishedDrawingCallback = (s: number[]) => {
-      s = s.map( (s1) => (Math.round(s1 * 100) / 100) );
+    const finishedDrawingCallback = (s: BoundingBox) => {
+      s.west = Math.round(s.west * 100) / 100;
+      s.south = Math.round(s.south * 100) / 100;
+      s.east = Math.round(s.east * 100) / 100;
+      s.north = Math.round(s.north * 100) / 100;
       this.updateBoundingBox(s);
     };
     const mode = new BoundingBoxMode(this.viewer, CesiumAdapter.ellipsoid,

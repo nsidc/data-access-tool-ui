@@ -2,18 +2,19 @@ import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { boundingBoxMatch } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IBoundingBoxFilterProps {
   onClick: any;
-  boundingBox: number[];
+  boundingBox: BoundingBox;
   hasPolygon: boolean;
   onBoundingBoxChange: any;
 }
 
 interface IBoundingBoxFilterState {
-  boundingBox: number[];
+  boundingBox: BoundingBox;
 }
 
 export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, IBoundingBoxFilterState> {
@@ -28,7 +29,7 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
   public shouldComponentUpdate(nextProps: IBoundingBoxFilterProps, nextState: IBoundingBoxFilterState) {
     const propsChanged = hasChanged(this.props, nextProps, ["boundingBox", "hasPolygon"]);
     if (hasChanged(this.props, nextProps, ["boundingBox"])) {
-      this.setState({ boundingBox: [...nextProps.boundingBox] });
+      this.setState({ boundingBox: nextProps.boundingBox });
     }
     const stateChanged = hasChanged(this.state, nextState, ["boundingBox"]);
     return propsChanged || stateChanged;
@@ -38,10 +39,10 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     return (
       <div id="boundingbox">
         <h3>Filter spatially by bounding box:</h3>&nbsp;
-        {this.inputBoundingBox("W", 0, this.props.hasPolygon)}
-        {this.inputBoundingBox("S", 1, this.props.hasPolygon)}
-        {this.inputBoundingBox("E", 2, this.props.hasPolygon)}
-        {this.inputBoundingBox("N", 3, this.props.hasPolygon)}
+        {this.inputBoundingBox("W", "west", this.props.hasPolygon)}
+        {this.inputBoundingBox("S", "south", this.props.hasPolygon)}
+        {this.inputBoundingBox("E", "east", this.props.hasPolygon)}
+        {this.inputBoundingBox("N", "north", this.props.hasPolygon)}
         <button className="buttonReset"
           onClick={this.props.onClick}
           data-tip="Reset bounding box to entire dataset"
@@ -52,7 +53,7 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     );
   }
 
-  private inputBoundingBox = (label: string, index: number, disabled: boolean) => {
+  private inputBoundingBox = (label: string, index: string, disabled: boolean) => {
     const isDisabled = disabled ? "disabled" : "";
     return (
       <div>
@@ -67,9 +68,9 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     );
   }
 
-  private boundingBoxChange = (e: any, index: number) => {
+  private boundingBoxChange = (e: any, index: string) => {
     if (RegExp("^[+-]?[0-9]*\\.?[0-9]*$").test(e.target.value)) {
-      const boundingBox = [...this.state.boundingBox];
+      const boundingBox = this.state.boundingBox.clone();
       boundingBox[index] = e.target.value;
       this.setState({ boundingBox });
     } else {
@@ -78,31 +79,36 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
     }
   }
 
-  private boundingBoxEnter = (e: any, index: number) => {
+  private boundingBoxEnter = (e: any, index: string) => {
     if (e.key === "Enter") {
       this.boundingBoxUpdate(e.target.value, index);
     }
   }
 
-  private boundingBoxOnBlur = (e: any, index: number) => {
+  private boundingBoxOnBlur = (e: any, index: string) => {
     this.boundingBoxUpdate(e.target.value, index);
   }
 
-  private boundingBoxUpdate = (newvalue: string, index: number) => {
+  private boundingBoxUpdate = (newvalue: string, index: string) => {
     if (newvalue.trim() === "") {
       newvalue = this.props.boundingBox[index].toString();
     }
-    const boundingBox = [...this.state.boundingBox];
+    const boundingBox = this.state.boundingBox.clone();
     boundingBox[index] = parseFloat(newvalue);
-    boundingBox[0] = Math.min(Math.max(boundingBox[0], -180), 180);
-    boundingBox[2] = Math.min(Math.max(boundingBox[2], -180), 180);
-    boundingBox[1] = Math.min(Math.max(boundingBox[1], -90), 90);
-    boundingBox[3] = Math.min(Math.max(boundingBox[3], -90), 90);
-    if (boundingBox[0] > boundingBox[2]) {
-      [boundingBox[0], boundingBox[2]] = [boundingBox[2], boundingBox[0]];
+    boundingBox.west = Math.min(Math.max(boundingBox.west, -180), 180);
+    boundingBox.east = Math.min(Math.max(boundingBox.east, -180), 180);
+    boundingBox.south = Math.min(Math.max(boundingBox.south, -90), 90);
+    boundingBox.north = Math.min(Math.max(boundingBox.north, -90), 90);
+    // TODO: Fix dateline
+    if (boundingBox.west > boundingBox.east) {
+      const tmp = boundingBox.west;
+      boundingBox.west = boundingBox.east;
+      boundingBox.east = tmp;
     }
-    if (boundingBox[1] > boundingBox[3]) {
-      [boundingBox[1], boundingBox[3]] = [boundingBox[3], boundingBox[1]];
+    if (boundingBox.south > boundingBox.north) {
+      const tmp = boundingBox.south;
+      boundingBox.south = boundingBox.north;
+      boundingBox.north = tmp;
     }
     this.setState({ boundingBox });
     if (!boundingBoxMatch(boundingBox, this.props.boundingBox)) {

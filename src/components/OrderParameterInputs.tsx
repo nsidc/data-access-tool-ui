@@ -2,6 +2,7 @@ import * as moment from "moment";
 import * as React from "react";
 
 import * as cesiumImg from "../img/cesium_credit.png";
+import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { OrderParameters } from "../types/OrderParameters";
 import { IEnvironment } from "../utils/environment";
@@ -48,7 +49,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
         />
         <Globe
           boundingBox={this.props.orderParameters.boundingBox}
-          onBoundingBoxChange={(boundingBox: number[]) =>
+          onBoundingBoxChange={(boundingBox: BoundingBox) =>
             this.props.onChange({ boundingBox })}
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
@@ -62,8 +63,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   }
 
   private onBoundingBoxReset = () => {
-    const boundingBox = this.props.orderParameters.collectionSpatialCoverage ?
-      this.props.orderParameters.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
-    this.props.onChange({ boundingBox });
+    const collectionBoundingBox =
+      this.props.orderParameters.collectionSpatialCoverage ?
+        this.props.orderParameters.collectionSpatialCoverage : BoundingBox.global();
+    this.props.onChange({ boundingBox: collectionBoundingBox.clone() });
   }
 }

@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import "../styles/index.less";
+import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumAdapter } from "../utils/CesiumAdapter";
 import { CesiumUtils } from "../utils/CesiumUtils";
@@ -11,9 +12,9 @@ import { LonLatInput } from "./LonLatInput";
 import { SpatialSelectionToolbar } from "./SpatialSelectionToolbar";
 
 interface IGlobeProps {
-  boundingBox: number[];
-  onBoundingBoxChange: (s: number[]) => void;
-  collectionSpatialCoverage: IGeoJsonPolygon | null;
+  boundingBox: BoundingBox;
+  onBoundingBoxChange: (s: BoundingBox) => void;
+  collectionSpatialCoverage: BoundingBox | null;
   spatialSelection: IGeoJsonPolygon | null;
   onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
 }
@@ -42,8 +43,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     let flyToRectangle = null;
 
     if (this.props.collectionSpatialCoverage !== null) {
-      this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
-      flyToRectangle = this.props.collectionSpatialCoverage.bbox;
+      this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage);
+      flyToRectangle = this.props.collectionSpatialCoverage;
     }
 
     if (this.props.spatialSelection !== null) {
@@ -51,7 +52,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       this.cesiumAdapter.flyToSpatialSelection(this.props.spatialSelection);
     } else {
       const collectionBoundingBox = this.props.collectionSpatialCoverage ?
-        this.props.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+        this.props.collectionSpatialCoverage : BoundingBox.global();
       if (!boundingBoxMatch(this.props.boundingBox, collectionBoundingBox)) {
         this.cesiumAdapter.displayBoundingBox(this.props.collectionSpatialCoverage,
           this.props.boundingBox, this.props.spatialSelection !== null);
@@ -73,8 +74,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
   public componentDidUpdate(prevProps: IGlobeProps) {
     if (hasChanged(prevProps, this.props, ["collectionSpatialCoverage"])) {
       if (this.props.collectionSpatialCoverage !== null) {
-        this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage.bbox);
-        this.cesiumAdapter.flyToRectangle(this.props.collectionSpatialCoverage.bbox);
+        this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage);
+        this.cesiumAdapter.flyToRectangle(this.props.collectionSpatialCoverage);
       }
     }
     if (!boundingBoxMatch(prevProps.boundingBox, this.props.boundingBox)) {
@@ -102,7 +103,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
           <SpatialSelectionToolbar
             onClickBoundingBox={() => {
               this.cesiumAdapter.clearSpatialSelection();
-              setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
+              window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
               window.setTimeout(this.startBoundingBox, 0);
             }}
             onClickHome={() => {
@@ -110,12 +111,12 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             }}
             onClickPolygon={() => {
               this.cesiumAdapter.clearSpatialSelection();
-              setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
+              window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
               window.setTimeout(this.startSpatialSelection, 0);
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
-              setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
+              window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
             }} />
           <div id="credit" />
         </div>
@@ -128,13 +129,13 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     CesiumUtils.setCursorCrosshair();
   }
 
-  private updateBoundingBox = (boundingBox: number[]) => {
+  private updateBoundingBox = (boundingBox: BoundingBox) => {
     if (this.props.collectionSpatialCoverage) {
-      const bbox = this.props.collectionSpatialCoverage.bbox;
-      boundingBox[0] = Math.max(bbox[0], boundingBox[0]);
-      boundingBox[1] = Math.max(bbox[1], boundingBox[1]);
-      boundingBox[2] = Math.min(bbox[2], boundingBox[2]);
-      boundingBox[3] = Math.min(bbox[3], boundingBox[3]);
+      const bbox = this.props.collectionSpatialCoverage;
+      boundingBox.west = Math.max(bbox.west, boundingBox.west);
+      boundingBox.south = Math.max(bbox.south, boundingBox.south);
+      boundingBox.east = Math.min(bbox.east, boundingBox.east);
+      boundingBox.north = Math.min(bbox.north, boundingBox.north);
     }
     if (!boundingBoxMatch(boundingBox, this.props.boundingBox)) {
       this.props.onBoundingBoxChange(boundingBox);

@@ -4,6 +4,7 @@ import * as React from "react";
 import SplitPane from "react-split-pane";
 import * as ReactTooltip from "react-tooltip";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
@@ -355,7 +356,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const collectionSpatialCoverage = cmrBoxArrToSpatialSelection(boundingBoxes);
 
     this.handleOrderParameterChange({
-      boundingBox: collectionSpatialCoverage.bbox,
+      boundingBox: collectionSpatialCoverage,
       cmrGranuleFilter: "",
       collection,
       collectionSpatialCoverage,
@@ -393,6 +394,23 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     orderParams.temporalFilterLowerBound = moment.utc(orderParams.temporalFilterLowerBound);
     orderParams.temporalFilterUpperBound = moment.utc(orderParams.temporalFilterUpperBound);
+
+    if (orderParams.boundingBox) {
+      const bbox = orderParams.boundingBox;
+      orderParams.boundingBox = new BoundingBox(bbox.west, bbox.south, bbox.east, bbox.north);
+    }
+
+    if (orderParams.collectionSpatialCoverage) {
+      const csc = orderParams.collectionSpatialCoverage;
+      if (csc.bbox) {
+        orderParams.collectionSpatialCoverage = new BoundingBox(csc.bbox[0], csc.bbox[1], csc.bbox[2], csc.bbox[3]);
+      } else if (csc.west) {
+        orderParams.collectionSpatialCoverage = new BoundingBox(csc.west, csc.south, csc.east, csc.north);
+      } else {
+        orderParams.collectionSpatialCoverage = null;
+      }
+    }
+
     const orderParameters: OrderParameters = new OrderParameters(...orderParams);
 
     console.warn("Order parameters loaded from previous state.");

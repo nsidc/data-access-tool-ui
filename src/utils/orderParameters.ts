@@ -22,7 +22,7 @@ export const mergeOrderParameters = (orderParamsA: OrderParameters,
   // ensure the GeoJSON polygons are POJOS; with the .merge() call above,
   // they are converted to Immutable Maps
   orderParameters = new OrderParameters({
-    boundingBox: Array.from(orderParameters.boundingBox),
+    boundingBox: orderParameters.boundingBox.clone(),
     cmrGranuleFilter: orderParameters.cmrGranuleFilter,
     collection: orderParameters.collection,
     collectionSpatialCoverage,

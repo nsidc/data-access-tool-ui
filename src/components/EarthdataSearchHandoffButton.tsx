@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { CmrCollection } from "../types/CmrCollection";
 import { OrderParameters } from "../types/OrderParameters";
 import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
@@ -67,9 +68,9 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
       url = url + `&polygon=${spatialSelection.geometry.coordinates.join(",")}`;
     } else {
       const collectionBoundingBox = collectionSpatialCoverage ?
-        collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+        collectionSpatialCoverage : BoundingBox.global();
       if (!boundingBoxMatch(boundingBox, collectionBoundingBox)) {
-        url = url + `&sb=${boundingBox.join(",")}`;
+        url = url + `&sb=${boundingBox.rect.join(",")}`;
       }
     }
     if (textFilter) {

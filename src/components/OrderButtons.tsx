@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { boundingBoxMatch, CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
@@ -154,10 +155,11 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       && (params.spatialSelection.geometry.type === "Polygon")) {
       polygon = params.spatialSelection.geometry.coordinates.join(",");
     } else {
-      const collectionBoundingBox = this.props.orderParameters.collectionSpatialCoverage ?
-          this.props.orderParameters.collectionSpatialCoverage.bbox : [-180, -90, 180, 90];
+      const collectionBoundingBox =
+        this.props.orderParameters.collectionSpatialCoverage ?
+          this.props.orderParameters.collectionSpatialCoverage : BoundingBox.global();
       if (!boundingBoxMatch(this.props.orderParameters.boundingBox, collectionBoundingBox)) {
-        boundingBox = this.props.orderParameters.boundingBox.join(",");
+        boundingBox = this.props.orderParameters.boundingBox.rect.join(",");
       }
     }
 
