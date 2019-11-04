@@ -294,6 +294,7 @@ export class CesiumAdapter {
 
   private createBoundingBoxMode() {
     const finishedDrawingCallback = (s: BoundingBox) => {
+      // Round to 2 decimal places
       s.west = Math.round(s.west * 100) / 100;
       s.south = Math.round(s.south * 100) / 100;
       s.east = Math.round(s.east * 100) / 100;

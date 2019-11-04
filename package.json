@@ -1,6 +1,6 @@
 {
   "name": "everest-ui",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Download Data UI",
   "repository": "https://bitbucket.org/nsidc/everest-ui",
   "main": "index.js",

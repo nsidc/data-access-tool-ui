@@ -396,6 +396,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     orderParams.temporalFilterUpperBound = moment.utc(orderParams.temporalFilterUpperBound);
 
     if (orderParams.boundingBox) {
+      // Convert from our plain ol' JS object back into a BoundingBox object.
       const bbox = orderParams.boundingBox;
       orderParams.boundingBox = new BoundingBox(bbox.west, bbox.south, bbox.east, bbox.north);
     }
@@ -403,8 +404,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     if (orderParams.collectionSpatialCoverage) {
       const csc = orderParams.collectionSpatialCoverage;
       if (csc.bbox) {
+        // Convert from our old (< v1.2) spatial coverage array into a BoundingBox object.
         orderParams.collectionSpatialCoverage = new BoundingBox(csc.bbox[0], csc.bbox[1], csc.bbox[2], csc.bbox[3]);
       } else if (csc.west) {
+        // Convert from our plain ol' JS object back into a BoundingBox object.
         orderParams.collectionSpatialCoverage = new BoundingBox(csc.west, csc.south, csc.east, csc.north);
       } else {
         orderParams.collectionSpatialCoverage = null;

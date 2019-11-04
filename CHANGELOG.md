@@ -1,3 +1,8 @@
+# v1.2.0 (unreleased)
+
+* Add support for bounding box filtering. Remove help instructions from polygon
+  and put them into tooltips instead.
+
 # v1.1.0 (2019-10-09)
 
 * *Note*: v1.0.6 contains new feature-like functionality, so it probably
