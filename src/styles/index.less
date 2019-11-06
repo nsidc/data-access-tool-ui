@@ -102,7 +102,7 @@
     }
 
     label.from {
-      margin-left: 0.5em;
+      margin-left: 1em;
     }
 
     label.to {
@@ -110,7 +110,7 @@
     }
 
     #to {
-      margin-right: 1.5em;
+      margin-right: 0;
     }
 
     div.timeError {
@@ -136,16 +136,56 @@
     }
   }
 
+  #boundingbox {
+    margin-top: 3px;
+
+    h3 {
+      display: inline;
+    }
+
+    > div {
+      display: inline;
+    }
+
+    label {
+      margin-left: 0.75em;
+    }
+
+    label.disabled {
+      color: lightgray;
+    }
+
+    .bbox {
+      width: 50px;
+      margin: 2px 2px 0 2px;
+      padding: 2px 5px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: darkgray;
+      border-radius: 4px;
+
+      &:disabled {
+        color: lightgray;
+      }
+    }
+  }
+
   .buttonReset {
     cursor: pointer;
     background-color: inherit;
     border-style: none;
+    margin-left: 1em;
     padding-left: 4px;
     padding-right: 4px;
     padding-top: 0;
     padding-bottom: 3px;
     vertical-align: middle;
     color: #555;
+
+    &:disabled {
+      color: lightgray;
+      pointer-events: none;
+    }
 
     &:hover {
       color: #48b;
@@ -194,42 +234,12 @@
 
   .note {
     font-style: italic;
+    font-size: 80%;
   }
 
-  .help-text {
-    display: inline;
+  .helpHeader {
     line-height: 1.2em;
-
-    span {
-      font-size: 80%;
-      padding: 0;
-    }
-
-    section {
-      font-size: 80%;
-      padding: 6pt 0 6pt 1em;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
-
-      img {
-        display: inline-block;
-        vertical-align: middle;
-        height: 20px;
-        padding: 2px;
-        margin: 0 2px;
-      }
-    }
-
-    ul {
-      margin: 0 0 0 1.2em;
-      padding: 0;
-    }
-
-    kbd {
-      border-radius: 3px;
-      padding: 0 2px 0;
-      border: 1px solid black;
-    }
+    margin-bottom: 0;
   }
 
   .cancel-button,
@@ -299,7 +309,10 @@
     input {
       width: 200px;
       font-size: 90%;
-      margin: 2px 2px 5px 2px;
+      margin-top: 2px;
+      margin-right: 0;
+      margin-bottom: 5px;
+      margin-left: 2px;
       padding: 2px 5px;
       border-style: solid;
       border-width: 1px;
@@ -351,7 +364,7 @@
         border-left-style: none;
         padding: 0.5rem;
         text-align: left;
-        word-wrap: break-word;
+        word-break: break-all;
       }
 
       th {

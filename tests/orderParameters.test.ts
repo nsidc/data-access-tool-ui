@@ -1,9 +1,10 @@
 import { List } from "immutable";
 import * as moment from "moment";
 
-import { mergeOrderParameters } from "../src/utils/orderParameters";
+import { BoundingBox } from "../src/types/BoundingBox";
 import { CmrCollection } from "../src/types/CmrCollection";
 import { OrderParameters } from "../src/types/OrderParameters";
+import { mergeOrderParameters } from "../src/utils/orderParameters";
 
 const cmrCollectionA = new CmrCollection({
   boxes: List(["-90 -180 90 180"]),
@@ -63,35 +64,9 @@ describe("mergeOrderParameters", () => {
   });
 
   test("GeoJSON objects are merged and remain POJOs", () => {
-    const globalBbox = {
-      bbox: [-180, -90, 180, 90],
-      geometry: {
-        coordinates: [[
-          [-180, 90],
-          [180, 90],
-          [180, -90],
-          [-180, -90],
-          [-180, 90],
-        ]],
-        type: "Polygon",
-      },
-      type: "Feature",
-    };
+    const globalBbox = BoundingBox.global();
 
-    const nsidc0742Bbox = {
-      bbox: [-109, 57, 11, 85],
-      geometry: {
-        coordinates: [[
-          [-109, 85],
-          [11, 85],
-          [11, 57],
-          [-109, 57],
-          [-109, 85],
-        ]],
-        type: "Polygon",
-      },
-      type: "Feature",
-    }
+    const nsidc0742Bbox = new BoundingBox(-109, 57, 11, 85);
 
     const triangle = {
       geometry: {
@@ -133,5 +108,5 @@ describe("mergeOrderParameters", () => {
 
     expect(actual.collectionSpatialCoverage).toEqual(nsidc0742Bbox);
     expect(actual.spatialSelection).toEqual(quadrilateral);
-  })
+  });
 });

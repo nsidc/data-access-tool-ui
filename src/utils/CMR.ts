@@ -2,7 +2,8 @@ import * as fetchMock from "fetch-mock";
 import { List, Map } from "immutable";
 import * as moment from "moment";
 
-import { IGeoJsonBbox, IGeoJsonPolygon } from "../types/GeoJson";
+import { BoundingBox } from "../types/BoundingBox";
+import { IGeoJsonPolygon } from "../types/GeoJson";
 import { GranuleSorting } from "../types/OrderParameters";
 import { getEnvironment } from "./environment";
 
@@ -37,26 +38,16 @@ const granuleSortParameter = (granuleSorting: GranuleSorting) => {
 
 // NOTE: Exported for testing only. Un-export once we find a way to test without exporting.
 export const spatialParameter = (spatialSelection: IGeoJsonPolygon | null,
-                                 collectionSpatialCoverage: IGeoJsonPolygon | null): string => {
-  const geoJSON = List([
-    spatialSelection,
-    collectionSpatialCoverage,
-    globalSpatialSelection,
-  ]).find((geoJsonPoly) => geoJsonPoly !== null);
-
+                                 boundingBox: number[]): string => {
   let param: string;
   let value: string;
 
-  if (geoJSON && geoJSON.hasOwnProperty("bbox")) {
-    param = "bounding_box";
-    value = geoJSON.bbox.join(",");
-
-  } else if (geoJSON && geoJSON.geometry && (geoJSON.geometry.type === "Polygon")) {
+  if (spatialSelection !== null) {
     param = "polygon";
-    value = geoJSON.geometry.coordinates.join(",");
-
+    value = spatialSelection.geometry.coordinates.join(",");
   } else {
-    return "";
+    param = "bounding_box";
+    value = boundingBox.join(",");
   }
 
   return `${param}=${value}`;
@@ -144,7 +135,7 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
 export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionVersionId: number,
                                   spatialSelection: IGeoJsonPolygon | null,
-                                  collectionSpatialCoverage: IGeoJsonPolygon | null,
+                                  boundingBox: BoundingBox,
                                   temporalLowerBound: moment.Moment,
                                   temporalUpperBound: moment.Moment,
                                   cmrGranuleFilter: string,
@@ -155,27 +146,12 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&short_name=${collectionAuthId}`
     + `&${versionParameters(collectionVersionId)}`
     + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection, collectionSpatialCoverage)}`;
+    + `&${spatialParameter(spatialSelection, boundingBox.rect)}`;
 
   if (cmrGranuleFilter !== "") {
     URL += `&${granuleFilterParameters(cmrGranuleFilter)}`;
   }
   return cmrFetch(URL, headers);
-};
-
-export const globalSpatialSelection: IGeoJsonBbox = {
-  bbox: [-180, -90, 180, 90],
-  geometry: {
-    coordinates: [[
-      [-180, -90],
-      [180, -90],
-      [180, 90],
-      [-180, 90],
-      [-180, -90],
-    ]],
-    type: "Polygon",
-  },
-  type: "Feature",
 };
 
 // take the list of bounding boxes from a CMR response
@@ -184,9 +160,9 @@ export const globalSpatialSelection: IGeoJsonBbox = {
 //
 // TODO: Kevin's ideas for refactoring
 // https://bitbucket.org/nsidc/everest-ui/pull-requests/179/hermes-92-point-data/activity#comment-112353646
-export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGeoJsonBbox => {
+export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>) => {
   if (((boxes as string[]).length === 0) || ((boxes as List<string>).size === 0)) {
-    return globalSpatialSelection;
+    return BoundingBox.global();
   }
 
   const souths: number[] = [];
@@ -210,20 +186,7 @@ export const cmrBoxArrToSpatialSelection = (boxes: string[] | List<string>): IGe
   const finalEast: number = Math.max.apply(null, easts);
   const finalNorth: number = Math.max.apply(null, norths);
 
-  return {
-    bbox: [finalWest, finalSouth, finalEast, finalNorth],
-    geometry: {
-      coordinates: [[
-        [finalWest, finalSouth],
-        [finalEast, finalSouth],
-        [finalEast, finalNorth],
-        [finalWest, finalNorth],
-        [finalWest, finalSouth],
-      ]],
-      type: "Polygon",
-    },
-    type: "Feature",
-  };
+  return new BoundingBox(finalWest, finalSouth, finalEast, finalNorth);
 };
 
 export const formatBytes = (bytes: number): string => {
@@ -239,4 +202,9 @@ export const formatBytes = (bytes: number): string => {
   const value = bytes / Math.pow(k, i);
   // Use parseFloat to get rid of scientific notation from toPrecision
   return parseFloat(value.toPrecision(2)) + " " + sizes[i];
+};
+
+export const boundingBoxMatch = (bbox1: BoundingBox, bbox2: BoundingBox) => {
+  const bboxMatch = JSON.stringify(bbox1) === JSON.stringify(bbox2);
+  return bboxMatch;
 };

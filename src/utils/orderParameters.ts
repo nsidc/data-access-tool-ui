@@ -9,33 +9,28 @@ export const mergeOrderParameters = (orderParamsA: OrderParameters,
   // @ts-ignore 2322
   let orderParameters: OrderParameters = orderParamsA.merge(orderParamsB);
 
-  let aGeoJsonPolygonWasUpdated: boolean = false;
-
   let spatialSelection = orderParameters.spatialSelection;
   if (orderParamsB.spatialSelection) {
-    aGeoJsonPolygonWasUpdated = true;
     spatialSelection = orderParamsB.spatialSelection;
   }
 
   let collectionSpatialCoverage = orderParameters.collectionSpatialCoverage;
   if (orderParamsB.collectionSpatialCoverage) {
-    aGeoJsonPolygonWasUpdated = true;
     collectionSpatialCoverage = orderParamsB.collectionSpatialCoverage;
   }
 
   // ensure the GeoJSON polygons are POJOS; with the .merge() call above,
   // they are converted to Immutable Maps
-  if (aGeoJsonPolygonWasUpdated) {
-    orderParameters = new OrderParameters({
-      cmrGranuleFilter: orderParameters.cmrGranuleFilter,
-      collection: orderParameters.collection,
-      collectionSpatialCoverage,
-      granuleSorting: orderParameters.granuleSorting,
-      spatialSelection,
-      temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
-      temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
-    });
-  }
+  orderParameters = new OrderParameters({
+    boundingBox: orderParameters.boundingBox.clone(),
+    cmrGranuleFilter: orderParameters.cmrGranuleFilter,
+    collection: orderParameters.collection,
+    collectionSpatialCoverage,
+    granuleSorting: orderParameters.granuleSorting,
+    spatialSelection,
+    temporalFilterLowerBound: orderParameters.temporalFilterLowerBound,
+    temporalFilterUpperBound: orderParameters.temporalFilterUpperBound,
+  });
 
   return orderParameters;
 };
