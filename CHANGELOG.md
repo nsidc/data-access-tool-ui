@@ -1,4 +1,4 @@
-# v1.2.0 (unreleased)
+# v1.2.0 (2019-11-11)
 
 * Add support for bounding box filtering. Remove help instructions from polygon
   and put them into tooltips instead.
