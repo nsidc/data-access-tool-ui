@@ -1,7 +1,8 @@
 import { List } from "immutable";
 
+import { BoundingBox } from "../src/types/BoundingBox";
 import { IGeoJsonPolygon } from "../src/types/GeoJson";
-import { cmrBoxArrToSpatialSelection, globalSpatialSelection,
+import { cmrBoxArrToSpatialSelection,
          spatialParameter, versionParameters } from "../src/utils/CMR";
 
 describe("CMR version_id query parameters", () => {
@@ -18,14 +19,7 @@ describe("CMR version_id query parameters", () => {
 
 describe("CMR spatial parameters", () => {
   // NSIDC-0642's bounding box
-  const defaultCollectionSpatialCoverage = {
-    bbox: [60, -75, 83, -14],
-    geometry: {
-      coordinates: [[]],
-      type: "Polygon",
-    },
-    type: "Feature",
-  };
+  const defaultCollectionSpatialCoverage = new BoundingBox(60, -75, 83, -14);
 
   // polygon (triangle) drawn on NSIDC-0642
   const defaultSpatialSelection = {
@@ -42,61 +36,62 @@ describe("CMR spatial parameters", () => {
     };
 
   let spatialSelection: IGeoJsonPolygon | null = defaultSpatialSelection;
-  let collectionSpatialCoverage: IGeoJsonPolygon | null = defaultCollectionSpatialCoverage;
+  let boundingBox = defaultCollectionSpatialCoverage.rect;
 
   describe("with a user-defined spatial selection", () => {
     beforeEach(() => {
       spatialSelection = defaultSpatialSelection;
-      collectionSpatialCoverage = defaultCollectionSpatialCoverage;
+      boundingBox = defaultCollectionSpatialCoverage.rect;
     });
 
     it("should use the user's polygon", () => {
       const expected = "polygon=-41.4,75.1,-76.5,76.4,-58.5,70.9,-41.4,75.1";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 
   describe("with a user-defined spatial selection, and no collection coverage", () => {
     beforeEach(() => {
       spatialSelection = defaultSpatialSelection;
-      collectionSpatialCoverage = null;
+      boundingBox = [-180, -90, 180, 90];
     });
 
     it("should use the user's polygon", () => {
       const expected = "polygon=-41.4,75.1,-76.5,76.4,-58.5,70.9,-41.4,75.1";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 
   describe("with no user-defined spatial selection, but with a collection coverage", () => {
     beforeEach(() => {
       spatialSelection = null;
-      collectionSpatialCoverage = defaultCollectionSpatialCoverage;
+      boundingBox = defaultCollectionSpatialCoverage.rect;
     });
 
     it("should use the collection's bounding box", () => {
       const expected = "bounding_box=60,-75,83,-14";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 
   describe("with no user-defined spatial selection, nor collection coverage", () => {
     beforeEach(() => {
       spatialSelection = null;
-      collectionSpatialCoverage = null;
+      boundingBox = [-180, -90, 180, 90];
     });
 
     it("should use the global bounding box", () => {
       const expected = "bounding_box=-180,-90,180,90";
-      expect(spatialParameter(spatialSelection, collectionSpatialCoverage)).toBe(expected);
+      expect(spatialParameter(spatialSelection, boundingBox)).toBe(expected);
     });
   });
 });
 
 describe("cmrBoxArrToSpatialSelection", () => {
+  const globalSpatialSelection = BoundingBox.global();
   it("returns a global box for an empty array", () => {
-    expect(cmrBoxArrToSpatialSelection([])).toBe(globalSpatialSelection);
-    expect(cmrBoxArrToSpatialSelection(List([]))).toBe(globalSpatialSelection);
+    expect(cmrBoxArrToSpatialSelection([]).rect).toEqual(globalSpatialSelection.rect);
+    expect(cmrBoxArrToSpatialSelection(List([])).rect).toEqual(globalSpatialSelection.rect);
   });
 
   it("returns the smallest box that encompasses all given boxes", () => {
@@ -109,7 +104,7 @@ describe("cmrBoxArrToSpatialSelection", () => {
 
     const expected = [-76, 59, -13, 84];
 
-    expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
+    expect(cmrBoxArrToSpatialSelection(inputBoxes).rect).toEqual(expected);
   });
 
   it("it returns the smallest box that encompasses all given boxes with no rounding", () => {
@@ -121,6 +116,6 @@ describe("cmrBoxArrToSpatialSelection", () => {
 
     const expected = [85.60915, 28.21502, 85.60986, 28.23467];
 
-    expect(cmrBoxArrToSpatialSelection(inputBoxes).bbox).toEqual(expected);
+    expect(cmrBoxArrToSpatialSelection(inputBoxes).rect).toEqual(expected);
   });
 });

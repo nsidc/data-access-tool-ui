@@ -19,11 +19,3 @@ export interface IGeoJsonPolygon {
   readonly type: string;
   [propName: string]: any;
 }
-
-// to fully follow the GeoJSON spec, a Bbox would be a polygon made of just one
-// LinearRing containing exactly 4 unique points, and the values of the points
-// would match the values of the bbox; with this interface, we ensure roughly
-// the right structure, but cannot validate the values
-export interface IGeoJsonBbox extends IGeoJsonPolygon {
-  readonly bbox: [number, number, number, number];
-}

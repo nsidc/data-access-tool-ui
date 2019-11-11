@@ -3,24 +3,14 @@ import * as React from "react";
 
 jest.mock("../src/utils/CesiumAdapter");
 import { Globe } from "../src/components/Globe";
+import { BoundingBox } from "../src/types/BoundingBox";
 
 const setup = () => {
   const props = {
+    boundingBox: BoundingBox.global(),
+    collectionSpatialCoverage: BoundingBox.global(),
+    onBoundingBoxChange: jest.fn(),
     onSpatialSelectionChange: jest.fn(),
-    collectionSpatialCoverage: {
-      bbox: [0, 0, 0, 0],
-      geometry: {
-        coordinates: [[
-          [0, 0],
-          [0, 0],
-          [0, 0],
-          [0, 0],
-          [0, 0],
-        ]],
-        type: "Polygon",
-      },
-      type: "Feature",
-    },
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {

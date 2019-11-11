@@ -1,8 +1,9 @@
 import * as React from "react";
 
+import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { ConfirmationFlow } from "./ConfirmationFlow";
@@ -148,13 +149,22 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     const filenameFilter = filterAddWildcards(params.cmrGranuleFilter);
 
+    let boundingBox = "";
     let polygon = "";
     if (params.spatialSelection && params.spatialSelection.geometry
       && (params.spatialSelection.geometry.type === "Polygon")) {
       polygon = params.spatialSelection.geometry.coordinates.join(",");
+    } else {
+      const collectionBoundingBox =
+        this.props.orderParameters.collectionSpatialCoverage ?
+          this.props.orderParameters.collectionSpatialCoverage : BoundingBox.global();
+      if (!boundingBoxMatch(this.props.orderParameters.boundingBox, collectionBoundingBox)) {
+        boundingBox = this.props.orderParameters.boundingBox.rect.join(",");
+      }
     }
 
     const body: object = {
+      bounding_box: boundingBox,
       dataset_short_name: params.collection.short_name,
       dataset_version: params.collection.version_id,
       filename_filter: filenameFilter,
