@@ -1,3 +1,7 @@
+# v1.2.1 (unreleased)
+
+* On Order History page, mark all old orders (2 weeks old) as "expired".
+
 # v1.2.0 (2019-11-11)
 
 * Add support for bounding box filtering. Remove help instructions from polygon
