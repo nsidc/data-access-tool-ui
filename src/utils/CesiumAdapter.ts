@@ -8,6 +8,7 @@ import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
 import { boundingBoxMatch } from "../utils/CMR";
 import { BoundingBoxMode } from "./BoundingBoxMode";
+import { ImportPolygon } from "./ImportPolygon";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
@@ -23,6 +24,7 @@ export class CesiumAdapter {
 
   public boundingBoxMode: BoundingBoxMode;
   public polygonMode: PolygonMode;
+  public importPolygon: ImportPolygon;
 
   private viewer: Cesium.Viewer;
   private bboxPrimitive: any;
@@ -100,6 +102,30 @@ export class CesiumAdapter {
     this.polygonMode.start();
   }
 
+  public importShape(files: FileList | null) {
+    const importPolygonCallback = (spatialSelection: IGeoJsonPolygon) => {
+      if (!spatialSelection) { return; }
+      const lonLatsArray = List(spatialSelection.geometry.coordinates[0]).map((point) => {
+        if (!point) { return { lon: 0, lat: 0 }; }
+        return { lon: point[0], lat: point[1] };
+      }).toList();
+      if (this.polygonIsClockwise(lonLatsArray)) {
+        spatialSelection.geometry.coordinates[0] = spatialSelection.geometry.coordinates[0].reverse();
+      }
+      this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
+      this.updateSpatialSelection(spatialSelection);
+      this.flyToSpatialSelection(spatialSelection);
+    };
+    if (!this.importPolygon) {
+      this.importPolygon = new ImportPolygon(importPolygonCallback);
+    }
+    if (files && files.length > 0) {
+      if (files[0].type === "application/json") {
+        this.importPolygon.GeoJSON(files[0]);
+      }
+    }
+  }
+
   public flyHome() {
     // @types/cesium incorrectly has the parameter to Camera.flyHome as required
     // instead of optional
@@ -144,21 +170,21 @@ export class CesiumAdapter {
   }
 
   public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
-    if (spatialSelection === null || spatialSelection.properties === null) { return; }
+    if (spatialSelection && spatialSelection.properties) {
+      const cameraPosition = spatialSelection.properties.camera;
+      if (cameraPosition === null) { return; }
 
-    const cameraPosition = spatialSelection.properties.camera;
-    if (cameraPosition === null) { return; }
-
-    const camera = this.viewer.camera;
-    camera.setView({
-      destination: cameraPosition.position,
-      endTransform: cameraPosition.transform,
-      orientation: {
-        heading: cameraPosition.heading,
-        pitch: cameraPosition.pitch,
-        roll: cameraPosition.roll,
-      },
-    });
+      const camera = this.viewer.camera;
+      camera.setView({
+        destination: cameraPosition.position,
+        endTransform: cameraPosition.transform,
+        orientation: {
+          heading: cameraPosition.heading,
+          pitch: cameraPosition.pitch,
+          roll: cameraPosition.roll,
+        },
+      });
+    }
   }
 
   public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {

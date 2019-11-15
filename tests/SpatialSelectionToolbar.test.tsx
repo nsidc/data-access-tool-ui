@@ -8,6 +8,7 @@ describe("Spatial toolbar component", () => {
     const toolbar = shallow(<SpatialSelectionToolbar
       onClickBoundingBox={() => jest.fn()}
       onClickHome={() => jest.fn()}
+      onClickImportShape={() => jest.fn()}
       onClickPolygon={() => jest.fn()}
       onClickReset={() => jest.fn()}/>);
 

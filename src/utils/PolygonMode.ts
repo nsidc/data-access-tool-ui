@@ -111,10 +111,10 @@ export class PolygonMode {
     return CesiumUtils.lonLatToCartesian(lonLat, this.ellipsoid);
   }
 
-  // should only be called when initially rendering a spatial selection that was
-  // saved in localStorage
+  // called for a spatial selection that was saved in localStorage
+  // or if you import a polygon
   public polygonFromLonLats(lonLatsArray: number[][]) {
-    if (this.state !== PolygonState.donePolygon) { return; }
+    this.state = PolygonState.donePolygon;
 
     this.clearAllPoints();
     this.initializeBillboards();
