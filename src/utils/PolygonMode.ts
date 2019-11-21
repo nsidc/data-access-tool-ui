@@ -117,6 +117,8 @@ export class PolygonMode {
     this.state = PolygonState.donePolygon;
 
     this.clearAllPoints();
+    this.scene.primitives.removeAll();
+    this.tooltip = null;
     this.initializeBillboards();
 
     const cartesians = lonLatsArray.map((coord: number[]) => {
@@ -139,7 +141,7 @@ export class PolygonMode {
 
   private clearAllPoints = () => {
     this.points = List<Point>();
-    if (this.billboards && this.billboards.length) {
+    if (this.billboards && this.billboards.length && !this.billboards.isDestroyed()) {
       this.billboards.removeAll();
     }
   }

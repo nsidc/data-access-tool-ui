@@ -11,6 +11,7 @@ const setup = () => {
     collectionSpatialCoverage: BoundingBox.global(),
     onBoundingBoxChange: jest.fn(),
     onSpatialSelectionChange: jest.fn(),
+    setCmrErrorMessage: jest.fn(),
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {

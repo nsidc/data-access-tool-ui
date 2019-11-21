@@ -17,6 +17,7 @@ interface IGlobeProps {
   collectionSpatialCoverage: BoundingBox | null;
   spatialSelection: IGeoJsonPolygon | null;
   onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
+  setCmrErrorMessage: (msg: string) => void;
 }
 
 interface IGlobeState {
@@ -34,7 +35,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       lonLatLabel: "",
     };
     this.cesiumAdapter = new CesiumAdapter(this.updateBoundingBox, this.updateSpatialSelection,
-      this.enableLonLat, this.updateLonLat);
+      this.enableLonLat, this.updateLonLat, this.props.setCmrErrorMessage);
   }
 
   public componentDidMount() {
@@ -115,7 +116,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               window.setTimeout(this.startSpatialSelection, 0);
             }}
             onClickImportShape={(files: FileList | null) => {
-              this.cesiumAdapter.importShape(files);
+              window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
+              window.setTimeout(() => { this.cesiumAdapter.importShape(files); }, 0);
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();

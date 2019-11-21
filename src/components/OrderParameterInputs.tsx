@@ -19,6 +19,7 @@ interface IOrderParametersProps {
   onChange: any;
   orderParameters: OrderParameters;
   onTemporalReset: any;
+  setCmrErrorMessage: (msg: string) => void;
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
@@ -52,6 +53,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
+          setCmrErrorMessage={this.props.setCmrErrorMessage}
           spatialSelection={this.props.orderParameters.spatialSelection} />
         <div id="version">
           <a href="https://cesiumjs.org" target="_blank"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>

@@ -170,6 +170,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
                 onChange={this.handleOrderParameterChange}
                 orderParameters={this.state.orderParameters}
                 onTemporalReset={this.handleTemporalReset}
+                setCmrErrorMessage={this.setCmrErrorMessage}
               />
             </div>
             <div id="right-side">
@@ -262,6 +263,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.cmrGranuleCount ? this.state.cmrGranuleCount : 0));
   }
 
+  private setCmrErrorMessage = (msg: string) => {
+    this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
+  }
+
   private createErrorMessage = (errorMsg: string) => {
     let msg = "";
     this.resetPolygon = true;
@@ -277,16 +282,14 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private onCmrRequestFailure = (response: any) => {
+    // Setting status to an empty string will generate the default error message.
     let msg = "";
     if (response.json) {
       response.json().then((json: any) => {
         msg = "Error: " + this.createErrorMessage(json.errors[0]);
-        this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
       });
-      return Promise.reject(response);
     }
-    // Setting status to an empty string will generate the default error message.
-    this.setState({ cmrStatusChecked: true, cmrStatusMessage: "", cmrStatusOk: false });
+    this.setCmrErrorMessage(msg);
     return Promise.reject(response);
   }
 

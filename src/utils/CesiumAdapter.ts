@@ -32,15 +32,18 @@ export class CesiumAdapter {
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
+  private setCmrErrorMessage: (msg: string) => void;
 
   public constructor(updateBoundingBox: (s: BoundingBox) => void,
                      updateSpatialSelection: (s: IGeoJsonPolygon) => void,
                      lonLatEnableCallback: (s: boolean) => void,
-                     lonLatLabelCallback: (s: string) => void) {
+                     lonLatLabelCallback: (s: string) => void,
+                     setCmrErrorMessage: (msg: string) => void) {
     this.updateBoundingBox = updateBoundingBox;
     this.updateSpatialSelection = updateSpatialSelection;
     this.lonLatLabelCallback = lonLatLabelCallback;
     this.lonLatEnableCallback = lonLatEnableCallback;
+    this.setCmrErrorMessage = setCmrErrorMessage;
   }
 
   public createViewer() {
@@ -105,13 +108,24 @@ export class CesiumAdapter {
   public importShape(files: FileList | null) {
     const importPolygonCallback = (spatialSelection: IGeoJsonPolygon) => {
       if (!spatialSelection) { return; }
-      const lonLatsArray = List(spatialSelection.geometry.coordinates[0]).map((point) => {
+      let points = spatialSelection.geometry.coordinates[0];
+      // Trim useless decimal digits so we can load more coordinates
+      points = points.map((point) => {
+        if (!point) { return [0, 0]; }
+        return [Math.round(point[0] * 1e6) / 1e6, Math.round(point[1] * 1e6) / 1e6 ];
+      });
+      const lonLatsArray = List(points).map((point) => {
         if (!point) { return { lon: 0, lat: 0 }; }
         return { lon: point[0], lat: point[1] };
       }).toList();
-      if (this.polygonIsClockwise(lonLatsArray)) {
-        spatialSelection.geometry.coordinates[0] = spatialSelection.geometry.coordinates[0].reverse();
+      if (points.join(",").length > 7800) {
+        this.setCmrErrorMessage("Error: Polygon has too many points. Please choose a different file.");
+        return;
       }
+      if (this.polygonIsClockwise(lonLatsArray)) {
+        points = points.reverse();
+      }
+      spatialSelection.geometry.coordinates[0] = points;
       this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
       this.updateSpatialSelection(spatialSelection);
       this.flyToSpatialSelection(spatialSelection);
@@ -170,20 +184,18 @@ export class CesiumAdapter {
   }
 
   public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
-    if (spatialSelection && spatialSelection.properties) {
-      const cameraPosition = spatialSelection.properties.camera;
-      if (cameraPosition === null) { return; }
-
-      const camera = this.viewer.camera;
-      camera.setView({
-        destination: cameraPosition.position,
-        endTransform: cameraPosition.transform,
-        orientation: {
-          heading: cameraPosition.heading,
-          pitch: cameraPosition.pitch,
-          roll: cameraPosition.roll,
-        },
-      });
+    if (spatialSelection && spatialSelection.geometry.type === "Polygon") {
+      const coords = spatialSelection.geometry.coordinates;
+      if (coords.length >= 1 && coords[0].length >= 3) {
+        const bbox = coords[0].reduce((bb: BoundingBox, coord) => {
+          bb.west = Math.min(bb.west, coord[0]);
+          bb.east = Math.max(bb.east, coord[0]);
+          bb.south = Math.min(bb.south, coord[1]);
+          bb.north = Math.max(bb.north, coord[1]);
+          return bb;
+        }, new BoundingBox(180, 90, -180, -90));
+        this.flyToRectangle(bbox);
+      }
     }
   }
 
