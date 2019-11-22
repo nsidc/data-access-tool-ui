@@ -74,12 +74,14 @@
     "@types/es6-promise": "^3.3.0",
     "@types/isomorphic-fetch": "0.0.34",
     "@types/react-tooltip": "^3.3.6",
+    "@types/shapefile": "^0.6.0",
     "es6-promise": "^4.2.4",
     "geojson": "^0.5.0",
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^2.2.1",
     "react-split-pane": "^0.1.87",
     "react-tooltip": "^3.9.0",
+    "shapefile": "^0.6.6",
     "webpack-shell-plugin": "^0.5.0"
   }
 }

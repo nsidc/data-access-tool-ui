@@ -106,9 +106,13 @@ export class CesiumAdapter {
   }
 
   public importShape(files: FileList | null) {
-    const importPolygonCallback = (spatialSelection: IGeoJsonPolygon) => {
-      if (!spatialSelection) { return; }
-      let points = spatialSelection.geometry.coordinates[0];
+    const importPolygonCallback = (poly: IGeoJsonPolygon) => {
+      if (poly.type !== "Feature" || poly.geometry.type !== "Polygon") {
+        this.setCmrErrorMessage("Error: File does not contain a valid polygon. \
+          Please choose a different file.");
+        return;
+      }
+      let points = poly.geometry.coordinates[0];
       // Trim useless decimal digits so we can load more coordinates
       points = points.map((point) => {
         if (!point) { return [0, 0]; }
@@ -119,16 +123,17 @@ export class CesiumAdapter {
         return { lon: point[0], lat: point[1] };
       }).toList();
       if (points.join(",").length > 7800) {
-        this.setCmrErrorMessage("Error: Polygon has too many points. Please choose a different file.");
+        this.setCmrErrorMessage("Error: Polygon has too many points. \
+          Please choose a different file.");
         return;
       }
       if (this.polygonIsClockwise(lonLatsArray)) {
         points = points.reverse();
       }
-      spatialSelection.geometry.coordinates[0] = points;
-      this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
-      this.updateSpatialSelection(spatialSelection);
-      this.flyToSpatialSelection(spatialSelection);
+      poly.geometry.coordinates[0] = points;
+      this.polygonMode.polygonFromLonLats(poly.geometry.coordinates[0]);
+      this.updateSpatialSelection(poly);
+      this.flyToSpatialSelection(poly);
     };
     if (!this.importPolygon) {
       this.importPolygon = new ImportPolygon(importPolygonCallback);
@@ -136,6 +141,8 @@ export class CesiumAdapter {
     if (files && files.length > 0) {
       if (files[0].type === "application/json") {
         this.importPolygon.GeoJSON(files[0]);
+      } else if (files[0].name.endsWith(".shp")) {
+        this.importPolygon.Shapefile(files[0]);
       }
     }
   }
