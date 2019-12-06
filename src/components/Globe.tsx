@@ -117,7 +117,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             }}
             onClickImportShape={(files: FileList | null) => {
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
-              window.setTimeout(() => { this.cesiumAdapter.importShape(files); }, 0);
+              window.setTimeout(() => { if (files) { this.cesiumAdapter.importShape(files); } }, 0);
             }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();

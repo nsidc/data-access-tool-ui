@@ -105,45 +105,13 @@ export class CesiumAdapter {
     this.polygonMode.start();
   }
 
-  public importShape(files: FileList | null) {
-    const importPolygonCallback = (poly: IGeoJsonPolygon) => {
-      if (poly.type !== "Feature" || poly.geometry.type !== "Polygon") {
-        this.setCmrErrorMessage("Error: File does not contain a valid polygon. \
-          Please choose a different file.");
-        return;
-      }
-      let points = poly.geometry.coordinates[0];
-      // Trim useless decimal digits so we can load more coordinates
-      points = points.map((point) => {
-        if (!point) { return [0, 0]; }
-        return [Math.round(point[0] * 1e6) / 1e6, Math.round(point[1] * 1e6) / 1e6 ];
-      });
-      const lonLatsArray = List(points).map((point) => {
-        if (!point) { return { lon: 0, lat: 0 }; }
-        return { lon: point[0], lat: point[1] };
-      }).toList();
-      if (points.join(",").length > 7800) {
-        this.setCmrErrorMessage("Error: Polygon has too many points. \
-          Please choose a different file.");
-        return;
-      }
-      if (this.polygonIsClockwise(lonLatsArray)) {
-        points = points.reverse();
-      }
-      poly.geometry.coordinates[0] = points;
-      this.polygonMode.polygonFromLonLats(poly.geometry.coordinates[0]);
-      this.updateSpatialSelection(poly);
-      this.flyToSpatialSelection(poly);
-    };
+  public importShape(files: FileList) {
     if (!this.importPolygon) {
-      this.importPolygon = new ImportPolygon(importPolygonCallback);
+      this.importPolygon = new ImportPolygon(this.importPolygonCallback);
     }
-    if (files && files.length > 0) {
-      if (files[0].type === "application/json") {
-        this.importPolygon.GeoJSON(files[0]);
-      } else if (files[0].name.endsWith(".shp")) {
-        this.importPolygon.Shapefile(files[0]);
-      }
+    const err = this.importPolygon.importFile(files[0]);
+    if (err) {
+      this.setCmrErrorMessage(err);
     }
   }
 
@@ -221,6 +189,39 @@ export class CesiumAdapter {
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE =
       Cesium.Rectangle.fromDegrees(...flyTo.rect);
     this.flyHome();
+  }
+
+  private importPolygonCallback = (poly: IGeoJsonPolygon) => {
+    if (poly.type !== "Feature" || poly.geometry.type !== "Polygon") {
+      this.setCmrErrorMessage("Error: File does not contain a valid polygon. \
+          Please choose a different file.");
+      return;
+    }
+    let points = poly.geometry.coordinates[0];
+    // Trim useless decimal digits so we can load more coordinates
+    points = points.map((point) => {
+      if (!point) { return [0, 0]; }
+      return [Math.round(point[0] * 1e6) / 1e6, Math.round(point[1] * 1e6) / 1e6];
+    });
+    const lonLatsArray = List(points).map((point) => {
+      if (!point) { return { lon: 0, lat: 0 }; }
+      return { lon: point[0], lat: point[1] };
+    }).toList();
+    // Note: Maximum browser length is currently 8192. The max length here is
+    // based on the total number of characters in the CMR query.
+    // We need to catch this here because CMR does not return a useful error.
+    if (points.join(",").length > 7800) {
+      this.setCmrErrorMessage("Error: Polygon has too many points. \
+          Please choose a different file.");
+      return;
+    }
+    if (this.polygonIsClockwise(lonLatsArray)) {
+      points = points.reverse();
+    }
+    poly.geometry.coordinates[0] = points;
+    this.polygonMode.polygonFromLonLats(poly.geometry.coordinates[0]);
+    this.updateSpatialSelection(poly);
+    this.flyToSpatialSelection(poly);
   }
 
   private renderBoundingBox = (boundingBox: BoundingBox, doRender: boolean) => {

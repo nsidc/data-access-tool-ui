@@ -9,7 +9,21 @@ export class ImportPolygon {
     this.importPolygonCallback = importPolygonCallback;
   }
 
-  public GeoJSON(filename: File) {
+  public importFile(filename: File) {
+    if (filename.type === "application/json") {
+      this.GeoJSON(filename);
+      return "";
+    } else if (filename.name.endsWith(".shp")) {
+      this.Shapefile(filename);
+      return "";
+    } else {
+      return "Error: File must be GeoJSON or .shp shapefile. \
+          Please choose a different file.";
+    }
+
+  }
+
+  private GeoJSON(filename: File) {
     const handleFileRead = () => {
       if (typeof fileReader.result === "string") {
         this.handleGeoJSON(JSON.parse(fileReader.result));
@@ -20,7 +34,7 @@ export class ImportPolygon {
     fileReader.readAsText(filename);
   }
 
-  public Shapefile(filename: File) {
+  private Shapefile(filename: File) {
     const handleFileRead = () => {
       if (fileReader.result) {
         shapefile.read(fileReader.result).then((geoJSON) => {
@@ -34,37 +48,63 @@ export class ImportPolygon {
   }
 
   private handleGeoJSON(geoJSON: any) {
+    if (!geoJSON || !geoJSON.type) {
+      return;
+    }
+
     let feature: IGeoJsonPolygon = {
       geometry: { coordinates: [], type: "" },
       type: "",
     };
-    if (geoJSON && geoJSON.type) {
-      if (geoJSON.type === "FeatureCollection") {
-        if (geoJSON.features && geoJSON.features.length > 0) {
-          feature = geoJSON.features[0];
-          // Some shapefiles have multiple parts per shape. Pick the first.
-          if (feature.geometry.type === "MultiPolygon") {
-            const firstPoly: any = feature.geometry.coordinates[0];
-            feature = {
-              geometry: {
-                coordinates: firstPoly,
-                type: "Polygon",
-              },
-              type: "Feature",
-            };
-          }
-        }
-      } else if (geoJSON.type === "Feature") {
-        feature = geoJSON;
-      } else if (geoJSON.type === "GeometryCollection") {
-        if (geoJSON.geometries && geoJSON.geometries.length > 0) {
+
+    if (geoJSON.type === "FeatureCollection") {
+      if (geoJSON.features && geoJSON.features.length > 0) {
+        feature = geoJSON.features[0];
+      }
+    } else if (geoJSON.type === "Feature") {
+      feature = geoJSON;
+    } else if (geoJSON.type === "GeometryCollection") {
+      if (geoJSON.geometries && geoJSON.geometries.length > 0) {
+        feature = {
+          geometry: geoJSON.geometries[0],
+          type: "Feature",
+        };
+      }
+    } else if (geoJSON.type === "Polygon" || geoJSON.type === "MultiPolygon") {
+      if (geoJSON.coordinates && geoJSON.coordinates.length > 0) {
+        feature = {
+          geometry: geoJSON,
+          type: "Feature",
+        };
+      }
+    }
+
+    // For multi-polygons, pick the first.
+    if (feature.type === "Feature") {
+      if (feature.geometry.type === "MultiPolygon") {
+        const firstPoly: any = feature.geometry.coordinates[0];
+        feature = {
+          geometry: {
+            coordinates: firstPoly,
+            type: "Polygon",
+          },
+          type: "Feature",
+        };
+      }
+      // For polygons with multiple linear rings, pick the first (exterior) one.
+      if (feature.geometry.type === "Polygon") {
+        if (feature.geometry.coordinates.length > 1) {
           feature = {
-            geometry: geoJSON.geometries[0],
+            geometry: {
+              coordinates: [feature.geometry.coordinates[0]],
+              type: "Polygon",
+            },
             type: "Feature",
           };
         }
       }
     }
+
     this.importPolygonCallback(feature);
   }
 }
