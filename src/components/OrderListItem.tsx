@@ -24,21 +24,25 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
     if (this.props.selected) {
       style += " order-list-item-selected";
     }
+    let status = this.props.order.status;
     const orderPlacedDate = moment(this.props.order.submitted_timestamp);
     const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
     if (moment(orderExpirationDate).isBefore(moment.now())) {
       style += " order-list-item-expired";
+      if (status === "complete" || status === "error" || status === "warning") {
+        status = "expired";
+      }
     }
     const delivery = (this.props.order.delivery === "ESI") ?
       "Zip" : this.props.order.delivery;
     const submitted = moment(this.props.order.submitted_timestamp).format(OrderListItem.timeFormat);
-    const status = getOrderStatus(this.props.order.status);
+    const statusIcon = getOrderStatus(status);
     return (
       <tr onClick={this.handleOrderSelection} className={style}>
         <td>{submitted}</td>
         <td>{this.props.order.order_id}</td>
         <td className="order-list-right">{this.props.order.granule_count}</td>
-        <td>{status}</td>
+        <td>{statusIcon}</td>
         <td>{delivery}</td>
       </tr>
     );
