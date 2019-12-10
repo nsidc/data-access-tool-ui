@@ -24,6 +24,7 @@ const setup = () => {
         ]],
         type: "Polygon",
       },
+      properties: null,
       type: "Feature",
     },
   };

@@ -17,5 +17,6 @@ export interface IGeoJsonPolygonGeometry {
 export interface IGeoJsonPolygon {
   readonly geometry: IGeoJsonPolygonGeometry;
   readonly type: string;
+  readonly properties: any;
   [propName: string]: any;
 }

@@ -115,10 +115,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
               window.setTimeout(this.startSpatialSelection, 0);
             }}
-            onClickImportShape={(files: FileList | null) => {
+            onClickImportPolygon={(files: FileList | null) => {
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
-              window.setTimeout(() => { if (files) { this.cesiumAdapter.importShape(files); } }, 0);
+              window.setTimeout(() => { if (files) { this.cesiumAdapter.doImportPolygon(files); } }, 0);
             }}
+            onClickExportPolygon={() => { this.exportPolygon(); }}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
@@ -151,4 +152,17 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     this.setState({ lonLatEnable });
   }
 
+  private exportPolygon = () => {
+    if (this.props.spatialSelection) {
+      const polygon = JSON.stringify(this.props.spatialSelection, null, 2);
+      const file = new Blob([polygon], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(file);
+      a.download = "nsidc-polygon.json";
+      // Append the element to the dom so it will work in Firefox
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  }
 }

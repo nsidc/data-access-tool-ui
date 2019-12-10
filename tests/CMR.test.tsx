@@ -32,6 +32,7 @@ describe("CMR spatial parameters", () => {
         ]],
         type: "Polygon",
       },
+      properties: null,
       type: "Feature",
     };
 

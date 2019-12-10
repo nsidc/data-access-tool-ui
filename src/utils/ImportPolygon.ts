@@ -54,6 +54,7 @@ export class ImportPolygon {
 
     let feature: IGeoJsonPolygon = {
       geometry: { coordinates: [], type: "" },
+      properties: null,
       type: "",
     };
 
@@ -67,6 +68,7 @@ export class ImportPolygon {
       if (geoJSON.geometries && geoJSON.geometries.length > 0) {
         feature = {
           geometry: geoJSON.geometries[0],
+          properties: null,
           type: "Feature",
         };
       }
@@ -74,6 +76,7 @@ export class ImportPolygon {
       if (geoJSON.coordinates && geoJSON.coordinates.length > 0) {
         feature = {
           geometry: geoJSON,
+          properties: null,
           type: "Feature",
         };
       }
@@ -88,6 +91,7 @@ export class ImportPolygon {
             coordinates: firstPoly,
             type: "Polygon",
           },
+          properties: null,
           type: "Feature",
         };
       }
@@ -99,8 +103,13 @@ export class ImportPolygon {
               coordinates: [feature.geometry.coordinates[0]],
               type: "Polygon",
             },
+            properties: null,
             type: "Feature",
           };
+        }
+
+        if (!("properties" in feature)) {
+          feature = {...feature, properties: null};
         }
       }
     }

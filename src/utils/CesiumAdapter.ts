@@ -105,7 +105,7 @@ export class CesiumAdapter {
     this.polygonMode.start();
   }
 
-  public importShape(files: FileList) {
+  public doImportPolygon(files: FileList) {
     if (!this.importPolygon) {
       this.importPolygon = new ImportPolygon(this.importPolygonCallback);
     }

@@ -1,15 +1,16 @@
 import * as React from "react";
 
 import { faSquare } from "@fortawesome/free-regular-svg-icons";
-import { faDrawPolygon, faFolderOpen, faHome, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faDrawPolygon, faFolderOpen, faHome, faSave, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import "../styles/index.less";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface ISpatialSelectionToolbarProps {
   onClickBoundingBox: () => void;
+  onClickExportPolygon: () => void;
   onClickHome: () => void;
-  onClickImportShape: (e: any) => void;
+  onClickImportPolygon: (e: any) => void;
   onClickPolygon: () => void;
   onClickReset: () => void;
 }
@@ -31,18 +32,22 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
                               onClick={() => this.props.onClickPolygon()}
                               img={faDrawPolygon}
                               title="Draw a polygon spatial filter"/>
-        <input type="file" id="importShapeInput"
+        <input type="file" id="importPolygonInput"
                onClick={(e: any) => e.target.value = null}
-               onChange={(e) => this.props.onClickImportShape(e.target.files)} />
+               onChange={(e) => this.props.onClickImportPolygon(e.target.files)} />
         <SpatialSelectionType name="import"
                               onClick={() => {
-                                const chooseFile = document.getElementById("importShapeInput");
+                                const chooseFile = document.getElementById("importPolygonInput");
                                 if (chooseFile) {
                                   chooseFile.click();
                                 }
                               }}
                               img={faFolderOpen}
                               title="Import polygon" />
+        <SpatialSelectionType name="export"
+                              onClick={() => this.props.onClickExportPolygon()}
+                              img={faSave}
+                              title="Export polygon" />
         <SpatialSelectionType name="reset"
                               onClick={() => this.props.onClickReset()}
                               img={faTrashAlt}
