@@ -111,12 +111,13 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               this.cesiumAdapter.flyHome();
             }}
             onClickPolygon={() => {
-              this.cesiumAdapter.clearSpatialSelection();
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
+              if (this.props.spatialSelection !== null) {
+                window.setTimeout(() => { this.cesiumAdapter.clearSpatialSelection(); }, 0);
+              }
               window.setTimeout(this.startSpatialSelection, 0);
             }}
             onClickImportPolygon={(files: FileList | null) => {
-              window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
               window.setTimeout(() => { if (files) { this.cesiumAdapter.doImportPolygon(files); } }, 0);
             }}
             onClickExportPolygon={() => { this.exportPolygon(); }}

@@ -320,6 +320,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     let orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
 
+    // If we have a polygon selection, reset the bounding box now to avoid
+    // having to do two separate CMR calls.
+    let boundingBox = orderParameters.boundingBox;
+    if (orderParameters.spatialSelection !== null) {
+      boundingBox = orderParameters.collectionSpatialCoverage ?
+        orderParameters.collectionSpatialCoverage : BoundingBox.global();
+    }
+    orderParameters = mergeOrderParameters(orderParameters, { boundingBox });
+
     if (orderParameters.temporalFilterLowerBound >= orderParameters.temporalFilterUpperBound) {
       timeErrorLowerBound = "Start date is after the end date";
       timeErrorUpperBound = timeErrorLowerBound;

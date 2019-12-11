@@ -78,7 +78,7 @@ describe("mergeOrderParameters", () => {
         ]],
         type: "Polygon",
       },
-      properties: null,
+      properties: {},
       type: "Feature",
     };
 
@@ -93,7 +93,7 @@ describe("mergeOrderParameters", () => {
         ]],
         type: "Polygon",
       },
-      properties: null,
+      properties: {},
       type: "Feature",
     };
 

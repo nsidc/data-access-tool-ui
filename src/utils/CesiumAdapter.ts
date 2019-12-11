@@ -366,15 +366,6 @@ export class CesiumAdapter {
         lonLats = lonLats.reverse().toList();
       }
 
-      const camera = this.viewer.camera;
-      const cameraPosition = {
-        heading: camera.heading,
-        pitch: camera.pitch,
-        position: camera.positionWC.clone(),
-        roll: camera.roll,
-        transform: camera.transform.clone(),
-      };
-
       const lonLatsArray = lonLats.map((lonLat) => {
         return [lonLat!.lon, lonLat!.lat];
       }).toJS();
@@ -383,8 +374,7 @@ export class CesiumAdapter {
       if (lonLatsArray.length >= MIN_VERTICES) {
         // the last point in a polygon needs to be the first again to close it
         lonLatsArray.push(lonLatsArray[0]);
-        geo = GeoJSON.parse({ polygon: [lonLatsArray] }, { Polygon: "polygon",
-          extraGlobal: { camera: cameraPosition}});
+        geo = GeoJSON.parse({ polygon: [lonLatsArray] }, { Polygon: "polygon" });
       }
       this.updateSpatialSelection(geo);
     };

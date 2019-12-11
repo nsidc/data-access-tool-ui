@@ -72,7 +72,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
       boundingBox.north = Math.min(boundingBox.north, bbox.north);
       boundingBox.north = Math.max(boundingBox.north, bbox.south);
     }
-    this.props.onChange({boundingBox});
+    if (!this.props.orderParameters.boundingBox.equals(boundingBox)) {
+      this.props.onChange({boundingBox});
+    }
   }
 
   private onBoundingBoxReset = () => {

@@ -23,18 +23,18 @@ describe("CMR spatial parameters", () => {
 
   // polygon (triangle) drawn on NSIDC-0642
   const defaultSpatialSelection = {
-      geometry: {
-        coordinates: [[
-          [-41.4, 75.1],
-          [-76.5, 76.4],
-          [-58.5, 70.9],
-          [-41.4, 75.1],
-        ]],
-        type: "Polygon",
-      },
-      properties: null,
-      type: "Feature",
-    };
+    geometry: {
+      coordinates: [[
+        [-41.4, 75.1],
+        [-76.5, 76.4],
+        [-58.5, 70.9],
+        [-41.4, 75.1],
+      ]],
+      type: "Polygon",
+    },
+    properties: {},
+    type: "Feature",
+  };
 
   let spatialSelection: IGeoJsonPolygon | null = defaultSpatialSelection;
   let boundingBox = defaultCollectionSpatialCoverage.rect;
