@@ -26,7 +26,8 @@ export class ImportPolygon {
   private GeoJSON(filename: File) {
     const handleFileRead = () => {
       if (typeof fileReader.result === "string") {
-        this.handleGeoJSON(JSON.parse(fileReader.result));
+        const feature = this.parseGeoJSON(JSON.parse(fileReader.result));
+        this.importPolygonCallback(feature);
       }
     };
     const fileReader = new FileReader();
@@ -38,7 +39,8 @@ export class ImportPolygon {
     const handleFileRead = () => {
       if (fileReader.result) {
         shapefile.read(fileReader.result).then((geoJSON) => {
-          this.handleGeoJSON(geoJSON);
+          const feature = this.parseGeoJSON(geoJSON);
+          this.importPolygonCallback(feature);
         });
       }
     };
@@ -47,16 +49,16 @@ export class ImportPolygon {
     fileReader.readAsArrayBuffer(filename);
   }
 
-  private handleGeoJSON(geoJSON: any) {
-    if (!geoJSON || !geoJSON.type) {
-      return;
-    }
-
+  private parseGeoJSON(geoJSON: any) {
     let feature: IGeoJsonPolygon = {
       geometry: { coordinates: [], type: "" },
       properties: {},
       type: "",
     };
+
+    if (!geoJSON || !geoJSON.type) {
+      return feature;
+    }
 
     if (geoJSON.type === "FeatureCollection") {
       if (geoJSON.features && geoJSON.features.length > 0) {
@@ -114,6 +116,6 @@ export class ImportPolygon {
       }
     }
 
-    this.importPolygonCallback(feature);
+    return feature;
   }
 }
