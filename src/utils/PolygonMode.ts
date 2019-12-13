@@ -50,6 +50,7 @@ export class PolygonMode {
     this.initializeMouseHandler();
     this.initializeBillboards();
     this.initializeTooltip();
+    this.state = PolygonState.drawingPolygon;
   }
 
   public reset = () => {

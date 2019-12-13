@@ -115,12 +115,6 @@ export class CesiumAdapter {
     }
   }
 
-  public flyHome() {
-    // @types/cesium incorrectly has the parameter to Camera.flyHome as required
-    // instead of optional
-    (this.viewer.camera as any).flyHome();
-  }
-
   public renderCollectionCoverage(bbox: BoundingBox): void {
     const ENTITY_ID = "collectionCoverage";
 
@@ -158,7 +152,18 @@ export class CesiumAdapter {
     this.renderBoundingBox(boundingBox, doRender);
   }
 
-  public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
+  public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
+    if (spatialSelection === null) { return; }
+    this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
+  }
+
+  public flyHome() {
+    // @types/cesium incorrectly has the parameter to Camera.flyHome as required
+    // instead of optional
+    (this.viewer.camera as any).flyHome();
+  }
+
+  public setFlyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
     if (spatialSelection && spatialSelection.geometry.type === "Polygon") {
       const coords = spatialSelection.geometry.coordinates;
       if (coords.length >= 1 && coords[0].length >= 3) {
@@ -169,18 +174,12 @@ export class CesiumAdapter {
           bb.north = Math.max(bb.north, coord[1]);
           return bb;
         }, new BoundingBox(180, 90, -180, -90));
-        this.flyToRectangle(bbox);
+        this.setFlyToRect(bbox);
       }
     }
   }
 
-  public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
-    if (spatialSelection === null) { return; }
-
-    this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
-  }
-
-  public flyToRectangle(bbox: BoundingBox): void {
+  public setFlyToRect(bbox: BoundingBox): void {
     const boulderCO = new BoundingBox(-135, 10, -75, 70);
     const flyTo = this.collectionCoverageIsGlobal(bbox) ? boulderCO : bbox;
 
@@ -188,7 +187,6 @@ export class CesiumAdapter {
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE =
       Cesium.Rectangle.fromDegrees(...flyTo.rect);
-    this.flyHome();
   }
 
   private importPolygonCallback = (poly: IGeoJsonPolygon) => {
@@ -221,7 +219,8 @@ export class CesiumAdapter {
     poly.geometry.coordinates[0] = points;
     this.polygonMode.polygonFromLonLats(poly.geometry.coordinates[0]);
     this.updateSpatialSelection(poly);
-    this.flyToSpatialSelection(poly);
+    this.setFlyToSpatialSelection(poly);
+    this.flyHome();
   }
 
   private renderBoundingBox = (boundingBox: BoundingBox, doRender: boolean) => {

@@ -4,6 +4,7 @@ import { faSquare } from "@fortawesome/free-regular-svg-icons";
 import { faDrawPolygon, faFolderOpen, faHome, faSave, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import "../styles/index.less";
+import { hasChanged } from "../utils/hasChanged";
 import { SpatialSelectionType } from "./SpatialSelectionType";
 
 interface ISpatialSelectionToolbarProps {
@@ -13,9 +14,16 @@ interface ISpatialSelectionToolbarProps {
   onClickImportPolygon: (e: any) => void;
   onClickPolygon: () => void;
   onClickReset: () => void;
+  disableExport: boolean;
+  disableReset: boolean;
 }
 
 export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionToolbarProps, {}> {
+  public shouldComponentUpdate(nextProps: ISpatialSelectionToolbarProps) {
+    const propsChanged = hasChanged(this.props, nextProps, ["disableExport", "disableReset"]);
+    return propsChanged;
+  }
+
   public render() {
     // For the <input file>, the onClick is necessary to allow the same file to be chosen again
     return (
@@ -47,10 +55,12 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
         <SpatialSelectionType name="export"
                               onClick={() => this.props.onClickExportPolygon()}
                               img={faSave}
+                              disabled={this.props.disableExport}
                               title="Export polygon" />
         <SpatialSelectionType name="reset"
                               onClick={() => this.props.onClickReset()}
                               img={faTrashAlt}
+                              disabled={this.props.disableReset}
                               title="Delete spatial filters"/>
       </div>
     );

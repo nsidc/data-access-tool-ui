@@ -50,7 +50,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
     if (this.props.spatialSelection !== null) {
       this.cesiumAdapter.renderSpatialSelection(this.props.spatialSelection);
-      this.cesiumAdapter.flyToSpatialSelection(this.props.spatialSelection);
+      this.cesiumAdapter.setFlyToSpatialSelection(this.props.spatialSelection);
+      this.cesiumAdapter.flyHome();
     } else {
       const collectionBoundingBox = this.props.collectionSpatialCoverage ?
         this.props.collectionSpatialCoverage : BoundingBox.global();
@@ -60,7 +61,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         flyToRectangle = this.props.boundingBox;
       }
       if (flyToRectangle) {
-        this.cesiumAdapter.flyToRectangle(flyToRectangle);
+        this.cesiumAdapter.setFlyToRect(flyToRectangle);
+        this.cesiumAdapter.flyHome();
       }
     }
   }
@@ -76,7 +78,8 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     if (hasChanged(prevProps, this.props, ["collectionSpatialCoverage"])) {
       if (this.props.collectionSpatialCoverage !== null) {
         this.cesiumAdapter.renderCollectionCoverage(this.props.collectionSpatialCoverage);
-        this.cesiumAdapter.flyToRectangle(this.props.collectionSpatialCoverage);
+        this.cesiumAdapter.setFlyToRect(this.props.collectionSpatialCoverage);
+        this.cesiumAdapter.flyHome();
       }
     }
     if (!boundingBoxMatch(prevProps.boundingBox, this.props.boundingBox)) {
@@ -111,7 +114,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               this.cesiumAdapter.flyHome();
             }}
             onClickPolygon={() => {
-              window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
+              this.cesiumAdapter.clearBoundingBox();
               if (this.props.spatialSelection !== null) {
                 window.setTimeout(() => { this.cesiumAdapter.clearSpatialSelection(); }, 0);
               }
@@ -121,18 +124,31 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
               window.setTimeout(() => { if (files) { this.cesiumAdapter.doImportPolygon(files); } }, 0);
             }}
             onClickExportPolygon={() => { this.exportPolygon(); }}
+            disableExport={this.props.spatialSelection == null}
             onClickReset={() => {
               this.cesiumAdapter.clearSpatialSelection();
               window.setTimeout(() => { this.cesiumAdapter.clearBoundingBox(); }, 0);
-            }} />
+              if (this.props.collectionSpatialCoverage !== null) {
+                const flyToRectangle = this.props.collectionSpatialCoverage;
+                this.cesiumAdapter.setFlyToRect(flyToRectangle);
+              }
+            }}
+            disableReset={!this.hasSpatialFilter()}
+          />
           <div id="credit" />
         </div>
       </div>
     );
   }
 
+  private hasSpatialFilter = () => {
+    return this.props.spatialSelection ||
+      !this.props.boundingBox.equals(this.props.collectionSpatialCoverage);
+  }
+
   private updateBoundingBox = (boundingBox: BoundingBox) => {
     this.props.onBoundingBoxChange(boundingBox);
+    this.cesiumAdapter.setFlyToRect(boundingBox);
   }
 
   private startSpatialSelection = () => {
@@ -142,6 +158,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   private updateSpatialSelection = (spatialSelection: IGeoJsonPolygon) => {
     this.props.onSpatialSelectionChange(spatialSelection);
+    this.cesiumAdapter.setFlyToSpatialSelection(spatialSelection);
     CesiumUtils.unsetCursorCrosshair();
   }
 
