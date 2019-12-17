@@ -1,4 +1,4 @@
-# v1.2.1 (unreleased)
+# v1.2.1 (2019-12-17)
 
 * On Order History page, mark all old orders (2 weeks old) as "expired".
 
