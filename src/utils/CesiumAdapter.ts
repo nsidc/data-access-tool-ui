@@ -210,7 +210,7 @@ export class CesiumAdapter {
     // We need to catch this here because CMR does not return a useful error.
     if (points.join(",").length > 7800) {
       this.setCmrErrorMessage("Error: Polygon has too many points. \
-          Please choose a different file.");
+          Please choose a file with less than 350 polygon points.");
       return;
     }
     if (this.polygonIsClockwise(lonLatsArray)) {
