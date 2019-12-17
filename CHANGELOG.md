@@ -1,3 +1,7 @@
+# v1.3.0 (unreleased)
+
+* Add polygon import/export.
+
 # v1.2.1 (2019-12-17)
 
 * On Order History page, mark all old orders (2 weeks old) as "expired".
