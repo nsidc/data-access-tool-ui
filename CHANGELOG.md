@@ -1,6 +1,6 @@
 # v1.3.0 (unreleased)
 
-* Add polygon import/export.
+* Allow import of GeoJSON or Shapefile polygons, and export of polygons to GeoJSON.
 
 # v1.2.1 (2019-12-17)
 

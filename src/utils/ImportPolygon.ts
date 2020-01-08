@@ -38,7 +38,7 @@ export class ImportPolygon {
   private Shapefile(filename: File) {
     const handleFileRead = () => {
       if (fileReader.result) {
-        shapefile.read(fileReader.result).then((geoJSON) => {
+        shapefile.read(fileReader.result).then((geoJSON: any) => {
           const feature = this.parseGeoJSON(geoJSON);
           this.importPolygonCallback(feature);
         });
