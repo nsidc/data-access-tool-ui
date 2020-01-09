@@ -36,6 +36,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
     };
     this.cesiumAdapter = new CesiumAdapter(this.updateBoundingBox, this.updateSpatialSelection,
       this.enableLonLat, this.updateLonLat, this.props.setCmrErrorMessage);
+    document.addEventListener("keydown", this.onKeyPress, false);
   }
 
   public componentDidMount() {
@@ -95,9 +96,9 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
 
   public render() {
     return (
-      <div id="spatial-selection">
+      <div id="spatial-selection" onKeyPress={this.onKeyPress}>
         <HelpText />
-        <div id={CesiumUtils.viewerId}>
+        <div id={CesiumUtils.viewerId} onKeyPress={this.onKeyPress}>
           <LonLatInput
             lonLatEnable={this.state.lonLatEnable}
             lonLatLabel={this.state.lonLatLabel}
@@ -139,6 +140,11 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
         </div>
       </div>
     );
+  }
+
+  private onKeyPress = (event: any) => {
+    // tslint:disable-next-line: no-console
+    console.log(event);
   }
 
   private hasSpatialFilter = () => {
