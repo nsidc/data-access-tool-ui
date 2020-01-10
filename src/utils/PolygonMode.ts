@@ -16,6 +16,7 @@ enum PolygonEvent {
   doubleClick,
   moveMouse,
   lonLatTextChange,
+  escapeKey,
 }
 
 export const MIN_VERTICES = 3;
@@ -43,13 +44,14 @@ export class PolygonMode {
     this.updateLonLatLabel = updateLonLatLabel;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
+    document.addEventListener("keydown", this.onKeyDown, false);
   }
 
   public start = () => {
     this.initializeMouseHandler();
     this.initializeBillboards();
     this.initializeTooltip();
-    this.state = PolygonState.drawingPolygon;
+    this.doStateTransition(PolygonState.drawingPolygon);
   }
 
   public reset = () => {
@@ -64,7 +66,7 @@ export class PolygonMode {
     if (didHavePoints) {
       this.finishedDrawingCallback(this.points);
     }
-    this.state = PolygonState.drawingPolygon;
+    this.doStateTransition(PolygonState.drawingPolygon);
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();
       this.mouseHandler = null;
@@ -355,19 +357,22 @@ export class PolygonMode {
 
   private doStateTransition = (newState: PolygonState) => {
     this.state = newState;
-    switch (this.state) {
-      case PolygonState.drawingPolygon:
-        this.tooltip.text = "Click to add more points\ndouble click to finish";
-        break;
-      case PolygonState.donePolygon:
-        this.tooltip.text = "Click a point to edit\ndouble click to move";
-        break;
-      case PolygonState.pointActive:
-        this.tooltip.text = "Edit lat/lon box or\nclick point to move";
-        break;
-      case PolygonState.movePoint:
-        this.tooltip.text = "Click to set new location";
-        break;
+    if (this.tooltip) {
+      switch (this.state) {
+        case PolygonState.drawingPolygon:
+          this.tooltip.text = (this.points.size > 1) ?
+            "Click to add more points\ndouble click to finish" : "Click to add first point";
+          break;
+        case PolygonState.donePolygon:
+          this.tooltip.text = "Click a point to edit\ndouble click to move";
+          break;
+        case PolygonState.pointActive:
+          this.tooltip.text = "Edit lat/lon box or\nclick point to move";
+          break;
+        case PolygonState.movePoint:
+          this.tooltip.text = "Click to set new location";
+          break;
+      }
     }
   }
 
@@ -447,6 +452,17 @@ export class PolygonMode {
             break;
           case PolygonEvent.lonLatTextChange:
             // nop
+            break;
+          case PolygonEvent.escapeKey:
+            this.removeActivePoint();
+            this.activateLastPoint();
+            if (this.points.size < MIN_VERTICES && this.polygon) {
+              this.scene.primitives.remove(this.polygon);
+              Cesium.destroyObject(this.polygon);
+              this.polygon = null;
+            }
+            this.doStateTransition(PolygonState.drawingPolygon);
+            this.scene.requestRender();
             break;
         }
         break;
@@ -551,6 +567,12 @@ export class PolygonMode {
             break;
         }
         break;
+    }
+  }
+
+  private onKeyDown = (event: any): void => {
+    if (event.key === "Escape") {
+      this.stateTransition(PolygonEvent.escapeKey, new Cesium.Cartesian2());
     }
   }
 
