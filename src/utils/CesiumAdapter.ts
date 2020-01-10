@@ -97,7 +97,7 @@ export class CesiumAdapter {
     this.boundingBoxMode.start();
   }
 
-  public clearSpatialSelection() {
+  public clearSpatialSelection = (): void => {
     this.polygonMode.reset();
   }
 
