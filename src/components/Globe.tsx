@@ -115,9 +115,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
             }}
             onClickPolygon={() => {
               this.cesiumAdapter.clearBoundingBox();
-              if (this.props.spatialSelection !== null) {
-                window.setTimeout(() => { this.cesiumAdapter.clearSpatialSelection(); }, 0);
-              }
+              window.setTimeout(this.cesiumAdapter.clearSpatialSelection, 0);
               window.setTimeout(this.startSpatialSelection, 0);
             }}
             onClickImportPolygon={(files: FileList | null) => {
