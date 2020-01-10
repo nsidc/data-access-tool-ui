@@ -19,8 +19,8 @@ import { mergeOrderParameters } from "../utils/orderParameters";
 import { updateStateInitGranules, UserContext } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
+import { EDLButton } from "./EDLButton";
 import { GranuleList } from "./GranuleList";
-import { LoginButton } from "./LoginButton";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 
@@ -177,7 +177,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="collection-list">
           {collectionDropdown}
         </div>
-        <LoginButton
+        <EDLButton
           environment={this.props.environment} />
         <div id="columns" ref={(n) => columnContainer = n}>
           <SplitPane split="vertical" minSize={300} maxSize={-600}

@@ -4,17 +4,16 @@ import * as React from "react";
 import { IEnvironment } from "../utils/environment";
 import { UserContext } from "../utils/state";
 
-interface ILoginButtonProps {
+interface IEDLButtonProps {
   environment: IEnvironment;
 }
 
-export class LoginButton extends React.Component<ILoginButtonProps, {}> {
-  public constructor(props: ILoginButtonProps) {
+export class EDLButton extends React.Component<IEDLButtonProps, {}> {
+  public constructor(props: IEDLButtonProps) {
     super(props);
     // TODO: No bind. There _must_ be a better way!
     // <img src="billy_mays.jpg">
     this.renderWithUserContext = this.renderWithUserContext.bind(this);
-    this.LoginButton = this.LoginButton.bind(this);
     this.LogoutButton = this.LogoutButton.bind(this);
   }
 
@@ -22,30 +21,28 @@ export class LoginButton extends React.Component<ILoginButtonProps, {}> {
     // TODO: Figure out a way to show a loading spinner until we know whether user logged in or not
     // Consider a second piece of state userLoggedIn that starts as undefined and is set to true or false
     // depending on result of getUser call.
+    const hermesApiUrl: string = this.props.environment.urls.hermesApiUrl;
 
     // Unknown login state
     if (user === undefined) {
       return (
-        <div className="earthdata-login">
-          {"Loading"}
-        </div>
+        <p>{"Loading"}</p>
       );
     // Logged out
     } else if (!user) {
+      const loginUrl = `${hermesApiUrl}/api/earthdata/auth/`;
       return (
-        <div className="earthdata-login">
+        <form method="GET" action={loginUrl}>
           <div className="button-group" id="earthdata-login-button">
-            <this.LoginButton />
+            <button type="submit" />
           </div>
-        </div>
+        </form>
       );
     // Logged in
     } else {
       return (
-        <div className="earthdata-login">
-          <div className="button-group" id="earthdata-login-button">
-            <this.LogoutButton updateUser={updateUser} />
-          </div>
+        <div className="button-group" id="earthdata-login-button">
+          <this.LogoutButton updateUser={updateUser} />
         </div>
       );
     }
@@ -71,19 +68,13 @@ export class LoginButton extends React.Component<ILoginButtonProps, {}> {
     );
   }
 
-  public LoginButton() {
-    const hermesApiUrl = this.props.environment.urls.hermesApiUrl;
-    const loginUrl = `${hermesApiUrl}/api/earthdata/auth/`;
-    return (
-      <a href={loginUrl}>Login</a>
-    );
-  }
-
   public render() {
     return (
-      <UserContext.Consumer>
-        {this.renderWithUserContext}
-      </UserContext.Consumer>
+      <div className="earthdata-login">
+        <UserContext.Consumer>
+          {this.renderWithUserContext}
+        </UserContext.Consumer>
+      </div>
     );
   }
 
