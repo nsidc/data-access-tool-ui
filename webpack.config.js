@@ -14,6 +14,10 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 // see: https://cesiumjs.org/tutorials/cesium-and-webpack/
 // Also: https://github.com/AnalyticalGraphicsInc/cesium-webpack-example
 
+links = ["https://cdn.earthdata.nasa.gov/eui/1.1.7/stylesheets/application.css"];
+scripts = ["https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js",
+           "https://cdn.earthdata.nasa.gov/eui/1.1.7/js/eui.js"];
+
 module.exports = {
     entry: {
       index: ['./src/index.ts'],
@@ -106,7 +110,9 @@ module.exports = {
             chunks: ['index'],
             inject: false,
             template: require('html-webpack-template'),
-            appMountId: 'everest-ui'
+            appMountId: 'everest-ui',
+            links,
+            scripts
         }),
         new HtmlWebpackPlugin({
             title: 'Profile Page',
@@ -114,7 +120,9 @@ module.exports = {
             inject: false,
             template: require('html-webpack-template'),
             filename: 'profile.html',
-            appMountId: 'everest-ui-profile'
+            appMountId: 'everest-ui-profile',
+            links,
+            scripts
         }),
         // Copy Cesium Assets, Widgets, and Workers to a static directory
         new CopywebpackPlugin([ { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' } ]),
