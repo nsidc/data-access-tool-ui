@@ -5,7 +5,9 @@ import { IUser } from "../types/User";
 
 export interface IHermesAPI {
   getOrder: (orderId: string) => any;
-  getUserOrders: (user: IUser) => any;
+  getUser: () => any;
+  getUserOrders: (user: IUser) => any;  // TODO: We probably don't need to pass user anymore here
+  logoutUser: () => any;
   openNotificationConnection: (user: IUser, callback: any) => void;
   submitOrder: (user: IUser,
                 selectionCriteria: ISelectionCriteria) => Promise<any>;
@@ -55,6 +57,7 @@ export function constructAPI(urls: any): IHermesAPI {
     };
 
     const uid = user.uid;
+    // TODO: Why not inline?
     body = Object.assign(body, {uid, user});
 
     const url = `${urls.hermesApiUrl}/orders/`;
@@ -66,9 +69,31 @@ export function constructAPI(urls: any): IHermesAPI {
     });
   };
 
+  const logoutUser = () => {
+    return fetch(
+      `${urls.hermesApiUrl}/api/user/`,
+      {
+        credentials: "include",
+        method: "DELETE",
+      },
+    );
+  };
+
+  const getUser = () => {
+    return fetch(
+      `${urls.hermesApiUrl}/api/user/`,
+      {
+        credentials: "include",
+        method: "GET",
+      },
+    );
+  };
+
   return {
     getOrder,
+    getUser,
     getUserOrders,
+    logoutUser,
     openNotificationConnection,
     submitOrder,
   };

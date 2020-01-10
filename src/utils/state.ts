@@ -1,8 +1,17 @@
 import { fromJS, List } from "immutable";
+import * as React from "react";
 
 import { IEverestState } from "../components/EverestUI";
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+
+export const UserContext = React.createContext({
+  updateUser: () => { return; },
+  // user: undefined stands for "We don't know if the user is logged in." A
+  // dict stands for a logged in user profile. False stands for a logged out
+  // user.
+  user: undefined,
+});
 
 const orderSubmissionParametersFromCmrGranules = (cmrGranules: List<CmrGranule>) => {
   const granules = cmrGranules.map((g) => g!.title) as List<string>;

@@ -16,10 +16,11 @@ import { CMR_COUNT_HEADER,
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
-import { updateStateInitGranules } from "../utils/state";
+import { updateStateInitGranules, UserContext } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { GranuleList } from "./GranuleList";
+import { LoginButton } from "./LoginButton";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
 
@@ -44,6 +45,7 @@ export interface IEverestState {
   orderSubmissionParameters?: OrderSubmissionParameters;
   stateCanBeFrozen: boolean;
   totalSize: number;
+  user: any;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -74,6 +76,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       orderSubmissionParameters: undefined,
       stateCanBeFrozen: false,
       totalSize: 0,
+      user: undefined,
     };
 
     // allow easy testing of CMR errors by creating functions that can be called
@@ -84,6 +87,26 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     props.environment.exposeFunction("CmrReset", () => {
       this.setState({cmrStatusChecked: false, cmrStatusOk: false}, this.cmrStatusRequestUntilOK);
     });
+
+    // TODO: Kill me
+    this.updateUser = this.updateUser.bind(this);
+  }
+
+  public updateUser() {
+    // 1) GET /user/ to ask Hermes who, if anyone, is logged in and what their details are.
+    // The HermesAPI.getUser() function should be used for this... and it will fetch from hermes
+    // TODO: Bind this function? Will it have the correct "this"?
+    this.props.environment.hermesAPI.getUser()
+      .then((response: any) => {
+        return response.json();
+      })
+      .then((user: any) => {
+        if (user.type === "anonymous") {
+          return this.setState({user: false});
+        } else {
+          return this.setState({user});
+        }
+      });
   }
 
   public CmrReset() {
@@ -103,11 +126,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     if (this.state.loadedParamsFromLocalStorage) {
       this.cmrGranuleRequest();
       this.enableStateFreezing();
-
     } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
       this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
-
     }
+
+    this.updateUser();
   }
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
@@ -123,6 +146,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       "orderParameters",
       "orderSubmissionParameters",
       "totalSize",
+      "user",
     ]);
 
     return propsChanged || stateChanged;
@@ -141,7 +165,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     let columnContainer: any;
 
-    return (
+    const appJSX =  (
       <div id="everest-container">
         <ReactTooltip effect="solid" delayShow={500} />
         <CmrDownBanner
@@ -153,6 +177,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="collection-list">
           {collectionDropdown}
         </div>
+        <LoginButton
+          environment={this.props.environment} />
         <div id="columns" ref={(n) => columnContainer = n}>
           <SplitPane split="vertical" minSize={300} maxSize={-600}
             defaultSize={this.getLocalStorageUIByKey("splitPosition", "50%")}
@@ -193,6 +219,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           </SplitPane>
         </div>
       </div>
+    );
+
+    // TODO: remove bind? See if it works
+    return (
+      <UserContext.Provider value={{user: this.state.user, updateUser: this.updateUser}} >
+        {appJSX}
+      </UserContext.Provider>
     );
   }
 

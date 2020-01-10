@@ -32,13 +32,13 @@ function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     return {
-      hermesApiUrl: `/order-proxy`,
+      hermesApiUrl: `https://dev.hermes2.${devPostfix}`,
       orderNotificationHost: `wss://dev.hermes2.${devPostfix}`,
       orderNotificationPath: "/notification/",
     };
   } else {
     return {
-      hermesApiUrl: `/order-proxy`,
+      hermesApiUrl: `https://${window.location.hostname}`,
       orderNotificationHost: `wss://${window.location.hostname}`,
       orderNotificationPath: "/apps/orders/notification2/",
     };
@@ -75,14 +75,13 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       drupalDataset: Drupal.settings.data_downloads.dataset,
       exposeFunction,
       hermesAPI: constructAPI(urls),
-      inDrupal,
+      inDrupal, // TODO: Can we kill you?
       urls,
       user: Drupal.settings.data_downloads.user,  // TODO: Use the Earthdata Login module function?
     };
   } else {
-    const environmentDependentURLs = getEnvironmentDependentURLs();
     const urls = {
-      ...environmentDependentURLs,
+      ...getEnvironmentDependentURLs(),
       profileUrl: "/profile.html",
     };
     return {
