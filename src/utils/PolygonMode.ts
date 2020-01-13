@@ -173,7 +173,7 @@ export class PolygonMode {
       pixelOffset: new Cesium.Cartesian2(-10, -10),
       show: false,
       showBackground: true,
-      text: "Click to add first point",
+      text: "",
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     });
   }
@@ -360,8 +360,7 @@ export class PolygonMode {
     if (this.tooltip) {
       switch (this.state) {
         case PolygonState.drawingPolygon:
-          this.tooltip.text = (this.points.size > 1) ?
-            "Click to add more points\ndouble click to finish" : "Click to add first point";
+          this.tooltip.text = "Click to add points\ndouble click to finish";
           break;
         case PolygonState.donePolygon:
           this.tooltip.text = "Click a point to edit\ndouble click to move";
