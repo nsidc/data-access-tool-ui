@@ -426,7 +426,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+    const orderParameters: OrderParameters = new OrderParameters(orderParams);
 
     console.warn("Order parameters loaded from previous state.");
 
