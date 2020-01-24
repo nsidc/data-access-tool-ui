@@ -32,18 +32,18 @@ export class CesiumAdapter {
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
-  private setCmrErrorMessage: (msg: string) => void;
+  private setErrorMessage: (msg: string) => void;
 
   public constructor(updateBoundingBox: (s: BoundingBox) => void,
                      updateSpatialSelection: (s: IGeoJsonPolygon) => void,
                      lonLatEnableCallback: (s: boolean) => void,
                      lonLatLabelCallback: (s: string) => void,
-                     setCmrErrorMessage: (msg: string) => void) {
+                     setErrorMessage: (msg: string) => void) {
     this.updateBoundingBox = updateBoundingBox;
     this.updateSpatialSelection = updateSpatialSelection;
     this.lonLatLabelCallback = lonLatLabelCallback;
     this.lonLatEnableCallback = lonLatEnableCallback;
-    this.setCmrErrorMessage = setCmrErrorMessage;
+    this.setErrorMessage = setErrorMessage;
   }
 
   public createViewer() {
@@ -111,7 +111,7 @@ export class CesiumAdapter {
     }
     const err = this.importPolygon.importFile(files[0]);
     if (err) {
-      this.setCmrErrorMessage(err);
+      this.setErrorMessage(err);
     }
   }
 
@@ -174,6 +174,11 @@ export class CesiumAdapter {
           bb.north = Math.max(bb.north, coord[1]);
           return bb;
         }, new BoundingBox(180, 90, -180, -90));
+        if ((bbox.east - bbox.west) >= 180) {
+          const tmp = bbox.east;
+          bbox.east = bbox.west;
+          bbox.west = tmp;
+        }
         this.setFlyToRect(bbox);
       }
     }
@@ -191,7 +196,7 @@ export class CesiumAdapter {
 
   private importPolygonCallback = (poly: IGeoJsonPolygon) => {
     if (poly.type !== "Feature" || poly.geometry.type !== "Polygon") {
-      this.setCmrErrorMessage("Error: File does not contain a valid polygon. \
+      this.setErrorMessage("Error: File does not contain a valid polygon. \
           Please choose a different file.");
       return;
     }
@@ -209,7 +214,7 @@ export class CesiumAdapter {
     // based on the total number of characters in the CMR query.
     // We need to catch this here because CMR does not return a useful error.
     if (points.join(",").length > 7800) {
-      this.setCmrErrorMessage("Error: Polygon has too many points. \
+      this.setErrorMessage("Error: Polygon has too many points. \
           Please choose a file with less than 350 polygon points.");
       return;
     }

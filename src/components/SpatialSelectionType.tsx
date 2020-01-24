@@ -26,17 +26,17 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
     const divStyle = (this.props.disabled ? "toolbarButtonDisabled " : "") +
       "cesium-button cesium-toolbar-button";
     return (
-      <div className={divStyle}>
-        <button className="toolbarButton"
-          data-tip={this.props.title}
-          onClick={
-            (e: any) => {
-              this.props.onClick(e.target.value);
-              // If button gets disabled (say for "Reset"), force Tooltip to hide
-              // since the button will no longer send the OnMouseOut event.
-              ReactTooltip.hide();
-            }
+      <div className={divStyle} data-tip={this.props.title}
+        onClick={
+          (e: any) => {
+            this.props.onClick(e.target.value);
+            // If button gets disabled (say for "Reset"), force Tooltip to hide
+            // since the button will no longer send the OnMouseOut event.
+            ReactTooltip.hide();
           }
+        }
+      >
+        <button className="toolbarButton"
           disabled={this.props.disabled}>
           <FontAwesomeIcon icon={this.props.img} />
         </button>
