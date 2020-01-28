@@ -1,3 +1,8 @@
+# v1.2.2 (unreleased)
+
+* For datasets without a producer_granule_id (those with multiple files),
+  be sure to display the base filename and disable file filter.
+
 # v1.2.1 (2019-12-17)
 
 * On Order History page, mark all old orders (2 weeks old) as "expired".
