@@ -40,7 +40,7 @@ function getEnvironmentDependentURLs() {
     return {
       hermesApiUrl: `/order-proxy`,
       orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/orders/notification2/",
+      orderNotificationPath: "/apps/orders/notification/",
     };
   }
 }
