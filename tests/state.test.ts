@@ -29,6 +29,7 @@ const initialState = {
   orderSubmissionParameters: undefined,
   stateCanBeFrozen: false,
   totalSize: 0,
+  user: undefined,
 };
 
 const expected = {

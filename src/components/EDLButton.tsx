@@ -1,3 +1,4 @@
+import $ from "jquery";
 import * as React from "react";
 // import * as ReactTooltip from "react-tooltip";
 
