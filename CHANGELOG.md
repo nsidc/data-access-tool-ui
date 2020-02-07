@@ -1,3 +1,8 @@
+# v1.2.2 (2020-02-06)
+
+* Switch to use /apps/orders/notification endpoint for websockets, reverting the
+  change introduced in v0.5.0.
+
 # v1.2.1 (2019-12-17)
 
 * On Order History page, mark all old orders (2 weeks old) as "expired".
