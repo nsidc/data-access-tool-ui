@@ -1,4 +1,4 @@
-# v1.2.1 (2020-02-06)
+# v1.2.2 (2020-02-06)
 
 * Switch to use /apps/orders/notification endpoint for websockets, reverting the
   change introduced in v0.5.0.
