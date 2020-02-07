@@ -1,7 +1,12 @@
-# v1.2.2 (unreleased)
+# v1.2.3 (unreleased)
 
 * For datasets without a producer_granule_id (those with multiple files),
   be sure to display the base filename and disable file filter.
+
+# v1.2.2 (2020-02-06)
+
+* Switch to use /apps/orders/notification endpoint for websockets, reverting the
+  change introduced in v0.5.0.
 
 # v1.2.1 (2019-12-17)
 
