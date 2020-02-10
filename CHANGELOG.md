@@ -1,6 +1,8 @@
 # v1.3.0 (unreleased)
 
 * Allow import of GeoJSON or Shapefile polygons, and export of polygons to GeoJSON.
+* For datasets without a producer_granule_id (those with multiple files),
+  be sure to display the base filename and disable file filter.
 
 # v1.2.2 (2020-02-06)
 
