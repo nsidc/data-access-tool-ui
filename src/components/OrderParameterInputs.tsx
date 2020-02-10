@@ -19,6 +19,7 @@ interface IOrderParametersProps {
   onChange: any;
   orderParameters: OrderParameters;
   onTemporalReset: any;
+  setErrorMessage: (msg: string) => void;
 }
 
 export class OrderParameterInputs extends React.Component<IOrderParametersProps, {}> {
@@ -52,6 +53,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           collectionSpatialCoverage={this.props.orderParameters.collectionSpatialCoverage}
           onSpatialSelectionChange={(spatialSelection: IGeoJsonPolygon | null) =>
             this.props.onChange({spatialSelection})}
+          setErrorMessage={this.props.setErrorMessage}
           spatialSelection={this.props.orderParameters.spatialSelection} />
         <div id="version">
           <a href="https://cesiumjs.org" target="_blank"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>
@@ -70,7 +72,9 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
       boundingBox.north = Math.min(boundingBox.north, bbox.north);
       boundingBox.north = Math.max(boundingBox.north, bbox.south);
     }
-    this.props.onChange({boundingBox});
+    if (!this.props.orderParameters.boundingBox.equals(boundingBox)) {
+      this.props.onChange({boundingBox});
+    }
   }
 
   private onBoundingBoxReset = () => {

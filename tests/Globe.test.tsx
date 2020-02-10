@@ -11,6 +11,7 @@ const setup = () => {
     collectionSpatialCoverage: BoundingBox.global(),
     onBoundingBoxChange: jest.fn(),
     onSpatialSelectionChange: jest.fn(),
+    setErrorMessage: jest.fn(),
     spatialSelection: {
       bbox: [0, 0, 0, 0],
       geometry: {
@@ -23,6 +24,7 @@ const setup = () => {
         ]],
         type: "Polygon",
       },
+      properties: {},
       type: "Feature",
     },
   };

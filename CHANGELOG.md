@@ -1,3 +1,7 @@
+# v1.3.0 (unreleased)
+
+* Allow import of GeoJSON or Shapefile polygons, and export of polygons to GeoJSON.
+
 # v1.2.2 (2020-02-06)
 
 * Switch to use /apps/orders/notification endpoint for websockets, reverting the

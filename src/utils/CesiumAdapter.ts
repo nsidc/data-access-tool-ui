@@ -8,6 +8,7 @@ import { IGeoJsonPolygon } from "../types/GeoJson";
 import { CesiumUtils, ILonLat } from "../utils/CesiumUtils";
 import { boundingBoxMatch } from "../utils/CMR";
 import { BoundingBoxMode } from "./BoundingBoxMode";
+import { ImportPolygon } from "./ImportPolygon";
 import { Point } from "./Point";
 import { MIN_VERTICES, PolygonMode } from "./PolygonMode";
 
@@ -23,6 +24,7 @@ export class CesiumAdapter {
 
   public boundingBoxMode: BoundingBoxMode;
   public polygonMode: PolygonMode;
+  public importPolygon: ImportPolygon;
 
   private viewer: Cesium.Viewer;
   private bboxPrimitive: any;
@@ -30,15 +32,18 @@ export class CesiumAdapter {
   private updateSpatialSelection: (s: IGeoJsonPolygon) => void;
   private lonLatEnableCallback: (s: boolean) => void;
   private lonLatLabelCallback: (s: string) => void;
+  private setErrorMessage: (msg: string) => void;
 
   public constructor(updateBoundingBox: (s: BoundingBox) => void,
                      updateSpatialSelection: (s: IGeoJsonPolygon) => void,
                      lonLatEnableCallback: (s: boolean) => void,
-                     lonLatLabelCallback: (s: string) => void) {
+                     lonLatLabelCallback: (s: string) => void,
+                     setErrorMessage: (msg: string) => void) {
     this.updateBoundingBox = updateBoundingBox;
     this.updateSpatialSelection = updateSpatialSelection;
     this.lonLatLabelCallback = lonLatLabelCallback;
     this.lonLatEnableCallback = lonLatEnableCallback;
+    this.setErrorMessage = setErrorMessage;
   }
 
   public createViewer() {
@@ -92,7 +97,7 @@ export class CesiumAdapter {
     this.boundingBoxMode.start();
   }
 
-  public clearSpatialSelection() {
+  public clearSpatialSelection = (): void => {
     this.polygonMode.reset();
   }
 
@@ -100,10 +105,14 @@ export class CesiumAdapter {
     this.polygonMode.start();
   }
 
-  public flyHome() {
-    // @types/cesium incorrectly has the parameter to Camera.flyHome as required
-    // instead of optional
-    (this.viewer.camera as any).flyHome();
+  public doImportPolygon(files: FileList) {
+    if (!this.importPolygon) {
+      this.importPolygon = new ImportPolygon(this.importPolygonCallback);
+    }
+    const err = this.importPolygon.importFile(files[0]);
+    if (err) {
+      this.setErrorMessage(err);
+    }
   }
 
   public renderCollectionCoverage(bbox: BoundingBox): void {
@@ -143,31 +152,39 @@ export class CesiumAdapter {
     this.renderBoundingBox(boundingBox, doRender);
   }
 
-  public flyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
-    if (spatialSelection === null || spatialSelection.properties === null) { return; }
-
-    const cameraPosition = spatialSelection.properties.camera;
-    if (cameraPosition === null) { return; }
-
-    const camera = this.viewer.camera;
-    camera.setView({
-      destination: cameraPosition.position,
-      endTransform: cameraPosition.transform,
-      orientation: {
-        heading: cameraPosition.heading,
-        pitch: cameraPosition.pitch,
-        roll: cameraPosition.roll,
-      },
-    });
-  }
-
   public renderSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
     if (spatialSelection === null) { return; }
-
     this.polygonMode.polygonFromLonLats(spatialSelection.geometry.coordinates[0]);
   }
 
-  public flyToRectangle(bbox: BoundingBox): void {
+  public flyHome() {
+    // @types/cesium incorrectly has the parameter to Camera.flyHome as required
+    // instead of optional
+    (this.viewer.camera as any).flyHome();
+  }
+
+  public setFlyToSpatialSelection(spatialSelection: IGeoJsonPolygon | null): void {
+    if (spatialSelection && spatialSelection.geometry.type === "Polygon") {
+      const coords = spatialSelection.geometry.coordinates;
+      if (coords.length >= 1 && coords[0].length >= 3) {
+        const bbox = coords[0].reduce((bb: BoundingBox, coord) => {
+          bb.west = Math.min(bb.west, coord[0]);
+          bb.east = Math.max(bb.east, coord[0]);
+          bb.south = Math.min(bb.south, coord[1]);
+          bb.north = Math.max(bb.north, coord[1]);
+          return bb;
+        }, new BoundingBox(180, 90, -180, -90));
+        if ((bbox.east - bbox.west) >= 180) {
+          const tmp = bbox.east;
+          bbox.east = bbox.west;
+          bbox.west = tmp;
+        }
+        this.setFlyToRect(bbox);
+      }
+    }
+  }
+
+  public setFlyToRect(bbox: BoundingBox): void {
     const boulderCO = new BoundingBox(-135, 10, -75, 70);
     const flyTo = this.collectionCoverageIsGlobal(bbox) ? boulderCO : bbox;
 
@@ -175,6 +192,50 @@ export class CesiumAdapter {
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0.15;
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE =
       Cesium.Rectangle.fromDegrees(...flyTo.rect);
+  }
+
+  private importPolygonCallback = (poly: IGeoJsonPolygon) => {
+    if (poly.type !== "Feature" || poly.geometry.type !== "Polygon") {
+      this.setErrorMessage("Error: File does not contain a valid polygon. \
+          Please choose a different file.");
+      return;
+    }
+    let points = poly.geometry.coordinates[0];
+    // Trim useless decimal digits so we can load more coordinates
+    points = points.map((point) => {
+      if (!point) { return [0, 0]; }
+      return [Math.round(point[0] * 1e6) / 1e6, Math.round(point[1] * 1e6) / 1e6];
+    });
+    // Shapefile reader doesn't tell us the coordinate system.
+    // Assume that if the file has coords > 360 then it's not in degrees.
+    const maxValue = points.reduce((maxAccum: number, point) => {
+      maxAccum = Math.max(maxAccum, Math.max(Math.abs(point[0]), Math.abs(point[1])));
+      return maxAccum;
+    }, 0);
+    if (maxValue > 360) {
+      this.setErrorMessage("Error: Polygon does not contain geographic coordinates. \
+          Please choose a file with geographic (longitude/latitude) coordinates.");
+      return;
+    }
+    // Note: Maximum browser length is currently 8192. The max length here is
+    // based on the total number of characters in the CMR query.
+    // We need to catch this here because CMR does not return a useful error.
+    if (points.join(",").length > 7800) {
+      this.setErrorMessage("Error: Polygon has too many points. \
+          Please choose a file with less than 350 polygon points.");
+      return;
+    }
+    const lonLatsArray = List(points).map((point) => {
+      if (!point) { return { lon: 0, lat: 0 }; }
+      return { lon: point[0], lat: point[1] };
+    }).toList();
+    if (this.polygonIsClockwise(lonLatsArray)) {
+      points = points.reverse();
+    }
+    poly.geometry.coordinates[0] = points;
+    this.polygonMode.polygonFromLonLats(poly.geometry.coordinates[0]);
+    this.updateSpatialSelection(poly);
+    this.setFlyToSpatialSelection(poly);
     this.flyHome();
   }
 
@@ -320,15 +381,6 @@ export class CesiumAdapter {
         lonLats = lonLats.reverse().toList();
       }
 
-      const camera = this.viewer.camera;
-      const cameraPosition = {
-        heading: camera.heading,
-        pitch: camera.pitch,
-        position: camera.positionWC.clone(),
-        roll: camera.roll,
-        transform: camera.transform.clone(),
-      };
-
       const lonLatsArray = lonLats.map((lonLat) => {
         return [lonLat!.lon, lonLat!.lat];
       }).toJS();
@@ -337,8 +389,7 @@ export class CesiumAdapter {
       if (lonLatsArray.length >= MIN_VERTICES) {
         // the last point in a polygon needs to be the first again to close it
         lonLatsArray.push(lonLatsArray[0]);
-        geo = GeoJSON.parse({ polygon: [lonLatsArray] }, { Polygon: "polygon",
-          extraGlobal: { camera: cameraPosition}});
+        geo = GeoJSON.parse({ polygon: [lonLatsArray] }, { Polygon: "polygon" });
       }
       this.updateSpatialSelection(geo);
     };
