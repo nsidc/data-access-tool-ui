@@ -61,7 +61,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     const firstGranule = this.props.cmrGranules.get(0);
     const disableFilter = firstGranule ? (firstGranule.producer_granule_id === "") : false;
     const tooltip = disableFilter ?
-      "File name filter is unavailable for multi-file datasets" :
+      "File name filter is unavailable for datasets with multi-file granules" :
       "* = match any characters<br /> ? = match one character";
 
     return (
