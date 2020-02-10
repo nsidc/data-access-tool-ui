@@ -147,7 +147,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       return null;
     }
 
-    const filenameFilter = filterAddWildcards(params.cmrGranuleFilter);
+    const filenameFilter = params.cmrGranuleFilter ?
+      filterAddWildcards(params.cmrGranuleFilter) : "";
 
     let boundingBox = "";
     let polygon = "";

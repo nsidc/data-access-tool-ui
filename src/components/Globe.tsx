@@ -17,7 +17,7 @@ interface IGlobeProps {
   collectionSpatialCoverage: BoundingBox | null;
   spatialSelection: IGeoJsonPolygon | null;
   onSpatialSelectionChange: (s: IGeoJsonPolygon | null) => void;
-  setCmrErrorMessage: (msg: string) => void;
+  setErrorMessage: (msg: string) => void;
 }
 
 interface IGlobeState {
@@ -35,7 +35,7 @@ export class Globe extends React.Component<IGlobeProps, IGlobeState> {
       lonLatLabel: "",
     };
     this.cesiumAdapter = new CesiumAdapter(this.updateBoundingBox, this.updateSpatialSelection,
-      this.enableLonLat, this.updateLonLat, this.props.setCmrErrorMessage);
+      this.enableLonLat, this.updateLonLat, this.props.setErrorMessage);
   }
 
   public componentDidMount() {
