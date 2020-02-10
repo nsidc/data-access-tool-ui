@@ -6,8 +6,12 @@ import { SpatialSelectionToolbar } from "../src/components/SpatialSelectionToolb
 describe("Spatial toolbar component", () => {
   test("Renders toolbar", () => {
     const toolbar = shallow(<SpatialSelectionToolbar
+      disableExport={false}
+      disableReset={false}
       onClickBoundingBox={() => jest.fn()}
+      onClickExportPolygon={() => jest.fn()}
       onClickHome={() => jest.fn()}
+      onClickImportPolygon={() => jest.fn()}
       onClickPolygon={() => jest.fn()}
       onClickReset={() => jest.fn()}/>);
 

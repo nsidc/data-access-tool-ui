@@ -626,6 +626,24 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    &:disabled {
+      color: darkgray;
+      cursor: default;
+    }
+  }
+
+  .toolbarButtonDisabled {
+    background: #303336;
+    border-color: #444;
+    box-shadow: none;
+    color: #edffff;
+    cursor: default;
+    fill: #edffff;
+  }
+
+  #importPolygonInput {
+    display: none;
   }
 
   .Resizer {

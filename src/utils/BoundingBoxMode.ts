@@ -16,6 +16,7 @@ export class BoundingBoxMode {
   private ellipsoid: Cesium.Ellipsoid;
   private finishedDrawingCallback: any;
   private renderBoundingBox: any;
+  private labels: any;
   private mouseHandler: any;
   private point1: Cesium.Cartesian3 | null;
   private point2: Cesium.Cartesian3 | null;
@@ -39,8 +40,8 @@ export class BoundingBoxMode {
     CesiumUtils.setCursorCrosshair();
     this.state = BoundingBoxState.startDrawing;
     this.point1 = this.point2 = null;
-    const labels = this.viewer.scene.primitives.add(new Cesium.LabelCollection());
-    this.tooltip = labels.add({
+    this.labels = this.viewer.scene.primitives.add(new Cesium.LabelCollection());
+    this.tooltip = this.labels.add({
       backgroundColor: Cesium.Color.fromAlpha(Cesium.Color.BLACK, 0.4),
       font: "11pt sans-serif",
       horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
@@ -53,7 +54,8 @@ export class BoundingBoxMode {
   }
 
   public reset = () => {
-    this.viewer.scene.primitives.removeAll();
+    this.viewer.scene.primitives.remove(this.labels);
+    this.renderBoundingBox(null, false);
     CesiumUtils.unsetCursorCrosshair();
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
       this.mouseHandler.destroy();

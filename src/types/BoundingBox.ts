@@ -25,4 +25,12 @@ export class BoundingBox {
   public clone() {
     return new BoundingBox(this.west, this.south, this.east, this.north);
   }
+
+  public equals(other: BoundingBox | null) {
+    if (other) {
+      return this.west === other.west && this.south === other.south &&
+        this.east === other.east && this.north === other.north;
+    }
+    return false;
+  }
 }
