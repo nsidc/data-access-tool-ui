@@ -49,7 +49,7 @@ describe("The user profile", () => {
       const environment = setup().environment;
       const oldProps = {environment, orderId: undefined, orderCount: 0};
       const wrapper = mount(
-        <OrderDetails {...oldProps} />
+        <OrderDetails {...oldProps} />,
       );
       const instance = wrapper.instance();
 
