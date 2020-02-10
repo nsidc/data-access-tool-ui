@@ -206,10 +206,17 @@ export class CesiumAdapter {
       if (!point) { return [0, 0]; }
       return [Math.round(point[0] * 1e6) / 1e6, Math.round(point[1] * 1e6) / 1e6];
     });
-    const lonLatsArray = List(points).map((point) => {
-      if (!point) { return { lon: 0, lat: 0 }; }
-      return { lon: point[0], lat: point[1] };
-    }).toList();
+    // Shapefile reader doesn't tell us the coordinate system.
+    // Assume that if the file has coords > 360 then it's not in degrees.
+    const maxValue = points.reduce((maxAccum: number, point) => {
+      maxAccum = Math.max(maxAccum, Math.max(Math.abs(point[0]), Math.abs(point[1])));
+      return maxAccum;
+    }, 0);
+    if (maxValue > 360) {
+      this.setErrorMessage("Error: Polygon does not contain geographic coordinates. \
+          Please choose a file with geographic (longitude/latitude) coordinates.");
+      return;
+    }
     // Note: Maximum browser length is currently 8192. The max length here is
     // based on the total number of characters in the CMR query.
     // We need to catch this here because CMR does not return a useful error.
@@ -218,6 +225,10 @@ export class CesiumAdapter {
           Please choose a file with less than 350 polygon points.");
       return;
     }
+    const lonLatsArray = List(points).map((point) => {
+      if (!point) { return { lon: 0, lat: 0 }; }
+      return { lon: point[0], lat: point[1] };
+    }).toList();
     if (this.polygonIsClockwise(lonLatsArray)) {
       points = points.reverse();
     }
