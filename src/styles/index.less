@@ -166,6 +166,7 @@
 
       &:disabled {
         color: lightgray;
+        border-color: lightgray;
       }
     }
   }
@@ -306,7 +307,7 @@
       line-height: 1em;
     }
 
-    input {
+    #granule-list-input {
       width: 200px;
       font-size: 90%;
       margin-top: 2px;
@@ -321,6 +322,15 @@
 
       &::placeholder {
         font-style: italic;
+      }
+
+      &:disabled {
+        color: lightgray;
+        border-color: lightgray;
+
+        &::placeholder {
+          color: lightgray;
+        }
       }
     }
   }
@@ -435,15 +445,15 @@
       border-radius: 4px;
       background-color: white;
       border-color: chartreuse;
-    }
 
-    input:focus {
-      outline-color: chartreuse;
-    }
+      &:focus {
+        outline-color: chartreuse;
+      }
 
-    input:disabled {
-      background-color: lightgray;
-      border-color: black;
+      &:disabled {
+        background-color: lightgray;
+        border-color: black;
+      }
     }
   }
 

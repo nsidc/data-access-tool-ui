@@ -170,7 +170,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
                 onChange={this.handleOrderParameterChange}
                 orderParameters={this.state.orderParameters}
                 onTemporalReset={this.handleTemporalReset}
-                setCmrErrorMessage={this.setCmrErrorMessage}
+                setErrorMessage={this.setErrorMessage}
               />
             </div>
             <div id="right-side">
@@ -263,7 +263,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.cmrGranuleCount ? this.state.cmrGranuleCount : 0));
   }
 
-  private setCmrErrorMessage = (msg: string) => {
+  private setErrorMessage = (msg: string) => {
     this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
   }
 
@@ -289,7 +289,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         msg = "Error: " + this.createErrorMessage(json.errors[0]);
       });
     }
-    this.setCmrErrorMessage(msg);
+    this.setErrorMessage(msg);
     return Promise.reject(response);
   }
 
@@ -426,7 +426,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+    const orderParameters: OrderParameters = new OrderParameters(orderParams);
 
     console.warn("Order parameters loaded from previous state.");
 

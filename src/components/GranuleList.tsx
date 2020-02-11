@@ -56,9 +56,13 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         {(this.props.cmrGranuleCount !== 1) ? " files " : " file "}
         selected (~{formatBytes(totalSize)})
         {granuleDisplayed}
-        .
       </div>
     );
+    const firstGranule = this.props.cmrGranules.get(0);
+    const disableFilter = firstGranule ? (firstGranule.producer_granule_id === "") : false;
+    const tooltip = disableFilter ?
+      "File name filter is unavailable for datasets with multi-file granules" :
+      "* = match any characters<br /> ? = match one character";
 
     return (
       <div>
@@ -68,18 +72,21 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
             <ReactTooltip id="granuleFilter" className="reactTooltip"
               disable={this.props.cmrGranuleFilter !== ""}
               effect="solid" delayShow={1000}>
-              * = match any characters<br/>? = match one character</ReactTooltip>
-            <input type="text"
+              {tooltip}</ReactTooltip>
+            <input id="granule-list-input" type="text"
+              disabled={disableFilter}
               value={this.props.cmrGranuleFilter}
               placeholder="Search file names"
               onChange={this.granuleFilterChange}>
             </input>
           </div>
-          <div onClick={(e: any) => {
-            this.props.updateGranuleFilter("");
-            window.setTimeout(this.props.fireGranuleFilter, 0);
-            }}>
-            <button className="buttonReset" data-tip="Reset search filter">
+          <div>
+            <button className="buttonReset" data-tip="Reset search filter"
+              disabled={disableFilter}
+              onClick={(e: any) => {
+                this.props.updateGranuleFilter("");
+                window.setTimeout(this.props.fireGranuleFilter, 0);
+              }}>
               <FontAwesomeIcon icon={faUndoAlt} size="lg" />
             </button>
           </div>
@@ -128,7 +135,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         const granuleSize = granule.granule_size ? parseFloat(granule.granule_size).toFixed(1) : "N/A";
         return (
           <tr key={i}>
-            <td>{granule.producer_granule_id}</td>
+            <td>{this.getGranuleID(granule)}</td>
             <td className="size-col">{granuleSize}</td>
             <td>{moment.utc(granule.time_start).format(GranuleList.timeFormat)}</td>
             <td>{moment.utc(granule.time_end).format(GranuleList.timeFormat)}</td>
@@ -156,5 +163,38 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
         </tbody>
       </table>
     );
+  }
+
+  private getGranuleID = (granule: CmrGranule) => {
+    let granuleID = granule.producer_granule_id;
+    if (granuleID) {
+      return granuleID;
+    }
+    let basename = "";
+    const filenames: string[] = [];
+    granule.links.forEach((linkIn) => {
+      if (linkIn) {
+        const link = linkIn.toJS();
+        if (!link.inherited && link.rel && link.href) {
+          const rel = link.rel as string;
+          const h = link.href as string;
+          if (rel.endsWith("metadata#")) {
+            basename = h.substr(h.lastIndexOf("/") + 1);
+            basename = basename.substr(0, basename.lastIndexOf(".xml") + 1);
+          } else if (rel.endsWith("/data#")) {
+            filenames.push(h.substr(h.lastIndexOf("/") + 1));
+          }
+        }
+      }
+    });
+    if (basename) {
+      for (const f of filenames) {
+        if (f.startsWith(basename)) {
+          granuleID = f;
+          break;
+        }
+      }
+    }
+    return granuleID;
   }
 }
