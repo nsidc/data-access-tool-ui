@@ -56,9 +56,7 @@ export function constructAPI(urls: any): IHermesAPI {
       },
     };
 
-    const uid = user.uid;
-    // TODO: Why not inline?
-    body = Object.assign(body, {uid, user});
+    body = Object.assign(body, {uid: user.uid, user});
 
     const url = `${urls.hermesApiUrl}/orders/`;
     return fetch(url, {
