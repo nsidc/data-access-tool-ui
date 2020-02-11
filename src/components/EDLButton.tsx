@@ -2,6 +2,7 @@ import * as jQuery from "jquery";
 import * as React from "react";
 // import * as ReactTooltip from "react-tooltip";
 
+import { EverestUser, ILoggedInUser, isLoggedInUser, isLoggedOutUser } from "../types/User";
 import { IEnvironment } from "../utils/environment";
 import { UserContext } from "../utils/state";
 
@@ -18,21 +19,14 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     this.LogoutButton = this.LogoutButton.bind(this);
   }
 
-  public renderWithUserContext({user, updateUser}: any) {
-    // TODO: Figure out a way to show a loading spinner until we know whether user logged in or not
-    // Consider a second piece of state userLoggedIn that starts as undefined and is set to true or false
-    // depending on result of getUser call.
-    const hermesApiUrl: string = this.props.environment.urls.hermesApiUrl;
-
-    // Unknown login state
-    if (user === undefined) {
+  public renderWithUserContext({user, updateUser}: {user: EverestUser, updateUser: any}) {
+    if (isLoggedInUser(user)) {
       return (
-        <p>{"Loading"}</p>
+        <this.LogoutButton user={user} updateUser={updateUser} />
       );
-    // Logged out
-    } else if (!user) {
+    } else if (isLoggedOutUser(user)) {
       // Change from form to fetch? Here we actually want to redirect the user.
-      const loginUrl = `${hermesApiUrl}/earthdata/auth/`;
+      const loginUrl = `${this.props.environment.urls.hermesApiUrl}/earthdata/auth/`;
       // TODO: Remove earthdata-login-button style?
       return (
         <form method="GET" action={loginUrl}>
@@ -43,15 +37,16 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
           </div>
         </form>
       );
-    // Logged in
-    } else {
-      return (
-        <this.LogoutButton user={user} updateUser={updateUser} />
-      );
     }
+
+    // Unknown login state
+    // TODO: show a loading spinner
+    return (
+      <p>{"Loading"}</p>
+    );
   }
 
-  public LogoutButton(props: {user: any; updateUser: any}) {
+  public LogoutButton(props: {user: ILoggedInUser; updateUser: any}) {
     const logout = () => {
       this.props.environment.hermesAPI.logoutUser()
         .then((s: any) => {

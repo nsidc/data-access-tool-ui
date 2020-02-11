@@ -3,6 +3,7 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+import { isLoggedInUser } from "../types/User";
 import { boundingBoxMatch, CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
@@ -45,7 +46,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public render() {
-    const loggedOut = !this.props.environment.user;
+    const loggedOut = !isLoggedInUser(this.props.environment.user);
     const noGranules = !this.props.cmrGranuleCount;
     const scriptButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
     const orderTooLarge = this.props.cmrGranuleCount !== undefined &&

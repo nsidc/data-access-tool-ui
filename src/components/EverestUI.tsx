@@ -10,6 +10,7 @@ import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { GranuleSorting, IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+import { EverestUser, EverestUserLoggedOut, EverestUserUnknownStatus, HermesAPIUserJSON, isLoggedInUser } from "../types/User";
 import { CMR_COUNT_HEADER,
          cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrGranuleRequest,
          cmrStatusRequest } from "../utils/CMR";
@@ -45,7 +46,7 @@ export interface IEverestState {
   orderSubmissionParameters?: OrderSubmissionParameters;
   stateCanBeFrozen: boolean;
   totalSize: number;
-  user: any;
+  user: EverestUser;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -76,7 +77,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       orderSubmissionParameters: undefined,
       stateCanBeFrozen: false,
       totalSize: 0,
-      user: undefined,
+      user: EverestUserUnknownStatus,
     };
 
     // allow easy testing of CMR errors by creating functions that can be called
@@ -93,18 +94,13 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   public updateUser() {
-    // 1) GET /user/ to ask Hermes who, if anyone, is logged in and what their details are.
-    // The HermesAPI.getUser() function should be used for this... and it will fetch from hermes
     // TODO: Bind this function? Will it have the correct "this"?
     this.props.environment.hermesAPI.getUser()
-      .then((response: any) => {
-        return response.json();
-      })
-      .then((user: any) => {
-        if (user.type === "anonymous") {
-          return this.setState({user: false});
-        } else {
+      .then((user: HermesAPIUserJSON) => {
+        if (isLoggedInUser(user)) {
           return this.setState({user});
+        } else {
+          return this.setState({user: EverestUserLoggedOut});
         }
       });
   }

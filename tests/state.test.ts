@@ -4,6 +4,7 @@ import * as moment from "moment";
 import { CmrGranule } from "../src/types/CmrGranule";
 import { OrderParameters } from "../src/types/OrderParameters";
 import { OrderSubmissionParameters } from "../src/types/OrderSubmissionParameters";
+import { EverestUserUnknownStatus } from "../src/types/User";
 import { updateStateAddGranules, updateStateInitGranules } from "../src/utils/state";
 
 const granuleInput = {
@@ -29,7 +30,7 @@ const initialState = {
   orderSubmissionParameters: undefined,
   stateCanBeFrozen: false,
   totalSize: 0,
-  user: undefined,
+  user: EverestUserUnknownStatus,
 };
 
 const expected = {

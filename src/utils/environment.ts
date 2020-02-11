@@ -1,5 +1,5 @@
 import { IDrupalDataset } from "../types/DrupalDataset";
-import { IUser } from "../types/User";
+import { EverestUser, EverestUserUnknownStatus } from "../types/User";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
 declare var Drupal: any;
@@ -17,7 +17,7 @@ export interface IEnvironment {
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
-  user: IUser;
+  user: EverestUser;
 }
 
 export function getEnvironment(): string {
@@ -77,7 +77,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       hermesAPI: constructAPI(urls),
       inDrupal, // TODO: Can we kill you?
       urls,
-      user: Drupal.settings.data_downloads.user,  // TODO: Use the Earthdata Login module function?
+      user: EverestUserUnknownStatus,
     };
   } else {
     const urls = {
@@ -90,7 +90,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       hermesAPI: constructAPI(urls),
       inDrupal,
       urls,
-      user: {uid: "__everestui-standalone__"},
+      user: EverestUserUnknownStatus,
     };
   }
 }

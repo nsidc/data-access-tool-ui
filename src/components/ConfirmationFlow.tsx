@@ -83,7 +83,9 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
       this.props.environment.user,
       this.props.orderSubmissionParameters!.selectionCriteria,
     )
-    .then((response: any) => {
+    .then((response: Response | null) => {
+      if (response == null) { throw new Error("Got null response from hermesAPI.submitOrder"); }
+
       if (![200, 201].includes(response.status)) {
         throw new Error(`${response.status} received from order system: "${response.statusText}"`);
       }

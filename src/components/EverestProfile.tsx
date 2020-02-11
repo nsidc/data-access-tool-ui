@@ -1,6 +1,7 @@
 import * as moment from "moment";
 import * as React from "react";
 
+import { isLoggedInUser } from "../types/User";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { OrderDetails } from "./OrderDetails";
@@ -41,10 +42,9 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
   }
 
   public render() {
-    const userLoggedOut = !this.props.environment.user;
     const userHasNoOrders = this.state.orderList.length === 0;
 
-    if (userLoggedOut) {
+    if (!isLoggedInUser(this.props.environment.user)) {
       return (
         <div>
           <div id="order-details">{"You must be logged in to view your orders."}</div>
