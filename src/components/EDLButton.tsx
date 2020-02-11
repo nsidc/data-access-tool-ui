@@ -32,7 +32,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     // Logged out
     } else if (!user) {
       // Change from form to fetch? Here we actually want to redirect the user.
-      const loginUrl = `${hermesApiUrl}/api/earthdata/auth/`;
+      const loginUrl = `${hermesApiUrl}/earthdata/auth/`;
       // TODO: Remove earthdata-login-button style?
       return (
         <form method="GET" action={loginUrl}>

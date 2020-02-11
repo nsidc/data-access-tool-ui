@@ -71,17 +71,17 @@ export function constructAPI(urls: any): IHermesAPI {
 
   const logoutUser = () => {
     return fetch(
-      `${urls.hermesApiUrl}/api/user/`,
+      `${urls.hermesApiUrl}/earthdata/deauth/`,
       {
         credentials: "include",
-        method: "DELETE",
+        method: "GET",
       },
     );
   };
 
   const getUser = () => {
     return fetch(
-      `${urls.hermesApiUrl}/api/user/`,
+      `${urls.hermesApiUrl}/user/`,
       {
         credentials: "include",
         method: "GET",
