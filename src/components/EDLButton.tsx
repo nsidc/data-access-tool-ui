@@ -1,4 +1,4 @@
-import $ from "jquery";
+import * as jQuery from "jquery";
 import * as React from "react";
 // import * as ReactTooltip from "react-tooltip";
 
@@ -95,7 +95,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     // registered wouldn't be mounted yet. This code is copied from:
     //   https://cdn.earthdata.nasa.gov/eui/1.1.7/js/eui.js
     event.stopPropagation();
-    $(".button-group--dropdown").slideToggle("fast");
+    jQuery(".button-group--dropdown").slideToggle("fast");
   }
 
   public componentDidMount() {
@@ -103,17 +103,17 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     // all event listeners because the elements that need listeners
     // registered wouldn't be mounted yet. This code is copied from:
     //   https://cdn.earthdata.nasa.gov/eui/1.1.7/js/eui.js
-    $(() => {
-      $(document).click((e: any) => {
+    jQuery(() => {
+      jQuery(document).click((e: any) => {
         const targetIds = [e.target.id, e.target.parentElement.id];
         const undesiredTargetId = "toggle-button-group";
         if (!targetIds.includes(undesiredTargetId)) {
-          $(".button-group--dropdown").hide();
+          jQuery(".button-group--dropdown").hide();
         }
       });
-      $(document).keyup((e: any) => {
+      jQuery(document).keyup((e: any) => {
         if (e.keyCode === 27) {
-          $(".button-group--dropdown").hide();
+          jQuery(".button-group--dropdown").hide();
         }
       });
     });
