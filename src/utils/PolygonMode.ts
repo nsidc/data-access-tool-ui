@@ -31,6 +31,7 @@ export class PolygonMode {
   private updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void;
   private mouseHandler: any;
   private points: List<Point> = List<Point>();
+  private prevPoint: Point;
   private polygon: any;
   private scene: any;
   private state: PolygonState = PolygonState.donePolygon;
@@ -492,6 +493,9 @@ export class PolygonMode {
           case PolygonEvent.lonLatTextChange:
             // nop
             break;
+          case PolygonEvent.escapeKey:
+            // nop
+            break;
         }
         break;
 
@@ -518,6 +522,7 @@ export class PolygonMode {
               break;
             }
             // We clicked on the active point
+            this.prevPoint = this.points.get(this.activePointIndex);
             this.doStateTransition(PolygonState.movePoint);
             this.lonLatEnableCallback(false);
             CesiumUtils.setCursorCrosshair();
@@ -539,6 +544,9 @@ export class PolygonMode {
             this.updateActivePointFromCartesian(cartesian3);
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
+            break;
+          case PolygonEvent.escapeKey:
+            // nop
             break;
         }
         break;
@@ -563,6 +571,11 @@ export class PolygonMode {
             break;
           case PolygonEvent.lonLatTextChange:
             // nop
+            break;
+          case PolygonEvent.escapeKey:
+            this.updateActivePointFromCartesian(this.prevPoint.cartesian);
+            this.stateTransition(PolygonEvent.leftClick, new Cesium.Cartesian2());
+            this.interactionRender();
             break;
         }
         break;

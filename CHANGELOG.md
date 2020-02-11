@@ -1,3 +1,7 @@
+# v1.3.1 (unreleased)
+
+* Press Escape key to cancel the last polygon point
+
 # v1.3.0 (2020-02-10)
 
 * Allow import of GeoJSON or Shapefile polygons, and export of polygons to GeoJSON.
