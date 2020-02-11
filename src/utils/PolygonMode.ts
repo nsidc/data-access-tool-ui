@@ -43,13 +43,13 @@ export class PolygonMode {
     this.updateLonLatLabel = updateLonLatLabel;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
-    this.billboards = new Cesium.BillboardCollection();
   }
 
   public start = () => {
     this.initializeMouseHandler();
     this.initializeBillboards();
     this.initializeTooltip();
+    this.state = PolygonState.drawingPolygon;
   }
 
   public reset = () => {
@@ -111,12 +111,14 @@ export class PolygonMode {
     return CesiumUtils.lonLatToCartesian(lonLat, this.ellipsoid);
   }
 
-  // should only be called when initially rendering a spatial selection that was
-  // saved in localStorage
+  // called for a spatial selection that was saved in localStorage
+  // or if you import a polygon
   public polygonFromLonLats(lonLatsArray: number[][]) {
-    if (this.state !== PolygonState.donePolygon) { return; }
+    this.state = PolygonState.donePolygon;
 
     this.clearAllPoints();
+    this.scene.primitives.removeAll();
+    this.tooltip = null;
     this.initializeBillboards();
 
     const cartesians = lonLatsArray.map((coord: number[]) => {
@@ -139,7 +141,7 @@ export class PolygonMode {
 
   private clearAllPoints = () => {
     this.points = List<Point>();
-    if (this.billboards && this.billboards.length) {
+    if (this.billboards && this.billboards.length && !this.billboards.isDestroyed()) {
       this.billboards.removeAll();
     }
   }
@@ -199,6 +201,7 @@ export class PolygonMode {
     if (geometry !== undefined) {
       const geometryInstances = new Cesium.GeometryInstance({
         geometry,
+        id: "polygon",
       });
       this.polygon = new Cesium.Primitive({
         appearance,
@@ -396,10 +399,19 @@ export class PolygonMode {
     // usually we're dealing with a 2D screen position, but sometimes (eg when
     // called from changeLonLat) it's a 3D `cartesian`
     const screenPosition = screenPositionOrCartesian as Cesium.Cartesian2;
-    const cartesian = screenPositionOrCartesian as Cesium.Cartesian3;
+    const cartesian3 = screenPositionOrCartesian as Cesium.Cartesian3;
     const newCartesian = this.screenPositionToCartesian(screenPosition);
+
     if (event === PolygonEvent.moveMouse && this.tooltip) {
-      if (newCartesian) {
+      let showTooltip = newCartesian !== null;
+      if (this.state === PolygonState.donePolygon || this.state === PolygonState.pointActive) {
+        const pickedFeature = this.scene.pick(screenPosition);
+        if (!(pickedFeature && (pickedFeature.id === "polygon" ||
+          pickedFeature.collection === this.billboards))) {
+          showTooltip = false;
+        }
+      }
+      if (showTooltip) {
         this.tooltip.position = newCartesian;
         this.tooltip.show = true;
       } else {
@@ -505,11 +517,11 @@ export class PolygonMode {
           case PolygonEvent.lonLatTextChange:
             // We used the edit box to change the coordinates.
             // If point already exists, refuse to change the screenPosition.
-            if (this.isDuplicateCartesian(cartesian)) {
+            if (this.isDuplicateCartesian(cartesian3)) {
               this.updateLonLatLabel(this.activePointCartesian());
               break;
             }
-            this.updateActivePointFromCartesian(cartesian);
+            this.updateActivePointFromCartesian(cartesian3);
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;

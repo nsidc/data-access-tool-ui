@@ -9,7 +9,7 @@ interface IGeoJsonLineStringCoords extends Array<IGeoJsonPointCoords> {}
 // first and last points are equivalent
 interface IGeoJsonPolygonCoords extends Array<IGeoJsonLineStringCoords> {}
 
-interface IGeoJsonPolygonGeometry {
+export interface IGeoJsonPolygonGeometry {
   readonly coordinates: IGeoJsonPolygonCoords;
   readonly type: string;
 }
@@ -17,5 +17,6 @@ interface IGeoJsonPolygonGeometry {
 export interface IGeoJsonPolygon {
   readonly geometry: IGeoJsonPolygonGeometry;
   readonly type: string;
+  readonly properties: any;
   [propName: string]: any;
 }

@@ -196,6 +196,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
                 onChange={this.handleOrderParameterChange}
                 orderParameters={this.state.orderParameters}
                 onTemporalReset={this.handleTemporalReset}
+                setErrorMessage={this.setErrorMessage}
               />
             </div>
             <div id="right-side">
@@ -295,6 +296,10 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.state.cmrGranuleCount ? this.state.cmrGranuleCount : 0));
   }
 
+  private setErrorMessage = (msg: string) => {
+    this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
+  }
+
   private createErrorMessage = (errorMsg: string) => {
     let msg = "";
     this.resetPolygon = true;
@@ -310,16 +315,14 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   private onCmrRequestFailure = (response: any) => {
+    // Setting status to an empty string will generate the default error message.
     let msg = "";
     if (response.json) {
       response.json().then((json: any) => {
         msg = "Error: " + this.createErrorMessage(json.errors[0]);
-        this.setState({ cmrStatusChecked: true, cmrStatusMessage: msg, cmrStatusOk: false });
       });
-      return Promise.reject(response);
     }
-    // Setting status to an empty string will generate the default error message.
-    this.setState({ cmrStatusChecked: true, cmrStatusMessage: "", cmrStatusOk: false });
+    this.setErrorMessage(msg);
     return Promise.reject(response);
   }
 
@@ -349,6 +352,15 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     let timeErrorUpperBound = "";
 
     let orderParameters = mergeOrderParameters(this.state.orderParameters, newOrderParameters);
+
+    // If we have a polygon selection, reset the bounding box now to avoid
+    // having to do two separate CMR calls.
+    let boundingBox = orderParameters.boundingBox;
+    if (orderParameters.spatialSelection !== null) {
+      boundingBox = orderParameters.collectionSpatialCoverage ?
+        orderParameters.collectionSpatialCoverage : BoundingBox.global();
+    }
+    orderParameters = mergeOrderParameters(orderParameters, { boundingBox });
 
     if (orderParameters.temporalFilterLowerBound >= orderParameters.temporalFilterUpperBound) {
       timeErrorLowerBound = "Start date is after the end date";
@@ -447,7 +459,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       }
     }
 
-    const orderParameters: OrderParameters = new OrderParameters(...orderParams);
+    const orderParameters: OrderParameters = new OrderParameters(orderParams);
 
     console.warn("Order parameters loaded from previous state.");
 

@@ -9,6 +9,10 @@ deploying the application to QA.
 
 [Node Version Manager (nvm)](https://github.com/creationix/nvm)
 
+To upgrade nvm (needed for install-latest-npm flag):
+
+        $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+
 ## Development as a standalone application (not integrated into a Drupal page)
 
 This is not recommended. For best dev results, see "Development with Drupal
@@ -17,6 +21,10 @@ integration".
 ### Use the version of NodeJS set in the project's .nvmrc file:
 
         $ nvm use
+
+### Upgrade npm to the latest so we can use `npm audit`
+
+        $ nvm install-latest-npm
 
 ### Install dependencies:
 

@@ -5,7 +5,7 @@ module.exports = {
     "<rootDir>/src",
     "<rootDir>/tests"
   ],
-  "setupTestFrameworkScriptFile": "jest-enzyme",
+  "setupFilesAfterEnv": ["jest-enzyme"],
   "testEnvironment": "enzyme",
   "testEnvironmentOptions": {
     "enzymeAdapter": "react16"
