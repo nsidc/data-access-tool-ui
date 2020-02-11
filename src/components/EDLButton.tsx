@@ -64,12 +64,12 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
       });
     };
 
-    const userName = `${props.user.first_name} ${props.user.last_name}`;
+    const fullName = `${props.user.first_name} ${props.user.last_name}`;
 
     return (
       <div className="button-group" id="earthdata-login-button">
         <button className="eui-btn--blue eui-btn--group-main" id="name-logout-button">
-          {userName}
+          {fullName}
         </button>
 
         <button id="toggle-button-group"
