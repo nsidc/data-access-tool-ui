@@ -92,7 +92,8 @@ module.exports = {
               enforce: 'pre',
               options: {
                 configFile: 'tslint.json',
-                emitErrors: true
+                emitErrors: true,
+                fix: true,
               }
             },
             {
