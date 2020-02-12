@@ -10,14 +10,14 @@ import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { GranuleSorting, IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { EverestUser, EverestUserLoggedOut, EverestUserUnknownStatus, HermesAPIUserJSON, isLoggedInUser } from "../types/User";
+import { EverestUser, EverestUserUnknownStatus } from "../types/User";
 import { CMR_COUNT_HEADER,
          cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrGranuleRequest,
          cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
-import { updateStateInitGranules, UserContext } from "../utils/state";
+import { updateStateInitGranules, updateUser, UserContext } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
 import { EDLButton } from "./EDLButton";
@@ -88,18 +88,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     props.environment.exposeFunction("CmrReset", () => {
       this.setState({cmrStatusChecked: false, cmrStatusOk: false}, this.cmrStatusRequestUntilOK);
     });
-
-    // TODO: Kill me
-    this.updateUser = this.updateUser.bind(this);
-  }
-
-  public updateUser() {
-    // TODO: Bind this function? Will it have the correct "this"?
-    this.props.environment.hermesAPI.getUser()
-      .then((hermesUser: HermesAPIUserJSON) => {
-        const user: EverestUser = isLoggedInUser(hermesUser) ? hermesUser : EverestUserLoggedOut;
-        return this.setState({user});
-      });
   }
 
   public CmrReset() {
@@ -123,7 +111,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
     }
 
-    this.updateUser();
+    updateUser(this);
   }
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
@@ -215,9 +203,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       </div>
     );
 
-    // TODO: remove bind? See if it works
     return (
-      <UserContext.Provider value={{user: this.state.user, updateUser: this.updateUser}} >
+      <UserContext.Provider value={{user: this.state.user, updateUser: () => updateUser(this)}} >
         {appJSX}
       </UserContext.Provider>
     );

@@ -4,10 +4,10 @@ import * as React from "react";
 import { IEverestState } from "../components/EverestUI";
 import { CmrGranule, ICmrGranule } from "../types/CmrGranule";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { EverestUser, EverestUserUnknownStatus } from "../types/User";
+import { EverestUser, EverestUserLoggedOut, EverestUserUnknownStatus, HermesAPIUserJSON, isLoggedInUser } from "../types/User";
 
 interface IUserContextProps {
-  updateUser: () => any;
+  updateUser: (thisArg: any) => void;
   user: EverestUser;
 }
 
@@ -15,6 +15,14 @@ export const UserContext = React.createContext<IUserContextProps>({
   updateUser: () => { return; },
   user: EverestUserUnknownStatus,
 });
+
+export const updateUser = (thisArg: any): void => {
+  thisArg.props.environment.hermesAPI.getUser()
+    .then((hermesUser: HermesAPIUserJSON) => {
+      const user: EverestUser = isLoggedInUser(hermesUser) ? hermesUser : EverestUserLoggedOut;
+      return thisArg.setState({user});
+    });
+};
 
 const orderSubmissionParametersFromCmrGranules = (cmrGranules: List<CmrGranule>) => {
   const granules = cmrGranules.map((g) => g!.title) as List<string>;

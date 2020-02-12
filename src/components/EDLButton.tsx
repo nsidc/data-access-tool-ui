@@ -2,7 +2,7 @@ import * as jQuery from "jquery";
 import * as React from "react";
 // import * as ReactTooltip from "react-tooltip";
 
-import { EverestUser, ILoggedInUser, isLoggedInUser, isLoggedOutUser } from "../types/User";
+import { isLoggedInUser, isLoggedOutUser } from "../types/User";
 import { IEnvironment } from "../utils/environment";
 import { UserContext } from "../utils/state";
 
@@ -11,47 +11,47 @@ interface IEDLButtonProps {
 }
 
 export class EDLButton extends React.Component<IEDLButtonProps, {}> {
-  public constructor(props: IEDLButtonProps) {
-    super(props);
-    // TODO: No bind. There _must_ be a better way!
-    // <img src="billy_mays.jpg">
-    this.renderWithUserContext = this.renderWithUserContext.bind(this);
-    this.LogoutButton = this.LogoutButton.bind(this);
-  }
+  public static contextType = UserContext;
 
-  public renderWithUserContext({user, updateUser}: {user: EverestUser, updateUser: any}) {
-    if (isLoggedInUser(user)) {
+  public render() {
+    if (isLoggedInUser(this.context.user)) {
       return (
-        <this.LogoutButton user={user} updateUser={updateUser} />
+      <div className="earthdata-login">
+        <this.LogoutButton />
+      </div>
       );
-    } else if (isLoggedOutUser(user)) {
+    } else if (isLoggedOutUser(this.context.user)) {
       // Change from form to fetch? Here we actually want to redirect the user.
       const loginUrl = `${this.props.environment.urls.hermesApiUrl}/earthdata/auth/`;
       // TODO: Remove earthdata-login-button style?
       return (
-        <form method="GET" action={loginUrl}>
-          <div className="button-group" id="earthdata-login-button">
-            <button type="submit" className="eui-btn--blue eui-btn--group-main">
-              {"Login to Earthdata"}
-            </button>
-          </div>
-        </form>
+        <div className="earthdata-login">
+          <form method="GET" action={loginUrl}>
+            <div className="button-group" id="earthdata-login-button">
+              <button type="submit" className="eui-btn--blue eui-btn--group-main">
+                {"Login to Earthdata"}
+              </button>
+            </div>
+          </form>
+        </div>
       );
     }
 
     // Unknown login state
     // TODO: show a loading spinner
     return (
-      <p>{"Loading"}</p>
+      <div className="earthdata-login">
+        <p>{"Loading"}</p>
+      </div>
     );
   }
 
-  public LogoutButton(props: {user: ILoggedInUser; updateUser: any}) {
+  public LogoutButton = () => {
     const logout = () => {
       this.props.environment.hermesAPI.logoutUser()
         .then((s: any) => {
           if (s.status === 200) {
-            return props.updateUser();
+            return this.context.updateUser();
           } else {
             // TODO: Is this fine? Does prod do better than this?
             throw(Error("something"));
@@ -59,7 +59,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
       });
     };
 
-    const fullName = `${props.user.first_name} ${props.user.last_name}`;
+    const fullName = `${this.context.user.first_name} ${this.context.user.last_name}`;
 
     return (
       <div className="button-group" id="earthdata-login-button">
@@ -113,15 +113,4 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
       });
     });
   }
-
-  public render() {
-    return (
-      <div className="earthdata-login">
-        <UserContext.Consumer>
-          {this.renderWithUserContext}
-        </UserContext.Consumer>
-      </div>
-    );
-  }
-
 }

@@ -1,5 +1,4 @@
 import { IDrupalDataset } from "../types/DrupalDataset";
-import { EverestUser, EverestUserUnknownStatus } from "../types/User";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
 declare var Drupal: any;
@@ -17,7 +16,6 @@ export interface IEnvironment {
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
-  user: EverestUser;
 }
 
 export function getEnvironment(): string {
@@ -77,7 +75,6 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       hermesAPI: constructAPI(urls),
       inDrupal, // TODO: Can we kill you?
       urls,
-      user: EverestUserUnknownStatus,
     };
   } else {
     const urls = {
@@ -90,7 +87,6 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       hermesAPI: constructAPI(urls),
       inDrupal,
       urls,
-      user: EverestUserUnknownStatus,
     };
   }
 }
