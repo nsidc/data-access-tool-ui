@@ -96,12 +96,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   public updateUser() {
     // TODO: Bind this function? Will it have the correct "this"?
     this.props.environment.hermesAPI.getUser()
-      .then((user: HermesAPIUserJSON) => {
-        if (isLoggedInUser(user)) {
-          return this.setState({user});
-        } else {
-          return this.setState({user: EverestUserLoggedOut});
-        }
+      .then((hermesUser: HermesAPIUserJSON) => {
+        const user: EverestUser = isLoggedInUser(hermesUser) ? hermesUser : EverestUserLoggedOut;
+        return this.setState({user});
       });
   }
 
