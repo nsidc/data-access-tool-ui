@@ -51,7 +51,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
       this.props.environment.hermesAPI.logoutUser()
         .then((s: any) => {
           if (s.status === 200) {
-            return this.context.updateUser();
+            return this.context.updateUser(this);
           } else {
             throw(Error("Error communicating with hermes-api when attempting to logout"));
           }
