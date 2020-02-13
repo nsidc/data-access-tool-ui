@@ -70,7 +70,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       profileUrl: "/order-history",
     };
     return {
-      drupalDataset: Drupal.settings.data_downloads.dataset,
+      drupalDataset: Drupal.settings.data_downloads?.dataset,
       exposeFunction,
       hermesAPI: constructAPI(urls),
       inDrupal,
