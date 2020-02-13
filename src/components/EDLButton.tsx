@@ -106,7 +106,8 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
         }
       });
       jQuery(document).keyup((e: any) => {
-        if (e.keyCode === 27) {
+        const escapeCode = 27;
+        if (e.keyCode === escapeCode) {
           jQuery(".button-group--dropdown").hide();
         }
       });
