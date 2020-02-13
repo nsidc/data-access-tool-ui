@@ -21,8 +21,6 @@ interface IEverestProfileState {
 }
 
 export class EverestProfile extends React.Component<IEverestProps, IEverestProfileState> {
-  // public static contextType = UserContext;
-
   public constructor(props: any) {
     super(props);
 

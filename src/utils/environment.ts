@@ -73,7 +73,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       drupalDataset: Drupal.settings.data_downloads.dataset,
       exposeFunction,
       hermesAPI: constructAPI(urls),
-      inDrupal, // TODO: Can we kill you?
+      inDrupal,
       urls,
     };
   } else {

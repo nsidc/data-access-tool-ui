@@ -53,8 +53,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
           if (s.status === 200) {
             return this.context.updateUser();
           } else {
-            // TODO: Is this fine? Does prod do better than this?
-            throw(Error("something"));
+            throw(Error("Error communicating with hermes-api when attempting to logout"));
           }
       });
     };
