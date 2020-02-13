@@ -73,11 +73,11 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
           <i className="eui-icon eui-fa-sort-desc" />
         </button>
 
-        <button onClick={logout} className="eui-btn--blue eui-btn--group-primary">
+        <button id="logout-button" onClick={logout} className="eui-btn--blue eui-btn--group-primary">
           {"Logout"}
         </button>
 
-        <ul className="button-group--dropdown" style={{zIndex: 1}}>
+        <ul className="button-group--dropdown" style={{zIndex: 1002}}>
           <li><a href={this.props.environment.urls.profileUrl}>Orders</a></li>
         </ul>
       </div>

@@ -71,7 +71,7 @@
   }
 
   #collection-list .dropdown {
-    margin: 0.5em 0;
+    margin: 0.5em 0 70px;
     width: 100%;
   }
 
@@ -704,6 +704,26 @@
 
   .ReactModal__Overlay {
     z-index: 11;
+  }
+
+  .earthdata-login {
+    position: relative;
+    bottom: 64px;
+    right: 217px;
+    float: right;
+
+    .button--group--dropdown {
+      z-index: 1002;
+    }
+
+    button {
+      z-index: 1002;
+
+      &#logout-button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
   }
 }
 
