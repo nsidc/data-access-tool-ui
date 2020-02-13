@@ -5,6 +5,7 @@ import * as React from "react";
 import { isLoggedInUser, isLoggedOutUser } from "../types/User";
 import { IEnvironment } from "../utils/environment";
 import { UserContext } from "../utils/state";
+import { LoadingIcon } from "./LoadingIcon";
 
 interface IEDLButtonProps {
   environment: IEnvironment;
@@ -14,34 +15,38 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
   public static contextType = UserContext;
 
   public render() {
+    let button;
+
     if (isLoggedInUser(this.context.user)) {
-      return (
-      <div className="earthdata-login">
+      button = (
         <this.LogoutButton />
-      </div>
       );
     } else if (isLoggedOutUser(this.context.user)) {
       // Change from form to fetch? Here we actually want to redirect the user.
       const loginUrl = `${this.props.environment.urls.hermesApiUrl}/earthdata/auth/`;
       // TODO: Remove earthdata-login-button style?
-      return (
-        <div className="earthdata-login">
-          <form method="GET" action={loginUrl}>
-            <div className="button-group" id="earthdata-login-button">
-              <button type="submit" className="eui-btn--blue eui-btn--group-main">
-                {"Login to Earthdata"}
-              </button>
-            </div>
-          </form>
-        </div>
+      button = (
+        <form method="GET" action={loginUrl}>
+          <div className="button-group" id="earthdata-login-button">
+            <button type="submit" className="eui-btn--blue eui-btn--group-main">
+              {"Login to Earthdata"}
+            </button>
+          </div>
+        </form>
+      );
+    } else {
+      // Unknown login state
+      button = (
+        <button className="eui-btn--blue eui-btn--group-main" disabled={true}>
+          {"Loading... "}
+          <LoadingIcon size="sm" className="loading-spinner-inline"/>
+        </button>
       );
     }
 
-    // Unknown login state
-    // TODO: show a loading spinner
     return (
       <div className="earthdata-login">
-        <p>{"Loading"}</p>
+        {button}
       </div>
     );
   }
