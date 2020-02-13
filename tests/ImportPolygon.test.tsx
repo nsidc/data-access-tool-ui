@@ -34,6 +34,10 @@ describe("GeoJSON files", () => {
   let file = new File([polygon], "filename.json", { type: "application/json" });
   doTestPolygon("simple polygon", file, expectedGeoJSON);
 
+  polygon = '{"coordinates":[[[100,0],[101,0],[101,1],[100,1],[100,0]]],"type":"Polygon"}';
+  file = new File([polygon], "filename.geojson", { type: "" });
+  doTestPolygon("simple polygon", file, expectedGeoJSON);
+
   polygon = '{"coordinates":[[[100,0],[101,0],[101,1],[100,1],[100,0]],' +
     '[[100.25,0.25],[100.25,0.75],[100.75,0.75],[100.75,0.25],[100.25,0.25]]],"type":"Polygon"}';
   file = new File([polygon], "filename.json", { type: "application/json" });
