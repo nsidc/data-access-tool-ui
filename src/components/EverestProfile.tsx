@@ -68,7 +68,7 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
       );
     } else {
       ordersView = (
-        <div>
+        <div id="order-list-wrapper">
           <OrderList
             environment={this.props.environment}
             initialLoadComplete={this.state.initialLoadComplete}
@@ -83,10 +83,14 @@ export class EverestProfile extends React.Component<IEverestProps, IEverestProfi
       );
     }
 
+    const className = this.props.environment.inDrupal ? "in-drupal" : "standalone";
+
     return (
       <UserContext.Provider value={{user: this.state.user, updateUser: () => updateUser(this)}} >
-        <EDLButton environment={this.props.environment} />
-        {ordersView}
+        <div id="everest-profile-container" className={className}>
+          <EDLButton environment={this.props.environment} />
+          {ordersView}
+        </div>
       </UserContext.Provider>
     );
   }

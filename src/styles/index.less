@@ -458,6 +458,30 @@
   }
 
   &-profile {
+    #everest-profile-container {
+      align-content: baseline;
+      align-items: baseline;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      position: relative;
+
+      &.in-drupal {
+        bottom: 64px;
+      }
+    }
+
+    .earthdata-login {
+      align-self: end;
+      order: 0;
+      margin-bottom: 22px;
+    }
+
+    #order-list-wrapper {
+      order: 1;
+      width: 100%;
+    }
+
     #order-list {
       max-height: 400px;
       overflow-y: scroll;
@@ -532,6 +556,7 @@
       overflow-wrap: break-word;
       word-break: break-all;
       min-height: 500px;
+      width: 100%;
     }
   }
 
@@ -739,7 +764,10 @@
     float: right;
     position: relative;
 
-    button,
+    button {
+      z-index: 1002;
+    }
+
     ul.button-group--dropdown {
       z-index: 1002;
     }
