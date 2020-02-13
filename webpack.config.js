@@ -139,6 +139,7 @@ module.exports = {
           configFile: ".stylelintrc",
           context: "src/styles",
           files: "**/*.less",
+          fix: true,
         })
     ]
 };
