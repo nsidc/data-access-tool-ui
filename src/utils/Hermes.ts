@@ -6,7 +6,7 @@ import { EverestUser, HermesAPIUserJSON, ILoggedInUser, isLoggedInUser } from ".
 export interface IHermesAPI {
   getOrder: (orderId: string) => any;
   getUser: () => Promise<HermesAPIUserJSON>;
-  getUserOrders: (user: ILoggedInUser) => any;  // TODO: We probably don't need to pass user anymore here
+  getUserOrders: (user: ILoggedInUser) => any;
   logoutUser: () => Promise<Response>;
   openNotificationConnection: (user: EverestUser, callback: any) => void;
   submitOrder: (user: EverestUser,
