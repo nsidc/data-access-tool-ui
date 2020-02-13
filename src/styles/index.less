@@ -535,6 +535,34 @@
     }
   }
 
+  &,
+  &-profile {
+    .sortColumn {
+      .sort-icon-stack {
+        font-size: 1.5em;
+        padding-top: -0.25em;
+        padding-bottom: -0.25em;
+        height: 1em;
+        width: 1em;
+        margin-left: 0.25em;
+        vertical-align: middle;
+        margin-bottom: 2px;
+      }
+
+      .sort-icon {
+        opacity: 0.25;
+      }
+
+      .sort-active {
+        opacity: 1;
+      }
+
+      &:hover .sort-icon {
+        opacity: 1;
+      }
+    }
+  }
+
   .cursor-crosshair {
     cursor: crosshair;
   }
@@ -726,28 +754,4 @@
     }
   }
 }
-
-.sortColumn {
-  .sort-icon-stack {
-    font-size: 1.5em;
-    padding-top: -0.25em;
-    padding-bottom: -0.25em;
-    height: 1em;
-    width: 1em;
-    margin-left: 0.25em;
-    vertical-align: middle;
-    margin-bottom: 2px;
-  }
-
-  .sort-icon {
-    opacity: 0.25;
-  }
-
-  .sort-active {
-    opacity: 1;
-  }
-
-  &:hover .sort-icon {
-    opacity: 1;
-  }
 }
