@@ -135,7 +135,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   public render() {
     let collectionDropdown = null;
+    let className = "in-drupal";
     if (!this.props.environment.inDrupal) {
+      className = "standalone";
       collectionDropdown = (
         <CollectionDropdown
           onCmrRequestFailure={this.onCmrRequestFailure}
@@ -147,7 +149,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     let columnContainer: any;
 
     const appJSX =  (
-      <div id="everest-container">
+      <div id="everest-container" className={className}>
         <ReactTooltip effect="solid" delayShow={500} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}

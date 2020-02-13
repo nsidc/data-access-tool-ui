@@ -735,12 +735,11 @@
   }
 
   .earthdata-login {
-    position: relative;
     bottom: 64px;
-    right: 217px;
     float: right;
+    position: relative;
 
-    .button--group--dropdown {
+    ul.button--group--dropdown {
       z-index: 1002;
     }
 
@@ -753,5 +752,10 @@
       }
     }
   }
-}
+
+  .in-drupal {
+    .earthdata-login {
+      right: 217px;
+    }
+  }
 }
