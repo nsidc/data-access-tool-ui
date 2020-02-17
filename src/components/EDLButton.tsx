@@ -7,7 +7,7 @@ import { IEnvironment } from "../utils/environment";
 import { UserContext } from "../utils/state";
 import { LoadingIcon } from "./LoadingIcon";
 
-import "../styles/eui_buttons.css";
+import "../styles/eui_buttons.less";
 
 interface IEDLButtonProps {
   environment: IEnvironment;
