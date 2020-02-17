@@ -1,6 +1,12 @@
-# v1.4.1 (unreleased)
+# v1.4.2 (unreleased)
 
 * Press Escape key to cancel the last polygon point
+
+# v1.4.1 (2020-02-17)
+
+* regenerate `package-lock.json` from scratch
+* fix type issues in test files (issues were not raised with the previous
+  `package-lock.json`)
 
 # v1.4.0 (2020-02-17)
 
