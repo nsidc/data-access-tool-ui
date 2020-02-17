@@ -5,6 +5,7 @@ import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { UserContext } from "../utils/state";
 import { LoadingIcon } from "./LoadingIcon";
 import { OrderErrorContent, OrderSuccessContent } from "./ModalContent/OrderSubmitResponse";
 import { SmallOrderConfirmation } from "./ModalContent/SmallOrderConfirmation";
@@ -25,6 +26,8 @@ interface IConfirmationFlowState {
 }
 
 export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IConfirmationFlowState> {
+  public static contextType = UserContext;
+
   public constructor(props: IConfirmationFlowProps) {
     super(props);
 
@@ -80,10 +83,12 @@ export class ConfirmationFlow extends React.Component<IConfirmationFlowProps, IC
 
   private submitOrder = () => {
     return this.props.environment.hermesAPI.submitOrder(
-      this.props.environment.user,
+      this.context.user,
       this.props.orderSubmissionParameters!.selectionCriteria,
     )
-    .then((response: any) => {
+    .then((response: Response | null) => {
+      if (response == null) { throw new Error("Got null response from hermesAPI.submitOrder"); }
+
       if (![200, 201].includes(response.status)) {
         throw new Error(`${response.status} received from order system: "${response.statusText}"`);
       }

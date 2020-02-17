@@ -1,11 +1,11 @@
-FROM node:8.11
+FROM node:13.8.0
 WORKDIR /app
 
 COPY package* ./
 RUN npm install
 
 COPY scripts ./scripts
-COPY webpack.config.js ts*.json ./
+COPY .stylelintrc webpack.config.js ts*.json ./
 COPY src ./src
 
 CMD ["npm", "start"]

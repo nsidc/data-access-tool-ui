@@ -1,5 +1,4 @@
 import { IDrupalDataset } from "../types/DrupalDataset";
-import { IUser } from "../types/User";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
 declare var Drupal: any;
@@ -17,7 +16,6 @@ export interface IEnvironment {
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
-  user: IUser;
 }
 
 export function getEnvironment(): string {
@@ -32,13 +30,13 @@ function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
     const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     return {
-      hermesApiUrl: `/order-proxy`,
+      hermesApiUrl: `https://dev.hermes2.${devPostfix}/api`,
       orderNotificationHost: `wss://dev.hermes2.${devPostfix}`,
       orderNotificationPath: "/notification/",
     };
   } else {
     return {
-      hermesApiUrl: `/order-proxy`,
+      hermesApiUrl: "/apps/orders/api",
       orderNotificationHost: `wss://${window.location.hostname}`,
       orderNotificationPath: "/apps/orders/notification/",
     };
@@ -72,17 +70,15 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       profileUrl: "/order-history",
     };
     return {
-      drupalDataset: Drupal.settings.data_downloads.dataset,
+      drupalDataset: Drupal.settings.data_downloads?.dataset,
       exposeFunction,
       hermesAPI: constructAPI(urls),
       inDrupal,
       urls,
-      user: Drupal.settings.data_downloads.user,  // TODO: Use the Earthdata Login module function?
     };
   } else {
-    const environmentDependentURLs = getEnvironmentDependentURLs();
     const urls = {
-      ...environmentDependentURLs,
+      ...getEnvironmentDependentURLs(),
       profileUrl: "/profile.html",
     };
     return {
@@ -91,7 +87,6 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       hermesAPI: constructAPI(urls),
       inDrupal,
       urls,
-      user: {uid: "__everestui-standalone__"},
     };
   }
 }

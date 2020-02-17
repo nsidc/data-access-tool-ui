@@ -1,6 +1,16 @@
-# v1.3.1 (unreleased)
+# v1.4.1 (unreleased)
 
 * Press Escape key to cancel the last polygon point
+
+# v1.4.0 (2020-02-17)
+
+* Upgrade Node (from v8.11.4 to v13.8.0)
+* Add Earthdata Login button and functionality, to both landing page and order
+  history views; no longer need the Earthdata Drupal module
+* Add styling for Earthdata UI buttons, taken from Earthdata Drupal module
+* Stop using the uid `__everestui-standalone__` in standalone mode; standalone
+  mode can now login to Earthdata via Hermes
+* Resolve a console warning originating from `CollectionDropdown.tsx`
 
 # v1.3.0 (2020-02-10)
 

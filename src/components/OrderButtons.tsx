@@ -3,9 +3,11 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+import { isLoggedInUser } from "../types/User";
 import { boundingBoxMatch, CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { UserContext } from "../utils/state";
 import { ConfirmationFlow } from "./ConfirmationFlow";
 import { EarthdataFlow } from "./EarthdataFlow";
 import { ScriptButton } from "./ScriptButton";
@@ -25,6 +27,8 @@ interface IOrderButtonsState {
 }
 
 export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButtonsState> {
+  public static contextType = UserContext;
+
   public constructor(props: IOrderButtonsProps) {
     super(props);
     this.state = {
@@ -45,7 +49,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public render() {
-    const loggedOut = !this.props.environment.user;
+    const loggedOut = !isLoggedInUser(this.context.user);
     const noGranules = !this.props.cmrGranuleCount;
     const scriptButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
     const orderTooLarge = this.props.cmrGranuleCount !== undefined &&

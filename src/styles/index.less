@@ -71,7 +71,7 @@
   }
 
   #collection-list .dropdown {
-    margin: 0.5em 0;
+    margin: 0.5em 0 70px;
     width: 100%;
   }
 
@@ -458,6 +458,30 @@
   }
 
   &-profile {
+    #everest-profile-container {
+      align-content: baseline;
+      align-items: baseline;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      position: relative;
+
+      &.in-drupal {
+        bottom: 64px;
+      }
+    }
+
+    .earthdata-login {
+      align-self: end;
+      order: 0;
+      margin-bottom: 22px;
+    }
+
+    #order-list-wrapper {
+      order: 1;
+      width: 100%;
+    }
+
     #order-list {
       max-height: 400px;
       overflow-y: scroll;
@@ -532,6 +556,35 @@
       overflow-wrap: break-word;
       word-break: break-all;
       min-height: 500px;
+      width: 100%;
+    }
+  }
+
+  &,
+  &-profile {
+    .sortColumn {
+      .sort-icon-stack {
+        font-size: 1.5em;
+        padding-top: -0.25em;
+        padding-bottom: -0.25em;
+        height: 1em;
+        width: 1em;
+        margin-left: 0.25em;
+        vertical-align: middle;
+        margin-bottom: 2px;
+      }
+
+      .sort-icon {
+        opacity: 0.25;
+      }
+
+      .sort-active {
+        opacity: 1;
+      }
+
+      &:hover .sort-icon {
+        opacity: 1;
+      }
     }
   }
 
@@ -705,29 +758,29 @@
   .ReactModal__Overlay {
     z-index: 11;
   }
-}
 
-.sortColumn {
-  .sort-icon-stack {
-    font-size: 1.5em;
-    padding-top: -0.25em;
-    padding-bottom: -0.25em;
-    height: 1em;
-    width: 1em;
-    margin-left: 0.25em;
-    vertical-align: middle;
-    margin-bottom: 2px;
+  .earthdata-login {
+    bottom: 64px;
+    float: right;
+    position: relative;
+
+    button {
+      z-index: 1002;
+    }
+
+    ul.button-group--dropdown {
+      z-index: 1002;
+    }
+
+    #logout-button {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
   }
 
-  .sort-icon {
-    opacity: 0.25;
-  }
-
-  .sort-active {
-    opacity: 1;
-  }
-
-  &:hover .sort-icon {
-    opacity: 1;
+  .in-drupal {
+    .earthdata-login {
+      right: 217px;
+    }
   }
 }

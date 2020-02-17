@@ -11,11 +11,6 @@ interface ISubmitButtonProps {
 }
 
 export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
-  public constructor(props: ISubmitButtonProps) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-  }
-
   public shouldComponentUpdate(nextProps: ISubmitButtonProps) {
     return hasChanged(this.props, nextProps, ["buttonText", "tooltip", "disabled"]);
   }
@@ -35,7 +30,7 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
     );
   }
 
-  public handleClick() {
+  public handleClick = () => {
     this.props.onSubmitOrder();
   }
 }
