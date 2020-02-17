@@ -1,3 +1,9 @@
+# v1.4.1 (2020-02-17)
+
+* regenerate `package-lock.json` from scratch
+* fix type issues in test files (issues were not raised with the previous
+  `package-lock.json`)
+
 # v1.4.0 (2020-02-17)
 
 * Upgrade Node (from v8.11.4 to v13.8.0)
