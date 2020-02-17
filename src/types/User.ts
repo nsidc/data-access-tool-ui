@@ -20,6 +20,7 @@ export const EverestUserUnknownStatus = null;
 export const EverestUserLoggedOut = false;
 export type EverestUser = ILoggedInUser | false | null;
 
+// https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
 export function isLoggedInUser(object: any): object is ILoggedInUser {
   return Boolean(object) &&
     ("first_name" in object) &&
