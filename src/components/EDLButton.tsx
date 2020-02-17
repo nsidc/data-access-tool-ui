@@ -1,6 +1,5 @@
 import * as jQuery from "jquery";
 import * as React from "react";
-// import * as ReactTooltip from "react-tooltip";
 
 import { isLoggedInUser, isLoggedOutUser } from "../types/User";
 import { IEnvironment } from "../utils/environment";
