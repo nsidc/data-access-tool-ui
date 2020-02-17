@@ -10,15 +10,17 @@ import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { GranuleSorting, IOrderParameters, OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
+import { EverestUser, EverestUserUnknownStatus } from "../types/User";
 import { CMR_COUNT_HEADER,
          cmrBoxArrToSpatialSelection, cmrCollectionRequest, cmrGranuleRequest,
          cmrStatusRequest } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
-import { updateStateInitGranules } from "../utils/state";
+import { updateStateInitGranules, updateUser, UserContext } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
 import { CollectionDropdown } from "./CollectionDropdown";
+import { EDLButton } from "./EDLButton";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
 import { OrderParameterInputs } from "./OrderParameterInputs";
@@ -44,6 +46,7 @@ export interface IEverestState {
   orderSubmissionParameters?: OrderSubmissionParameters;
   stateCanBeFrozen: boolean;
   totalSize: number;
+  user: EverestUser;
 }
 
 export class EverestUI extends React.Component<IEverestProps, IEverestState> {
@@ -74,6 +77,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       orderSubmissionParameters: undefined,
       stateCanBeFrozen: false,
       totalSize: 0,
+      user: EverestUserUnknownStatus,
     };
 
     // allow easy testing of CMR errors by creating functions that can be called
@@ -103,11 +107,11 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     if (this.state.loadedParamsFromLocalStorage) {
       this.cmrGranuleRequest();
       this.enableStateFreezing();
-
     } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
       this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
-
     }
+
+    updateUser(this);
   }
 
   public shouldComponentUpdate(nextProps: IEverestProps, nextState: IEverestState) {
@@ -123,6 +127,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       "orderParameters",
       "orderSubmissionParameters",
       "totalSize",
+      "user",
     ]);
 
     return propsChanged || stateChanged;
@@ -130,7 +135,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
   public render() {
     let collectionDropdown = null;
+    let className = "in-drupal";
     if (!this.props.environment.inDrupal) {
+      className = "standalone";
       collectionDropdown = (
         <CollectionDropdown
           onCmrRequestFailure={this.onCmrRequestFailure}
@@ -141,8 +148,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     let columnContainer: any;
 
-    return (
-      <div id="everest-container">
+    const appJSX =  (
+      <div id="everest-container" className={className}>
         <ReactTooltip effect="solid" delayShow={500} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
@@ -153,6 +160,8 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
         <div id="collection-list">
           {collectionDropdown}
         </div>
+        <EDLButton
+          environment={this.props.environment} />
         <div id="columns" ref={(n) => columnContainer = n}>
           <SplitPane split="vertical" minSize={300} maxSize={-600}
             defaultSize={this.getLocalStorageUIByKey("splitPosition", "50%")}
@@ -194,6 +203,12 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           </SplitPane>
         </div>
       </div>
+    );
+
+    return (
+      <UserContext.Provider value={{user: this.state.user, updateUser: () => updateUser(this)}} >
+        {appJSX}
+      </UserContext.Provider>
     );
   }
 

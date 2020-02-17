@@ -3,7 +3,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:13.8.0
     working_directory: ~/everest-ui
     steps:
       - checkout
