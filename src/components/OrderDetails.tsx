@@ -7,13 +7,13 @@ import { UserContext } from "../utils/state";
 import { LoadingIcon } from "./LoadingIcon";
 import { getOrderStatus } from "./OrderListItem";
 
-interface IOrderDetailsProps {
+export interface IOrderDetailsProps {
   environment: IEnvironment;
   initialLoadComplete?: boolean;
   orderId?: string;
 }
 
-interface IOrderDetailsState {
+export interface IOrderDetailsState {
   loading: boolean;
   order?: any;
 }
