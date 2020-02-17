@@ -82,6 +82,7 @@
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.4.1",
+    "npm": "^6.13.7",
     "react-split-pane": "^0.1.87",
     "react-tooltip": "^3.9.0",
     "shapefile": "^0.6.6",
