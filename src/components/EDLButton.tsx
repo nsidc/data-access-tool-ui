@@ -25,11 +25,10 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     } else if (isLoggedOutUser(this.context.user)) {
       // Change from form to fetch? Here we actually want to redirect the user.
       const loginUrl = `${this.props.environment.urls.hermesApiUrl}/earthdata/auth/`;
-      // TODO: Remove earthdata-login-button style?
       button = (
         <form method="GET" action={loginUrl}>
-          <div className="button-group" id="earthdata-login-button">
-            <button type="submit" className="eui-btn--blue eui-btn--group-main">
+          <div className="button-group">
+            <button type="submit" className="eui-btn--blue">
               {"Login to Earthdata"}
             </button>
           </div>
@@ -38,7 +37,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     } else {
       // Unknown login state
       button = (
-        <button className="eui-btn--blue eui-btn--group-main" disabled={true}>
+        <button className="eui-btn--blue" disabled={true}>
           {"Loading... "}
           <LoadingIcon size="sm" className="loading-spinner-inline"/>
         </button>
@@ -67,7 +66,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
     const fullName = `${this.context.user.first_name} ${this.context.user.last_name}`;
 
     return (
-      <div className="button-group" id="earthdata-login-button">
+      <div className="button-group">
         <button className="eui-btn--blue eui-btn--group-main" id="name-logout-button">
           {fullName}
         </button>
