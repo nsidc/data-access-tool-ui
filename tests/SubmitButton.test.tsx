@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { SubmitButton } from "../src/components/SubmitButton";
 
-const setup = () => {
+const setup = (setupProps = {}) => {
   const props = {
     buttonText: "Order List of Links",
     tooltip: <span></span>,
@@ -30,6 +30,7 @@ const setup = () => {
     },
     temporalLowerBound: moment(),
     temporalUpperBound: moment(),
+    ...setupProps,
   };
 
   return {
@@ -46,10 +47,9 @@ describe("Submit button component", () => {
 
 describe("Click submit", () => {
   test("Responds to click", () => {
-    const mockClick = jest.fn();
-    SubmitButton.prototype.handleClick = mockClick;
-    const button = setup().button.find("button");
+    const onSubmitOrder = jest.fn();
+    const button = setup({onSubmitOrder}).button.find("button");
     button.simulate("click");
-    expect(mockClick).toHaveBeenCalled();
+    expect(onSubmitOrder).toHaveBeenCalled();
   });
 });

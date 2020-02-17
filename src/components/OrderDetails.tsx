@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { UserContext } from "../utils/state";
 import { LoadingIcon } from "./LoadingIcon";
 import { getOrderStatus } from "./OrderListItem";
 
@@ -18,6 +19,7 @@ interface IOrderDetailsState {
 }
 
 export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDetailsState> {
+  public static contextType = UserContext;
   private static timeFormat = "l LT";
 
   public constructor(props: any) {
@@ -82,7 +84,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
   }
 
   public componentDidMount() {
-    this.props.environment.hermesAPI.openNotificationConnection(this.props.environment.user,
+    this.props.environment.hermesAPI.openNotificationConnection(this.context.user,
                                                                 this.handleNotification);
   }
 

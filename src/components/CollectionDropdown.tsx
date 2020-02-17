@@ -61,8 +61,6 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   public render() {
-    let selectedCollectionAvailable = false;
-
     const collections = this.state.whitelistOnly ?
                         this.state.collections.filter((c: any) => WHITELIST.includes(c.short_name)) :
                         this.state.collections;
@@ -75,14 +73,8 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
       const value = JSON.stringify(c.toJS());
 
-      const selected = this.state.selectedCollection === value;
-
-      if (selected) {
-        selectedCollectionAvailable = true;
-      }
-
       return (
-        <option key={key} value={value} selected={selected}>{label}</option>
+        <option key={key} value={value}>{label}</option>
       );
     });
 
@@ -112,10 +104,8 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
           </label>
         </div>
 
-        <select className="dropdown" name="collections" onChange={this.handleChange}>
-          <option value=""
-                  disabled={true}
-                  selected={(this.state.selectedCollection === null) || (selectedCollectionAvailable === false)}>
+        <select className="dropdown" name="collections" onChange={this.handleChange} defaultValue={""}>
+          <option value="" disabled={true}>
             {"Select a collection."}
           </option>
           {collectionOptions}
