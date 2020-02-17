@@ -74,7 +74,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
         </button>
 
         <button id="toggle-button-group"
-                className="eui-btn--blue eui-btn--group-secondary toggle-button-group"
+                className="eui-btn--blue eui-btn--group-secondary"
                 onClick={this.toggleDropdown}>
           <i className="eui-icon eui-fa-sort-desc" />
         </button>
