@@ -1,6 +1,7 @@
 # v1.4.2 (unreleased)
 
-* Press Escape key to cancel the last polygon point
+* Press Escape key to delete the current point while creating a polygon,
+  or cancel the move of an existing polygon point.
 
 # v1.4.1 (2020-02-17)
 # unreleased
