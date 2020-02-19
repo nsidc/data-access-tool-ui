@@ -1,11 +1,7 @@
-# v1.4.2 (unreleased)
+# v1.5.0 (unreleased)
 
 * Press Escape key to delete the current point while creating a polygon,
   or cancel the move of an existing polygon point.
-
-# v1.4.1 (2020-02-17)
-# unreleased
-
 * pin `react-tooltip` to 3.11.2 (in everest-ui v1.4.1, 3.11.6 was installed from
   a constraint of `^3.9.0`; every version since 3.11.3 doesn't work with our
   app)

@@ -461,6 +461,10 @@ export class PolygonMode {
               Cesium.destroyObject(this.polygon);
               this.polygon = null;
             }
+            if (this.points.size === 0) {
+              this.reset();
+              break;
+            }
             this.doStateTransition(PolygonState.drawingPolygon);
             this.scene.requestRender();
             break;
