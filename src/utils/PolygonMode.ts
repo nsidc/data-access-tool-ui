@@ -60,6 +60,10 @@ export class PolygonMode {
     this.clearAllPoints();
     this.deactivateActivePoint();
     this.scene.primitives.removeAll();
+    if (this.polygon) {
+      Cesium.destroyObject(this.polygon);
+      this.polygon = null;
+    }
     this.tooltip = null;
     this.lonLatEnableCallback(false);
     this.updateLonLatLabel(null);
@@ -454,19 +458,22 @@ export class PolygonMode {
             // nop
             break;
           case PolygonEvent.escapeKey:
-            this.removeActivePoint();
-            this.activateLastPoint();
-            if (this.points.size < MIN_VERTICES && this.polygon) {
-              this.scene.primitives.remove(this.polygon);
-              Cesium.destroyObject(this.polygon);
-              this.polygon = null;
-            }
-            if (this.points.size === 0) {
+            if (this.activePointIndex > 0) {
+              this.activePointIndex--;
+              this.removeActivePoint();
+              this.activateLastPoint();
+              if (this.points.size < MIN_VERTICES && this.polygon) {
+                this.scene.primitives.remove(this.polygon);
+                Cesium.destroyObject(this.polygon);
+                this.polygon = null;
+              }
+              this.doStateTransition(PolygonState.drawingPolygon);
+              this.interactionRender();
+            } else {
               this.reset();
-              break;
+              CesiumUtils.unsetCursorCrosshair();
+              this.scene.requestRender();
             }
-            this.doStateTransition(PolygonState.drawingPolygon);
-            this.scene.requestRender();
             break;
         }
         break;
