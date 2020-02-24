@@ -5,6 +5,11 @@ set -e
 
 ENVIRONMENT=$1
 
+
+######################
+# VERIFY ENVIRONMENT #
+######################
+
 if [ "${ENVIRONMENT}" = "production" ]; then
     EXPECTED_VM="nsidc.org.drupal.apps.int.nsidc.org"
 else
@@ -15,6 +20,18 @@ if [ "${EXPECTED_VM}" != $(facter cname) ]; then
     exit 1
 fi
 
+
+################
+# BUILD BUNDLE #
+################
+
+npm run build-drupal
+
+
+#################
+# DEPLOY BUNDLE #
+#################
+
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 FROM="$THIS_DIR/../dist/*"
 
@@ -24,6 +41,11 @@ rm -rf $TO/*
 cp -R $FROM $TO/.
 
 echo "App deployed to $TO"
+
+
+##################
+# UPDATE GIT TAG #
+##################
 
 if [ -n "$ENVIRONMENT" ]; then
     git tag --force $ENVIRONMENT
