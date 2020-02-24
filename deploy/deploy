@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script is expected to be run from the Drupal VM that is being targeted to
 # for deployment via garrison.
-set -e
+set -ex
 
 ENVIRONMENT=$1
 

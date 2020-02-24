@@ -2,7 +2,7 @@
 
 # Install Node v13
 
-set -e
+set -ex
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
