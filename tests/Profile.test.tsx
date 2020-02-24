@@ -1,7 +1,7 @@
 import { mount } from "enzyme";
 import * as React from "react";
 
-import { OrderDetails } from "../src/components/OrderDetails";
+import { IOrderDetailsProps, IOrderDetailsState, OrderDetails } from "../src/components/OrderDetails";
 import setupEnvironment from "../src/utils/environment";
 
 const setup = () => {
@@ -47,16 +47,18 @@ describe("The user profile", () => {
   describe("OrderDetails", () => {
     it("should update when new order selected", () => {
       const environment = setup().environment;
-      const oldProps = {environment, orderId: undefined, orderCount: 0};
+      const oldProps: IOrderDetailsProps = {environment, orderId: undefined, initialLoadComplete: true};
+      const oldState: IOrderDetailsState = {loading: false, order: undefined};
       const wrapper = mount(
         <OrderDetails {...oldProps} />,
       );
       const instance = wrapper.instance();
+      instance.state = oldState;
 
-      expect(instance.state.order).not.toBeDefined();
-      expect(instance.props.orderId).not.toBeDefined();
+      expect((instance.state as IOrderDetailsState).order).not.toBeDefined();
+      expect((instance.props as IOrderDetailsProps).orderId).not.toBeDefined();
 
-      const nextProps: any = {environment, orderId: "order1"};
+      const nextProps: IOrderDetailsProps = {environment, orderId: "order1"};
       expect(instance.shouldComponentUpdate!(nextProps, {}, {})).toBe(true);
 
       // Test the component state changes and renders expected HTML
@@ -64,8 +66,8 @@ describe("The user profile", () => {
       /*
       console.log("Set props...");
       wrapper.setProps({orderId: "order1"});
-      expect(instance.props.orderId).toEqual("order1");
-      expect(instance.state.order).toBeDefined();
+      expect((instance.props as IOrderDetailsProps).orderId).toEqual("order1");
+      expect((instance.state as IOrderDetailsState).order).toBeDefined();
       */
     });
   });

@@ -1,6 +1,17 @@
-# v1.4.1 (unreleased)
+# v1.5.0 (2020-02-24)
 
 * Look for .geojson file suffix when importing polygons.
+* Press Escape key to delete the current point while creating a polygon,
+  or cancel the move of an existing polygon point.
+* pin `react-tooltip` to 3.11.2 (in everest-ui v1.4.1, 3.11.6 was installed from
+  a constraint of `^3.9.0`; every version since 3.11.3 doesn't work with our
+  app)
+
+# v1.4.1 (2020-02-17) - broken
+
+* regenerate `package-lock.json` from scratch
+* fix type issues in test files (issues were not raised with the previous
+  `package-lock.json`)
 
 # v1.4.0 (2020-02-17)
 
