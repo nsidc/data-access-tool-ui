@@ -21,6 +21,13 @@ if [ "${EXPECTED_VM}" != $(facter cname) ]; then
 fi
 
 
+########################
+# INSTALL DEPENDENCIES #
+########################
+
+npm ci
+
+
 ################
 # BUILD BUNDLE #
 ################
