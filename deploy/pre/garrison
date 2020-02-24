@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+sudo -E bash ${THIS_DIR}/node_setup_13.x
+
+sudo apt-get install -y nodejs
