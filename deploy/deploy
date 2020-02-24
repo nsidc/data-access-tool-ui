@@ -49,13 +49,3 @@ rm -rf $TO/*
 cp -R $FROM $TO/.
 
 echo "App deployed to $TO"
-
-
-##################
-# UPDATE GIT TAG #
-##################
-
-if [ -n "$ENVIRONMENT" ]; then
-    git tag --force $ENVIRONMENT
-    git push --force origin refs/tags/$ENVIRONMENT
-fi
