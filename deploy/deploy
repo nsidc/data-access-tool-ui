@@ -40,8 +40,8 @@ npm run build-drupal
 #################
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-FROM="$THIS_DIR/../dist/*"
 
+FROM="$THIS_DIR/../dist/*"
 TO=/share/apps/everest-ui
 
 rm -rf $TO/*
