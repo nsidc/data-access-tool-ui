@@ -1,0 +1,31 @@
+#!/bin/bash
+# This script is expected to be run from the Drupal VM that is being targeted to
+# for deployment via garrison.
+set -e
+
+ENVIRONMENT=$1
+
+if [ "${ENVIRONMENT}" = "production" ]; then
+    EXPECTED_VM="nsidc.org.drupal.apps.int.nsidc.org"
+else
+    EXPECTED_VM="${ENVIRONMENT}.nsidc.org.drupal.apps.int.nsidc.org"
+fi
+if [ "${EXPECTED_VM}" != $(facter cname) ]; then
+    echo "Error: tried to deploy to environment \"${ENVIRONMENT}\" on VM $(facter cname)"
+    exit 1
+fi
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+FROM="$THIS_DIR/../dist/*"
+
+TO=/share/apps/everest-ui
+
+rm -rf $TO/*
+cp -R $FROM $TO/.
+
+echo "App deployed to $TO"
+
+if [ -n "$ENVIRONMENT" ]; then
+    git tag --force $ENVIRONMENT
+    git push --force origin refs/tags/$ENVIRONMENT
+fi
