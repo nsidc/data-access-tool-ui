@@ -10,7 +10,9 @@ export class ImportPolygon {
   }
 
   public importFile(filename: File) {
-    if (filename.type === "application/json") {
+    if (filename.type === "application/json" ||
+      filename.name.endsWith(".geojson") ||
+      filename.name.endsWith(".json")) {
       this.GeoJSON(filename);
       return "";
     } else if (filename.name.endsWith(".shp")) {
