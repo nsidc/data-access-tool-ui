@@ -1,3 +1,8 @@
+# v1.5.1 (2020-02-25)
+
+* Add `./deploy/deploy` script so that `everest-ui` can be deployed using
+  [garrison](https://bitbucket.org/nsidc/garrison/).
+
 # v1.5.0 (2020-02-24)
 
 * Look for .geojson file suffix when importing polygons.
