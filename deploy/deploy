@@ -49,3 +49,11 @@ rm -rf $TO/*
 cp -R $FROM $TO/.
 
 echo "App deployed to $TO"
+
+
+######################
+# CLEAR DRUPAL CACHE #
+######################
+
+# drupal cache doesn't play nice; sometimes we need to smack it thrice
+"drush cache-clear all; sleep 10 ; drush cache-clear all ; sleep 10 ; drush cache-clear all"
