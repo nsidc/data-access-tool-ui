@@ -56,4 +56,4 @@ echo "App deployed to $TO"
 ######################
 
 # drupal cache doesn't play nice; sometimes we need to smack it thrice
-"drush cache-clear all; sleep 10 ; drush cache-clear all ; sleep 10 ; drush cache-clear all"
+drush cache-clear all; sleep 10 ; drush cache-clear all ; sleep 10 ; drush cache-clear all
