@@ -32,7 +32,8 @@ npm ci
 # BUILD BUNDLE #
 ################
 
-npm run build-drupal
+# allow node to use up to 4GB of RAM
+NODE_OPTIONS='--max-old-space-size=4096' npm run build-drupal
 
 
 #################
