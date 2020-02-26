@@ -1,3 +1,9 @@
+# v1.5.2 (2020-02-26)
+
+* In `./deploy/deploy`, run `npx webpack -p` instead of `npm run build-drupal`
+  so that the script works on the staging VM. (for more details see the [Slack
+  thread](https://nsidc.slack.com/archives/C4TLLDQ2U/p1582674223003500))
+
 # v1.5.1 (2020-02-25)
 
 * Add `./deploy/deploy` script so that `everest-ui` can be deployed using

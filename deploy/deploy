@@ -32,8 +32,10 @@ npm ci
 # BUILD BUNDLE #
 ################
 
+# npm run build-drupal fails on the staging VM
+#
 # allow node to use up to 4GB of RAM
-NODE_OPTIONS='--max-old-space-size=4096' npm run build-drupal
+NODE_OPTIONS='--max-old-space-size=4096' CESIUM_BASE_URL=/apps/everest-ui npx webpack -p
 
 
 #################
