@@ -63,7 +63,8 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
   }
 
   private onBoundingBoxChange = (boundingBox: BoundingBox) => {
-    if (this.props.orderParameters.collectionSpatialCoverage) {
+    if (this.props.orderParameters.collectionSpatialCoverage &&
+      boundingBox.equals(BoundingBox.global())) {
       const bbox = this.props.orderParameters.collectionSpatialCoverage;
       boundingBox.west = Math.max(boundingBox.west, bbox.west);
       boundingBox.south = Math.max(boundingBox.south, bbox.south);

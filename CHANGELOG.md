@@ -1,3 +1,7 @@
+# v1.5.3 (unreleased)
+
+* Do not clip bounding box to spatial coverage unless bounding box is reset to global.
+
 # v1.5.2 (2020-02-26)
 
 * In `./deploy/deploy`, run `npx webpack -p` instead of `npm run build-drupal`
