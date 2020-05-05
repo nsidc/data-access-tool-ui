@@ -14,6 +14,8 @@ enum PolygonState {
 enum PolygonEvent {
   leftClick,
   doubleClick,
+  mouseDown,
+  mouseUp,
   moveMouse,
   lonLatTextChange,
   escapeKey,
@@ -159,6 +161,12 @@ export class PolygonMode {
 
       this.mouseHandler.setInputAction(this.onLeftClick,
                                        Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      this.mouseHandler.setInputAction(this.onMouseDown,
+                                       Cesium.ScreenSpaceEventType.LEFT_DOWN);
+
+      this.mouseHandler.setInputAction(this.onMouseUp,
+                                       Cesium.ScreenSpaceEventType.LEFT_UP);
 
       this.mouseHandler.setInputAction(this.onLeftDoubleClick,
                                        Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
@@ -368,13 +376,13 @@ export class PolygonMode {
           this.tooltip.text = "Click to add points\ndouble click to finish";
           break;
         case PolygonState.donePolygon:
-          this.tooltip.text = "Click a point to edit\ndouble click to move";
+          this.tooltip.text = "Click and drag a point to edit";
           break;
         case PolygonState.pointActive:
-          this.tooltip.text = "Edit lat/lon box or\nclick point to move";
+          this.tooltip.text = "Edit lat/lon box or\nclick and drag to move";
           break;
         case PolygonState.movePoint:
-          this.tooltip.text = "Click to set new location";
+          this.tooltip.text = "";
           break;
       }
     }
@@ -385,24 +393,16 @@ export class PolygonMode {
   //   leftClick: Add new point (transfer mouse point)
   //   moveMouse: Move current mouse point
   //   doubleClick: End polygon, CALLBACK, --> DonePolygon
-  //   lonLatTextChange: nop
   // DonePolygon
-  //   leftClick: If on point, activate point --> PointActive
+  //   mouseDown: If on point, activate point --> MovePoint; otherwise deactivate
   //   moveMouse: Check mouse cursor
-  //   doubleClick: nop
-  //   lonLatTextChange: nop
   // PointActive
-  //   leftClick: If not on point, deactivate point --> DonePolygon
-  //              If different point, activate it (deactivating the other)
-  //              If on point, transfer to mouse point --> MovePoint
+  //   mouseDown:  --> DonePolygon, call DonePolygon mouseDown
   //   moveMouse: Check mouse cursor
-  //   doubleClick: nop
   //   lonLatTextChange: Move point to new position, CALLBACK
   // MovePoint
-  //   leftClick: Add new point (transfer mouse point), CALLBACK, --> PointActive
+  //   mouseUp: Add new point (transfer mouse point), CALLBACK, --> PointActive
   //   moveMouse: Move current mouse point
-  //   doubleClick: nop
-  //   lonLatTextChange: nop
 
   private stateTransition = (event: PolygonEvent, screenPositionOrCartesian: Cesium.Cartesian2 | Cesium.Cartesian3) => {
     // usually we're dealing with a 2D screen position, but sometimes (eg when
@@ -412,7 +412,7 @@ export class PolygonMode {
     const newCartesian = this.screenPositionToCartesian(screenPosition);
 
     if (event === PolygonEvent.moveMouse && this.tooltip) {
-      let showTooltip = newCartesian !== null;
+      let showTooltip = newCartesian !== null && this.tooltip.text !== "";
       if (this.state === PolygonState.donePolygon || this.state === PolygonState.pointActive) {
         const pickedFeature = this.scene.pick(screenPosition);
         if (!(pickedFeature && (pickedFeature.id === "polygon" ||
@@ -454,9 +454,6 @@ export class PolygonMode {
               this.finishedDrawingCallback(this.points);
             }
             break;
-          case PolygonEvent.lonLatTextChange:
-            // nop
-            break;
           case PolygonEvent.escapeKey:
             if (this.activePointIndex > 0) {
               this.activePointIndex--;
@@ -480,70 +477,40 @@ export class PolygonMode {
 
       case PolygonState.donePolygon:
         switch (event) {
-          case PolygonEvent.leftClick:
+          case PolygonEvent.mouseDown:
             if (this.points.size === 0) { break; }
             const pickedFeature = this.scene.pick(screenPosition);
             const index = (pickedFeature !== undefined) ?
               this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
+            this.lonLatEnableCallback(false);
             if (index >= 0) {
               // We clicked on one of the polygon points
-              this.doStateTransition(PolygonState.pointActive);
               this.activatePoint(index);
-              this.updateLonLatLabel(this.activePointCartesian());
-              this.lonLatEnableCallback(true);
-              this.interactionRender();
+              this.prevPoint = this.points.get(this.activePointIndex);
+              this.doStateTransition(PolygonState.movePoint);
+              this.scene.screenSpaceCameraController.enableInputs = false;
+              CesiumUtils.setCursorCrosshair();
+            } else {
+              // We clicked somewhere else, not on a point
+              this.deactivateActivePoint();
             }
+            this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(screenPosition);
             this.updateLonLatLabel(newCartesian);
-            break;
-          case PolygonEvent.doubleClick:
-            // nop
-            break;
-          case PolygonEvent.lonLatTextChange:
-            // nop
-            break;
-          case PolygonEvent.escapeKey:
-            // nop
             break;
         }
         break;
 
       case PolygonState.pointActive:
         switch (event) {
-          case PolygonEvent.leftClick:
-            if (this.points.size === 0) { break; }
-            const pickedFeature = this.scene.pick(screenPosition);
-            const index = (pickedFeature !== undefined) ?
-              this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
-            if (index < 0) {
-              // We clicked somewhere else, not on a point
-              this.doStateTransition(PolygonState.donePolygon);
-              this.lonLatEnableCallback(false);
-              this.deactivateActivePoint();
-              this.interactionRender();
-              break;
-            }
-            if (this.activePointIndex !== index) {
-              // We clicked on a new point, so activate it instead
-              this.activatePoint(index);
-              this.updateLonLatLabel(this.activePointCartesian());
-              this.interactionRender();
-              break;
-            }
-            // We clicked on the active point
-            this.prevPoint = this.points.get(this.activePointIndex);
-            this.doStateTransition(PolygonState.movePoint);
-            this.lonLatEnableCallback(false);
-            CesiumUtils.setCursorCrosshair();
-            this.interactionRender();
+          case PolygonEvent.mouseDown:
+            this.doStateTransition(PolygonState.donePolygon);
+            this.stateTransition(PolygonEvent.mouseDown, screenPosition);
             break;
           case PolygonEvent.moveMouse:
             this.handleMouseCursor(screenPosition);
-            break;
-          case PolygonEvent.doubleClick:
-            // nop
             break;
           case PolygonEvent.lonLatTextChange:
             // We used the edit box to change the coordinates.
@@ -556,32 +523,25 @@ export class PolygonMode {
             this.interactionRender();
             this.finishedDrawingCallback(this.points);
             break;
-          case PolygonEvent.escapeKey:
-            // nop
-            break;
         }
         break;
 
       case PolygonState.movePoint:
         switch (event) {
-          case PolygonEvent.leftClick:
-            // We're done moving the point
-            this.doStateTransition(PolygonState.pointActive);
-            CesiumUtils.unsetCursorCrosshair();
-            this.updateLonLatLabel(this.activePointCartesian());
-            this.lonLatEnableCallback(true);
-            this.finishedDrawingCallback(this.points);
-            break;
           case PolygonEvent.moveMouse:
             this.movePointUsingScreenPosition(screenPosition);
             this.updateLonLatLabel(this.activePointCartesian());
             this.interactionRender();
             break;
-          case PolygonEvent.doubleClick:
-            // nop - this allows doubleClick to immediately activate and start moving a point
-            break;
-          case PolygonEvent.lonLatTextChange:
-            // nop
+          case PolygonEvent.mouseUp:
+            // We're done moving the point
+            this.scene.screenSpaceCameraController.enableInputs = true;
+            this.doStateTransition(PolygonState.pointActive);
+            CesiumUtils.unsetCursorCrosshair();
+            this.updateLonLatLabel(this.activePointCartesian());
+            this.lonLatEnableCallback(true);
+            this.finishedDrawingCallback(this.points);
+            this.interactionRender();
             break;
           case PolygonEvent.escapeKey:
             this.updateActivePointFromCartesian(this.prevPoint.cartesian);
@@ -601,6 +561,14 @@ export class PolygonMode {
 
   private onLeftClick = ({position}: {position: Cesium.Cartesian2}) => {
     this.stateTransition(PolygonEvent.leftClick, position);
+  }
+
+  private onMouseDown = ({ position }: { position: Cesium.Cartesian2 }) => {
+    this.stateTransition(PolygonEvent.mouseDown, position);
+  }
+
+  private onMouseUp = ({ position }: { position: Cesium.Cartesian2 }) => {
+    this.stateTransition(PolygonEvent.mouseUp, position);
   }
 
   private onLeftDoubleClick = ({position}: {position: Cesium.Cartesian2}) => {
