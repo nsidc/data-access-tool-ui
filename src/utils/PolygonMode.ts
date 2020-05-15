@@ -29,12 +29,14 @@ export class PolygonMode {
   private billboards: Cesium.BillboardCollection;
   private ellipsoid: Cesium.Ellipsoid;
   private finishedDrawingCallback: any;
+  private highlightLastPoint: boolean;
   private lonLatEnableCallback: (s: boolean) => void;
   private updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void;
   private mouseHandler: any;
   private points: List<Point> = List<Point>();
   private prevPoint: Point;
   private polygon: any;
+  private polyline: any;
   private scene: any;
   private state: PolygonState = PolygonState.donePolygon;
   private tooltip: any;
@@ -62,10 +64,7 @@ export class PolygonMode {
     this.clearAllPoints();
     this.deactivateActivePoint();
     this.scene.primitives.removeAll();
-    if (this.polygon) {
-      Cesium.destroyObject(this.polygon);
-      this.polygon = null;
-    }
+    this.resetShapes();
     this.tooltip = null;
     this.lonLatEnableCallback(false);
     this.updateLonLatLabel(null);
@@ -191,18 +190,54 @@ export class PolygonMode {
     });
   }
 
+  private resetShapes = (): void => {
+    if (this.polyline) {
+      this.scene.primitives.remove(this.polyline);
+      Cesium.destroyObject(this.polyline);
+      this.polyline = null;
+    }
+    if (this.polygon) {
+      this.scene.primitives.remove(this.polygon);
+      Cesium.destroyObject(this.polygon);
+      this.polygon = null;
+    }
+  }
+
+  private renderPolylineFromPoints = (points: List<Point>): void => {
+    if (this.points.size < 2) {
+      return;
+    }
+
+    const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS();
+
+    const line1 = new Cesium.PolylineGeometry({
+      positions: cartesiansArray,
+    });
+
+    const geometryInstance1 = new Cesium.GeometryInstance({
+      attributes: {
+        color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.CRIMSON),
+      },
+      geometry: Cesium.PolylineGeometry.createGeometry(line1),
+      id: "polyline",
+    });
+    this.polyline = new Cesium.Primitive({
+      appearance: new Cesium.PolylineColorAppearance({
+       translucent: false,
+      }),
+      asynchronous: false,
+      geometryInstances: geometryInstance1,
+    });
+    this.scene.primitives.add(this.polyline);
+    this.scene.requestRender();
+  }
+
   // render the given List of points; this also updates this.points to the given
   // list of points, but sorted clockwiseness
   private renderPolygonFromPoints = (points: List<Point>): void => {
     this.points = this.reopenPolygonPoints(points);
 
     const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS();
-
-    // remove previously rendered polygon
-    if (this.polygon) {
-      this.scene.primitives.remove(this.polygon);
-      Cesium.destroyObject(this.polygon);
-    }
 
     const appearance = new Cesium.EllipsoidSurfaceAppearance({
       aboveGround: false,
@@ -250,9 +285,11 @@ export class PolygonMode {
   }
 
   private interactionRender = () => {
-    // if we meet the minimum points requirement, render the polygon
-    if (this.points.size >= MIN_VERTICES) {
+    this.resetShapes();
+    if (this.state !== PolygonState.drawingPolygon) {
       this.renderPolygonFromPoints(this.points);
+    } else {
+      this.renderPolylineFromPoints(this.points);
     }
 
     this.updateBillboardsAppearanceForActivePoint();
@@ -348,7 +385,9 @@ export class PolygonMode {
 
   private updateBillboardsAppearanceForActivePoint = () => {
     this.points.forEach((point, index) => {
-      if (index === this.activePointIndex) {
+      if (this.highlightLastPoint && index === this.points.size - 1) {
+        point!.highlight();
+      } else if (index === this.activePointIndex) {
         point!.activate();
       } else {
         point!.deactivate();
@@ -370,10 +409,11 @@ export class PolygonMode {
 
   private doStateTransition = (newState: PolygonState) => {
     this.state = newState;
+    this.highlightLastPoint = false;
     if (this.tooltip) {
       switch (this.state) {
         case PolygonState.drawingPolygon:
-          this.tooltip.text = "Click to add points\ndouble click to finish";
+          this.tooltip.text = "Click to add points\nconnect to first point to finish";
           break;
         case PolygonState.donePolygon:
           this.tooltip.text = "Click and drag a point to edit";
@@ -435,35 +475,45 @@ export class PolygonMode {
           case PolygonEvent.leftClick:
             // Add a new point to the polygon, keep drawing
             this.removeActivePoint();
-            if (newCartesian !== null && !this.isDuplicateCartesian(newCartesian)) {
-              this.addPointFromCartesian(newCartesian);
-              this.doStateTransition(PolygonState.drawingPolygon);
+            this.highlightLastPoint = false;
+            if (newCartesian !== null) {
+              const pickedFeature = this.scene.pick(screenPosition);
+              const index = (pickedFeature !== undefined) ?
+                this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
+              if (index >= 0) {
+                if (index === 0) {
+                  this.doStateTransition(PolygonState.donePolygon);
+                  if (this.points.size >= MIN_VERTICES) {
+                    this.interactionRender();
+                    this.finishedDrawingCallback(this.points);
+                  }
+                }
+              } else {
+                this.addPointFromCartesian(newCartesian);
+                this.doStateTransition(PolygonState.drawingPolygon);
+              }
             }
             this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
+            this.highlightLastPoint = false;
+            if (newCartesian !== null) {
+              const pickedFeature = this.scene.pick(screenPosition);
+              const index = (pickedFeature !== undefined) ?
+                this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
+              if (this.points.size >= MIN_VERTICES && index === 0) {
+                this.highlightLastPoint = true;
+              }
+            }
             this.movePointUsingScreenPosition(screenPosition);
             this.updateLonLatLabel(this.activePointCartesian());
             this.interactionRender();
-            break;
-          case PolygonEvent.doubleClick:
-            this.doStateTransition(PolygonState.donePolygon);
-            if (this.points.size >= MIN_VERTICES) {
-              this.removeActivePoint();
-              this.interactionRender();
-              this.finishedDrawingCallback(this.points);
-            }
             break;
           case PolygonEvent.escapeKey:
             if (this.activePointIndex > 0) {
               this.activePointIndex--;
               this.removeActivePoint();
               this.activateLastPoint();
-              if (this.points.size < MIN_VERTICES && this.polygon) {
-                this.scene.primitives.remove(this.polygon);
-                Cesium.destroyObject(this.polygon);
-                this.polygon = null;
-              }
               this.doStateTransition(PolygonState.drawingPolygon);
               this.interactionRender();
             } else {

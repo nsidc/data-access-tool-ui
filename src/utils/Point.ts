@@ -42,4 +42,10 @@ export class Point {
     this.billboard.color = Cesium.Color.CRIMSON;
     this.billboard.scale = 1.25;
   }
+
+  public highlight = () => {
+    this.billboard.color = Cesium.Color.CHARTREUSE;
+    this.billboard.scale = 2.75;
+  }
+
 }
