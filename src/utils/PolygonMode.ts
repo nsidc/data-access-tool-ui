@@ -397,14 +397,24 @@ export class PolygonMode {
   }
 
   private handleMouseCursor(screenPosition: Cesium.Cartesian2) {
-    const mouseoverFeature = this.scene.pick(screenPosition);
-    const mouseoverIndex = (mouseoverFeature !== undefined) ?
-      this.indexOfPointByBillboard(mouseoverFeature.primitive) : -1;
-    if (mouseoverIndex >= 0) {
+    const index = this.pickBillboardPoint(screenPosition);
+    if (index >= 0) {
       CesiumUtils.setCursorCrosshair();
     } else {
       CesiumUtils.unsetCursorCrosshair();
     }
+  }
+
+  private pickBillboardPoint = (screenPosition: Cesium.Cartesian2): number => {
+    const pickedFeatures = this.scene.drillPick(screenPosition, 7, 7);
+    let index = -1;
+    for (const f of pickedFeatures) {
+      const i = this.indexOfPointByBillboard(f.primitive);
+      if (i >= 0) {
+        index = i;
+      }
+    }
+    return index;
   }
 
   private doStateTransition = (newState: PolygonState) => {
@@ -413,7 +423,7 @@ export class PolygonMode {
     if (this.tooltip) {
       switch (this.state) {
         case PolygonState.drawingPolygon:
-          this.tooltip.text = "Click to add points\nconnect to first point to finish";
+          this.tooltip.text = "Click to add points\nConnect to first point to finish";
           break;
         case PolygonState.donePolygon:
           this.tooltip.text = "Click and drag a point to edit";
@@ -477,9 +487,7 @@ export class PolygonMode {
             this.removeActivePoint();
             this.highlightLastPoint = false;
             if (newCartesian !== null) {
-              const pickedFeature = this.scene.pick(screenPosition);
-              const index = (pickedFeature !== undefined) ?
-                this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
+              const index = this.pickBillboardPoint(screenPosition);
               if (index >= 0) {
                 if (index === 0) {
                   this.doStateTransition(PolygonState.donePolygon);
@@ -498,11 +506,9 @@ export class PolygonMode {
           case PolygonEvent.moveMouse:
             this.highlightLastPoint = false;
             if (newCartesian !== null) {
-              const pickedFeature = this.scene.pick(screenPosition);
-              const index = (pickedFeature !== undefined) ?
-                this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
+              const index = this.pickBillboardPoint(screenPosition);
               if (this.points.size >= MIN_VERTICES && index === 0) {
-                this.highlightLastPoint = true;
+                  this.highlightLastPoint = true;
               }
             }
             this.movePointUsingScreenPosition(screenPosition);
@@ -529,10 +535,8 @@ export class PolygonMode {
         switch (event) {
           case PolygonEvent.mouseDown:
             if (this.points.size === 0) { break; }
-            const pickedFeature = this.scene.pick(screenPosition);
-            const index = (pickedFeature !== undefined) ?
-              this.indexOfPointByBillboard(pickedFeature.primitive) : -1;
             this.lonLatEnableCallback(false);
+            const index = this.pickBillboardPoint(screenPosition);
             if (index >= 0) {
               // We clicked on one of the polygon points
               this.activatePoint(index);
