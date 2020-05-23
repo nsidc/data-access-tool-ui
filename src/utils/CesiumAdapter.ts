@@ -362,7 +362,7 @@ export class CesiumAdapter {
       s.north = Math.round(s.north * 100) / 100;
       this.updateBoundingBox(s);
     };
-    const mode = new BoundingBoxMode(this.viewer, CesiumAdapter.ellipsoid,
+    const mode = new BoundingBoxMode(this.viewer.scene, CesiumAdapter.ellipsoid,
       this.renderBoundingBox, finishedDrawingCallback, this.updateLonLatLabel);
     return mode;
   }

@@ -405,6 +405,14 @@ export class PolygonMode {
     }
   }
 
+  private disableGlobeMovement = () => {
+    this.scene.screenSpaceCameraController.enableInputs = false;
+  }
+
+  private enableGlobeMovement = () => {
+    this.scene.screenSpaceCameraController.enableInputs = true;
+  }
+
   private pickBillboardPoint = (screenPosition: Cesium.Cartesian2): number => {
     const pickedFeatures = this.scene.drillPick(screenPosition, 7, 7);
     let index = -1;
@@ -542,7 +550,7 @@ export class PolygonMode {
               this.activatePoint(index);
               this.prevPoint = this.points.get(this.activePointIndex);
               this.doStateTransition(PolygonState.movePoint);
-              this.scene.screenSpaceCameraController.enableInputs = false;
+              this.disableGlobeMovement();
               CesiumUtils.setCursorCrosshair();
             } else {
               // We clicked somewhere else, not on a point
@@ -589,7 +597,7 @@ export class PolygonMode {
             break;
           case PolygonEvent.mouseUp:
             // We're done moving the point
-            this.scene.screenSpaceCameraController.enableInputs = true;
+            this.enableGlobeMovement();
             this.doStateTransition(PolygonState.pointActive);
             CesiumUtils.unsetCursorCrosshair();
             this.updateLonLatLabel(this.activePointCartesian());
