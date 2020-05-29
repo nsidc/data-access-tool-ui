@@ -1,3 +1,7 @@
+# v1.5.3 (unreleased)
+
+* Update dev hermes API URLs from `hermes2` to `hermes`
+
 # v1.5.2 (2020-02-26)
 
 * In `./deploy/deploy`, run `npx webpack -p` instead of `npm run build-drupal`
