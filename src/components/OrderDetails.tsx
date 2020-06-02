@@ -51,8 +51,10 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else {
       const order: any = this.state.order;
-      const orderPlacedDate = moment(order.submitted_timestamp);
-      const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
+      const orderExpirationDate = order.completed_timestamp ?
+        moment(order.completed_timestamp).clone().add(14, "days") :
+        moment(order.submitted_timestamp).clone().add(14, "days");
+
       let links = null;
       if (moment(orderExpirationDate).isAfter(moment.now())) {
         const dataLinks = this.buildDataLinks(order);
@@ -71,12 +73,18 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
             </div>
           </div>;
       } else {
-        links = <div><b>Expired:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>;
+        links = (<div>
+          <b>Expired:</b>&nbsp;
+          {orderExpirationDate.format(OrderDetails.timeFormat)}
+        </div>);
       }
       return (
         <div id="order-details">
-          <div><b>Order ID:</b> {order.order_id}</div>
-          <div><b>Status:</b> {getOrderStatus(order.status)}</div>
+          <div><b>Order ID:</b>&nbsp;{order.order_id}</div>
+          <div><b>Status:</b>&nbsp;{getOrderStatus(order.status)}</div>
+          <div><b>Submitted:</b>&nbsp;
+            {moment(order.submitted_timestamp).format(OrderDetails.timeFormat)}
+          </div>
           {links}
         </div>
       );
