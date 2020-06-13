@@ -12,9 +12,11 @@ const __DEV__ = false;  // set to true to test CMR failure case in development
 const CMR_PAGE_SIZE = 2000;
 export const CMR_MAX_GRANULES = 2000;
 
-// Note!
-// Non-production environments should be using a CMR_URL value of https://cmr.uat.earthdata.nasa.gov/
-const CMR_URL = "https://cmr.earthdata.nasa.gov";
+// Ops prefers to use UAT in staging so they can be aware of impacts of changes
+// making their way in to prod ECS systems.
+const CMR_URL = getEnvironment() === "staging" ?
+  "https://cmr.uat.earthdata.nasa.gov" :
+  "https://cmr.earthdata.nasa.gov";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS"
   + "&page_size=500&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
