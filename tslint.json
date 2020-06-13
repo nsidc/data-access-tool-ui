@@ -6,6 +6,7 @@
             "spaces",
             2
         ],
-        "no-console": [true, "log"]
+        "no-console": [true, "log"],
+        "no-debugger": [true, "log"]
     }
 }
