@@ -25,14 +25,19 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
       style += " order-list-item-selected";
     }
     let status = this.props.order.status;
-    const orderPlacedDate = moment(this.props.order.submitted_timestamp);
-    const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
-    if (moment(orderExpirationDate).isBefore(moment.now())) {
-      style += " order-list-item-expired";
-      if (status === "complete" || status === "error" || status === "warning") {
-        status = "expired";
+    const orderCompletedDate = moment(this.props.order.finalized_timestamp);
+
+    // Make mock "expired" status based on completion date +2 weeks
+    if (orderCompletedDate.isValid()) {
+      const orderExpirationDate = orderCompletedDate.clone().add(14, "days");
+      if (moment(orderExpirationDate).isBefore(moment.now())) {
+        style += " order-list-item-expired";
+        if (status === "complete" || status === "error" || status === "warning") {
+          status = "expired";
+        }
       }
     }
+
     const delivery = (this.props.order.delivery === "ESI") ?
       "Zip" : this.props.order.delivery;
     const submitted = moment(this.props.order.submitted_timestamp).format(OrderListItem.timeFormat);
