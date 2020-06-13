@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { orderExpirationTimestamp } from "../utils/misc";
 import { UserContext } from "../utils/state";
 import { LoadingIcon } from "./LoadingIcon";
 import { getOrderStatus } from "./OrderListItem";
@@ -54,7 +55,7 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
       let links = null;
       // Show a mock expiration timestamp based on completed timestamp
-      const expirationTimestamp = this.expirationTimestamp(order);
+      const expirationTimestamp = orderExpirationTimestamp(order);
       if (expirationTimestamp && expirationTimestamp.isBefore(moment.now())) {
         links = (
           <div>
@@ -161,13 +162,6 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
           {moment(order.finalized_timestamp).format(OrderDetails.timeFormat)}
         </div>
       );
-    }
-    return null;
-  }
-
-  private expirationTimestamp(order: any): moment.Moment | null {
-    if (order.finalized_timestamp) {
-      return moment(order.finalized_timestamp).clone().add(14, "days");
     }
     return null;
   }

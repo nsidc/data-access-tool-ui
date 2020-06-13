@@ -5,6 +5,7 @@ import { faBan, faCheck, faClock, faEllipsisH,
   faExclamationTriangle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { hasChanged } from "../utils/hasChanged";
+import { orderExpirationTimestamp } from "../utils/misc";
 
 interface IOrderListItemProps {
   order: any;
@@ -25,16 +26,13 @@ export class OrderListItem extends React.Component<IOrderListItemProps, {}> {
       style += " order-list-item-selected";
     }
     let status = this.props.order.status;
-    const orderCompletedDate = moment(this.props.order.finalized_timestamp);
 
     // Make mock "expired" status based on completion date +2 weeks
-    if (orderCompletedDate.isValid()) {
-      const orderExpirationDate = orderCompletedDate.clone().add(14, "days");
-      if (moment(orderExpirationDate).isBefore(moment.now())) {
-        style += " order-list-item-expired";
-        if (status === "complete" || status === "error" || status === "warning") {
-          status = "expired";
-        }
+    const expirationTimestamp = orderExpirationTimestamp(this.props.order);
+    if (expirationTimestamp && expirationTimestamp.isBefore(moment.now())) {
+      style += " order-list-item-expired";
+      if (status === "complete" || status === "error" || status === "warning") {
+        status = "expired";
       }
     }
 
