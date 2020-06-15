@@ -1,6 +1,8 @@
 # v1.5.3 (unreleased)
 
 * Do not clip bounding box to spatial coverage unless bounding box is reset to global.
+* Update dev hermes API URLs from `hermes2` to `hermes`
+* Use UAT CMR in staging only
 
 # v1.5.2 (2020-02-26)
 
@@ -19,7 +21,7 @@
 * Press Escape key to delete the current point while creating a polygon,
   or cancel the move of an existing polygon point.
 * pin `react-tooltip` to 3.11.2 (in everest-ui v1.4.1, 3.11.6 was installed from
-  a constraint of `^3.9.0`; every version since 3.11.3 doesn't work with our
+  a constraint of `^3.9.0`; every version since 3.11.3 doesn''t work with our
   app)
 
 # v1.4.1 (2020-02-17) - broken
@@ -157,7 +159,7 @@
 # v0.11.0 (2019-04-30)
 
 * Stop passing the 'api' version string to `/order-proxy`; the Drupal module
-  manages this so we don't have to
+  manages this so we don''t have to
 
 # v0.10.0 (2019-04-30)
 
@@ -186,7 +188,7 @@
 
 * Merge list-of-links and zip buttons into one -- ESI provides both for free.
 * Display file links and zip link separately on order history page
-  * This was done in a hacky way that won't work once we enable dataproducts
+  * This was done in a hacky way that won''t work once we enable dataproducts
     which contain .zip files. We plan to address this with the database switch.
 
 # v0.5.0 (2019-03-12)
@@ -222,10 +224,10 @@
   * change granule count color from blue to dark grey
   * adjust positioning of order buttons
   * tweak header of granule table
-* Hide lonlat edit box if it's empty, show when displaying lonlat
+* Hide lonlat edit box if it''s empty, show when displaying lonlat
 * After reload from `localStorage`, fly to last-known camera position
   when polygon was created or edited.
-* When creating a polygon, don't lose points--fix bug where moving the mouse
+* When creating a polygon, don''t lose points--fix bug where moving the mouse
   slowly after clicking would sometimes lose the point that should have just
   been created by clicking (easiest to see in Safari)
 * Whitelist datasets for standalone mode: MOD10A2, MYD10A2, and NISE
@@ -243,7 +245,7 @@
   selecting from a collection by order ID.
 * Load orders only once per click, instead of twice per click, on the order
   history / profile page.
-* On the order history page, before the user's orders are actually loaded, show
+* On the order history page, before the user''s orders are actually loaded, show
   a spinner instead of the "You have no orders" message.
 
 # v0.1.0 (2018-10-16)
@@ -269,12 +271,12 @@
 * Extract the collection dropdown from the main part of the application and update CSS to add some basic responsiveness.
 * Animate the GranuleList when loading
 * Help text now rearranges to a single column when browser is narrow.
-* Tooltips over order buttons now have a width that corresponds to the button's
+* Tooltips over order buttons now have a width that corresponds to the button''s
   width.
 * Allow editing polygon selection points by click-and-drag
 * Allow editing polygon selection points by lon/lat input
-* Show selected collection's coverage at the same time as the polygon
-* Save the user's temporal and spatial parameters to `localStorage`, reloading
+* Show selected collection''s coverage at the same time as the polygon
+* Save the user''s temporal and spatial parameters to `localStorage`, reloading
   and applying those filters when the user returns. Only the parameters for a
-  single dataset are saved; if another dataset's page is visited, the saved
+  single dataset are saved; if another dataset''s page is visited, the saved
   filters are cleared.
