@@ -1,6 +1,9 @@
 # v1.5.4 (unreleased)
 
 * Do not clip bounding box to spatial coverage unless bounding box is reset to global.
+* Change Bounding Box UI so user does a click and drag
+* Change Polygon UI so user needs to connect last point to first to finish drawing
+* Change Polygon editing so user can just click and drag a point
 
 # v1.5.3 (2020-06-17)
 
