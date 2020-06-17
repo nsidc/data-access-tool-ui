@@ -13,7 +13,6 @@ enum PolygonState {
 
 enum PolygonEvent {
   leftClick,
-  doubleClick,
   mouseDown,
   mouseUp,
   moveMouse,
@@ -166,9 +165,6 @@ export class PolygonMode {
 
       this.mouseHandler.setInputAction(this.onMouseUp,
                                        Cesium.ScreenSpaceEventType.LEFT_UP);
-
-      this.mouseHandler.setInputAction(this.onLeftDoubleClick,
-                                       Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
       this.mouseHandler.setInputAction(this.onMouseMove,
                                        Cesium.ScreenSpaceEventType.MOUSE_MOVE);
@@ -448,9 +444,8 @@ export class PolygonMode {
 
   // States
   // DrawingPolygon
-  //   leftClick: Add new point (transfer mouse point)
+  //   leftClick: Add new point (transfer mouse point) or finish polygon
   //   moveMouse: Move current mouse point
-  //   doubleClick: End polygon, CALLBACK, --> DonePolygon
   // DonePolygon
   //   mouseDown: If on point, activate point --> MovePoint; otherwise deactivate
   //   moveMouse: Check mouse cursor
@@ -631,10 +626,6 @@ export class PolygonMode {
 
   private onMouseUp = ({ position }: { position: Cesium.Cartesian2 }) => {
     this.stateTransition(PolygonEvent.mouseUp, position);
-  }
-
-  private onLeftDoubleClick = ({position}: {position: Cesium.Cartesian2}) => {
-    this.stateTransition(PolygonEvent.doubleClick, position);
   }
 
   private onMouseMove = ({endPosition}: {endPosition: Cesium.Cartesian2}) => {
