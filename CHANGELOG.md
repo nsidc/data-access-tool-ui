@@ -1,4 +1,4 @@
-# v1.5.3 (unreleased)
+# v1.5.3 (2020-06-17)
 
 * Show completed timestamp
 * Update expiration timestamp to completed + 2 weeks when available
