@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
+import { orderExpirationTimestamp } from "../utils/misc";
 import { UserContext } from "../utils/state";
 import { LoadingIcon } from "./LoadingIcon";
 import { getOrderStatus } from "./OrderListItem";
@@ -51,32 +52,47 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
       );
     } else {
       const order: any = this.state.order;
-      const orderPlacedDate = moment(order.submitted_timestamp);
-      const orderExpirationDate = orderPlacedDate.clone().add(14, "days");
+
       let links = null;
-      if (moment(orderExpirationDate).isAfter(moment.now())) {
+      // Show a mock expiration timestamp based on completed timestamp
+      const expirationTimestamp = orderExpirationTimestamp(order);
+      if (expirationTimestamp && expirationTimestamp.isBefore(moment.now())) {
+        links = (
+          <div>
+            <b>Expired:</b> {expirationTimestamp.format(OrderDetails.timeFormat)}
+          </div>
+        );
+      } else {
         const dataLinks = this.buildDataLinks(order);
         const zipLinks = this.buildZipLinks(order);
         const textFileLinks: any = this.buildTextFileLink(order);
-        links = <div>
-          <div><b>Expires:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>
-          <div><b>Zip links:</b> (download may take a moment to start)
-            <ul>{zipLinks}</ul>
-          </div>
-          <div><b>File list:</b>
-            <ul>{textFileLinks}</ul>
-          </div>
+        const expirationJSX = expirationTimestamp ?
+          (<div><b>Expires:</b> {expirationTimestamp.format(OrderDetails.timeFormat)}</div>) :
+          null;
+        links = (
+          <div>
+            {expirationJSX}
+            <div><b>Zip links:</b> (download may take a moment to start)
+              <ul>{zipLinks}</ul>
+            </div>
+            <div><b>File list:</b>
+              <ul>{textFileLinks}</ul>
+            </div>
             <div><b>File links:</b>
               <ul>{dataLinks}</ul>
             </div>
-          </div>;
-      } else {
-        links = <div><b>Expired:</b> {orderExpirationDate.format(OrderDetails.timeFormat)}</div>;
+          </div>
+        );
       }
+
       return (
         <div id="order-details">
-          <div><b>Order ID:</b> {order.order_id}</div>
-          <div><b>Status:</b> {getOrderStatus(order.status)}</div>
+          <div><b>Order ID:</b>&nbsp;{order.order_id}</div>
+          <div><b>Status:</b>&nbsp;{getOrderStatus(order.status)}</div>
+          <div><b>Submitted:</b>&nbsp;
+            {moment(order.submitted_timestamp).format(OrderDetails.timeFormat)}
+          </div>
+          {this.completedTimestampJSX(order)}
           {links}
         </div>
       );
@@ -136,6 +152,18 @@ export class OrderDetails extends React.Component<IOrderDetailsProps, IOrderDeta
 
   private findZipLinks(order: any): any {
     return order.file_urls.archive;
+  }
+
+  private completedTimestampJSX(order: any): JSX.Element | null {
+    if (order.finalized_timestamp) {
+      return (
+        <div>
+          <b>Completed:</b>&nbsp;
+          {moment(order.finalized_timestamp).format(OrderDetails.timeFormat)}
+        </div>
+      );
+    }
+    return null;
   }
 
   private loadOrder = () => {
