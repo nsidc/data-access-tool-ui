@@ -1,5 +1,7 @@
 # v1.5.3 (unreleased)
 
+* Show completed timestamp
+* Update expiration timestamp to completed + 2 weeks when available
 * Update dev hermes API URLs from `hermes2` to `hermes`
 * Use UAT CMR in staging only
 
