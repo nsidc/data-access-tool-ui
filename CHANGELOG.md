@@ -1,3 +1,7 @@
+# v1.5.4 (unreleased)
+
+* Do not clip bounding box to spatial coverage unless bounding box is reset to global.
+
 # v1.5.3 (2020-06-17)
 
 * Show completed timestamp
