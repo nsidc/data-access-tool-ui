@@ -25,8 +25,9 @@ export class BoundingBoxMode {
   private tooltip: any;
   private updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void;
 
-  public constructor(scene: any, ellipsoid: Cesium.Ellipsoid,
-                     renderBoundingBox: any, finishedDrawingCallback: any,
+  public constructor(scene: Cesium.Scene, ellipsoid: Cesium.Ellipsoid,
+                     renderBoundingBox: (boundingBox: BoundingBox, doRender: boolean) => void,
+                     finishedDrawingCallback: (s: BoundingBox) => void,
                      updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void) {
     this.scene = scene;
     this.ellipsoid = ellipsoid;

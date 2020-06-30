@@ -40,9 +40,10 @@ export class PolygonMode {
   private state: PolygonState = PolygonState.donePolygon;
   private tooltip: any;
 
-  public constructor(scene: any, lonLatEnableCallback: (s: boolean) => void,
+  public constructor(scene: Cesium.Scene, lonLatEnableCallback: (s: boolean) => void,
                      updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void,
-                     ellipsoid: Cesium.Ellipsoid, finishedDrawingCallback: any) {
+                     ellipsoid: Cesium.Ellipsoid,
+                     finishedDrawingCallback: (points: List<Point>) => void) {
     this.scene = scene;
     this.lonLatEnableCallback = lonLatEnableCallback;
     this.updateLonLatLabel = updateLonLatLabel;
@@ -415,7 +416,8 @@ export class PolygonMode {
     for (const f of pickedFeatures) {
       const i = this.indexOfPointByBillboard(f.primitive);
       if (i >= 0) {
-        index = i;
+        // Choose the billboard point closest to the front of the list.
+        index = (index === -1) ? i : Math.min(i, index);
       }
     }
     return index;
@@ -489,6 +491,7 @@ export class PolygonMode {
             // Add a new point to the polygon, keep drawing
             this.removeActivePoint();
             this.highlightLastPoint = false;
+            CesiumUtils.unsetPointerCrosshair();
             if (newCartesian !== null) {
               const index = this.pickBillboardPoint(screenPosition);
               if (index >= 0) {
@@ -507,12 +510,13 @@ export class PolygonMode {
             this.interactionRender();
             break;
           case PolygonEvent.moveMouse:
-            this.highlightLastPoint = false;
-            if (newCartesian !== null) {
-              const index = this.pickBillboardPoint(screenPosition);
-              if (this.points.size >= MIN_VERTICES && index === 0) {
-                  this.highlightLastPoint = true;
-              }
+            const indexMove = (newCartesian !== null) ?
+              this.pickBillboardPoint(screenPosition) : -1;
+            this.highlightLastPoint = this.points.size >= MIN_VERTICES && indexMove === 0;
+            if (this.highlightLastPoint) {
+              CesiumUtils.setPointerCrosshair();
+            } else {
+              CesiumUtils.unsetPointerCrosshair();
             }
             this.movePointUsingScreenPosition(screenPosition);
             this.updateLonLatLabel(this.activePointCartesian());
