@@ -491,7 +491,7 @@ export class PolygonMode {
             // Add a new point to the polygon, keep drawing
             this.removeActivePoint();
             this.highlightLastPoint = false;
-            CesiumUtils.unsetPointerCrosshair();
+            CesiumUtils.unsetCursorPointer();
             if (newCartesian !== null) {
               const index = this.pickBillboardPoint(screenPosition);
               if (index >= 0) {
@@ -514,9 +514,9 @@ export class PolygonMode {
               this.pickBillboardPoint(screenPosition) : -1;
             this.highlightLastPoint = this.points.size >= MIN_VERTICES && indexMove === 0;
             if (this.highlightLastPoint) {
-              CesiumUtils.setPointerCrosshair();
+              CesiumUtils.setCursorPointer();
             } else {
-              CesiumUtils.unsetPointerCrosshair();
+              CesiumUtils.unsetCursorPointer();
             }
             this.movePointUsingScreenPosition(screenPosition);
             this.updateLonLatLabel(this.activePointCartesian());

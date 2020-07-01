@@ -25,7 +25,7 @@ export class CesiumUtils {
     }
   }
 
-  public static setPointerCrosshair() {
+  public static setCursorPointer() {
     const el = document.getElementById(this.viewerId);
 
     if (el && el.classList && el.classList.add) {
@@ -33,7 +33,7 @@ export class CesiumUtils {
     }
   }
 
-  public static unsetPointerCrosshair() {
+  public static unsetCursorPointer() {
     const el = document.getElementById(this.viewerId);
 
     if (el && el.classList && el.classList.remove) {
