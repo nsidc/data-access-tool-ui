@@ -1,4 +1,4 @@
-# v1.5.4 (unreleased)
+# v1.5.4 (2020-07-06)
 
 * Do not clip bounding box to spatial coverage unless bounding box is reset to global.
 * Change Bounding Box UI so user does a click and drag
