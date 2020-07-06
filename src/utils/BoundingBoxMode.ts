@@ -1,13 +1,13 @@
 import * as Cesium from "cesium";
 
 import { BoundingBox } from "../types/BoundingBox";
-import { CesiumUtils } from "./CesiumUtils";
+import { CesiumUtils, ILonLat } from "./CesiumUtils";
 
 export const MIN_VERTICES = 3;
 
 enum BoundingBoxState {
   startDrawing,
-  movePoint2,
+  isDrawing,
   doneDrawing,
 }
 
@@ -18,17 +18,18 @@ export class BoundingBoxMode {
   private renderBoundingBox: any;
   private labels: any;
   private mouseHandler: any;
-  private point1: Cesium.Cartesian3 | null;
-  private point2: Cesium.Cartesian3 | null;
+  private lonlat1: ILonLat | null;
+  private lonlat2: ILonLat | null;
+  private scene: any;
   private state: BoundingBoxState;
   private tooltip: any;
   private updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void;
-  private viewer: any;
 
-  public constructor(viewer: any, ellipsoid: Cesium.Ellipsoid,
-                     renderBoundingBox: any, finishedDrawingCallback: any,
+  public constructor(scene: Cesium.Scene, ellipsoid: Cesium.Ellipsoid,
+                     renderBoundingBox: (boundingBox: BoundingBox, doRender: boolean) => void,
+                     finishedDrawingCallback: (s: BoundingBox) => void,
                      updateLonLatLabel: (cartesian: Cesium.Cartesian3 | null) => void) {
-    this.viewer = viewer;
+    this.scene = scene;
     this.ellipsoid = ellipsoid;
     this.finishedDrawingCallback = finishedDrawingCallback;
     this.renderBoundingBox = renderBoundingBox;
@@ -39,8 +40,8 @@ export class BoundingBoxMode {
     this.initializeMouseHandler();
     CesiumUtils.setCursorCrosshair();
     this.state = BoundingBoxState.startDrawing;
-    this.point1 = this.point2 = null;
-    this.labels = this.viewer.scene.primitives.add(new Cesium.LabelCollection());
+    this.lonlat1 = this.lonlat2 = null;
+    this.labels = this.scene.primitives.add(new Cesium.LabelCollection());
     this.tooltip = this.labels.add({
       backgroundColor: Cesium.Color.fromAlpha(Cesium.Color.BLACK, 0.4),
       font: "11pt sans-serif",
@@ -48,13 +49,14 @@ export class BoundingBoxMode {
       pixelOffset: new Cesium.Cartesian2(-10, -10),
       show: false,
       showBackground: true,
-      text: "Click to set southwest corner",
+      text: "Click and drag from west to east",
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     });
   }
 
   public reset = () => {
-    this.viewer.scene.primitives.remove(this.labels);
+    this.state = BoundingBoxState.startDrawing;
+    this.scene.primitives.remove(this.labels);
     this.renderBoundingBox(null, false);
     CesiumUtils.unsetCursorCrosshair();
     if (this.mouseHandler && !this.mouseHandler.isDestroyed()) {
@@ -62,27 +64,28 @@ export class BoundingBoxMode {
       this.mouseHandler = null;
     }
     this.tooltip = null;
-    this.point1 = this.point2 = null;
+    this.lonlat1 = this.lonlat2 = null;
     this.updateLonLatLabel(null);
   }
 
   private initializeMouseHandler = () => {
     if (!this.mouseHandler) {
-      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+      this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.scene.canvas);
 
-      this.mouseHandler.setInputAction(this.onLeftClick,
-                                       Cesium.ScreenSpaceEventType.LEFT_CLICK);
+      this.mouseHandler.setInputAction(this.onLeftDown,
+                                       Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
       this.mouseHandler.setInputAction(this.onMouseMove,
                                        Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+      this.mouseHandler.setInputAction(this.onLeftUp,
+                                       Cesium.ScreenSpaceEventType.LEFT_UP);
     }
   }
 
   private getBoundingBox = () => {
-    if (this.point1 && this.point2) {
-      const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
-      const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
-      const bbox = new BoundingBox(ll1.lon, ll1.lat, ll2.lon, ll2.lat);
+    if (this.lonlat1 && this.lonlat2) {
+      const bbox = new BoundingBox(this.lonlat1.lon, this.lonlat1.lat, this.lonlat2.lon, this.lonlat2.lat);
       if (bbox.south > bbox.north) {
         const tmp = bbox.south;
         bbox.south = bbox.north;
@@ -95,41 +98,41 @@ export class BoundingBoxMode {
   }
 
   private interactionRender = () => {
-    if (this.point1 && this.point2) {
+    if (this.lonlat1 && this.lonlat2) {
       this.renderBoundingBox(this.getBoundingBox(), true);
     }
   }
 
-  private screenPositionToCartesian = (screenPosition: Cesium.Cartesian2): Cesium.Cartesian3 | null => {
-    return CesiumUtils.screenPositionToCartesian(screenPosition, this.viewer.scene.camera, this.ellipsoid);
+  private disableGlobeMovement = () => {
+    this.scene.screenSpaceCameraController.enableInputs = false;
   }
 
-  private onLeftClick = ({position}: {position: Cesium.Cartesian2}) => {
+  private enableGlobeMovement = () => {
+    this.scene.screenSpaceCameraController.enableInputs = true;
+  }
+
+  private screenPositionToCartesian = (screenPosition: Cesium.Cartesian2): Cesium.Cartesian3 | null => {
+    return CesiumUtils.screenPositionToCartesian(screenPosition, this.scene.camera, this.ellipsoid);
+  }
+
+  private onLeftDown = ({position}: {position: Cesium.Cartesian2}) => {
     const cartesian = this.screenPositionToCartesian(position);
     if (cartesian) {
-      if (this.state === BoundingBoxState.startDrawing) {
-        this.state = BoundingBoxState.movePoint2;
-        this.tooltip.text = "Click to set northeast corner";
-      } else if (this.state === BoundingBoxState.movePoint2 && this.point2) {
-        this.state = BoundingBoxState.doneDrawing;
-        this.tooltip.show = false;
-        const bbox = this.getBoundingBox();
-        this.reset();
-        this.finishedDrawingCallback(bbox);
-      }
+      this.state = BoundingBoxState.isDrawing;
+      this.disableGlobeMovement();
+      this.tooltip.text = "Release to finish drawing";
+      this.lonlat1 = CesiumUtils.cartesianToLonLat(cartesian);
     }
   }
 
   private updateTooltipLocation = () => {
-    if (this.point1 && this.point2) {
-      const ll1 = CesiumUtils.cartesianToLonLat(this.point1);
-      const ll2 = CesiumUtils.cartesianToLonLat(this.point2);
-      this.tooltip.horizontalOrigin = (ll2.lon > ll1.lon) ?
+    if (this.lonlat1 && this.lonlat2) {
+      this.tooltip.horizontalOrigin = (this.lonlat2.lon > this.lonlat1.lon) ?
         Cesium.HorizontalOrigin.LEFT : Cesium.HorizontalOrigin.RIGHT;
-      this.tooltip.verticalOrigin = (ll2.lat > ll1.lat) ?
+      this.tooltip.verticalOrigin = (this.lonlat2.lat > this.lonlat1.lat) ?
         Cesium.VerticalOrigin.BOTTOM : Cesium.VerticalOrigin.TOP;
       this.tooltip.pixelOffset = new Cesium.Cartesian2(
-        (ll2.lon > ll1.lon) ? 10 : -10, (ll2.lat > ll1.lat) ? -10 : 10);
+        (this.lonlat2.lon > this.lonlat1.lon) ? 10 : -10, (this.lonlat2.lat > this.lonlat1.lat) ? -10 : 10);
     }
   }
 
@@ -142,17 +145,28 @@ export class BoundingBoxMode {
         if (this.state !== BoundingBoxState.doneDrawing) {
           showTooltip = true;
           this.tooltip.position = cartesian;
-          if (this.state === BoundingBoxState.movePoint2) {
-            this.point2 = cartesian;
+          if (this.state === BoundingBoxState.isDrawing) {
+            this.lonlat2 = CesiumUtils.cartesianToLonLat(cartesian);
             this.updateTooltipLocation();
-          } else {
-            this.point1 = cartesian;
           }
         }
         this.interactionRender();
       }
     }
     this.tooltip.show = showTooltip;
-    this.viewer.scene.requestRender();
+    this.scene.requestRender();
   }
+
+  private onLeftUp = ({ position }: { position: Cesium.Cartesian2 }) => {
+    if (this.state === BoundingBoxState.isDrawing) {
+      this.state = BoundingBoxState.doneDrawing;
+      this.enableGlobeMovement();
+      this.tooltip.text = "Release to finish drawing";
+      this.tooltip.show = false;
+      const bbox = this.getBoundingBox();
+      this.reset();
+      this.finishedDrawingCallback(bbox);
+    }
+  }
+
 }

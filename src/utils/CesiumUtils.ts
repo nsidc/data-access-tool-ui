@@ -25,6 +25,22 @@ export class CesiumUtils {
     }
   }
 
+  public static setCursorPointer() {
+    const el = document.getElementById(this.viewerId);
+
+    if (el && el.classList && el.classList.add) {
+      el.classList.add("cursor-pointer");
+    }
+  }
+
+  public static unsetCursorPointer() {
+    const el = document.getElementById(this.viewerId);
+
+    if (el && el.classList && el.classList.remove) {
+      el.classList.remove("cursor-pointer");
+    }
+  }
+
   // cartesian: 3D coordinates for position on earth's surface
   // https://en.wikipedia.org/wiki/ECEF
   public static cartesianToLonLat(cartesian: Cesium.Cartesian3): ILonLat {
