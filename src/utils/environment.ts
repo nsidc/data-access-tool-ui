@@ -1,7 +1,7 @@
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
-declare var Drupal: any;
+declare var drupalSettings: any;
 
 interface IUrls {
   hermesApiUrl: string;
@@ -70,7 +70,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
       profileUrl: "/order-history",
     };
     return {
-      drupalDataset: Drupal.settings.data_downloads?.dataset,
+      drupalDataset: drupalSettings.data_downloads?.dataset,
       exposeFunction,
       hermesAPI: constructAPI(urls),
       inDrupal,
