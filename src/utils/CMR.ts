@@ -77,8 +77,14 @@ export const filterAddWildcards = (filter: string): string => {
 };
 
 export const granuleFilterParameters = (cmrGranuleFilter: string): string => {
-  const filter = filterAddWildcards(cmrGranuleFilter);
-  const result = `&producer_granule_id[]=${filter}&options[producer_granule_id][pattern]=true`;
+  let result = "&options[producer_granule_id][pattern]=true";
+  // Remove whitespace and see if we have multiple filters separated by commas
+  cmrGranuleFilter.replace(/\s*/g, "").split(",").forEach((subFilter: string) => {
+    if (subFilter.length > 0) {
+      subFilter = filterAddWildcards(subFilter);
+      result += `&producer_granule_id[]=${subFilter}`;
+    }
+  });
   return result;
 };
 
