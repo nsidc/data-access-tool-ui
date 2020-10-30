@@ -3,7 +3,7 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { CmrCollection } from "../types/CmrCollection";
 import { OrderParameters } from "../types/OrderParameters";
-import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, earthdataGranuleFilterParameter } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IHandoffButtonProps {
@@ -59,7 +59,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
                       spatialSelection: OrderParameters["spatialSelection"],
                       temporalStart: OrderParameters["temporalFilterLowerBound"],
                       temporalEnd: OrderParameters["temporalFilterUpperBound"],
-                      textFilter: OrderParameters["cmrGranuleFilter"]) => {
+                      cmrGranuleFilter: OrderParameters["cmrGranuleFilter"]) => {
     let url = `https://search.earthdata.nasa.gov/search/granules?` +
       `p=${conceptId}` +
       `&pg[0][qt]=${temporalStart.toISOString()},${temporalEnd.toISOString()}`;
@@ -73,8 +73,8 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
         url = url + `&sb=${boundingBox.rect.join(",")}`;
       }
     }
-    if (textFilter) {
-      url = url + `&pg[0][id]=${filterAddWildcards(textFilter)}`;
+    if (cmrGranuleFilter) {
+      url += earthdataGranuleFilterParameter(cmrGranuleFilter);
     }
 
     return url;

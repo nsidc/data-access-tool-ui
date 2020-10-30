@@ -76,15 +76,33 @@ export const filterAddWildcards = (filter: string): string => {
   return filter;
 };
 
-export const granuleFilterParameters = (cmrGranuleFilter: string): string => {
-  let result = "&options[producer_granule_id][pattern]=true";
+const combineGranuleFilters = (cmrGranuleFilter: string, separator: string, filterPrefix: string): string => {
+  const multipleFilters: string[] = [];
   // Remove whitespace and see if we have multiple filters separated by commas
-  cmrGranuleFilter.replace(/\s*/g, "").split(",").forEach((subFilter: string) => {
-    if (subFilter.length > 0) {
-      subFilter = filterAddWildcards(subFilter);
-      result += `&producer_granule_id[]=${subFilter}`;
+  cmrGranuleFilter.replace(/\s*/g, "").split(",").forEach((singleFilter: string) => {
+    if (singleFilter.length > 0) {
+      singleFilter = filterPrefix + filterAddWildcards(singleFilter);
+      multipleFilters.push(singleFilter);
     }
   });
+  return multipleFilters.join(separator);
+};
+
+export const earthdataGranuleFilterParameter = (cmrGranuleFilter: string): string => {
+  // Earthdata expects a single parameter separated by !'s
+  let result = combineGranuleFilters(cmrGranuleFilter, "!", "");
+  if (result.length > 0) {
+    result = "&pg[0][id]=" + result;
+  }
+  return result;
+};
+
+const granuleFilterParameters = (cmrGranuleFilter: string): string => {
+  // CMR expects multiple parameters, one for each pattern
+  let result = combineGranuleFilters(cmrGranuleFilter, "", "&producer_granule_id[]=");
+  if (result.length > 0) {
+    result = "&options[producer_granule_id][pattern]=true" + result;
+  }
   return result;
 };
 
@@ -158,7 +176,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&${spatialParameter(spatialSelection, boundingBox.rect)}`;
 
   if (cmrGranuleFilter !== "") {
-    URL += `&${granuleFilterParameters(cmrGranuleFilter)}`;
+    URL += granuleFilterParameters(cmrGranuleFilter);
   }
   return cmrFetch(URL, headers);
 };
