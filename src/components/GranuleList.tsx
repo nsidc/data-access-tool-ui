@@ -62,7 +62,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
     const disableFilter = firstGranule ? (firstGranule.producer_granule_id === "") : false;
     const tooltip = disableFilter ?
       "File name filter is unavailable for datasets with multi-file granules" :
-      "*=match any characters, ?=match one character, use commas to combine queries";
+      "'*' match multiple characters; '?' match one character; ',' combine queries; Example: *2019??01*,*2020??01*";
 
     return (
       <div>

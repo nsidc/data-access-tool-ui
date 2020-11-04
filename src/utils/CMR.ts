@@ -88,7 +88,7 @@ const combineGranuleFilters = (cmrGranuleFilter: string, separator: string, filt
   return multipleFilters.join(separator);
 };
 
-export const earthdataGranuleFilterParameter = (cmrGranuleFilter: string): string => {
+export const earthdataGranuleFilterParameters = (cmrGranuleFilter: string): string => {
   // Earthdata expects a single parameter separated by !'s
   let result = combineGranuleFilters(cmrGranuleFilter, "!", "");
   if (result.length > 0) {
@@ -97,7 +97,7 @@ export const earthdataGranuleFilterParameter = (cmrGranuleFilter: string): strin
   return result;
 };
 
-const granuleFilterParameters = (cmrGranuleFilter: string): string => {
+const cmrGranuleFilterParameters = (cmrGranuleFilter: string): string => {
   // CMR expects multiple parameters, one for each pattern
   let result = combineGranuleFilters(cmrGranuleFilter, "", "&producer_granule_id[]=");
   if (result.length > 0) {
@@ -176,7 +176,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&${spatialParameter(spatialSelection, boundingBox.rect)}`;
 
   if (cmrGranuleFilter !== "") {
-    URL += granuleFilterParameters(cmrGranuleFilter);
+    URL += cmrGranuleFilterParameters(cmrGranuleFilter);
   }
   return cmrFetch(URL, headers);
 };

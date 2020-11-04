@@ -3,7 +3,7 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { CmrCollection } from "../types/CmrCollection";
 import { OrderParameters } from "../types/OrderParameters";
-import { boundingBoxMatch, earthdataGranuleFilterParameter } from "../utils/CMR";
+import { boundingBoxMatch, earthdataGranuleFilterParameters } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IHandoffButtonProps {
@@ -74,7 +74,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
       }
     }
     if (cmrGranuleFilter) {
-      url += earthdataGranuleFilterParameter(cmrGranuleFilter);
+      url += earthdataGranuleFilterParameters(cmrGranuleFilter);
     }
 
     return url;
