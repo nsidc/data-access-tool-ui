@@ -150,7 +150,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const appJSX =  (
       <div id="everest-container" className={className}>
-        <ReactTooltip effect="solid" delayShow={500} />
+        <ReactTooltip effect="solid" delayShow={500} multiline={true} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
           cmrStatusOk={this.state.cmrStatusOk}

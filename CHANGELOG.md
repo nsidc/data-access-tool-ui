@@ -1,3 +1,7 @@
+# v1.6.0 (2020-11-04)
+
+* Allow multiple query strings in the text search box, separated by commas
+
 # v1.5.4 (2020-07-06)
 
 * Do not clip bounding box to spatial coverage unless bounding box is reset to global.
