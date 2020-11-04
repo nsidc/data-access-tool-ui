@@ -1,4 +1,4 @@
-# v1.6.0 (unreleased)
+# v1.6.0 (2020-11-04)
 
 * Allow multiple query strings in the text search box, separated by commas
 
