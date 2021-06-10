@@ -1,3 +1,7 @@
+# v1.6.1 (2021-06-10)
+
+* PSS-539: Confirm dataset version matches when restoring from localStorage cache
+
 # v1.6.0 (2020-11-04)
 
 * Allow multiple query strings in the text search box, separated by commas
