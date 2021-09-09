@@ -1,3 +1,7 @@
+# v1.6.2 (2021-09-09)
+
+* Use NSIDC_TS1 as the provider for the staging environment.
+
 # v1.6.1 (2021-06-10)
 
 * PSS-539: Confirm dataset version matches when restoring from localStorage cache
