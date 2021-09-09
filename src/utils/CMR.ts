@@ -17,9 +17,10 @@ export const CMR_MAX_GRANULES = 2000;
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
-const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS"
+const CMR_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER
   + "&page_size=500&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
+const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER;
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
@@ -167,7 +168,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
   let URL = CMR_GRANULE_URL
-    + "?provider=NSIDC_ECS"
+    + `?provider=${CMR_PROVIDER}`
     + `&page_size=${CMR_PAGE_SIZE}`
     + `${granuleSortParameter(granuleSorting)}`
     + `&short_name=${collectionAuthId}`
