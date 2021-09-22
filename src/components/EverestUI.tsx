@@ -150,7 +150,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const appJSX =  (
       <div id="everest-container" className={className}>
-        <ReactTooltip effect="solid" delayShow={500} />
+        <ReactTooltip effect="solid" delayShow={500} multiline={true} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
           cmrStatusOk={this.state.cmrStatusOk}
@@ -413,7 +413,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const orderParams: any = JSON.parse(localStorageOrderParams);
 
-    const currentDatasetMatchesSaved = this.props.environment.drupalDataset!.id === orderParams.collection.short_name;
+    const currentDatasetMatchesSaved =
+      this.props.environment.drupalDataset!.id === orderParams.collection.short_name &&
+      this.props.environment.drupalDataset!.version === orderParams.collection.version_id;
     if (!currentDatasetMatchesSaved) {
       this.clearLocalStorage();
       return null;

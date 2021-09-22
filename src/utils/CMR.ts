@@ -17,9 +17,10 @@ export const CMR_MAX_GRANULES = 2000;
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
-const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS"
+const CMR_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER
   + "&page_size=500&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=NSIDC_ECS";
+const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER;
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
@@ -76,9 +77,33 @@ export const filterAddWildcards = (filter: string): string => {
   return filter;
 };
 
-export const granuleFilterParameters = (cmrGranuleFilter: string): string => {
-  const filter = filterAddWildcards(cmrGranuleFilter);
-  const result = `&producer_granule_id[]=${filter}&options[producer_granule_id][pattern]=true`;
+const combineGranuleFilters = (cmrGranuleFilter: string, separator: string, filterPrefix: string): string => {
+  const multipleFilters: string[] = [];
+  // Remove whitespace and see if we have multiple filters separated by commas
+  cmrGranuleFilter.replace(/\s*/g, "").split(",").forEach((singleFilter: string) => {
+    if (singleFilter.length > 0) {
+      singleFilter = filterPrefix + filterAddWildcards(singleFilter);
+      multipleFilters.push(singleFilter);
+    }
+  });
+  return multipleFilters.join(separator);
+};
+
+export const earthdataGranuleFilterParameters = (cmrGranuleFilter: string): string => {
+  // Earthdata expects a single parameter separated by !'s
+  let result = combineGranuleFilters(cmrGranuleFilter, "!", "");
+  if (result.length > 0) {
+    result = "&pg[0][id]=" + result;
+  }
+  return result;
+};
+
+const cmrGranuleFilterParameters = (cmrGranuleFilter: string): string => {
+  // CMR expects multiple parameters, one for each pattern
+  let result = combineGranuleFilters(cmrGranuleFilter, "", "&producer_granule_id[]=");
+  if (result.length > 0) {
+    result = "&options[producer_granule_id][pattern]=true" + result;
+  }
   return result;
 };
 
@@ -143,7 +168,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
   let URL = CMR_GRANULE_URL
-    + "?provider=NSIDC_ECS"
+    + `?provider=${CMR_PROVIDER}`
     + `&page_size=${CMR_PAGE_SIZE}`
     + `${granuleSortParameter(granuleSorting)}`
     + `&short_name=${collectionAuthId}`
@@ -152,7 +177,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     + `&${spatialParameter(spatialSelection, boundingBox.rect)}`;
 
   if (cmrGranuleFilter !== "") {
-    URL += `&${granuleFilterParameters(cmrGranuleFilter)}`;
+    URL += cmrGranuleFilterParameters(cmrGranuleFilter);
   }
   return cmrFetch(URL, headers);
 };

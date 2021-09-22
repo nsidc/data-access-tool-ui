@@ -1,3 +1,15 @@
+# v1.6.2 (2021-09-09)
+
+* Use NSIDC_TS1 as the provider for the staging environment.
+
+# v1.6.1 (2021-06-10)
+
+* PSS-539: Confirm dataset version matches when restoring from localStorage cache
+
+# v1.6.0 (2020-11-04)
+
+* Allow multiple query strings in the text search box, separated by commas
+
 # v1.5.4 (2020-07-06)
 
 * Do not clip bounding box to spatial coverage unless bounding box is reset to global.
