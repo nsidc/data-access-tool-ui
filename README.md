@@ -1,6 +1,8 @@
-# Everest UI
+# Data Access Tools
 
 A "data orders" user interface that can be embedded into dataset landing pages.
+
+[![CircleCI](https://circleci.com/bb/nsidc/everest-ui.svg?style=svg)](https://circleci.com/bb/nsidc/everest-ui)
 
 **tl;dr:** See the end of this document for the sequence of steps involved in
 deploying the application to QA.
@@ -14,9 +16,6 @@ To upgrade nvm (needed for install-latest-npm flag):
         $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
 
 ## Development as a standalone application (not integrated into a Drupal page)
-
-This is not recommended. For best dev results, see "Development with Drupal
-integration".
 
 ### Use the version of NodeJS set in the project's .nvmrc file:
 

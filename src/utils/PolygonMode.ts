@@ -1,6 +1,7 @@
 import * as Cesium from "cesium";
 import { List } from "immutable";
 
+import {GeometryFactory} from "cesium";
 import { CesiumUtils, ILonLat } from "./CesiumUtils";
 import { Point } from "./Point";
 
@@ -215,7 +216,7 @@ export class PolygonMode {
       attributes: {
         color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.CRIMSON),
       },
-      geometry: Cesium.PolylineGeometry.createGeometry(line1),
+      geometry: Cesium.PolylineGeometry.createGeometry(line1) as GeometryFactory,
       id: "polyline",
     });
     this.polyline = new Cesium.Primitive({
