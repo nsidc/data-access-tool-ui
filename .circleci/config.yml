@@ -1,7 +1,7 @@
 version: 2.1
 
 setup: &setup
-  working_directory: ~/data-access-tools
+  working_directory: ~/everest-ui
   docker:
     - image: node:14.17
 
@@ -10,18 +10,31 @@ jobs:
     <<: *setup
     steps:
       - checkout
+      - restore_cache:
+          key: everest-ui-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          name: Run tests
-          command: |
-            npm install
-            npm run lint
-            npm run test
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Test
+          command: npm run test
+      - save_cache:
+          key: everest-ui-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - "~/everest-ui/node_modules"
+      - persist_to_workspace:
+          root: ~/everest-ui
+          paths:
+            - .
 
   package-and-publish:
     <<: *setup
     steps:
       - attach_workspace:
-          at: ~/data-access-tools
+          at: ~/everest-ui
       - run:
           name: Build package
           command: npm run build-drupal
@@ -39,14 +52,14 @@ workflows:
       - test:
           filters:
             tags:
-              only: /^.*$/
+              only: /.*/
 
-    package-and-publish:
-      context: org-global
-      requires:
-        - test
-      filters:
-        branches:
-          ignore: /.*/
-        tags:
-          only: /^v[0-9]+(\.[0-9]+)*(\-[\.a-zA-Z0-9]+)?$/
+      - package-and-publish:
+          context: org-global
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(\-[\.a-zA-Z0-9]+)?$/
