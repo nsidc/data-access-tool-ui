@@ -4,6 +4,10 @@ import setupEnvironment from "./utils/environment";
 
 declare var Drupal: any;
 
+// application url format: /data/data-access-tool/MOD10_L2/versions/61
+// authid
+// version
+
 shim(); // Get support for Promise.finally(). Can be replaced with Typescript 2.7+ and esnext
 let renderUI: any;
 if (typeof(Drupal) !== "undefined") {

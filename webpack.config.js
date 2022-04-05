@@ -11,7 +11,7 @@ const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 
 // To understand the magic used to include CesiumJS in the project,
-// see: https://cesiumjs.org/tutorials/cesium-and-webpack/
+// see: https://cesium.com/learn/cesiumjs-learn/cesiumjs-webpack/
 // Also: https://github.com/AnalyticalGraphicsInc/cesium-webpack-example
 
 // TODO: Can JQuery go away? We'd have to rewrite some code that uses JQuery.

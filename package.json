@@ -1,6 +1,6 @@
 {
   "name": "data-access-tools",
-  "version": "1.6.2",
+  "version": "2.0.0",
   "description": "UI elements supporting access to NASA data sets.",
   "repository": "https://bitbucket.org/nsidc/everest-ui",
   "files": [
@@ -8,21 +8,31 @@
     "CHANGELOG",
     "README"
   ],
+  "type": "module",
   "engines": {
     "node": "^14.19.0",
     "npm": "^6.14.16"
   },
-  "browser": "dist/index.bundle.js",
-  "scripts": {
-    "clean": "rm -rf dist",
-    "start": "webpack-dev-server --https",
+  "browser": "./dist/index.bundle.js",
+  "old-scripts": {
     "build-dev": "webpack --watch",
     "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack -p",
     "build-dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack-dev-server --https",
     "build-lando": "CESIUM_BASE_URL=/apps/everest-ui/everest-ui-app WEBPACK_OUTPUT_PATH=/app/web/apps/everest-ui/everest-ui-app DRUSH_CACHE_CLEAR_ON_BUILD=true webpack -p --progress",
-    "deploy-drupal": "./scripts/deploy.sh",
+    "deploy-drupal": "./scripts/deploy.sh"
+  },
+  "scripts": {
+    "clean": "rm -rf ./dist/*",
+    "start": "webpack serve --node-env development --no-client-overlay --progress",
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
     "lint": "scripts/lint.sh",
-    "test": "npx jest --config=jest.config.js"
+    "test": "npx jest --config=jest.config.js",
+    "setup:prerelease": "npm version prepatch --no-git-tag-version; npm version prerelease --preid=rc --no-git-tag-version",
+    "bump:prerelease": "npm version prerelease --preid=rc",
+    "release": "npm version",
+    "version": "./scripts/release.sh",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",
@@ -43,6 +53,7 @@
     "@types/react-modal": "^3.1.2",
     "@types/react-transition-group": "^2.0.13",
     "@types/socket.io-client": "^1.4.32",
+    "@webpack-cli/serve": "^1.6.1",
     "ajv": "^6.5.3",
     "copy-webpack-plugin": "^5.1.1",
     "core-js": "^2.5.7",
