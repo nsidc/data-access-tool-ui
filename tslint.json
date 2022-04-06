@@ -1,11 +1,6 @@
 {
     "extends": "tslint:recommended",
     "rules": {
-        "indent": [
-            true,
-            "spaces",
-            2
-        ],
         "no-console": [true, "log"],
         "no-debugger": [true, "log"]
     }
