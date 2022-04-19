@@ -1,7 +1,7 @@
 import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
-import * as ReactTooltip from "react-tooltip";
+import ReactTooltip from "react-tooltip";
 
 import { faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

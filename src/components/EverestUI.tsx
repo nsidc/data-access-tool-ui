@@ -2,8 +2,7 @@ import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 import SplitPane from "react-split-pane";
-import * as ReactTooltip from "react-tooltip";
-
+import ReactTooltip from "react-tooltip";
 import { BoundingBox } from "../types/BoundingBox";
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule } from "../types/CmrGranule";
@@ -19,7 +18,6 @@ import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
 import { updateStateInitGranules, updateUser, UserContext } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
-import { CollectionDropdown } from "./CollectionDropdown";
 import { EDLButton } from "./EDLButton";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
@@ -134,18 +132,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   public render() {
-    let collectionDropdown = null;
-    let className = "in-drupal";
-    if (!this.props.environment.inDrupal) {
-      className = "standalone";
-      collectionDropdown = (
-        <CollectionDropdown
-          onCmrRequestFailure={this.onCmrRequestFailure}
-          cmrStatusOk={this.state.cmrStatusOk}
-          onCollectionChange={this.handleCollectionChange} />
-      );
-    }
-
+    const className = "in-drupal";
     let columnContainer: any;
 
     const appJSX =  (
@@ -157,9 +144,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           cmrStatusMessage={this.state.cmrStatusMessage}
           onChange={() => { this.CmrReset(); }}
         />
-        <div id="collection-list">
-          {collectionDropdown}
-        </div>
         <EDLButton
           environment={this.props.environment} />
         <div id="columns" ref={(n) => columnContainer = n}>
@@ -311,6 +295,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   private handleTemporalReset = () => {
     const collection = this.state.orderParameters.collection;
     this.handleOrderParameterChange({
+      timeErrorLowerBound: "",
       temporalFilterLowerBound: collection.time_start ? moment.utc(collection.time_start) : moment.utc("20100101"),
       temporalFilterUpperBound: collection.time_end ? moment.utc(collection.time_end) : moment.utc(),
     });

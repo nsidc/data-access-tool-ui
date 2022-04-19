@@ -21,7 +21,7 @@ export class Point {
 
   public getBillboard = (): Cesium.Billboard => {
     return this.billboard;
-  }
+  };
 
   public addBillboard = (billboardCollection: Cesium.BillboardCollection): Cesium.Billboard => {
     this.billboard = billboardCollection.add(this.billboardProps);

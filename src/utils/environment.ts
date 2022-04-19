@@ -20,7 +20,7 @@ export interface IEnvironment {
 
 export function getEnvironment(): string {
   const env: string = window.location.hostname.split(".")[0];
-  if (["dev", "integration", "qa", "staging"].includes(env)) {
+  if (["localhost", "dev", "integration", "qa", "staging"].includes(env)) {
     return env;
   }
   return "production";
@@ -79,7 +79,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
   } else {
     const urls = {
       ...getEnvironmentDependentURLs(),
-      profileUrl: "/profile.html",
+      profileUrl: "/order-history.html",
     };
     return {
       drupalDataset: undefined,

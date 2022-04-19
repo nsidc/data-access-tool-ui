@@ -42,18 +42,18 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
         <DatePicker
           id="from"
           className={(this.props.timeErrorLowerBound === "") ? "" : "error"}
-          selected={this.props.fromDate.utc()}
-          dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
-          onChange={(d: moment.Moment) =>
-            this.props.onFromDateChange(moment(d.format("YYYYMMDD")).utc().startOf("day"))} />
+          selected={this.props.fromDate.utc().toDate()}
+          dateFormat={["MM/dd/yyyy", "M/D/YYYY"]}
+          onChange={(date: Date) =>
+            this.props.onFromDateChange(moment(date.getUTCDate()).startOf("day"))} />
         <label className="to">To</label>
         <DatePicker
           id="to"
           className={(this.props.timeErrorUpperBound === "") ? "" : "error"}
-          selected={this.props.toDate.utc()}
-          dateFormat={["MM/DD/YYYY", "M/D/YYYY"]}
-          onChange={(d: moment.Moment) =>
-            this.props.onToDateChange(moment(d.format("YYYYMMDD")).utc().endOf("day"))} />
+          selected={this.props.toDate.utc().toDate()}
+          dateFormat={["MM/dd/yyyy", "M/D/YYYY"]}
+          onChange={(date: Date) =>
+            this.props.onToDateChange(moment(date.getUTCDate()).endOf("day"))} />
         <div onClick={this.props.onClick}>
           <button className="buttonReset" data-tip="Reset dates to defaults">
             <FontAwesomeIcon icon={faUndoAlt} size="lg" />
