@@ -2,7 +2,7 @@
 import * as React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as ReactTooltip from "react-tooltip";
+import ReactTooltip from "react-tooltip";
 import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 

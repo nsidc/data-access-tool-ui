@@ -12,7 +12,7 @@ run_cmd () {
 }
 
 run_cmd "npx tsc --project tsconfig.json"
-run_cmd "npx tslint --fix --config tslint.json 'src/**/*.{ts,tsx}'"
-run_cmd "npx stylelint --fix --config .stylelintrc src/styles/"
+run_cmd "npx eslint --fix --config .eslintrc.json --ext .ts --ext .tsx src/"
+run_cmd "npx stylelint --fix src/styles/"
 
 exit $status

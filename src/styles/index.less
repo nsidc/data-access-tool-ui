@@ -1,6 +1,8 @@
 #everest-ui {
-  font-family: 'Open Sans', Segoe UI, Arial, Helvetica, sans-serif;
+  font-family: "Open Sans", "Segoe UI", Arial, Helvetica, sans-serif;
   margin: 0;
+
+  --column-height: 800px;
 
   .fade-appear,
   .fade-enter {
@@ -29,6 +31,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     -webkit-overflow-scrolling: touch;
+    z-index: 11;
   }
 
   .loading-spinner {
@@ -54,9 +57,7 @@
   }
 
   #columns {
-    --columnHeight: 800px;
-
-    height: var(--columnHeight);
+    height: var(--column-height);
 
     #left-side {
       border: none;
@@ -113,14 +114,14 @@
       margin-right: 0;
     }
 
-    div.timeError {
+    div.timeError { /* stylelint-disable-line selector-class-pattern */
       position: relative;
       z-index: 100;
       width: 0;
       height: 0;
     }
 
-    label.timeError {
+    label.timeError { /* stylelint-disable-line selector-class-pattern */
       display: inline-block;
       width: 210px;
       text-align: center;
@@ -131,8 +132,8 @@
       border-radius: 4px;
       padding: 4px;
       font-size: 80%;
-      left: -calc(100% + 1em);
-      margin-right: -calc(100% + 1em);
+      left: calc(-100% - 1em);
+      margin-right: calc(-100% - 1em);
     }
   }
 
@@ -157,7 +158,7 @@
 
     .bbox {
       width: 50px;
-      margin: 2px 2px 0 2px;
+      margin: 2px 2px 0;
       padding: 2px 5px;
       border-style: solid;
       border-width: 1px;
@@ -171,15 +172,12 @@
     }
   }
 
-  .buttonReset {
+  .buttonReset { /* stylelint-disable-line selector-class-pattern */
     cursor: pointer;
     background-color: inherit;
     border-style: none;
     margin-left: 1em;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 0;
-    padding-bottom: 3px;
+    padding: 0 4px 3px;
     vertical-align: middle;
     color: #555;
 
@@ -238,7 +236,7 @@
     font-size: 80%;
   }
 
-  .helpHeader {
+  .helpHeader { /* stylelint-disable-line selector-class-pattern */
     line-height: 1.2em;
     margin-bottom: 0;
   }
@@ -310,10 +308,7 @@
     #granule-list-input {
       width: 200px;
       font-size: 90%;
-      margin-top: 2px;
-      margin-right: 0;
-      margin-bottom: 5px;
-      margin-left: 2px;
+      margin: 2px 0 5px 2px;
       padding: 2px 5px;
       border-style: solid;
       border-width: 1px;
@@ -336,7 +331,7 @@
   }
 
   #granule-list-container {
-    height: calc(var(--columnHeight) - 150px);
+    height: calc(var(--column-height) - 150px);
     overflow-x: auto;
     overflow-y: scroll;
     width: 100%;
@@ -381,7 +376,6 @@
         color: white;
         cursor: pointer;
         position: sticky;
-        position: -webkit-sticky;
         top: 0;
         padding: 0.5rem 0 0.5rem 0.5rem;
         z-index: 9;
@@ -427,7 +421,7 @@
       padding: 0.5em;
     }
 
-    .cesium-credit-logoContainer * {
+    .cesium-credit-logoContainer * { /* stylelint-disable-line selector-class-pattern */
       display: none;
     }
 
@@ -441,7 +435,7 @@
       line-height: 1em;
       font-size: 90%;
       z-index: 2;
-      border-width: 1;
+      border-width: 1px;
       border-radius: 4px;
       background-color: white;
       border-color: chartreuse;
@@ -462,8 +456,7 @@
       align-content: baseline;
       align-items: baseline;
       display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
+      flex-flow: column wrap;
       position: relative;
 
       &.in-drupal {
@@ -526,7 +519,7 @@
           color: white;
           cursor: pointer;
           position: sticky;
-          position: -webkit-sticky;
+          position: -webkit-sticky; /* stylelint-disable-line value-no-vendor-prefix */
           top: 0;
           padding: 0.5rem 0 0.5rem 0.5rem;
           z-index: 9;
@@ -562,7 +555,7 @@
 
   &,
   &-profile {
-    .sortColumn {
+    .sortColumn { /* stylelint-disable-line selector-class-pattern */
       .sort-icon-stack {
         font-size: 1.5em;
         padding-top: -0.25em;
@@ -659,7 +652,7 @@
       position: relative;
       text-align: left;
 
-      .reactTooltip {
+      .reactTooltip { /* stylelint-disable-line selector-class-pattern */
         width: 160px;
         font-size: 100%;
         line-height: 24px;
@@ -672,7 +665,7 @@
     }
   }
 
-  .toolbarButton {
+  .toolbarButton { /* stylelint-disable-line selector-class-pattern */
     color: white;
     border-color: inherit;
     border-style: none;
@@ -690,7 +683,7 @@
     }
   }
 
-  .toolbarButtonDisabled {
+  .toolbarButtonDisabled { /* stylelint-disable-line selector-class-pattern */
     background: #303336;
     border-color: #444;
     box-shadow: none;
@@ -699,10 +692,12 @@
     fill: #edffff;
   }
 
-  #importPolygonInput {
+  #importPolygonInput { /* stylelint-disable-line selector-id-pattern */
     display: none;
   }
 
+  /* stylelint-disable selector-class-pattern */
+  /* stylelint-disable property-no-vendor-prefix */
   .Resizer {
     background: #000;
     opacity: 0.1;
@@ -723,22 +718,22 @@
   .Resizer.horizontal {
     height: 11px;
     margin: -5px 0;
-    border-top: 5px solid rgba(255, 255, 255, 0);
-    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    border-top: 5px solid rgb(255 255 255 / 0%);
+    border-bottom: 5px solid rgb(255 255 255 / 0%);
     cursor: row-resize;
     width: 100%;
   }
 
   .Resizer.horizontal:hover {
-    border-top: 5px solid rgba(0, 0, 0, 0.5);
-    border-bottom: 5px solid rgba(0, 0, 0, 0.5);
+    border-top: 5px solid rgb(0 0 0 / 50%);
+    border-bottom: 5px solid rgb(0 0 0 / 50%);
   }
 
   .Resizer.vertical {
     width: 5px;
     height: 60px;
     background: #fff;
-    margin-top: calc((var(--columnHeight) - 30px) / 2);
+    margin-top: calc((var(--column-height) - 30px) / 2);
     margin-left: 0;
     opacity: 0.5;
     border-left: 1px solid black;
@@ -758,10 +753,8 @@
   .Resizer.disabled:hover {
     border-color: transparent;
   }
-
-  .ReactModal__Overlay {
-    z-index: 11;
-  }
+  /* stylelint-enable selector-class-pattern */
+  /* stylelint-enable property-no-vendor-prefix */
 
   .earthdata-login {
     bottom: 64px;
@@ -772,7 +765,7 @@
       z-index: 1002;
     }
 
-    ul.button-group--dropdown {
+    ul.button-group--dropdown { /* stylelint-disable-line selector-class-pattern */
       z-index: 1002;
     }
 

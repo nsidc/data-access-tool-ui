@@ -12,7 +12,7 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 // To understand the magic used to include CesiumJS in the project,
 // see: https://cesium.com/learn/cesiumjs-learn/cesiumjs-webpack/
 // Also: https://github.com/AnalyticalGraphicsInc/cesium-webpack-example
-//https://github.com/CesiumGS/cesium-webpack-example/blob/main/webpack.config.js
+// https://github.com/CesiumGS/cesium-webpack-example/blob/main/webpack.config.js
 
 // TODO: Can JQuery go away? We'd have to rewrite some code that uses JQuery.
 links = ["https://cdn.earthdata.nasa.gov/eui/1.1.7/stylesheets/application.css"];
@@ -20,15 +20,14 @@ scripts = ["https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"];
 
 module.exports = {
     entry: {
-      index: ['./src/main.tsx'],
-      history: ['./src/profile.ts']
+      "order-data": ['./src/index.ts'],
+      "order-history": ['./src/profile.ts']
     },
     output: {
         filename: '[name].bundle.js',
         path: process.env.WEBPACK_OUTPUT_PATH || path.resolve(__dirname, 'dist'),
         // for Cesium
         sourcePrefix: '',
-        publicPath : '/'
     },
     amd: {
         // Enable webpack-friendly use of require in Cesium
@@ -36,6 +35,13 @@ module.exports = {
     },
 
     devtool: 'source-map',
+
+    devServer : {
+        historyApiFallback: {
+            disableDotRule: true,
+        },
+        hot: true
+    },
 
     resolve: {
         extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx'],
@@ -80,18 +86,19 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'Order Interface',
-            chunks: ['index'],
+            title: 'Order Data Interface',
+            chunks: ['order-data'],
             inject: 'body',
-            template: './public/index.html',
-            appMountId: 'data-access-tool',
+            template: './public/order-data.html',
+            filename: 'order-data.html',
+            appMountId: 'order-data',
             links,
             scripts
         }),
         new HtmlWebpackPlugin({
-            title: 'Order History',
-            chunks: ['history'],
-            inject: false,
+            title: 'Order History Interface',
+            chunks: ['order-history'],
+            inject: 'body',
             template: './public/order-history.html',
             filename: 'order-history.html',
             appMountId: 'order-history',

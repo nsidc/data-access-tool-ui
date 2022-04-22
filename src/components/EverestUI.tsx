@@ -18,6 +18,7 @@ import { hasChanged } from "../utils/hasChanged";
 import { mergeOrderParameters } from "../utils/orderParameters";
 import { updateStateInitGranules, updateUser, UserContext } from "../utils/state";
 import { CmrDownBanner } from "./CmrDownBanner";
+import { CollectionDropdown } from "./CollectionDropdown";
 import { EDLButton } from "./EDLButton";
 import { GranuleList } from "./GranuleList";
 import { OrderButtons } from "./OrderButtons";
@@ -132,7 +133,17 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   }
 
   public render() {
-    const className = "in-drupal";
+    let collectionDropdown = null;
+    let className = "in-drupal";
+    if (!this.props.environment.inDrupal) {
+      className = "standalone";
+      collectionDropdown = (
+        <CollectionDropdown
+          onCmrRequestFailure={this.onCmrRequestFailure}
+          cmrStatusOk={this.state.cmrStatusOk}
+          onCollectionChange={this.handleCollectionChange} />
+      );
+    }
     let columnContainer: any;
 
     const appJSX =  (
@@ -144,6 +155,9 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           cmrStatusMessage={this.state.cmrStatusMessage}
           onChange={() => { this.CmrReset(); }}
         />
+        <div id="collection-list">
+          {collectionDropdown}
+        </div>
         <EDLButton
           environment={this.props.environment} />
         <div id="columns" ref={(n) => columnContainer = n}>
