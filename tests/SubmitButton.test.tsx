@@ -7,6 +7,7 @@ import { SubmitButton } from "../src/components/SubmitButton";
 const setup = (setupProps = {}) => {
   const props = {
     buttonText: "Order List of Links",
+    buttonId: "testButton",
     tooltip: <span></span>,
     disabled: false,
     collectionId: "abcd123",

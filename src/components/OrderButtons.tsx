@@ -93,11 +93,13 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onClick={this.handleScriptDownload} />
         <SubmitButton
           buttonText={"Order Files"}
+          buttonId={"orderFilesButton"}
           tooltip={tooltipOrder}
           disabled={orderButtonDisabled}
           onSubmitOrder={this.handleSubmitOrder} />
         <SubmitButton
           buttonText={"Large/Custom Order"}
+          buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
           disabled={earthdataButtonDisabled}
           onSubmitOrder={this.handleEarthdataOrder} />
