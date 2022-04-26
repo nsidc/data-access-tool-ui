@@ -37,7 +37,7 @@ jobs:
           at: ~/everest-ui
       - run:
           name: Build package
-          command: npm run build-drupal
+          command: npm run build
       - run:
           name: Publish to npmjs.org
           command: |
