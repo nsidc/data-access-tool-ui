@@ -32,7 +32,7 @@
     "bump:prerelease": "npm version prerelease --preid=rc",
     "release": "npm version",
     "version": "./scripts/release.sh",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push --follow-tags"
   },
   "keywords": [],
   "author": "National Snow and Ice Data Center",
