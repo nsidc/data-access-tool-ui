@@ -1,8 +1,9 @@
+Main branch: [![CircleCI](https://circleci.com/bb/nsidc/everest-ui.svg?style=svg&circle-token=05777f28b61b63d37438d50af8c951a8c2789b1d)](https://circleci.com/bb/nsidc/everest-ui)
+Release candidate: [![CircleCI](https://circleci.com/bb/nsidc/everest-ui/src/da-64.svg?style=shield&circle-token=05777f28b61b63d37438d50af8c951a8c2789b1d)](https://circleci.com/bb/nsidc/everest-ui/src/da-64)
+
 # Data Access Tools
 
 A "data orders" user interface that can be embedded into dataset landing pages.
-
-[![CircleCI](https://circleci.com/bb/nsidc/everest-ui.svg?style=svg)](https://circleci.com/bb/nsidc/everest-ui)
 
 **tl;dr:** See the end of this document for the sequence of steps involved in
 deploying the application to QA.
@@ -100,31 +101,3 @@ incremented and `-dev` appended to the version string, so that subsequent builds
 indicate that it is a new version.
 
 ## Deployment
-
-The CI job
-[everest-ui_Deploy](http://ci.everest-ui.apps.int.nsidc.org:8080/job/everest-ui_Deploy/)
-can be used to build and deploy the app to integration, qa, or staging. It is
-configured to run automatically for integration for every new push on
-master. The app is built and deployed to the appropriate share, a git tag
-matching the chosen environment is updated, then the cache on the corresponding
-Drupal VM is cleared with `drush cache-clear css-js`.
-
-You can inspect the [everest-ui_Deploy job
-configuration](http://ci.everest-ui.apps.int.nsidc.org:8080/job/everest-ui_Deploy/configure)
-to see the specific commands used to build and deploy the app. Running those
-commands individually, you can deploy the app from a dev VM (assuming
-`/share/apps/everest-ui-all` is mounted) to any environment.
-
-
-While using the CI job is preferred, you can also deploy to the current
-environment from a VM (e.g., if the VM was built for the `integration`
-environment, and you want to deploy to `integration`):
-
-        $ npm run deploy-drupal
-
-However, this option will not add a git tag, nor will it automatically refresh
-the Drupal cache.
-
-A full deployment of the app may include changes to Drupal modules not covered
-above. For details on that part of the project, see the [drupal project
-README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md).
