@@ -13,6 +13,9 @@
     "node": "^14.19.0",
     "npm": "^6.14.16"
   },
+  "browser": {
+    "fs": false
+  },
   "exports": {},
   "old-scripts": {
     "build-dev": "webpack --watch",
@@ -76,11 +79,6 @@
     "postcss-less": "^6.0.0",
     "prettier": "2.6.2",
     "promise.prototype.finally": "^3.1.0",
-    "react": "^16.14.0",
-    "react-datepicker": "^4.7.0",
-    "react-dom": "^16.14.0",
-    "react-modal": "^3.14.4",
-    "react-transition-group": "^4.4.2",
     "socket.io-client": "^4.4.1",
     "source-map-loader": "3.0.1",
     "style-loader": "^3.3.1",
@@ -97,7 +95,6 @@
   },
   "dependencies": {
     "@fortawesome/free-regular-svg-icons": "^6.1.1",
-    "@types/es6-promise": "^3.3.0",
     "@types/isomorphic-fetch": "0.0.36",
     "cesium": "^1.92.0",
     "es6-promise": "^4.2.4",
@@ -105,8 +102,13 @@
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^3.0.0",
     "jquery": "^3.4.1",
+    "react": "^16.14.0",
+    "react-datepicker": "^4.7.0",
+    "react-dom": "^16.14.0",
+    "react-modal": "^3.14.4",
     "react-split-pane": "^0.1.92",
     "react-tooltip": "4.2.21",
+    "react-transition-group": "^4.4.2",
     "shapefile": "^0.6.6",
     "webpack-shell-plugin": "^0.5.0"
   }

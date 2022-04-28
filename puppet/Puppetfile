@@ -6,4 +6,14 @@ mod "nsidc/nsidc_jenkins",
 
 mod "nsidc/nsidc_nfs",
   :git => "git@bitbucket.org:/nsidc/puppet-nsidc-nfs.git",
-  :ref => "v2.0.0"
+  :ref => "latest"
+
+# Module for installing packages from apt
+mod 'puppetlabs/apt', "< 8.0.0"
+
+# Module for webserver (nginx) install
+mod 'nsidc/puppet-nginx',
+  :git => 'https://github.com/nsidc/puppet-nginx',
+  :ref => 'puppet6'
+
+mod 'willdurand/nodejs', '2.1.1'

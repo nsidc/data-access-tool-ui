@@ -11,7 +11,7 @@ import { BoundingBoxFilter } from "./BoundingBoxFilter";
 import { Globe } from "./Globe";
 import { TemporalFilter } from "./TemporalFilter";
 
-declare var EVEREST_UI_VERSION: string;  // defined at compile time by webpack.DefinePlugin
+declare var VERSION: string;  // defined at compile time by webpack.DefinePlugin
 
 interface IOrderParametersProps {
   cmrStatusOk: boolean;
@@ -57,7 +57,7 @@ export class OrderParameterInputs extends React.Component<IOrderParametersProps,
           spatialSelection={this.props.orderParameters.spatialSelection} />
         <div id="version">
           <a href="https://cesiumjs.org" target="_blank"><img id="cesium" src={cesiumImg} alt="Cesium"/></a>
-          <span>NSIDC UI v{EVEREST_UI_VERSION}</span></div>
+          <span>NSIDC UI v{VERSION}</span></div>
       </div>
     );
   }

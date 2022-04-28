@@ -114,7 +114,7 @@ module.exports = {
             ]
         }),
         new webpack.DefinePlugin({
-            EVEREST_UI_VERSION: JSON.stringify(require("./package.json").version),
+            VERSION: JSON.stringify(require("./package.json").version),
             // Define relative base path in cesium for loading assets
             CESIUM_BASE_URL: JSON.stringify(process.env.CESIUM_BASE_URL || '')
         }),
