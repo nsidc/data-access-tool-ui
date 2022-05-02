@@ -26,7 +26,7 @@
   },
   "scripts": {
     "clean": "rm -rf ./dist/*",
-    "start": "CESIUM_BASE_URL=/ webpack serve --node-env development --no-client-overlay --progress",
+    "start": "webpack serve --node-env development --no-client-overlay --progress",
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development",
     "lint": "scripts/lint.sh",

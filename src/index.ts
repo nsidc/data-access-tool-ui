@@ -27,6 +27,8 @@ let renderUI: any;
 // if (name === 'doRoute' && window['drupalSettings'].keywords) {
 //   args[0] = 'keywords=' + window['drupalSettings'].keywords;
 // }
+// @ts-ignore
+window["CESIUM_BASE_URL"] = process.env.CESIUM_BASE_URL;
 
 if (typeof(Drupal) !== "undefined") {
   // By extending Drupal.behaviors with a new behavior and callback, we can

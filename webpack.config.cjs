@@ -113,10 +113,10 @@ module.exports = {
                 { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' }
             ]
         }),
-        new webpack.DefinePlugin({
+        new webpack.EnvironmentPlugin({
             VERSION: JSON.stringify(require("./package.json").version),
             // Define relative base path in cesium for loading assets
-            CESIUM_BASE_URL: JSON.stringify(process.env.CESIUM_BASE_URL || '')
+            CESIUM_BASE_URL: process.env.CESIUM_BASE_URL || '/'
         }),
         new WriteFilePlugin(),
     ]
