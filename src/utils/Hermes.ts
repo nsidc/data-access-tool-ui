@@ -87,6 +87,7 @@ export function constructAPI(urls: any): IHermesAPI {
       {
         credentials: "include",
         method: "GET",
+        mode: 'no-cors',
       },
     ).then((response: Response) => {
       return response.json();

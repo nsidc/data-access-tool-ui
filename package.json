@@ -27,7 +27,7 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "start": "webpack serve --node-env development --no-client-overlay --progress",
-    "build": "webpack --mode=production",
+    "build": "CESIUM_BASE_URL=/ webpack --mode=production",
     "build:dev": "webpack --mode=development",
     "lint": "scripts/lint.sh",
     "test": "npx jest --config=jest.config.cjs",

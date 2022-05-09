@@ -34,13 +34,10 @@ module.exports = {
         toUrlUndefined: true
     },
 
-    devtool: 'source-map',
+    // TODO: remove source-map from production build.
+    devtool: 'cheap-module-source-map',
 
     devServer : {
-        historyApiFallback: {
-            disableDotRule: true,
-        },
-        hot: true
     },
 
     resolve: {
@@ -62,18 +59,24 @@ module.exports = {
                 ]
             },
             {
-                test: /\.less$/,
-                use: [{
-                  loader: 'style-loader'
-                }, {
-                  loader: 'css-loader', options: {
-                    sourceMap: true
-                  }
-                }, {
-                  loader: 'less-loader', options: {
-                    sourceMap: true
-                  }
-                }]
+                test: /\.less$/i,
+                use : [
+                    {
+                        loader : "style-loader",
+                    },
+                    {
+                        loader : "css-loader",
+                        options: {
+                            sourceMap: true,
+                        }
+                    },
+                    {
+                        loader : "less-loader",
+                        options : {
+                            sourceMap: true,
+                        },
+                    },
+                ],
             },
             { test: /\.tsx?$/, loader: 'ts-loader' },
             {
@@ -121,12 +124,3 @@ module.exports = {
         new WriteFilePlugin(),
     ]
 };
-
-// clear the Drupal JS/CSS cache so that source changes can be immediately
-// picked up
-if (process.env.DRUSH_CACHE_CLEAR_ON_BUILD) {
-  module.exports.plugins.push(new WebpackShellPlugin({
-    onBuildEnd: ['./scripts/clear-drush-cache.sh'],
-    dev: false  // without this, the command only runs on the first build with --watch
-  }));
-}

@@ -22,6 +22,19 @@ Note! The versions of `node` and `npm` are also specified in `package.json`.
 
 [Open the app](http://localhost:8080/), make changes, and the page will be refreshed automatically.
 
+## Developer VM (no Drupal)
+
+     $ npm run build:dev # Build with source maps for development environment, and development
+                         # settings.
+                         # Do "npm run build" if you don't need source maps.
+     $ rsync -av dist/ vagrant@dev.data-access-tools.USERNAME.dev.int.nsidc.org:/var/www/html/data-access-tools
+
+On VM:
+
+     $ sudo systemctl status nginx
+     $ sudo systemctl restart nginx
+
+
 ## Development with Drupal integration
 
 Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/),
