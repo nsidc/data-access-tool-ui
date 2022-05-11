@@ -1,11 +1,11 @@
 import * as io from "socket.io-client";
 
 import { ISelectionCriteria } from "../types/OrderSubmissionParameters";
-import { EverestUser, HermesAPIUserJSON, ILoggedInUser, isLoggedInUser } from "../types/User";
+import { EverestUser, ILoggedInUser, isLoggedInUser } from "../types/User";
 
 export interface IHermesAPI {
   getOrder: (orderId: string) => any;
-  getUser: () => Promise<HermesAPIUserJSON>;
+  getUser: () => Promise<Response>;
   getUserOrders: (user: ILoggedInUser) => any;
   logoutUser: () => Promise<Response>;
   openNotificationConnection: (user: EverestUser, callback: any) => void;
@@ -81,17 +81,17 @@ export function constructAPI(urls: any): IHermesAPI {
     );
   };
 
-  const getUser = (): Promise<HermesAPIUserJSON> => {
+  const getUser = (): Promise<any> => {
     return fetch(
       `${urls.hermesApiUrl}/user/`,
       {
-        credentials: "include",
+        credentials: "same-origin",
         method: "GET",
-        mode: 'no-cors',
       },
     ).then((response: Response) => {
-      return response.json();
-    });
+      if (!response.ok) { throw new Error('Network response was not ok'); }
+        return response.json();
+      })
   };
 
   return {
