@@ -1,6 +1,6 @@
 {
   "name": "@nsidc/data-access-tools",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0-rc.3",
   "description": "UI to order NASA data and track order history.",
   "repository": "https://bitbucket.org/nsidc/everest-ui",
   "files": [
