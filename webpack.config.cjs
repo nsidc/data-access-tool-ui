@@ -1,9 +1,9 @@
 const path = require('path');
+const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WebpackShellPlugin = require('webpack-shell-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 
 const cesiumSource = 'node_modules/cesium/Source';
@@ -18,7 +18,35 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 links = ["https://cdn.earthdata.nasa.gov/eui/1.1.7/stylesheets/application.css"];
 scripts = ["https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"];
 
-module.exports = {
+const devConfig = {
+    plugins: [
+        new webpack.EnvironmentPlugin({
+            APPLICATION_ENVIRONMENT: 'development'
+        }),
+
+    ],
+
+    devtool: 'cheap-module-source-map',
+
+    devServer : {
+        proxy: {
+            "/apps/orders/api": {
+                target: "http://localhost:3000",
+                pathRewrite: { '^/apps/orders/api': '' },
+            }
+        }
+    },
+};
+
+const prodConfig = {
+    plugins: [
+        new webpack.EnvironmentPlugin({
+            APPLICATION_ENVIRONMENT: 'production'
+        })
+    ]
+};
+
+const config = {
     entry: {
       "order-data": ['./src/index.ts'],
       "order-history": ['./src/profile.ts']
@@ -33,19 +61,6 @@ module.exports = {
         // Enable webpack-friendly use of require in Cesium
         toUrlUndefined: true
     },
-
-    // TODO: remove source-map from production build.
-    devtool: 'cheap-module-source-map',
-
-    devServer : {
-        proxy: {
-            "/apps/orders/api": {
-                target: "http://localhost:3000",
-                pathRewrite: { '^/apps/orders/api': '' },
-            }
-        }
-    },
-
     resolve: {
         extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx'],
         alias: {
@@ -129,4 +144,17 @@ module.exports = {
         }),
         new WriteFilePlugin(),
     ]
+};
+
+module.exports = (env, argv) => {
+    let mergedConfig = {};
+
+    if (argv.mode !== 'production') {
+        mergedConfig = merge(devConfig, config);
+    }
+    else {
+        mergedConfig = merge(prodConfig, config);
+    }
+
+    return mergedConfig;
 };
