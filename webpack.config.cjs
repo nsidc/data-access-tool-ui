@@ -38,6 +38,12 @@ module.exports = {
     devtool: 'cheap-module-source-map',
 
     devServer : {
+        proxy: {
+            "/apps/orders/api": {
+                target: "http://localhost:3000",
+                pathRewrite: { '^/apps/orders/api': '' },
+            }
+        }
     },
 
     resolve: {

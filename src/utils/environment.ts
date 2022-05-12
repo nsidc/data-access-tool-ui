@@ -36,9 +36,9 @@ function getEnvironmentDependentURLs() {
     };
   } else {
     return {
-      hermesApiUrl: `https://nsidc.org/apps/orders/api`,
+      hermesApiUrl: "/apps/orders/api",
       orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "https://nsidc.org/apps/orders/notification/",
+      orderNotificationPath: "/apps/orders/notification/",
     };
   }
 }
