@@ -65,6 +65,7 @@ export class EDLButton extends React.Component<IEDLButtonProps, {}> {
 
     const fullName = `${this.context.user.first_name} ${this.context.user.last_name}`;
 
+    // TODO profileUrl needs to include user id (or it must exist in local storage)
     return (
       <div className="button-group">
         <button className="eui-btn--blue eui-btn--group-main" id="name-logout-button">

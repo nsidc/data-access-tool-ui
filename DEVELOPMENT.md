@@ -11,6 +11,7 @@
         $ nvm use
 
 Note! The versions of `node` and `npm` are also specified in `package.json`.
+These all need to be in sync (or ideally, only maintained in one place).
 
 3. Install dependencies:
 
@@ -21,6 +22,9 @@ Note! The versions of `node` and `npm` are also specified in `package.json`.
         $ npm start
 
 [Open the app](http://localhost:8080/), make changes, and the page will be refreshed automatically.
+
+You also need to run a proxy to Hermes: npx http-server -p 3000 -P https://nsidc.org/apps/orders/api
+See the config in webpack.config.cjs. Would like to proxy directly to Hermes URL, but couldn't get that to work.
 
 ## Developer VM (no Drupal)
 

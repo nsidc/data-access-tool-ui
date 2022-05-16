@@ -64,6 +64,7 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     }
   };
 
+  // TODO profileUrl needs to include user id if it exists.
   if (inDrupal) {
     const urls = {
       ...getEnvironmentDependentURLs(),

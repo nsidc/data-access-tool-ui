@@ -31,6 +31,7 @@ interface IOrderSuccessContentProps {
   response: any;
 }
 
+// TODO profileUrl needs to reflect user id (or it must exist in local storage)
 export const OrderSuccessContent = (props: IOrderSuccessContentProps) => {
   const orderId = props.response.order.order_id;
   return (

@@ -1,9 +1,14 @@
 import { shim } from "promise.prototype.finally";
 
 import setupEnvironment from "./utils/environment";
+import { renderApp } from "./renderOrderForm";
 
-declare var Drupal: any;
+let datasetAuthId: string | null = null;
+let datasetVersion: string | null = null;
+let drupalSettings: { [key: string]: any};
 
+// Ignore these random notes to self while app migration is still in progress...
+// but TODO remove them before merging this branch!
 // existing application URL: https://nsidc.org/data/MOD10_L2/versions/61
 // D9 application URL: /data/data-access-tool/MOD10_L2/versions/61
 // D9 landing page URL: https://staging.example.nsidc.org/data/mod10_l2/versions/61
@@ -19,32 +24,17 @@ declare var Drupal: any;
 //
 
 shim(); // Get support for Promise.finally(). Can be replaced with Typescript 2.7+ and esnext
-let renderUI: any;
+let inDrupal: boolean;
 
-// if (window['drupalSettings'] === void 0) {
-//   window['drupalSettings'] = {};
-// }
-// if (name === 'doRoute' && window['drupalSettings'].keywords) {
-//   args[0] = 'keywords=' + window['drupalSettings'].keywords;
-// }
 // @ts-ignore
 window["CESIUM_BASE_URL"] = process.env.CESIUM_BASE_URL;
+drupalSettings = (window as { [key: string]: any })["drupalSettings"];
+inDrupal = false;
 
-if (typeof(Drupal) !== "undefined") {
-  // By extending Drupal.behaviors with a new behavior and callback, we can
-  // ensure that the "everest-ui" element and required Drupal state exist
-  // before we render the app or include dependencies.
-  Drupal.behaviors.EverestUI = {
-    attach: (context: any, settings: any) => {
-      /* tslint:disable:no-var-requires */
-      renderUI = require("./renderOrderForm");
-      /* tslint:enable:no-var-requires */
-      return renderUI.renderApp(setupEnvironment(true));
-    },
-  };
-} else {
-  /* tslint:disable:no-var-requires */
-  renderUI = require("./renderOrderForm");
-  /* tslint:enable:no-var-requires */
-  renderUI.renderApp(setupEnvironment(false));
+if (drupalSettings !== void 0) {
+  datasetAuthId = drupalSettings['auth-id'];
+  datasetVersion = drupalSettings['version'];
+  inDrupal = true;
 }
+
+renderApp(setupEnvironment(inDrupal), datasetAuthId, datasetVersion);
