@@ -17,7 +17,7 @@ import { EverestUI } from "./components/EverestUI";
 ReactDOM.render((<div id="everest-container" />), document.getElementById("order-data"));
 ReactModal.setAppElement("#everest-container");
 
-export const renderApp = (environment: any, datasetAuthId: string | null, datasetVersion: string | null) => {
+export const renderApp = (environment: any) => {
   ReactDOM.render(
     <EverestUI environment={environment} />,
     document.getElementById("order-data"),

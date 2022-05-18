@@ -3,10 +3,6 @@ import { shim } from "promise.prototype.finally";
 import setupEnvironment from "./utils/environment";
 import { renderApp } from "./renderOrderForm";
 
-let datasetAuthId: string | null = null;
-let datasetVersion: string | null = null;
-let drupalSettings: { [key: string]: any};
-
 // Ignore these random notes to self while app migration is still in progress...
 // but TODO remove them before merging this branch!
 // existing application URL: https://nsidc.org/data/MOD10_L2/versions/61
@@ -24,17 +20,8 @@ let drupalSettings: { [key: string]: any};
 //
 
 shim(); // Get support for Promise.finally(). Can be replaced with Typescript 2.7+ and esnext
-let inDrupal: boolean;
 
 // @ts-ignore
-window["CESIUM_BASE_URL"] = process.env.CESIUM_BASE_URL;
-drupalSettings = (window as { [key: string]: any })["drupalSettings"];
-inDrupal = false;
+window.CESIUM_BASE_URL = process.env.CESIUM_BASE_URL;
 
-if (drupalSettings !== void 0) {
-  datasetAuthId = drupalSettings['auth-id'];
-  datasetVersion = drupalSettings['version'];
-  inDrupal = true;
-}
-
-renderApp(setupEnvironment(inDrupal), datasetAuthId, datasetVersion);
+renderApp(setupEnvironment());

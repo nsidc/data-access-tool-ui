@@ -15,12 +15,12 @@ if (typeof(Drupal) !== "undefined") {
       /* tslint:disable:no-var-requires */
       renderProfile = require("./renderProfile");
       /* tslint:enable:no-var-requires */
-      return renderProfile.renderApp(setupEnvironment(true));
+      return renderProfile.renderApp(setupEnvironment());
     },
   };
 } else {
   /* tslint:disable:no-var-requires */
   renderProfile = require("./renderProfile");
   /* tslint:enable:no-var-requires */
-  renderProfile.renderApp(setupEnvironment(false));
+  renderProfile.renderApp(setupEnvironment());
 }

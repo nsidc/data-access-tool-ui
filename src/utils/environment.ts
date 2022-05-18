@@ -1,7 +1,7 @@
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
-declare var drupalSettings: any;
+declare var datasetFromDrupal: any;
 
 interface IUrls {
   hermesApiUrl: string;
@@ -43,7 +43,7 @@ function getEnvironmentDependentURLs() {
   }
 }
 
-export default function setupEnvironment(inDrupal: boolean): IEnvironment {
+export default function setupEnvironment(): IEnvironment {
   const exposeFunction = (name: string, callback: (...args: any[]) => any): boolean => {
     if (!["dev", "integration"].includes(getEnvironment())) {
       return false;
@@ -64,30 +64,29 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     }
   };
 
-  // TODO profileUrl needs to include user id if it exists.
-  if (inDrupal) {
-    const urls = {
-      ...getEnvironmentDependentURLs(),
-      profileUrl: "/order-history",
-    };
-    return {
-      drupalDataset: drupalSettings.data_downloads?.dataset,
-      exposeFunction,
-      hermesAPI: constructAPI(urls),
-      inDrupal,
-      urls,
-    };
-  } else {
-    const urls = {
-      ...getEnvironmentDependentURLs(),
-      profileUrl: "/order-history.html",
-    };
-    return {
-      drupalDataset: undefined,
-      exposeFunction,
-      hermesAPI: constructAPI(urls),
-      inDrupal,
-      urls,
-    };
+  let inDrupal: boolean = false;
+  let profileLocation: string = "/order-history.html";
+  const drupalSettings: { [key: string]: any} = (window as { [key: string]: any }).drupalSettings;
+
+  // if drupalSettings.auth-id?
+  if (drupalSettings !== void 0) {
+    datasetFromDrupal.id = drupalSettings["auth-id"];
+    datasetFromDrupal.version = drupalSettings.version;
+    datasetFromDrupal.title = '';
+    profileLocation = "/order-history";
+    inDrupal = true;
   }
+
+  // TODO profileUrl needs to include user id if it exists.
+  const urls = {
+    ...getEnvironmentDependentURLs(),
+    profileUrl: profileLocation,
+  };
+  return {
+    drupalDataset: datasetFromDrupal,
+    exposeFunction,
+    hermesAPI: constructAPI(urls),
+    inDrupal,
+    urls,
+  };
 }
