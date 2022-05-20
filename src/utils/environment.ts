@@ -1,8 +1,6 @@
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { constructAPI, IHermesAPI } from "./Hermes";
 
-declare var datasetFromDrupal: any;
-
 interface IUrls {
   hermesApiUrl: string;
   orderNotificationHost: string;
@@ -64,15 +62,18 @@ export default function setupEnvironment(): IEnvironment {
     }
   };
 
+  let datasetFromDrupal: IDrupalDataset | undefined;
   let inDrupal: boolean = false;
   let profileLocation: string = "/order-history.html";
   const drupalSettings: { [key: string]: any} = (window as { [key: string]: any }).drupalSettings;
 
   // if drupalSettings.auth-id?
-  if (drupalSettings !== void 0) {
-    datasetFromDrupal.id = drupalSettings["auth-id"];
-    datasetFromDrupal.version = drupalSettings.version;
-    datasetFromDrupal.title = '';
+  if (typeof(drupalSettings) !== "undefined") {
+    datasetFromDrupal = {
+      id: drupalSettings["auth-id"],
+      version: drupalSettings.version,
+      title: '',
+    };
     profileLocation = "/order-history";
     inDrupal = true;
   }
