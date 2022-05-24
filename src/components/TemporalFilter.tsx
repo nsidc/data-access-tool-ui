@@ -43,17 +43,17 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           id="from"
           className={(this.props.timeErrorLowerBound === "") ? "" : "error"}
           selected={this.props.fromDate.utc().toDate()}
-          dateFormat={["MM/dd/yyyy", "M/D/YYYY"]}
+          dateFormat={["MM/dd/yyyy", "M/d/yyyy"]}
           onChange={(date: Date) =>
-            this.props.onFromDateChange(moment(date.getUTCDate()).startOf("day"))} />
+            this.props.onFromDateChange(moment(date.toUTCString()).startOf("day"))} />
         <label className="to">To</label>
         <DatePicker
           id="to"
           className={(this.props.timeErrorUpperBound === "") ? "" : "error"}
           selected={this.props.toDate.utc().toDate()}
-          dateFormat={["MM/dd/yyyy", "M/D/YYYY"]}
+          dateFormat={["MM/dd/yyyy", "M/d/yyyy"]}
           onChange={(date: Date) =>
-            this.props.onToDateChange(moment(date.getUTCDate()).endOf("day"))} />
+            this.props.onToDateChange(moment(date.toUTCString()).endOf("day"))} />
         <div onClick={this.props.onClick}>
           <button className="buttonReset" data-tip="Reset dates to defaults">
             <FontAwesomeIcon icon={faUndoAlt} size="lg" />

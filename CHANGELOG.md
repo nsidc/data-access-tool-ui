@@ -1,3 +1,9 @@
+# v2.0.0-rc 
+
+* Update to Webpack v5; bump dependencies to latest version possible
+  within limits of time available for refactoring.
+* Add CircleCI config to publish application to npmjs.com.
+
 # v1.6.2 (2021-09-09)
 
 * Use NSIDC_TS1 as the provider for the staging environment.
