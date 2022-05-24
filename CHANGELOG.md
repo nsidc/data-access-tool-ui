@@ -1,4 +1,4 @@
-# v2.0.0-rc 
+# v2.0.0-rc
 
 * Update to Webpack v5; bump dependencies to latest version possible
   within limits of time available for refactoring.

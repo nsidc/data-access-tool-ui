@@ -91,6 +91,63 @@
     color: #474747;
   }
 
+  .buttonReset { /* stylelint-disable-line selector-class-pattern */
+    cursor: pointer;
+    background-color: inherit;
+    border-style: none;
+    margin-left: 1em;
+    padding: 0 4px 3px;
+    vertical-align: middle;
+    color: #555;
+
+    &:disabled {
+      color: lightgray;
+      pointer-events: none;
+    }
+
+    &:hover {
+      color: #48b;
+      box-shadow: 0 0 8px #fff;
+    }
+
+    &:focus {
+      outline-width: 0;
+    }
+
+    &:active {
+      color: #adf;
+      box-shadow: 0 0 8px #fff;
+    }
+  }
+
+  div.react-datepicker-wrapper {
+    margin: 0 0 0 0.5em;
+
+    input {
+      margin: 0;
+      padding: 2px 0;
+      width: 7em;
+      text-align: center;
+      border-style: solid;
+      border-width: 1px;
+      border-color: darkgray;
+      border-radius: 4px;
+    }
+
+    input.error {
+      border-color: red;
+      outline-color: red;
+    }
+
+    > div {
+      width: auto;
+    }
+  }
+
+  div.react-datepicker-popper {
+    z-index: 10;
+  }
+
   #temporal-selection {
     margin: 0;
     padding: 0;
@@ -171,63 +228,6 @@
         border-color: lightgray;
       }
     }
-  }
-
-  .buttonReset { /* stylelint-disable-line selector-class-pattern */
-    cursor: pointer;
-    background-color: inherit;
-    border-style: none;
-    margin-left: 1em;
-    padding: 0 4px 3px;
-    vertical-align: middle;
-    color: #555;
-
-    &:disabled {
-      color: lightgray;
-      pointer-events: none;
-    }
-
-    &:hover {
-      color: #48b;
-      box-shadow: 0 0 8px #fff;
-    }
-
-    &:focus {
-      outline-width: 0;
-    }
-
-    &:active {
-      color: #adf;
-      box-shadow: 0 0 8px #fff;
-    }
-  }
-
-  div.react-datepicker-wrapper {
-    margin: 0 0 0 0.5em;
-
-    input {
-      margin: 0;
-      padding: 2px 0;
-      width: 7em;
-      text-align: center;
-      border-style: solid;
-      border-width: 1px;
-      border-color: darkgray;
-      border-radius: 4px;
-    }
-
-    input.error {
-      border-color: red;
-      outline-color: red;
-    }
-
-    div {
-      width: auto;
-    }
-  }
-
-  div.react-datepicker-popper {
-    z-index: 10;
   }
 
   #spatial-selection:first-child {

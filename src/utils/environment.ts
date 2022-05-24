@@ -67,7 +67,6 @@ export default function setupEnvironment(): IEnvironment {
   let profileLocation: string = "/order-history.html";
   const drupalSettings: { [key: string]: any} = (window as { [key: string]: any }).drupalSettings;
 
-  // if drupalSettings.auth-id?
   if (typeof(drupalSettings) !== "undefined") {
     datasetFromDrupal = {
       id: drupalSettings["auth-id"],
@@ -78,7 +77,6 @@ export default function setupEnvironment(): IEnvironment {
     inDrupal = true;
   }
 
-  // TODO profileUrl needs to include user id if it exists.
   const urls = {
     ...getEnvironmentDependentURLs(),
     profileUrl: profileLocation,
