@@ -23,12 +23,5 @@ shim(); // Get support for Promise.finally(). Can be replaced with Typescript 2.
 
 // @ts-ignore
 window.CESIUM_BASE_URL = process.env.CESIUM_BASE_URL;
-// @ts-ignore
-// For manual testing of auth id/version handoff from Drupal
-// window.drupalSettings = {
-//    'auth-id': 'MYD10_L2',
-//    'version': '6',
-// };
-
 
 renderApp(setupEnvironment());

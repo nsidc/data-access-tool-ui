@@ -26,11 +26,10 @@ export function getEnvironment(): string {
 
 function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
-    const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     return {
-      hermesApiUrl: `https://dev.hermes.${devPostfix}/api`,
-      orderNotificationHost: `wss://dev.hermes.${devPostfix}`,
-      orderNotificationPath: "/notification/",
+      hermesApiUrl: "https://staging.nsidc.org/apps/orders/api",
+      orderNotificationHost: `wss://${window.location.hostname}`,
+      orderNotificationPath: "/apps/orders/notification/",
     };
   } else {
     return {
@@ -69,8 +68,8 @@ export default function setupEnvironment(): IEnvironment {
 
   if (typeof(drupalSettings) !== "undefined") {
     datasetFromDrupal = {
-      id: drupalSettings["auth-id"],
-      version: drupalSettings.version,
+      id: drupalSettings.data_downloads.dataset.id,
+      version: drupalSettings.data_downloads.dataset.version,
       title: '',
     };
     profileLocation = "/order-history";
