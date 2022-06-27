@@ -19,7 +19,7 @@ export interface IEnvironment {
 export function getEnvironment(): string {
   const env: string = window.location.hostname.split(".")[0];
   if (["localhost", "dev", "integration", "qa", "staging"].includes(env)) {
-    return env;
+    return (env === "localhost") ? "dev" : env;
   }
   return "production";
 }
@@ -27,7 +27,7 @@ export function getEnvironment(): string {
 function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
     return {
-      hermesApiUrl: "https://staging.nsidc.org/apps/orders/api",
+      hermesApiUrl: "/apps/orders/api",
       orderNotificationHost: `wss://${window.location.hostname}`,
       orderNotificationPath: "/apps/orders/notification/",
     };

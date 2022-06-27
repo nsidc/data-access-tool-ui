@@ -17,13 +17,6 @@
     "fs": false
   },
   "exports": {},
-  "old-scripts": {
-    "build-dev": "webpack --watch",
-    "build-drupal": "CESIUM_BASE_URL=/apps/everest-ui webpack -p",
-    "build-dev-drupal": "CESIUM_BASE_URL=/apps/everest-ui WEBPACK_OUTPUT_PATH=/share/apps/everest-ui DRUSH_CACHE_CLEAR_ON_BUILD=true webpack-dev-server --https",
-    "build-lando": "CESIUM_BASE_URL=/apps/everest-ui/everest-ui-app WEBPACK_OUTPUT_PATH=/app/web/apps/everest-ui/everest-ui-app DRUSH_CACHE_CLEAR_ON_BUILD=true webpack -p --progress",
-    "deploy-drupal": "./scripts/deploy.sh"
-  },
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "start": "webpack serve --node-env development --no-client-overlay --progress",
