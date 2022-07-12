@@ -1,5 +1,5 @@
-import { IDrupalDataset } from "../types/DrupalDataset";
-import { constructAPI, IHermesAPI } from "./Hermes";
+import {IDrupalDataset} from "../types/DrupalDataset";
+import {constructAPI, IHermesAPI} from "./Hermes";
 
 interface IUrls {
   hermesApiUrl: string;
@@ -64,14 +64,10 @@ export default function setupEnvironment(): IEnvironment {
   let datasetFromDrupal: IDrupalDataset | undefined;
   let inDrupal: boolean = false;
   let profileLocation: string = "/order-history.html";
-  const drupalSettings: { [key: string]: any} = (window as { [key: string]: any }).drupalSettings;
+  const drupalSettings: {[key: string]: any} = (window as {[key: string]: any}).drupalSettings;
 
-  if (typeof(drupalSettings) !== "undefined") {
-    datasetFromDrupal = {
-      id: drupalSettings.data_downloads.dataset.id,
-      version: drupalSettings.data_downloads.dataset.version,
-      title: '',
-    };
+  if (typeof (drupalSettings) !== "undefined") {
+    console.log("Using drupalSettings:", drupalSettings);
     profileLocation = "/order-history";
     inDrupal = true;
   }
