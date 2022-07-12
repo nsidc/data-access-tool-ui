@@ -67,7 +67,7 @@ export default function setupEnvironment(): IEnvironment {
   const drupalSettings: {[key: string]: any} = (window as {[key: string]: any}).drupalSettings;
 
   if (typeof (drupalSettings) !== "undefined") {
-    console.log("Using drupalSettings:", drupalSettings);
+    console.warn("Using drupalSettings:", drupalSettings);
     profileLocation = "/order-history";
     inDrupal = true;
   }
