@@ -68,6 +68,11 @@ export default function setupEnvironment(): IEnvironment {
 
   if (typeof (drupalSettings) !== "undefined") {
     console.warn("Using drupalSettings:", drupalSettings);
+    datasetFromDrupal = {
+      id: drupalSettings.data_downloads?.dataset?.id,
+      version: drupalSettings.data_downloads?.dataset?.version,
+      title: '',
+    };
     profileLocation = "/order-history";
     inDrupal = true;
   }
