@@ -1,10 +1,11 @@
 import * as React from "react";
-import * as ReactTooltip from "react-tooltip";
+import ReactTooltip from "react-tooltip";
 
 import { hasChanged } from "../utils/hasChanged";
 
 interface ISubmitButtonProps {
   buttonText: string;
+  buttonId: string;
   tooltip: JSX.Element;
   disabled: boolean;
   onSubmitOrder: any;
@@ -17,10 +18,11 @@ export class SubmitButton extends React.Component<ISubmitButtonProps, {}> {
 
   public render() {
     return (
-      <div className="tooltip" data-tip data-for={this.props.buttonText}>
-        <ReactTooltip id={this.props.buttonText} className="reactTooltip"
+      <div className="tooltip" data-tip data-for={this.props.buttonId}>
+        <ReactTooltip id={this.props.buttonId} className="reactTooltip"
           effect="solid" delayShow={500}>{this.props.tooltip}</ReactTooltip>
         <button
+          type="button"
           className="submit-button eui-btn--blue"
           disabled={this.props.disabled}
           onClick={this.handleClick}>

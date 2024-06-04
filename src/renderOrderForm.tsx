@@ -14,12 +14,12 @@ import { EverestUI } from "./components/EverestUI";
 //
 // http://reactcommunity.org/react-modal/accessibility/#app-element
 // http://reactcommunity.org/react-modal/#custom-parent
-ReactDOM.render((<div id="everest-container" />), document.getElementById("everest-ui"));
+ReactDOM.render((<div id="everest-container" />), document.getElementById("order-data"));
 ReactModal.setAppElement("#everest-container");
 
 export const renderApp = (environment: any) => {
   ReactDOM.render(
     <EverestUI environment={environment} />,
-    document.getElementById("everest-ui"),
+    document.getElementById("order-data"),
   );
 };

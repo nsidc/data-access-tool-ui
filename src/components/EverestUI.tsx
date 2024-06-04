@@ -2,8 +2,7 @@ import { fromJS, List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 import SplitPane from "react-split-pane";
-import * as ReactTooltip from "react-tooltip";
-
+import ReactTooltip from "react-tooltip";
 import { BoundingBox } from "../types/BoundingBox";
 import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule } from "../types/CmrGranule";
@@ -145,7 +144,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
           onCollectionChange={this.handleCollectionChange} />
       );
     }
-
     let columnContainer: any;
 
     const appJSX =  (
@@ -311,6 +309,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
   private handleTemporalReset = () => {
     const collection = this.state.orderParameters.collection;
     this.handleOrderParameterChange({
+      timeErrorLowerBound: "",
       temporalFilterLowerBound: collection.time_start ? moment.utc(collection.time_start) : moment.utc("20100101"),
       temporalFilterUpperBound: collection.time_end ? moment.utc(collection.time_end) : moment.utc(),
     });

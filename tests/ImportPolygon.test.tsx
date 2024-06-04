@@ -9,6 +9,7 @@ const doTestPolygon = (testName: string, file: any, expected: any) => {
         expect(poly).toEqual(expected);
         done();
       } catch (error) {
+        // @ts-ignore
         done.fail(error);
       }
     };

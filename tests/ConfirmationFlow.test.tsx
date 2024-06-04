@@ -10,7 +10,7 @@ import setupEnvironment from "../src/utils/environment";
 
 shim();
 
-const environment = setupEnvironment(false);
+const environment = setupEnvironment();
 
 const setup = (props = {}) => {
   const defaultProps = {

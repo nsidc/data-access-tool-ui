@@ -31,7 +31,7 @@ const setup = () => {
       "timestamp": "2018-08-10T01:22:21.457Z",
     },
   };
-  const environment = Object.assign(setupEnvironment(false), {
+  const environment = Object.assign(setupEnvironment(), {
     hermesAPI: {
       getOrder: jest.fn((orderId: string) => Promise.resolve(orders[orderId])),
       getUserOrders: jest.fn(() => Promise.resolve(orders)),

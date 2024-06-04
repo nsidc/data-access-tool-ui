@@ -2,21 +2,15 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
+  config.ssh.forward_x11 = true
+  config.vm.network "forwarded_port", guest: 80, host: 9080
+  config.vm.network "forwarded_port", guest: 443, host: 9443
+  config.vm.synced_folder ".", "/vagrant", type: "rsync",
+    rsync__exclude: [".git/", "puppet/modules/*", "puppet/.tmp/*", "node_modules/*"]
+
   config.vm.provision :shell do |s|
     s.name = 'apt-get update'
     s.inline = 'apt-get update'
-  end
-
-  config.vm.provision :shell do |s|
-    s.name = 'install nvm'
-    s.inline = 'curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash'
-    s.privileged = false
-  end
-
-  config.vm.provision :shell do |s|
-    s.name = 'install node'
-    s.inline = 'source /home/vagrant/.nvm/nvm.sh && cd /vagrant && nvm install'
-    s.privileged = false
   end
 
   config.vm.provision :shell do |s|

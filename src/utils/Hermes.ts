@@ -89,8 +89,9 @@ export function constructAPI(urls: any): IHermesAPI {
         method: "GET",
       },
     ).then((response: Response) => {
+      if (!response.ok) { return Promise.resolve(null); }
       return response.json();
-    });
+    })
   };
 
   return {

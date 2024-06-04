@@ -14,10 +14,10 @@ interface ICollectionDropdownProps {
 interface ICollectionDropdownState {
   collections: List<CmrCollection>;
   selectedCollection: string | null;
-  whitelistOnly: boolean;
+  shortlistOnly: boolean;
 }
 
-const WHITELIST = List([
+const SHORTLIST = List([
   "MOD10A2",
   "MOD10_L2",
   "MYD10A2",
@@ -37,7 +37,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
     this.state = {
       collections: List<CmrCollection>(),
       selectedCollection: null,
-      whitelistOnly: true,
+      shortlistOnly: true,
     };
   }
 
@@ -55,14 +55,14 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
   public shouldComponentUpdate(nextProps: ICollectionDropdownProps, nextState: ICollectionDropdownState) {
     const propsChanged = hasChanged(this.props, nextProps, ["cmrStatusOk"]);
-    const stateChanged = hasChanged(this.state, nextState, ["collections", "whitelistOnly"]);
+    const stateChanged = hasChanged(this.state, nextState, ["collections", "shortlistOnly"]);
 
     return propsChanged || stateChanged;
   }
 
   public render() {
-    const collections = this.state.whitelistOnly ?
-                        this.state.collections.filter((c: any) => WHITELIST.includes(c.short_name)) :
+    const collections = this.state.shortlistOnly ?
+                        this.state.collections.filter((c: any) => SHORTLIST.includes(c.short_name)) :
                         this.state.collections;
 
     const sortedCollections = collections.sortBy((c: CmrCollection = new CmrCollection()) => {
@@ -87,10 +87,10 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
           <label>
             <input type="radio"
-                   value="whitelist"
-                   checked={this.state.whitelistOnly}
+                   value="shortlist"
+                   checked={this.state.shortlistOnly}
                    onChange={this.handleIncludeChange} />
-            Whitelisted
+            Subset
           </label>
 
           <br />
@@ -98,7 +98,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
           <label>
             <input type="radio"
                    value="all"
-                   checked={!this.state.whitelistOnly}
+                   checked={!this.state.shortlistOnly}
                    onChange={this.handleIncludeChange} />
             All
           </label>
@@ -132,7 +132,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
   private handleIncludeChange = (e: any) => {
     this.setState({
-      whitelistOnly: e.target.value === "whitelist",
+      shortlistOnly: e.target.value === "shortlist",
     });
   }
 }

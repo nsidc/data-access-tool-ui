@@ -1,37 +1,65 @@
-version: 2
+version: 2.1
+
+setup: &setup
+  working_directory: ~/everest-ui
+  docker:
+    - image: node:14.17
 
 jobs:
   test:
-    docker:
-      - image: circleci/node:13.8.0
-    working_directory: ~/everest-ui
+    <<: *setup
     steps:
       - checkout
+      - restore_cache:
+          key: everest-ui-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          name: Run tests
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Test
+          command: npm run test
+      - save_cache:
+          key: everest-ui-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - "~/everest-ui/node_modules"
+      - persist_to_workspace:
+          root: ~/everest-ui
+          paths:
+            - .
+
+  package-and-publish:
+    <<: *setup
+    steps:
+      - attach_workspace:
+          at: ~/everest-ui
+      - run:
+          name: Build package
+          command: npm run build
+      - run:
+          name: Publish to npmjs.org
           command: |
-            npm install
-            npm run lint
-            npm run test
-            npm run build-drupal
+            echo "//registry.npmjs.org/:_authToken=${NPM_DEPLOY_TOKEN}" >> ~/.npmrc
+            npm --access public publish
 
 workflows:
-  version: 2
+  version: 2.1
 
-  build-and-deploy:
+  test-package-publish:
     jobs:
-      - test
-      #- build:
-      #    filters:
-      #      tags:
-      #        only: /^.*$/
-      #- deploy:
-      #    context: org-global
-      #    requires:
-      #      - build
-      #      - test
-      #    filters:
-      #      tags:
-      #        only: /^.*$/
-      #      branches:
-      #        only: /^master$/
+      - test:
+          filters:
+            tags:
+              only: /.*/
+
+      - package-and-publish:
+          context: org-global
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(\-[\.a-zA-Z0-9]+)?$/

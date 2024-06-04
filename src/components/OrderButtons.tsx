@@ -64,7 +64,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     ) : null;
     const tooltipOrder = (orderTooLarge) ? (
         <div>
-          <div>To place a large order (>2000 files), use the button at right.
+          <div>To place a large order (&gt;2000 files), use the button at right.
           You may also download a Python script, using the button at left.</div>
         </div>
       ) : (
@@ -76,7 +76,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       );
     const tooltipEarthdata = (
       <div>
-        <div>Orders >2000 files will be fulfilled via Earthdata Search.
+        <div>Orders &gt;2000 files will be fulfilled via Earthdata Search.
           Also use this option to apply customizations (e.g. subset, reformat).
           Your current order will be transferred intact for completion.
         </div>
@@ -93,11 +93,13 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onClick={this.handleScriptDownload} />
         <SubmitButton
           buttonText={"Order Files"}
+          buttonId={"orderFilesButton"}
           tooltip={tooltipOrder}
           disabled={orderButtonDisabled}
           onSubmitOrder={this.handleSubmitOrder} />
         <SubmitButton
           buttonText={"Large/Custom Order"}
+          buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
           disabled={earthdataButtonDisabled}
           onSubmitOrder={this.handleEarthdataOrder} />

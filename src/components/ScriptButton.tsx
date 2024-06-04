@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactModal from "react-modal";
-import * as ReactTooltip from "react-tooltip";
+import ReactTooltip from "react-tooltip";
 
 import { OrderParameters } from "../types/OrderParameters";
 import { IEnvironment } from "../utils/environment";

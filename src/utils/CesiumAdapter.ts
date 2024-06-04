@@ -54,7 +54,7 @@ export class CesiumAdapter {
       minimumLevel: 0,
       style: "",
       tileHeight: 512,
-      tileMatrixSetID: "EPSG4326_500m",
+      tileMatrixSetID: "500m",
       tileWidth: 512,
       tilingScheme: gibsGeographicTilingScheme(),
       url: "//gibs.earthdata.nasa.gov/wmts/epsg4326/best/wmts.cgi",

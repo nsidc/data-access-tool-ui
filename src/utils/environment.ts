@@ -1,7 +1,5 @@
-import { IDrupalDataset } from "../types/DrupalDataset";
-import { constructAPI, IHermesAPI } from "./Hermes";
-
-declare var Drupal: any;
+import {IDrupalDataset} from "../types/DrupalDataset";
+import {constructAPI, IHermesAPI} from "./Hermes";
 
 interface IUrls {
   hermesApiUrl: string;
@@ -20,19 +18,18 @@ export interface IEnvironment {
 
 export function getEnvironment(): string {
   const env: string = window.location.hostname.split(".")[0];
-  if (["dev", "integration", "qa", "staging"].includes(env)) {
-    return env;
+  if (["localhost", "dev", "integration", "qa", "staging"].includes(env)) {
+    return (env === "localhost") ? "dev" : env;
   }
   return "production";
 }
 
 function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
-    const devPostfix: string = window.location.hostname.split(".").slice(-5).join(".");
     return {
-      hermesApiUrl: `https://dev.hermes.${devPostfix}/api`,
-      orderNotificationHost: `wss://dev.hermes.${devPostfix}`,
-      orderNotificationPath: "/notification/",
+      hermesApiUrl: "/apps/orders/api",
+      orderNotificationHost: `wss://${window.location.hostname}`,
+      orderNotificationPath: "/apps/orders/notification/",
     };
   } else {
     return {
@@ -43,7 +40,7 @@ function getEnvironmentDependentURLs() {
   }
 }
 
-export default function setupEnvironment(inDrupal: boolean): IEnvironment {
+export default function setupEnvironment(): IEnvironment {
   const exposeFunction = (name: string, callback: (...args: any[]) => any): boolean => {
     if (!["dev", "integration"].includes(getEnvironment())) {
       return false;
@@ -64,29 +61,31 @@ export default function setupEnvironment(inDrupal: boolean): IEnvironment {
     }
   };
 
-  if (inDrupal) {
-    const urls = {
-      ...getEnvironmentDependentURLs(),
-      profileUrl: "/order-history",
+  let datasetFromDrupal: IDrupalDataset | undefined;
+  let inDrupal: boolean = false;
+  let profileLocation: string = "/order-history.html";
+  const drupalSettings: {[key: string]: any} = (window as {[key: string]: any}).drupalSettings;
+
+  if (typeof (drupalSettings) !== "undefined") {
+    console.warn("Using drupalSettings:", drupalSettings);
+    datasetFromDrupal = {
+      id: drupalSettings.data_downloads?.dataset?.id,
+      version: drupalSettings.data_downloads?.dataset?.version,
+      title: '',
     };
-    return {
-      drupalDataset: Drupal.settings.data_downloads?.dataset,
-      exposeFunction,
-      hermesAPI: constructAPI(urls),
-      inDrupal,
-      urls,
-    };
-  } else {
-    const urls = {
-      ...getEnvironmentDependentURLs(),
-      profileUrl: "/profile.html",
-    };
-    return {
-      drupalDataset: undefined,
-      exposeFunction,
-      hermesAPI: constructAPI(urls),
-      inDrupal,
-      urls,
-    };
+    profileLocation = "/order-history";
+    inDrupal = true;
   }
+
+  const urls = {
+    ...getEnvironmentDependentURLs(),
+    profileUrl: profileLocation,
+  };
+  return {
+    drupalDataset: datasetFromDrupal,
+    exposeFunction,
+    hermesAPI: constructAPI(urls),
+    inDrupal,
+    urls,
+  };
 }
