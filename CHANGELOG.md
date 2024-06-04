@@ -1,3 +1,8 @@
+# v3.0.0 (TBD)
+
+* Remove "Order Files" button in preparation for the decomissioning of the data
+  ordering system (hermes).
+
 # v2.0.0-rc
 
 * Update to Webpack v5; bump dependencies to latest version possible
