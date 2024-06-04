@@ -41,6 +41,13 @@ On VM:
 
 ## Development with Drupal integration
 
+NOTE: these development instructions are out of date. Consider looking at the
+[search-interface dev
+docs](https://github.com/nsidc/search-interface/blob/main/DEVELOPMENT.md#deploying-to-a-developer-drupal-vm)
+for information about how to work with drupal.
+
+TODO: update the information here as much as possible, or remove it.
+
 Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/),
 including the submodules.
 (See the `Quickstart` section in the [drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md)
