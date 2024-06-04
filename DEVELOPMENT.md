@@ -21,7 +21,9 @@ These all need to be in sync (or ideally, only maintained in one place).
 
         $ npm start
 
-[Open the app](http://localhost:8080/), make changes, and the page will be refreshed automatically.
+[Open the app](https://localhost:8080/), make changes, and the page will be
+refreshed automatically. Note that the webapp is served with a self-signed cert,
+so accept the risk and continue if your web browser blocks the request.
 
 You also need to run a proxy to Hermes: npx http-server -p 3000 -P https://nsidc.org/apps/orders/api
 See the config in webpack.config.cjs. Would like to proxy directly to Hermes URL, but couldn't get that to work.
@@ -40,6 +42,13 @@ On VM:
 
 
 ## Development with Drupal integration
+
+NOTE: these development instructions are out of date. Consider looking at the
+[search-interface dev
+docs](https://github.com/nsidc/search-interface/blob/main/DEVELOPMENT.md#deploying-to-a-developer-drupal-vm)
+for information about how to work with drupal.
+
+TODO: update the information here as much as possible, or remove it.
 
 Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/),
 including the submodules.
