@@ -29,6 +29,7 @@ const devConfig = {
     devtool: 'cheap-module-source-map',
 
     devServer : {
+        server: "https",
         proxy: {
             "/apps/orders/api": {
                 target: "http://localhost:3000",
