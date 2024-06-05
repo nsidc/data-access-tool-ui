@@ -6,6 +6,7 @@ import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { GranuleSorting } from "../types/OrderParameters";
 import { getEnvironment } from "./environment";
+import { CmrCollection } from "../types/CmrCollection";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
@@ -14,13 +15,14 @@ export const CMR_MAX_GRANULES = 2000;
 
 // Ops prefers to use UAT in staging so they can be aware of impacts of changes
 // making their way in to prod ECS systems.
+// TODO: do we still want this in our "hybrid" operating mode?
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
-const CMR_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
-const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER
+// const CMR_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?"
   + "&page_size=500&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER;
+const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
@@ -147,19 +149,43 @@ export const cmrStatusRequest = () => {
   return fetchResult;
 };
 
-export const cmrEcsCollectionsRequest = () => {
+const getCmrCollection = (response: any) => {
+    const collections: List<CmrCollection> = List(response.feed.entry.map((e: any) => new CmrCollection(e)));
+
+    // Could filter for `cloud_hosted == true` instead. Is there a reason to
+    // prefer specific providers? Could e.g., TS1 provider end up in the prod cmr?
+    const cloudCollection: CmrCollection | undefined = collections.find(collection => collection!.provider === "NSIDC_CPRD");
+    if (cloudCollection) {
+        console.log("Using cloud hosted collection: " +  cloudCollection);
+        return cloudCollection;
+    }
+
+    const ecsCollection: CmrCollection | undefined = collections.find(collection => collection!.provider === "NSIDC_ECS");
+    if (ecsCollection) {
+        console.log("Using ECS hosted collection: " +  ecsCollection);
+        return ecsCollection;
+    }
+
+    console.warn("No collection matched");
+    // In this case, something may have gone wrong!
+    return undefined
+}
+
+export const cmrCollectionsRequest = () => {
   return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
 };
 
 export const cmrCollectionRequest = (shortName: string, version: number) => {
   const collectionUrl = CMR_COLLECTION_URL
-    + `&short_name=${shortName}`
+    + `short_name=${shortName}`
     + `&${versionParameters(version)}`;
-  return cmrFetch(collectionUrl).then((response: Response) => response.json());
+  const response = cmrFetch(collectionUrl).then((response: Response) => response.json());
+  return response.then(getCmrCollection);
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionVersionId: number,
+                                  cmr_provider: string,
                                   spatialSelection: IGeoJsonPolygon | null,
                                   boundingBox: BoundingBox,
                                   temporalLowerBound: moment.Moment,
@@ -168,7 +194,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
   let URL = CMR_GRANULE_URL
-    + `?provider=${CMR_PROVIDER}`
+    + `?provider=${cmr_provider}`
     + `&page_size=${CMR_PAGE_SIZE}`
     + `${granuleSortParameter(granuleSorting)}`
     + `&short_name=${collectionAuthId}`

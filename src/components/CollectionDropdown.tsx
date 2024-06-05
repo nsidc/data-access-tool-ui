@@ -2,7 +2,7 @@ import { List } from "immutable";
 import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
-import { cmrEcsCollectionsRequest } from "../utils/CMR";
+import { cmrCollectionsRequest } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
@@ -116,12 +116,15 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
 
   private getCmrCollections() {
     const onSuccess = (response: any) => {
+      const collections: List<CmrCollection> = List(response.feed.entry.map((e: any) => new CmrCollection(e)))
+      console.log("on success! " + response);
       this.setState({
-        collections: List(response.feed.entry.map((e: any) => new CmrCollection(e))),
+        // This maps over all the entries and creates new CmrCollections from it. I think this could be re-used to get the list of entries and determine which ones have e.g. `cloud_hosted` or our provider name.
+        collections: collections,
       });
     };
 
-    cmrEcsCollectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
+    cmrCollectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
   }
 
   private handleChange = (e: any) => {
