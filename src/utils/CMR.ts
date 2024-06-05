@@ -172,7 +172,26 @@ const getCmrCollection = (response: any) => {
 }
 
 export const cmrCollectionsRequest = () => {
-  return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
+    const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=NSIDC_CPRD")
+        .then((response: Response) => response.json())
+        .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
+
+    const EcsHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=NSIDC_ECS")
+        .then((response: Response) => response.json())
+        .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
+
+    return Promise.all([cloudHostedCollections, EcsHostedCollections])
+        .then(([cloudHostedCollections, EcsHostedCollections]: [List<CmrCollection>, List<CmrCollection>]) => {
+            // Combine the two lists w/ a new map that uses short_name as the key. Since
+            // the cloud hosted results are added second, they'll overwrite any ECS
+            // specific results.
+            const mergedMap = Map().withMutations(map => {
+              EcsHostedCollections.forEach((collection) => map.set(collection!.short_name, collection))
+              cloudHostedCollections.forEach((collection) => map.set(collection!.short_name, collection))
+            })
+
+            return List(mergedMap.values());
+        })
 };
 
 export const cmrCollectionRequest = (shortName: string, version: number) => {

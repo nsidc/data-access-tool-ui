@@ -18,6 +18,7 @@ interface ICollectionDropdownState {
 }
 
 const SHORTLIST = List([
+  "ATL06",
   "MOD10A2",
   "MOD10_L2",
   "MYD10A2",
@@ -115,11 +116,8 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   private getCmrCollections() {
-    const onSuccess = (response: any) => {
-      const collections: List<CmrCollection> = List(response.feed.entry.map((e: any) => new CmrCollection(e)))
-      console.log("on success! " + response);
+    const onSuccess = (collections: any) => {
       this.setState({
-        // This maps over all the entries and creates new CmrCollections from it. I think this could be re-used to get the list of entries and determine which ones have e.g. `cloud_hosted` or our provider name.
         collections: collections,
       });
     };
