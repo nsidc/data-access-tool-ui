@@ -118,7 +118,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   private getCmrCollections() {
     const onSuccess = (collections: any) => {
       this.setState({
-        collections: collections,
+        collections,
       });
     };
 

@@ -5,8 +5,8 @@ import * as moment from "moment";
 import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { GranuleSorting } from "../types/OrderParameters";
-import { getEnvironment } from "./environment";
 import { CmrCollection } from "../types/CmrCollection";
+import { getEnvironment } from "./environment";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
 
@@ -19,7 +19,9 @@ export const CMR_MAX_GRANULES = 2000;
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
-// const CMR_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+// TODO: do we still want to use NSIDC_TS1 in staging? Is there an equivilent test provider in the cloud instance?
+const CMR_ECS_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+const CMR_CLOUD_PROVIDER = "NSIDC_CPRD"
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?"
   + "&page_size=500&sort_key=short_name";
 const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?";
@@ -149,57 +151,63 @@ export const cmrStatusRequest = () => {
   return fetchResult;
 };
 
-const getCmrCollection = (response: any) => {
-    const collections: List<CmrCollection> = List(response.feed.entry.map((e: any) => new CmrCollection(e)));
-
-    // Could filter for `cloud_hosted == true` instead. Is there a reason to
-    // prefer specific providers? Could e.g., TS1 provider end up in the prod cmr?
-    const cloudCollection: CmrCollection | undefined = collections.find(collection => collection!.provider === "NSIDC_CPRD");
-    if (cloudCollection) {
-        console.log("Using cloud hosted collection: " +  cloudCollection);
-        return cloudCollection;
-    }
-
-    const ecsCollection: CmrCollection | undefined = collections.find(collection => collection!.provider === "NSIDC_ECS");
-    if (ecsCollection) {
-        console.log("Using ECS hosted collection: " +  ecsCollection);
-        return ecsCollection;
-    }
-
-    console.warn("No collection matched");
-    // In this case, something may have gone wrong!
-    return undefined
-}
 
 export const cmrCollectionsRequest = () => {
-    const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=NSIDC_CPRD")
-        .then((response: Response) => response.json())
-        .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
+  const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=" + CMR_CLOUD_PROVIDER)
+    .then((response: Response) => response.json())
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
 
-    const EcsHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=NSIDC_ECS")
-        .then((response: Response) => response.json())
-        .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
+  const EcsHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=" + CMR_ECS_PROVIDER)
+    .then((response: Response) => response.json())
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
 
-    return Promise.all([cloudHostedCollections, EcsHostedCollections])
-        .then(([cloudHostedCollections, EcsHostedCollections]: [List<CmrCollection>, List<CmrCollection>]) => {
-            // Combine the two lists w/ a new map that uses short_name as the key. Since
-            // the cloud hosted results are added second, they'll overwrite any ECS
-            // specific results.
-            const mergedMap = Map().withMutations(map => {
-              EcsHostedCollections.forEach((collection) => map.set(collection!.short_name, collection))
-              cloudHostedCollections.forEach((collection) => map.set(collection!.short_name, collection))
-            })
-
-            return List(mergedMap.values());
+  return Promise.all([cloudHostedCollections, EcsHostedCollections])
+      .then(([cloudCollections, EcsCollections]: [List<CmrCollection>, List<CmrCollection>]) => {
+        // Combine the two lists w/ a new map that uses short_name as the key. Since
+        // the cloud hosted results are added second, they'll overwrite any ECS
+        // specific results.
+        const mergedMap = Map().withMutations((map) => {
+            EcsCollections.forEach((collection) => map.set(collection!.short_name, collection))
+            cloudCollections.forEach((collection) => map.set(collection!.short_name, collection))
         })
+        // Convert to list and return. There should be no duplicates and
+        // cloud collections are preferred.
+        return List(mergedMap.values());
+      })
 };
+
 
 export const cmrCollectionRequest = (shortName: string, version: number) => {
   const collectionUrl = CMR_COLLECTION_URL
     + `short_name=${shortName}`
     + `&${versionParameters(version)}`;
-  const response = cmrFetch(collectionUrl).then((response: Response) => response.json());
-  return response.then(getCmrCollection);
+  const json = cmrFetch(collectionUrl).then((response: Response) => response.json());
+  // Filter the reuslts, preferring the cloud-hosted version if it exists,
+  // otherwise the NSIDC-ECS hosted version.
+  const filteredCmrCollection = json.then((collectionJson) => {
+    const collections: List<CmrCollection> = List(collectionJson.feed.entry.map((e: any) => new CmrCollection(e)));
+
+    // Could filter for `cloud_hosted == true` instead. Is there a reason to
+    // prefer specific providers? Could e.g., TS1 provider end up in the prod cmr?
+    const cloudCollection: CmrCollection | undefined = collections.find((collection) => collection!.provider === CMR_CLOUD_PROVIDER);
+    if (cloudCollection) {
+        // use the cloud hosted collection
+        return cloudCollection;
+    }
+
+    const ecsCollection: CmrCollection | undefined = collections.find((collection) => collection!.provider === CMR_ECS_PROVIDER);
+    if (ecsCollection) {
+        // use the ecs hosted collection
+        return ecsCollection;
+    }
+
+    console.warn("No collection matched");
+    // In this case, something may have gone wrong!
+    // TODO: should this be a promise rejection instead of returning undefined?
+    return undefined
+  });
+
+  return filteredCmrCollection;
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,
