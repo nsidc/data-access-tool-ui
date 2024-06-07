@@ -102,10 +102,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.cmrStatusRequestUntilOK();
     }
 
-    if (this.state.loadedParamsFromLocalStorage) {
-      this.cmrGranuleRequest();
-      this.enableStateFreezing();
-    } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
+    if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
       this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
     }
 
@@ -238,6 +235,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const orderInputPopulated = this.state.orderParameters.collection
                                 && this.state.orderParameters.collection.id
+                                && this.state.orderParameters.collection.provider
                                 && this.state.orderParameters.temporalFilterLowerBound
                                 && this.state.orderParameters.temporalFilterUpperBound;
     if (orderInputPopulated) {

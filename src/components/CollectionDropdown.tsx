@@ -122,7 +122,7 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
       });
     };
 
-    cmrCollectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
+    cmrCollectionsRequest("page_size=500&sort_key=short_name").then(onSuccess, this.props.onCmrRequestFailure);
   }
 
   private handleChange = (e: any) => {

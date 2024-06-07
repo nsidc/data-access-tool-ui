@@ -23,8 +23,6 @@ const CMR_URL = getEnvironment() === "staging" ?
 const CMR_ECS_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
 const CMR_CLOUD_PROVIDER = "NSIDC_CPRD"
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?"
-  + "&page_size=500&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?";
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
@@ -152,14 +150,23 @@ export const cmrStatusRequest = () => {
 };
 
 
-export const cmrCollectionsRequest = () => {
-  const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=" + CMR_CLOUD_PROVIDER)
+/**
+ * This function searches CMR with the provided filter string (e.g.,
+ * "short_name=NSIDC-0051") and returns matching collections as a list,
+ * preferring cloud hosted (NSIDC_CPRD provider) datasets over ECS ones
+ * (NSIDC_ECS). If both cloud and ECS providers are available, return results
+ * only for the cloud provider.
+ */
+export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
+  const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(
+    CMR_COLLECTIONS_URL + cmrCollectionFilters + "&provider=" + CMR_CLOUD_PROVIDER
+  )
     .then((response: Response) => response.json())
-    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_CLOUD_PROVIDER}}))));
 
-  const EcsHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + "&provider=" + CMR_ECS_PROVIDER)
+  const EcsHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + cmrCollectionFilters + "&provider=" + CMR_ECS_PROVIDER)
     .then((response: Response) => response.json())
-    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection(e))));
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_ECS_PROVIDER}}))));
 
   return Promise.all([cloudHostedCollections, EcsHostedCollections])
       .then(([cloudCollections, EcsCollections]: [List<CmrCollection>, List<CmrCollection>]) => {
@@ -178,36 +185,13 @@ export const cmrCollectionsRequest = () => {
 
 
 export const cmrCollectionRequest = (shortName: string, version: number) => {
-  const collectionUrl = CMR_COLLECTION_URL
-    + `short_name=${shortName}`
-    + `&${versionParameters(version)}`;
-  const json = cmrFetch(collectionUrl).then((response: Response) => response.json());
-  // Filter the reuslts, preferring the cloud-hosted version if it exists,
-  // otherwise the NSIDC-ECS hosted version.
-  const filteredCmrCollection = json.then((collectionJson) => {
-    const collections: List<CmrCollection> = List(collectionJson.feed.entry.map((e: any) => new CmrCollection(e)));
-
-    // Could filter for `cloud_hosted == true` instead. Is there a reason to
-    // prefer specific providers? Could e.g., TS1 provider end up in the prod cmr?
-    const cloudCollection: CmrCollection | undefined = collections.find((collection) => collection!.provider === CMR_CLOUD_PROVIDER);
-    if (cloudCollection) {
-        // use the cloud hosted collection
-        return cloudCollection;
+  const collectionDatasetFilters = `short_name=${shortName}&${versionParameters(version)}`;
+  return cmrCollectionsRequest(collectionDatasetFilters).then(
+    (collections) => {
+      return collections.first()
     }
+  );
 
-    const ecsCollection: CmrCollection | undefined = collections.find((collection) => collection!.provider === CMR_ECS_PROVIDER);
-    if (ecsCollection) {
-        // use the ecs hosted collection
-        return ecsCollection;
-    }
-
-    console.warn("No collection matched");
-    // In this case, something may have gone wrong!
-    // TODO: should this be a promise rejection instead of returning undefined?
-    return undefined
-  });
-
-  return filteredCmrCollection;
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,
