@@ -43,47 +43,40 @@ On VM:
 
 ## Development with Drupal integration
 
-NOTE: these development instructions are out of date. Consider looking at the
-[search-interface dev
-docs](https://github.com/nsidc/search-interface/blob/main/DEVELOPMENT.md#deploying-to-a-developer-drupal-vm)
-for information about how to work with drupal.
+This application relies on NSIDC drupal-set parameters that provide dataset
+information (dataset ID and version) that drives CMR requests that populate
+items like the granules list and bounding box in the cesium map.
 
-TODO: update the information here as much as possible, or remove it.
+In order to test integration with drupal, create a dev VM from the
+`ansible_drupal_nsidc_org` repository, hosted on NSIDC's `gitsrv` server. To
+clone `ansible_drupal_nsidc_org`:
 
-Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/),
-including the submodules.
-(See the `Quickstart` section in the [drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md)
-for information about cloning the drupal project with its associated submodules.)
+```
+git clone ssh://gitsrv.nsidc.org/gitsrv/webteam/ansible_drupal_nsidc_org.git
+```
 
-`cd` to the drupal working directory and provision a `dev` VM:
+Note that you should be able to log into `gitsrv.nsidc.org` with LDAP login
+credentials. It's reccomended to login and setup ssh keys. If you have trouble
+logging into `gitsrv.nsidc.org`, create an SA ticket for support.
 
-    vagrant nsidc up --env=dev
+Follow the `ansible_drupal_nsidc_org` repository's `README.md` for instructions
+on how to bring up a dev VM.
 
-Assuming it builds successfully, you should now have a dev VM with
-`/share/apps/everest-ui` mounted from `/share/apps/everest-ui-all/dev/<your-login>`,
-and a symlink at `/var/www/drupal/apps/everest-ui` pointing to `/share/apps/everest-ui`.
-In other words, step 1 under "Custom module development" in the
-[drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md)
-will be automatically handled when the VM is provisioned. The provisioning
-process will also clone the `everest-ui` project and install `npm`. You can then
-`ssh` to the VM, check out the desired branch or tag, and run the app in a
-"watch" mode which will build and deploy the webapp to `/share/apps/everest-ui` when
-source files change. This method will also clear Drupal's css-js cache on each build.
-Do:
+Once a VM has been brought up, run a
+[garrision](https://bitbucket.org/nsidc/garrison) deployment of
+[nsidc-drupal8](https://bitbucket.org/nsidc/nsidc-drupal8/) on the VM as
+described in the README, using e.g., the `staging` ref, or one that has updated
+the `web/libraries/package.json` with a new version of the `data-access-tools`
+(this project, aka Everest UI).
 
-    $ vagrant nsidc ssh --env=dev
-    $ cd ~vagrant/everest-ui
-    $ git checkout my-development-branch # If you want to work on a branch besides master
-    $ npm install
-    $ npm run build-dev-drupal
+To test code that has not yet been released to npmjs, use e.g,. `rsync` to copy
+the built application into the expected installation location on the drupal VM. E.g.:
 
-See the app running at `<vm-url>/data/nsidc-0642?qt-data_set_tabs=1#`.
+```
+$ npm run build
+$ rsync -a --progress ./dist/* dev.nsidc.org.docker-drupal8.{YOUR_USERNAME}.dev.int.nsidc.org:/home/vagrant/drupal/web/libraries/node_modules/@nsidc/data-access-tools/dist/
+```
 
-This also starts the app in "standalone" mode; to see the app there, navigate to
-`<vm-url>:8080`.
-
-To debug the app (in either environment), use the files under `webpack://` in
-the Sources tab of the Developer Tools.
 
 ## Testing
 
