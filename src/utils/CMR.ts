@@ -19,9 +19,8 @@ export const CMR_MAX_GRANULES = 2000;
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
-// TODO: do we still want to use NSIDC_TS1 in staging? Is there an equivilent test provider in the cloud instance?
 const CMR_ECS_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
-const CMR_CLOUD_PROVIDER = "NSIDC_CPRD"
+const CMR_CLOUD_PROVIDER = getEnvironment() === "staging" ? "NSIDC_CUAT" : "NSIDC_CPRD";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?"
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
 
