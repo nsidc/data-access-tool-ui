@@ -20,6 +20,9 @@ const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
 const CMR_ECS_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+// `NSIDC_CUAT` is the cloud provider in UAT. Note that we don't expect to get
+// results for `NSIDC_CUAT` in UAT because cloud-hosted datasets in UAT are not
+// public.
 const CMR_CLOUD_PROVIDER = getEnvironment() === "staging" ? "NSIDC_CUAT" : "NSIDC_CPRD";
 const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?"
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
