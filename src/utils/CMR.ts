@@ -15,7 +15,6 @@ export const CMR_MAX_GRANULES = 2000;
 
 // Ops prefers to use UAT in staging so they can be aware of impacts of changes
 // making their way in to prod ECS systems.
-// TODO: do we still want this in our "hybrid" operating mode?
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
