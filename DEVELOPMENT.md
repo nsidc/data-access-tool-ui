@@ -21,7 +21,9 @@ These all need to be in sync (or ideally, only maintained in one place).
 
         $ npm start
 
-[Open the app](http://localhost:8080/), make changes, and the page will be refreshed automatically.
+[Open the app](https://localhost:8080/), make changes, and the page will be
+refreshed automatically. Note that the webapp is served with a self-signed cert,
+so accept the risk and continue if your web browser blocks the request.
 
 You also need to run a proxy to Hermes: npx http-server -p 3000 -P https://nsidc.org/apps/orders/api
 See the config in webpack.config.cjs. Would like to proxy directly to Hermes URL, but couldn't get that to work.
@@ -41,40 +43,40 @@ On VM:
 
 ## Development with Drupal integration
 
-Clone the [drupal repository (landing-page-module branch)](https://bitbucket.org/nsidc/drupal/src/landing-page-module/),
-including the submodules.
-(See the `Quickstart` section in the [drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md)
-for information about cloning the drupal project with its associated submodules.)
+This application relies on NSIDC drupal-set parameters that provide dataset
+information (dataset ID and version) that drives CMR requests that populate
+items like the granules list and bounding box in the cesium map.
 
-`cd` to the drupal working directory and provision a `dev` VM:
+In order to test integration with drupal, create a dev VM from the
+`ansible_drupal_nsidc_org` repository, hosted on NSIDC's `gitsrv` server. To
+clone `ansible_drupal_nsidc_org`:
 
-    vagrant nsidc up --env=dev
+```
+git clone ssh://gitsrv.nsidc.org/gitsrv/webteam/ansible_drupal_nsidc_org.git
+```
 
-Assuming it builds successfully, you should now have a dev VM with
-`/share/apps/everest-ui` mounted from `/share/apps/everest-ui-all/dev/<your-login>`,
-and a symlink at `/var/www/drupal/apps/everest-ui` pointing to `/share/apps/everest-ui`.
-In other words, step 1 under "Custom module development" in the
-[drupal project README](https://bitbucket.org/nsidc/drupal/src/landing-page-module/README.md)
-will be automatically handled when the VM is provisioned. The provisioning
-process will also clone the `everest-ui` project and install `npm`. You can then
-`ssh` to the VM, check out the desired branch or tag, and run the app in a
-"watch" mode which will build and deploy the webapp to `/share/apps/everest-ui` when
-source files change. This method will also clear Drupal's css-js cache on each build.
-Do:
+Note that you should be able to log into `gitsrv.nsidc.org` with LDAP login
+credentials. It's reccomended to login and setup ssh keys. If you have trouble
+logging into `gitsrv.nsidc.org`, create an SA ticket for support.
 
-    $ vagrant nsidc ssh --env=dev
-    $ cd ~vagrant/everest-ui
-    $ git checkout my-development-branch # If you want to work on a branch besides master
-    $ npm install
-    $ npm run build-dev-drupal
+Follow the `ansible_drupal_nsidc_org` repository's `README.md` for instructions
+on how to bring up a dev VM.
 
-See the app running at `<vm-url>/data/nsidc-0642?qt-data_set_tabs=1#`.
+Once a VM has been brought up, run a
+[garrision](https://bitbucket.org/nsidc/garrison) deployment of
+[nsidc-drupal8](https://bitbucket.org/nsidc/nsidc-drupal8/) on the VM as
+described in the README, using e.g., the `staging` ref, or one that has updated
+the `web/libraries/package.json` with a new version of the `data-access-tools`
+(this project, aka Everest UI).
 
-This also starts the app in "standalone" mode; to see the app there, navigate to
-`<vm-url>:8080`.
+To test code that has not yet been released to npmjs, use e.g,. `rsync` to copy
+the built application into the expected installation location on the drupal VM. E.g.:
 
-To debug the app (in either environment), use the files under `webpack://` in
-the Sources tab of the Developer Tools.
+```
+$ npm run build
+$ rsync -a --progress ./dist/* dev.nsidc.org.docker-drupal8.{YOUR_USERNAME}.dev.int.nsidc.org:/home/vagrant/drupal/web/libraries/node_modules/@nsidc/data-access-tools/dist/
+```
+
 
 ## Testing
 

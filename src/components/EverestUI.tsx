@@ -1,10 +1,9 @@
-import { fromJS, List } from "immutable";
+import { List } from "immutable";
 import * as moment from "moment";
 import * as React from "react";
 import SplitPane from "react-split-pane";
 import ReactTooltip from "react-tooltip";
 import { BoundingBox } from "../types/BoundingBox";
-import { CmrCollection, ICmrCollection } from "../types/CmrCollection";
 import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
 import { GranuleSorting, IOrderParameters, OrderParameters } from "../types/OrderParameters";
@@ -103,10 +102,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
       this.cmrStatusRequestUntilOK();
     }
 
-    if (this.state.loadedParamsFromLocalStorage) {
-      this.cmrGranuleRequest();
-      this.enableStateFreezing();
-    } else if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
+    if (this.props.environment.inDrupal && this.props.environment.drupalDataset) {
       this.initStateFromCollectionDefaults(this.props.environment.drupalDataset);
     }
 
@@ -239,6 +235,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const orderInputPopulated = this.state.orderParameters.collection
                                 && this.state.orderParameters.collection.id
+                                && this.state.orderParameters.collection.provider
                                 && this.state.orderParameters.temporalFilterLowerBound
                                 && this.state.orderParameters.temporalFilterUpperBound;
     if (orderInputPopulated) {
@@ -252,6 +249,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     return cmrGranuleRequest(
       this.state.orderParameters.collection.short_name,
       Number(this.state.orderParameters.collection.version_id),
+      this.state.orderParameters.collection.provider,
       this.state.orderParameters.spatialSelection,
       this.state.orderParameters.boundingBox,
       this.state.orderParameters.temporalFilterLowerBound,
@@ -391,18 +389,6 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     });
   }
 
-  private handleCmrCollectionResponse = (response: any) => {
-    const cmrCollections = fromJS(response.feed.entry).map((c: ICmrCollection) => new CmrCollection(c));
-
-    if (cmrCollections.size > 1) {
-      console.warn("Multiple collections matched, using first: " + cmrCollections.toJS());
-    } else if (cmrCollections.size === 0) {
-      console.warn("No collections matched: " + this.props.environment.drupalDataset);
-    }
-
-    const collection = cmrCollections.first();
-    this.handleCollectionChange(collection);
-  }
 
   private extractOrderParametersFromLocalStorage = (): OrderParameters | null => {
     if (!this.props.environment.inDrupal) { return null; }
@@ -453,7 +439,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
     const datasetId: string = selectedCollection.id;
     const datasetVersion: number = Number(selectedCollection.version);
     cmrCollectionRequest(datasetId, datasetVersion)
-      .then(this.handleCmrCollectionResponse, this.onCmrRequestFailure)
+      .then(this.handleCollectionChange, this.onCmrRequestFailure)
       .then(this.enableStateFreezing);
   }
 

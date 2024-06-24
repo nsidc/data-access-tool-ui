@@ -2,7 +2,7 @@ import { List } from "immutable";
 import * as React from "react";
 
 import { CmrCollection } from "../types/CmrCollection";
-import { cmrEcsCollectionsRequest } from "../utils/CMR";
+import { cmrCollectionsRequest } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface ICollectionDropdownProps {
@@ -18,6 +18,7 @@ interface ICollectionDropdownState {
 }
 
 const SHORTLIST = List([
+  "ATL06",
   "MOD10A2",
   "MOD10_L2",
   "MYD10A2",
@@ -115,13 +116,13 @@ export class CollectionDropdown extends React.Component<ICollectionDropdownProps
   }
 
   private getCmrCollections() {
-    const onSuccess = (response: any) => {
+    const onSuccess = (collections: any) => {
       this.setState({
-        collections: List(response.feed.entry.map((e: any) => new CmrCollection(e))),
+        collections,
       });
     };
 
-    cmrEcsCollectionsRequest().then(onSuccess, this.props.onCmrRequestFailure);
+    cmrCollectionsRequest("page_size=500&sort_key=short_name").then(onSuccess, this.props.onCmrRequestFailure);
   }
 
   private handleChange = (e: any) => {
