@@ -32,8 +32,9 @@ const devConfig = {
         server: "https",
         proxy: {
             "/apps/orders/api": {
-                target: "http://localhost:3000",
+                target: "https://localhost:5000",
                 pathRewrite: { '^/apps/orders/api': '' },
+                secure: false,
             }
         }
     },

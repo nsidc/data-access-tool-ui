@@ -3,6 +3,12 @@
 * Remove "Order Files" button in preparation for the decomissioning of the data
   ordering system (hermes).
 
+# v2.1.0 (2024-06-24)
+
+* Add support for and prefer cloud-hosted datasets to the "Large/Custom Order"
+  option that redirects users to Earthdata Search.
+* Update cesium website link: `https://cesiumjs.org` -> `https://cesium.com`.
+
 # v2.0.0-rc
 
 * Update to Webpack v5; bump dependencies to latest version possible

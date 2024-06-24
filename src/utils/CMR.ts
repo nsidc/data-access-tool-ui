@@ -5,6 +5,7 @@ import * as moment from "moment";
 import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { GranuleSorting } from "../types/OrderParameters";
+import { CmrCollection } from "../types/CmrCollection";
 import { getEnvironment } from "./environment";
 
 const __DEV__ = false;  // set to true to test CMR failure case in development
@@ -17,10 +18,12 @@ export const CMR_MAX_GRANULES = 2000;
 const CMR_URL = getEnvironment() === "staging" ?
   "https://cmr.uat.earthdata.nasa.gov" :
   "https://cmr.earthdata.nasa.gov";
-const CMR_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
-const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER
-  + "&page_size=500&sort_key=short_name";
-const CMR_COLLECTION_URL = CMR_URL + "/search/collections.json?provider=" + CMR_PROVIDER;
+const CMR_ECS_PROVIDER = getEnvironment() === "staging" ? "NSIDC_TS1" : "NSIDC_ECS";
+// `NSIDC_CUAT` is the cloud provider in UAT. Note that we don't expect to get
+// results for `NSIDC_CUAT` in UAT because cloud-hosted datasets in UAT are not
+// public.
+const CMR_CLOUD_PROVIDER = getEnvironment() === "staging" ? "NSIDC_CUAT" : "NSIDC_CPRD";
+const CMR_COLLECTIONS_URL = CMR_URL + "/search/collections.json?"
 const CMR_GRANULE_URL = CMR_URL + "/search/granules.json";
 
 export const CMR_COUNT_HEADER = "CMR-Hits";
@@ -147,19 +150,54 @@ export const cmrStatusRequest = () => {
   return fetchResult;
 };
 
-export const cmrEcsCollectionsRequest = () => {
-  return cmrFetch(CMR_COLLECTIONS_URL).then((response: Response) => response.json());
+
+/**
+ * This function searches CMR with the provided filter string (e.g.,
+ * "short_name=NSIDC-0051") and returns matching collections as a list,
+ * preferring cloud hosted (NSIDC_CPRD provider) datasets over ECS ones
+ * (NSIDC_ECS). If both cloud and ECS providers are available, return results
+ * only for the cloud provider.
+ */
+export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
+  const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(
+    CMR_COLLECTIONS_URL + cmrCollectionFilters + "&provider=" + CMR_CLOUD_PROVIDER
+  )
+    .then((response: Response) => response.json())
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_CLOUD_PROVIDER}}))));
+
+  const EcsHostedCollections: Promise<List<CmrCollection>> = cmrFetch(CMR_COLLECTIONS_URL + cmrCollectionFilters + "&provider=" + CMR_ECS_PROVIDER)
+    .then((response: Response) => response.json())
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_ECS_PROVIDER}}))));
+
+  return Promise.all([cloudHostedCollections, EcsHostedCollections])
+      .then(([cloudCollections, EcsCollections]: [List<CmrCollection>, List<CmrCollection>]) => {
+        // Combine the two lists w/ a new map that uses short_name as the key. Since
+        // the cloud hosted results are added second, they'll overwrite any ECS
+        // specific results.
+        const mergedMap = Map().withMutations((map) => {
+            EcsCollections.forEach((collection) => map.set(collection!.short_name, collection))
+            cloudCollections.forEach((collection) => map.set(collection!.short_name, collection))
+        })
+        // Convert to list and return. There should be no duplicates and
+        // cloud collections are preferred.
+        return List(mergedMap.values());
+      })
 };
 
+
 export const cmrCollectionRequest = (shortName: string, version: number) => {
-  const collectionUrl = CMR_COLLECTION_URL
-    + `&short_name=${shortName}`
-    + `&${versionParameters(version)}`;
-  return cmrFetch(collectionUrl).then((response: Response) => response.json());
+  const collectionDatasetFilters = `short_name=${shortName}&${versionParameters(version)}`;
+  return cmrCollectionsRequest(collectionDatasetFilters).then(
+    (collections) => {
+      return collections.first()
+    }
+  );
+
 };
 
 export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionVersionId: number,
+                                  cmr_provider: string,
                                   spatialSelection: IGeoJsonPolygon | null,
                                   boundingBox: BoundingBox,
                                   temporalLowerBound: moment.Moment,
@@ -168,7 +206,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
   let URL = CMR_GRANULE_URL
-    + `?provider=${CMR_PROVIDER}`
+    + `?provider=${cmr_provider}`
     + `&page_size=${CMR_PAGE_SIZE}`
     + `${granuleSortParameter(granuleSorting)}`
     + `&short_name=${collectionAuthId}`

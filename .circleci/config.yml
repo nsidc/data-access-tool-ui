@@ -25,16 +25,17 @@ jobs:
           key: everest-ui-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "~/everest-ui/node_modules"
-      - persist_to_workspace:
-          root: ~/everest-ui
-          paths:
-            - .
 
   package-and-publish:
     <<: *setup
     steps:
-      - attach_workspace:
-          at: ~/everest-ui
+      - checkout
+      # Note: attaching dependencies installed from first step does not work. The
+      # error output does not indicate why, but re-installing the packages with
+      # `npm ci` works.
+      - run:
+          name: Install dependencies
+          command: npm ci
       - run:
           name: Build package
           command: npm run build
