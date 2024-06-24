@@ -1,4 +1,4 @@
-# v2.1.0 (TBD)
+# v2.1.0 (2024-06-24)
 
 * Add support for and prefer cloud-hosted datasets to the "Large/Custom Order"
   option that redirects users to Earthdata Search.

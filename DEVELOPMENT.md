@@ -106,3 +106,7 @@ incremented and `-dev` appended to the version string, so that subsequent builds
 indicate that it is a new version.
 
 ## Deployment
+
+
+See [this confluence page on how to deploy a Javascript application to nsidc.org
+Drupal](https://nsidc.atlassian.net/wiki/spaces/PROG/pages/50364633/How+to+deploy+a+Javascript+application+into+nsidc.org+Drupal)
