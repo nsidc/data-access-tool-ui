@@ -14,6 +14,7 @@ const cmrCollectionA = new CmrCollection({
   time_end: "",
   time_start: "",
   version_id: "",
+  provider: "",
 });
 
 const cmrCollectionB = new CmrCollection({
@@ -24,6 +25,7 @@ const cmrCollectionB = new CmrCollection({
   time_end: "",
   time_start: "",
   version_id: "",
+  provider: "",
 });
 
 describe("mergeOrderParameters", () => {

@@ -8,6 +8,7 @@ export interface ICmrCollection {
   time_end: string;
   time_start: string;
   version_id: string;
+  provider: string;
 }
 
 const defaultCmrCollection = {
@@ -18,6 +19,7 @@ const defaultCmrCollection = {
   time_end: "",
   time_start: "",
   version_id: "",
+  provider: "",
 };
 const CmrCollectionRecord = Record(defaultCmrCollection);
 
@@ -32,6 +34,7 @@ export class CmrCollection extends CmrCollectionRecord implements ICmrCollection
   public time_end: string;
   public time_start: string;
   public version_id: string;
+  public provider: string;
 
   constructor(props: ICmrCollection = defaultCmrCollection) {
     if (props.boxes instanceof Array) {
