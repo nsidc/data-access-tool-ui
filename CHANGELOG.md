@@ -2,6 +2,10 @@
 
 * Remove "Order Files" button in preparation for the decomissioning of the data
   ordering system (hermes).
+* Change the "Large/custom order" button text -> "Earthdata Order". Update
+  tooltip/popup description to no longer reference file order limits. This
+  langauge no longer makes sense without the context of the removed "Order
+  Files" button.
 
 # v2.1.0 (2024-06-24)
 
