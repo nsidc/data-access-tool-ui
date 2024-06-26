@@ -51,7 +51,6 @@ const prodConfig = {
 const config = {
     entry: {
       "order-data": ['./src/index.ts'],
-      "order-history": ['./src/profile.ts']
     },
     output: {
         filename: '[name].bundle.js',

@@ -5,7 +5,6 @@ interface IUrls {
   hermesApiUrl: string;
   orderNotificationHost: string;
   orderNotificationPath: string;
-  profileUrl: string;
 }
 
 export interface IEnvironment {
@@ -63,7 +62,6 @@ export default function setupEnvironment(): IEnvironment {
 
   let datasetFromDrupal: IDrupalDataset | undefined;
   let inDrupal: boolean = false;
-  let profileLocation: string = "/order-history.html";
   const drupalSettings: {[key: string]: any} = (window as {[key: string]: any}).drupalSettings;
 
   if (typeof (drupalSettings) !== "undefined") {
@@ -73,13 +71,11 @@ export default function setupEnvironment(): IEnvironment {
       version: drupalSettings.data_downloads?.dataset?.version,
       title: '',
     };
-    profileLocation = "/order-history";
     inDrupal = true;
   }
 
   const urls = {
     ...getEnvironmentDependentURLs(),
-    profileUrl: profileLocation,
   };
   return {
     drupalDataset: datasetFromDrupal,

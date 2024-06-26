@@ -6,6 +6,7 @@
   tooltip/popup description to no longer reference file order limits. This
   langauge no longer makes sense without the context of the removed "Order
   Files" button.
+* Remove "Orders" profile page for logged-in users
 
 # v2.1.0 (2024-06-24)
 

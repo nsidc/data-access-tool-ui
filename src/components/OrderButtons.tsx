@@ -7,7 +7,6 @@ import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
-import { ConfirmationFlow } from "./ConfirmationFlow";
 import { EarthdataFlow } from "./EarthdataFlow";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
@@ -74,15 +73,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           tooltip={tooltipEarthdata}
           disabled={earthdataButtonDisabled}
           onSubmitOrder={this.handleEarthdataOrder} />
-        <ConfirmationFlow
-          cmrGranuleCount={this.props.cmrGranuleCount}
-          environment={this.props.environment}
-          onRequestClose={this.closeConfirmationFlow}
-          onScriptDownloadClick={this.handleScriptDownload}
-          orderParameters={this.props.orderParameters}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
-          show={this.state.showConfirmationFlow}
-          totalSize={this.props.totalSize} />
         <EarthdataFlow
           onRequestClose={this.closeEarthdataFlow}
           onScriptDownloadClick={this.handleScriptDownload}
@@ -92,10 +82,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       </div>
       </div>
     );
-  }
-
-  private closeConfirmationFlow = () => {
-    this.setState({showConfirmationFlow: false});
   }
 
   private closeEarthdataFlow = () => {
