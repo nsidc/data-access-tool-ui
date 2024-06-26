@@ -23,7 +23,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
         <p>You will be redirected to Earthdata Search for fulfillment (see illustration).
           Your current order will be transferred intact.</p>
 
-        <p>Alternatively, you can {downloadScriptLink}, to retrieve your files.</p>
+        <p>Alternatively, you can {downloadScriptLink} to retrieve your files.</p>
 
         <div style={{display: "flex"}}>
 
