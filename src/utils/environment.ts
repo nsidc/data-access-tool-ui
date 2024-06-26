@@ -1,5 +1,4 @@
 import {IDrupalDataset} from "../types/DrupalDataset";
-import {constructAPI, IHermesAPI} from "./Hermes";
 
 interface IUrls {
   hermesApiUrl: string;
@@ -10,7 +9,6 @@ interface IUrls {
 export interface IEnvironment {
   drupalDataset?: IDrupalDataset;
   exposeFunction: (name: string, callback: (...args: any[]) => any) => boolean;
-  hermesAPI: IHermesAPI;
   inDrupal: boolean;
   urls: IUrls;
 }
@@ -80,7 +78,6 @@ export default function setupEnvironment(): IEnvironment {
   return {
     drupalDataset: datasetFromDrupal,
     exposeFunction,
-    hermesAPI: constructAPI(urls),
     inDrupal,
     urls,
   };
