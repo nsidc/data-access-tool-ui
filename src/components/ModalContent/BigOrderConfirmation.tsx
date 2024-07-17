@@ -20,13 +20,10 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
       <span style={{width: "50%"}}>
         <h2>Your order will be redirected</h2>
 
-        <p>Because your order is larger than 2000 files,
-          or you would like to apply customizations such as subsetting or reformatting,
-          you will be redirected to Earthdata Search for fulfillment (see illustration).
+        <p>You will be redirected to Earthdata Search for fulfillment (see illustration).
           Your current order will be transferred intact.</p>
 
-        <p>Alternatively, you can {downloadScriptLink}, which has no file
-        limits, to retrieve your files.</p>
+        <p>Alternatively, you can {downloadScriptLink} to retrieve your files.</p>
 
         <div style={{display: "flex"}}>
 

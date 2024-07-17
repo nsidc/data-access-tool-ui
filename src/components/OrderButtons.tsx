@@ -53,8 +53,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     const earthdataButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
     const tooltipEarthdata = (
       <div>
-        <div>Orders &gt;2000 files will be fulfilled via Earthdata Search.
-          Also use this option to apply customizations (e.g. subset, reformat).
+        <div>Fulfill order via Earthdata Search.
+          Use this option to apply customizations (e.g. subset, reformat).
           Your current order will be transferred intact for completion.
         </div>
       </div>
@@ -69,7 +69,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderParameters={this.props.orderParameters}
           onClick={this.handleScriptDownload} />
         <SubmitButton
-          buttonText={"Large/Custom Order"}
+          buttonText={"Order Data"}
           buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
           disabled={earthdataButtonDisabled}
