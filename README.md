@@ -1,6 +1,14 @@
 Main branch: [![CircleCI](https://circleci.com/bb/nsidc/everest-ui.svg?style=shield&circle-token=05777f28b61b63d37438d50af8c951a8c2789b1d)](https://circleci.com/bb/nsidc/everest-ui)
 
-Release candidate: [![CircleCI](https://circleci.com/bb/nsidc/everest-ui/tree/da-64.svg?style=shield&circle-token=05777f28b61b63d37438d50af8c951a8c2789b1d)](https://circleci.com/bb/nsidc/everest-ui/tree/da-64)
+**NOTE: on July 1, 2024 we realized that changes to support cloud-collections in
+v2.1.0 broke hermes-brokered orders ("Order Files" button) for cloud-enabled
+collections. See the PSS ticket here:
+<https://nsidc.atlassian.net/browse/PSS-663>. V2.1.0 was rolled back to v2.0.0
+as a result. The plan now is to wait to roll out v2.1.0 changes until we
+completely remove the "Order Files" button (see
+<https://bitbucket.org/nsidc/everest-ui/pull-requests/210>). The next
+anticipated release will be v3.0.0. The timing of this change is still subject
+to discussion.**
 
 # Data Access Tools
 
