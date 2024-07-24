@@ -159,8 +159,11 @@ export const cmrStatusRequest = () => {
  * only for the cloud provider.
  */
 export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
+  // Cloud collections are those that have the `NSIDC_CPRD` provider. We also
+  // require that cloud collections include harmony services, for parity with
+  // existing services exposed for ECS collections in Earthdata search.
   const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(
-    CMR_COLLECTIONS_URL + cmrCollectionFilters + "&provider=" + CMR_CLOUD_PROVIDER
+    CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}&service_type=Harmony`
   )
     .then((response: Response) => response.json())
     .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_CLOUD_PROVIDER}}))));

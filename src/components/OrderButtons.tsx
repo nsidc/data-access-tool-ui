@@ -3,8 +3,7 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { isLoggedInUser } from "../types/User";
-import { boundingBoxMatch, CMR_MAX_GRANULES, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
@@ -49,35 +48,13 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   }
 
   public render() {
-    const loggedOut = !isLoggedInUser(this.context.user);
     const noGranules = !this.props.cmrGranuleCount;
     const scriptButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
-    const orderTooLarge = this.props.cmrGranuleCount !== undefined &&
-      this.props.cmrGranuleCount > CMR_MAX_GRANULES;
-    const orderButtonDisabled = !this.props.orderSubmissionParameters ||
-      loggedOut || orderTooLarge || noGranules;
     const earthdataButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
-    const loggedOutSpan = (loggedOut) ? (
-      <span className="must-be-logged-in">
-        You must be logged in to place an order.
-      </span>
-    ) : null;
-    const tooltipOrder = (orderTooLarge) ? (
-        <div>
-          <div>To place a large order (&gt;2000 files), use the button at right.
-          You may also download a Python script, using the button at left.</div>
-        </div>
-      ) : (
-        <div>
-          <div>Once processed, your Orders page will display one or more zip files
-            and a list of file URLs.</div>
-          <div>{loggedOutSpan}</div>
-        </div>
-      );
     const tooltipEarthdata = (
       <div>
-        <div>Orders &gt;2000 files will be fulfilled via Earthdata Search.
-          Also use this option to apply customizations (e.g. subset, reformat).
+        <div>Fulfill order via Earthdata Search.
+          Use this option to apply customizations (e.g. subset, reformat).
           Your current order will be transferred intact for completion.
         </div>
       </div>
@@ -92,13 +69,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderParameters={this.props.orderParameters}
           onClick={this.handleScriptDownload} />
         <SubmitButton
-          buttonText={"Order Files"}
-          buttonId={"orderFilesButton"}
-          tooltip={tooltipOrder}
-          disabled={orderButtonDisabled}
-          onSubmitOrder={this.handleSubmitOrder} />
-        <SubmitButton
-          buttonText={"Large/Custom Order"}
+          buttonText={"Order Data"}
           buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
           disabled={earthdataButtonDisabled}
@@ -125,12 +96,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
   private closeConfirmationFlow = () => {
     this.setState({showConfirmationFlow: false});
-  }
-
-  private handleSubmitOrder = () => {
-    this.setState({
-      showConfirmationFlow: true,
-    });
   }
 
   private closeEarthdataFlow = () => {
