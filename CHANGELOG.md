@@ -6,6 +6,8 @@
   tooltip/popup description to no longer reference file order limits. This
   langauge no longer makes sense without the context of the removed "Order
   Files" button.
+* Cloud collections must have Harmony services available to be surfaced over ECS
+  (DA-79).
 * Remove Earthdata login button and user orders page.
 
 # v2.1.0 (2024-06-24)
@@ -16,7 +18,7 @@ collections. See the PSS ticket here:
 <https://nsidc.atlassian.net/browse/PSS-663>. V2.1.0 was rolled back to v2.0.0
 as a result. The plan now is to wait to roll out v2.1.0 changes until we
 completely remove the "Order Files" button (see
-<https://bitbucket.org/nsidc/everest-ui/pull-requests/210>). The next
+<https://bitbucket.org/nsidc/everest-ui/pull-requests/216>). The next
 anticipated release will be v3.0.0. The timing of this change is still subject
 to discussion.**
 
