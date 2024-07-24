@@ -1,5 +1,3 @@
-Main branch: [![CircleCI](https://circleci.com/bb/nsidc/everest-ui.svg?style=shield&circle-token=05777f28b61b63d37438d50af8c951a8c2789b1d)](https://circleci.com/bb/nsidc/everest-ui)
-
 **NOTE: on July 1, 2024 we realized that changes to support cloud-collections in
 v2.1.0 broke hermes-brokered orders ("Order Files" button) for cloud-enabled
 collections. See the PSS ticket here:
