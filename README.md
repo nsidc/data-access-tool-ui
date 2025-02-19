@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="NSIDC logo" src="https://nsidc.org/themes/custom/nsidc/logo.svg" width="150" />
+</p>
+
 **NOTE: on July 1, 2024 we realized that changes to support cloud-collections in
 v2.1.0 broke hermes-brokered orders ("Order Files" button) for cloud-enabled
 collections. See the PSS ticket here:
