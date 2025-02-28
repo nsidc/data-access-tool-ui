@@ -14,7 +14,8 @@ to discussion.**
 
 # Data Access Tool
 
-Interfaces to support Earthdata data set orders and viewing of a user's order history.
+Interface to support granule-level discovery and access of NASA Earthdata for a
+given data collection.
 
 ## Development notes
 
