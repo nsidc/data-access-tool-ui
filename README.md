@@ -12,7 +12,7 @@ completely remove the "Order Files" button (see
 anticipated release will be v3.0.0. The timing of this change is still subject
 to discussion.**
 
-# Data Access Tools
+# Data Access Tool
 
 Interfaces to support Earthdata data set orders and viewing of a user's order history.
 
