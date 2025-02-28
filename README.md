@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="NSIDC logo" src="https://nsidc.org/themes/custom/nsidc/logo.svg" width="150" />
+</p>
+
 **NOTE: on July 1, 2024 we realized that changes to support cloud-collections in
 v2.1.0 broke hermes-brokered orders ("Order Files" button) for cloud-enabled
 collections. See the PSS ticket here:
@@ -8,9 +12,10 @@ completely remove the "Order Files" button (see
 anticipated release will be v3.0.0. The timing of this change is still subject
 to discussion.**
 
-# Data Access Tools
+# Data Access Tool
 
-Interfaces to support Earthdata data set orders and viewing of a user's order history.
+Interface to support granule-level discovery and access of NASA Earthdata for a
+given data collection.
 
 ## Development notes
 
