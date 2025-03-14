@@ -212,6 +212,30 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
 
 };
 
+export const cmrGranuleParams = (collectionAuthId: string,
+                                  collectionVersionId: number,
+                                  cmr_provider: string,
+                                  spatialSelection: IGeoJsonPolygon | null,
+                                  boundingBox: BoundingBox,
+                                  temporalLowerBound: moment.Moment,
+                                  temporalUpperBound: moment.Moment,
+                                  cmrGranuleFilter: string,
+                                  granuleSorting: GranuleSorting) => {
+  let params = `provider=${cmr_provider}`
+    + `&page_size=${CMR_PAGE_SIZE}`
+    + `${granuleSortParameter(granuleSorting)}`
+    + `&short_name=${collectionAuthId}`
+    + `&${versionParameters(collectionVersionId)}`
+    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
+    + `&${spatialParameter(spatialSelection, boundingBox.rect)}`;
+
+  if (cmrGranuleFilter !== "") {
+    params += cmrGranuleFilterParameters(cmrGranuleFilter);
+  }
+
+  return params;
+};
+
 export const cmrGranuleRequest = (collectionAuthId: string,
                                   collectionVersionId: number,
                                   cmr_provider: string,
@@ -222,18 +246,19 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   cmrGranuleFilter: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
-  let URL = CMR_GRANULE_URL
-    + `?provider=${cmr_provider}`
-    + `&page_size=${CMR_PAGE_SIZE}`
-    + `${granuleSortParameter(granuleSorting)}`
-    + `&short_name=${collectionAuthId}`
-    + `&${versionParameters(collectionVersionId)}`
-    + `&temporal\[\]=${temporalLowerBound.utc().format()},${temporalUpperBound.utc().format()}`
-    + `&${spatialParameter(spatialSelection, boundingBox.rect)}`;
+  let params = cmrGranuleParams(
+    collectionAuthId,
+    collectionVersionId,
+    cmr_provider,
+    spatialSelection,
+    boundingBox,
+    temporalLowerBound,
+    temporalUpperBound,
+    cmrGranuleFilter,
+    granuleSorting,
+  );
+  let URL = `${CMR_GRANULE_URL}?${params}`;
 
-  if (cmrGranuleFilter !== "") {
-    URL += cmrGranuleFilterParameters(cmrGranuleFilter);
-  }
   return cmrFetch(URL, headers);
 };
 

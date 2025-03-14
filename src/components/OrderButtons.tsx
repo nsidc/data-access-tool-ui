@@ -9,8 +9,10 @@ import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
 import { ConfirmationFlow } from "./ConfirmationFlow";
 import { EarthdataFlow } from "./EarthdataFlow";
+import { EddFlow } from "./EddFlow";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
+import { EddButton } from "./EddButton";
 
 interface IOrderButtonsProps {
   cmrGranuleCount?: number;
@@ -23,6 +25,7 @@ interface IOrderButtonsProps {
 interface IOrderButtonsState {
   showConfirmationFlow: boolean;
   showEarthdataFlow: boolean;
+  showEddFlow: boolean;
 }
 
 export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButtonsState> {
@@ -33,6 +36,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.state = {
       showConfirmationFlow: false,
       showEarthdataFlow: false,
+      showEddFlow: false,
     };
   }
 
@@ -42,15 +46,15 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
                                                             "orderParameters",
                                                             "orderSubmissionParameters",
                                                             "totalSize"]);
-    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEarthdataFlow"]);
+    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEarthdataFlow", "showEddFlow"]);
 
     return propsChanged || stateChanged;
   }
 
   public render() {
     const noGranules = !this.props.cmrGranuleCount;
-    const scriptButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
-    const earthdataButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
+    const orderButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
+    
     const tooltipEarthdata = (
       <div>
         <div>Fulfill order via Earthdata Search.
@@ -60,19 +64,31 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       </div>
     );
 
+    const tooltipEdd = (
+      <div>
+        <div>Fulfill order via Earthdata Download.</div>
+      </div>
+    );
+
     return (
       <div>
       <div id="order-buttons">
         <ScriptButton
-          disabled={scriptButtonDisabled}
+          disabled={orderButtonDisabled}
           environment={this.props.environment}
           orderParameters={this.props.orderParameters}
           onClick={this.handleScriptDownload} />
+        <EddButton
+          disabled={orderButtonDisabled}
+          buttonText={"Earthdata Download"}
+          buttonId={"orderEddFilesButton"}
+          tooltip={tooltipEdd}
+          onEddOrder={this.handleEddOrder} />
         <SubmitButton
           buttonText={"Order Data"}
           buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
-          disabled={earthdataButtonDisabled}
+          disabled={orderButtonDisabled}
           onSubmitOrder={this.handleEarthdataOrder} />
         <ConfirmationFlow
           cmrGranuleCount={this.props.cmrGranuleCount}
@@ -89,6 +105,10 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderParameters={this.props.orderParameters}
           show={this.state.showEarthdataFlow}
           totalSize={this.props.totalSize} />
+        <EddFlow
+          onRequestClose={this.closeEddFlow}
+          orderParameters={this.props.orderParameters}
+          show={this.state.showEddFlow} />
       </div>
       </div>
     );
@@ -102,9 +122,19 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.setState({ showEarthdataFlow: false });
   }
 
+  private closeEddFlow = () => {
+    this.setState({ showEddFlow: false });
+  }
+
   private handleEarthdataOrder = () => {
     this.setState({
       showEarthdataFlow: true,
+    });
+  }
+
+  private handleEddOrder = () => {
+    this.setState({
+      showEddFlow: true,
     });
   }
 
