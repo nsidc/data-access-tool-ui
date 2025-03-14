@@ -18,6 +18,9 @@ interface ICollectionDropdownState {
 }
 
 const SHORTLIST = List([
+  "ATL10",
+  "ATL09",
+  "AU_SI12",
   "ATL06",
   "MOD10A2",
   "MOD10_L2",

@@ -159,10 +159,16 @@ export const cmrStatusRequest = () => {
  * only for the cloud provider.
  */
 export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
+
+  const allCloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(
+    CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}`
+  )
+    .then((response: Response) => response.json())
+    .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_CLOUD_PROVIDER}}))));
   // Cloud collections are those that have the `NSIDC_CPRD` provider. We also
   // require that cloud collections include harmony services, for parity with
   // existing services exposed for ECS collections in Earthdata search.
-  const cloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(
+  const cloudHostedHarmonyCollections: Promise<List<CmrCollection>> = cmrFetch(
     CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}&service_type=Harmony`
   )
     .then((response: Response) => response.json())
@@ -172,14 +178,22 @@ export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
     .then((response: Response) => response.json())
     .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_ECS_PROVIDER}}))));
 
-  return Promise.all([cloudHostedCollections, EcsHostedCollections])
-      .then(([cloudCollections, EcsCollections]: [List<CmrCollection>, List<CmrCollection>]) => {
-        // Combine the two lists w/ a new map that uses short_name as the key. Since
-        // the cloud hosted results are added second, they'll overwrite any ECS
-        // specific results.
+  return Promise.all([allCloudHostedCollections, cloudHostedHarmonyCollections, EcsHostedCollections])
+    .then(([allCloudCollections, cloudHarmonyCollections, EcsCollections]: [List<CmrCollection>, List<CmrCollection>, List<CmrCollection>]) => {
+        // Combine the three lists w/ a new map that uses short_name as the key.
+        // We start with all cloud hosted collections, then we overwrite those
+        // cloud collections with any that are in ECS, and finally we add the
+        // cloud-hosted harmony-supported collections. This ensures that cloud
+        // collections with harmony support are prioritized. ECS collections are
+        // second priority, and third priority is any cloud-hosted collection.  In
+        // practice, this means that the ECS copy will be preferred unless there
+        // is a copy in the cloud with Harmony support. Failing that, and if there
+        // is no longer an ECS copy, we just use the cloud copy without any
+        // services.
         const mergedMap = Map().withMutations((map) => {
+            allCloudCollections.forEach((collection) => map.set(collection!.short_name, collection))
             EcsCollections.forEach((collection) => map.set(collection!.short_name, collection))
-            cloudCollections.forEach((collection) => map.set(collection!.short_name, collection))
+            cloudHarmonyCollections.forEach((collection) => map.set(collection!.short_name, collection))
         })
         // Convert to list and return. There should be no duplicates and
         // cloud collections are preferred.
