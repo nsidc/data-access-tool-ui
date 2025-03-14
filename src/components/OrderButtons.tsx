@@ -54,7 +54,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   public render() {
     const noGranules = !this.props.cmrGranuleCount;
     const orderButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
-    
+
     const tooltipEarthdata = (
       <div>
         <div>Fulfill order via Earthdata Search.

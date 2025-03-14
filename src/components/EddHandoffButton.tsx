@@ -55,7 +55,7 @@ export class EddHandoffButton extends React.Component<IHandoffButtonProps> {
         orderParameters.collection.version_id,
       );
 
-      console.log(`Using deep link: ${eddDeepLink}`)
+      // console.log(`Using deep link: ${eddDeepLink}`)
 
     window.open(eddDeepLink, "_blank");
   }
@@ -69,7 +69,7 @@ export class EddHandoffButton extends React.Component<IHandoffButtonProps> {
                               temporalEnd: OrderParameters["temporalFilterUpperBound"],
                               cmrGranuleFilter: OrderParameters["cmrGranuleFilter"]) => {
 
-    let params = cmrGranuleParams(
+    const params = cmrGranuleParams(
         short_name,
         Number(version),
         provider,
@@ -81,23 +81,24 @@ export class EddHandoffButton extends React.Component<IHandoffButtonProps> {
         GranuleSorting.StartTimeDown,
     );
 
-    let url_encoded_params = encodeURIComponent(params);
+    const url_encoded_params = encodeURIComponent(params);
 
     // TODO: parameterize this url based on env or some other mechanism.
-    let url = `https://integration.nsidc.org/apps/data-access-tool/api/get-links?cmr_request_params=${url_encoded_params}`;
-        
-    let url_encoded_url = encodeURI(url);
+    const url = `https://integration.nsidc.org/apps/data-access-tool/api/get-links?cmr_request_params=${url_encoded_params}`;
+
+    const url_encoded_url = encodeURI(url);
 
     return url_encoded_url;
   }
 
   private buildEddDeepLink = (get_links_url: any, collection_short_name: any, collection_version: any) => {
-    let client_id = `data_access_tool`;
+    const client_id = `data_access_tool`;
     // TODO: parameterize this url based on env or some other mechanism.
-    let auth_url = `https://integration.nsidc.org/apps/data-access-tool/api/earthdata/auth?eddRedirect=earthdata-download%3A%2F%2FauthCallback`;
-    let download_id = `${collection_short_name}_${collection_version}`;
+    const auth_url = `https://integration.nsidc.org/apps/data-access-tool/api/earthdata/auth?eddRedirect=earthdata-download%3A%2F%2FauthCallback`;
+    const download_id = `${collection_short_name}_${collection_version}`;
 
-    let edd_deep_link = `earthdata-download://startDownload?getLinks=${get_links_url}&clientId=${client_id}&authUrl=${auth_url}&downloadId=${download_id}`;
+    const edd_deep_link = `earthdata-download://startDownload?getLinks=${get_links_url}`
+                          + `&clientId=${client_id}&authUrl=${auth_url}&downloadId=${download_id}`;
 
     return edd_deep_link;
   }

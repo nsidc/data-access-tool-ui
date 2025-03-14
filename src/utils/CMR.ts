@@ -246,7 +246,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
                                   cmrGranuleFilter: string,
                                   granuleSorting: GranuleSorting,
                                   headers?: Map<string, string>) => {
-  let params = cmrGranuleParams(
+  const params = cmrGranuleParams(
     collectionAuthId,
     collectionVersionId,
     cmr_provider,
@@ -257,7 +257,7 @@ export const cmrGranuleRequest = (collectionAuthId: string,
     cmrGranuleFilter,
     granuleSorting,
   );
-  let URL = `${CMR_GRANULE_URL}?${params}`;
+  const URL = `${CMR_GRANULE_URL}?${params}`;
 
   return cmrFetch(URL, headers);
 };
