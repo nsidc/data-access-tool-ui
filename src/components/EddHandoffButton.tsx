@@ -1,13 +1,10 @@
 import * as React from "react";
 
-import { CmrCollection } from "../types/CmrCollection";
-import { OrderParameters, GranuleSorting } from "../types/OrderParameters";
-import { cmrGranuleParams } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
 interface IHandoffButtonProps {
   onClick: () => void;
-  orderParameters: OrderParameters;
+  eddDeeplink: any;
 }
 
 export class EddHandoffButton extends React.Component<IHandoffButtonProps> {
@@ -32,74 +29,11 @@ export class EddHandoffButton extends React.Component<IHandoffButtonProps> {
         type="button"
         className="handoff-button eui-btn--blue"
         onClick={() => {
-          this.edscRedirect(this.props.orderParameters);
-          this.props.onClick();
+          window.open(this.props.eddDeeplink, "_self");
           }}>
-        OK
+        Open Earthdata Download
       </button>
     );
   }
 
-  private edscRedirect = (orderParameters: OrderParameters) => {
-    const getLinksUrl = this.buildGetLinksUrl(orderParameters.collection.short_name,
-                                              orderParameters.collection.version_id,
-                                              orderParameters.collection.provider,
-                                              orderParameters.boundingBox,
-                                              orderParameters.spatialSelection,
-                                              orderParameters.temporalFilterLowerBound,
-                                              orderParameters.temporalFilterUpperBound,
-                                              orderParameters.cmrGranuleFilter);
-      const eddDeepLink = this.buildEddDeepLink(
-        getLinksUrl,
-        orderParameters.collection.short_name,
-        orderParameters.collection.version_id,
-      );
-
-      // console.log(`Using deep link: ${eddDeepLink}`)
-
-    window.open(eddDeepLink, "_blank");
-  }
-
-  private buildGetLinksUrl = (short_name: CmrCollection["short_name"],
-                              version: CmrCollection["version_id"],
-                              provider: CmrCollection["provider"],
-                              boundingBox: OrderParameters["boundingBox"],
-                              spatialSelection: OrderParameters["spatialSelection"],
-                              temporalStart: OrderParameters["temporalFilterLowerBound"],
-                              temporalEnd: OrderParameters["temporalFilterUpperBound"],
-                              cmrGranuleFilter: OrderParameters["cmrGranuleFilter"]) => {
-
-    const params = cmrGranuleParams(
-        short_name,
-        Number(version),
-        provider,
-        spatialSelection,
-        boundingBox,
-        temporalStart,
-        temporalEnd,
-        cmrGranuleFilter,
-        GranuleSorting.StartTimeDown,
-    );
-
-    const url_encoded_params = encodeURIComponent(params);
-
-    // TODO: parameterize this url based on env or some other mechanism.
-    const url = `https://integration.nsidc.org/apps/data-access-tool/api/get-links?cmr_request_params=${url_encoded_params}`;
-
-    const url_encoded_url = encodeURI(url);
-
-    return url_encoded_url;
-  }
-
-  private buildEddDeepLink = (get_links_url: any, collection_short_name: any, collection_version: any) => {
-    const client_id = `data_access_tool`;
-    // TODO: parameterize this url based on env or some other mechanism.
-    const auth_url = `https://integration.nsidc.org/apps/data-access-tool/api/earthdata/auth?eddRedirect=earthdata-download%3A%2F%2FauthCallback`;
-    const download_id = `${collection_short_name}_${collection_version}`;
-
-    const edd_deep_link = `earthdata-download://startDownload?getLinks=${get_links_url}`
-                          + `&clientId=${client_id}&authUrl=${auth_url}&downloadId=${download_id}`;
-
-    return edd_deep_link;
-  }
 }
