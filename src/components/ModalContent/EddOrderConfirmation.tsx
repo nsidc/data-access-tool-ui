@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { hasChanged } from "../../utils/hasChanged";
 import { OrderParameters, GranuleSorting } from "../../types/OrderParameters";
 import { EddHandoffButton } from "../EddHandoffButton";
 import { cmrGranuleParams } from "../../utils/CMR";
@@ -73,43 +74,52 @@ const buildEddDeepLink = (get_links_url: any, collection_short_name: any, collec
   return edd_deep_link;
 }
 
-export const EddOrderConfirmation = (props: IEddOrderConfirmationProps) => {
-  const edd_deeplink = eddDeepLinkFromOrderParams(props.orderParameters);
-  window.open(edd_deeplink, "_self"); 
-  return (
-    <div style={{display: "flex"}}>
-      <span style={{width: "50%"}}>
-        <h2>Opening Earthdata Download to download your files...</h2>
 
-        <p>
-          Click <strong>Open Earthdata Download </strong>
-          in the dialog presented by your browser.
-          If the dialog does not open automatically, click
-          <strong> Open Earthdata Download </strong> below.
-          You can close this window once your download begins.
-        </p>
+export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationProps> {
 
-        <p>
-          Don’t have Earthdata Download installed? Go To the
-          <a href="https://nasa.github.io/earthdata-download/" target="blank"
-          > Downloads Page</a>.
-        </p>
+  public shouldComponentUpdate(nextProps: IEddOrderConfirmationProps) {
+    const propsChanged = hasChanged(this.props, nextProps, ["onCancel", "orderParameters"]);
 
+    return propsChanged;
+  }
+
+    public render() {
+      const edd_deeplink = eddDeepLinkFromOrderParams(this.props.orderParameters);
+      window.open(edd_deeplink, "_self");
+      return (
         <div style={{display: "flex"}}>
+          <span style={{width: "50%"}}>
+            <h2>Opening Earthdata Download to download your files...</h2>
 
-          <EddHandoffButton
-            onClick={props.onCancel}
-            eddDeeplink={edd_deeplink} />
+            <p>
+              Click <strong>Open Earthdata Download </strong>
+              in the dialog presented by your browser.
+              If the dialog does not open automatically, click
+              <strong> Open Earthdata Download </strong> below.
+              You can close this window once your download begins.
+            </p>
 
-          <button className="cancel-button eui-btn--red"
-                  onClick={props.onCancel}>
-            Close
-          </button>
+            <p>
+              Don’t have Earthdata Download installed? Go To the
+              <a href="https://nasa.github.io/earthdata-download/" target="blank"
+              > Downloads Page</a>.
+            </p>
 
+            <div style={{display: "flex"}}>
+
+              <EddHandoffButton
+                onClick={this.props.onCancel}
+                eddDeeplink={edd_deeplink} />
+
+              <button className="cancel-button eui-btn--red"
+                      onClick={this.props.onCancel}>
+                Close
+              </button>
+
+            </div>
+          </span>
         </div>
-      </span>
-    </div>
-  );
-};
+      );
+    }
 
-(EddOrderConfirmation as React.SFC).displayName = "EddOrderConfirmation";
+}
