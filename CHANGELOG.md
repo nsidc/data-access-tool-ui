@@ -1,3 +1,9 @@
+# v3.1.0 (TBD)
+
+* Updates to cloud collections must have Harmony services available to be
+  surfaced over ECS
+* Add Earthdata Download option order button (DA-99).
+
 # v3.0.0 (TBD)
 
 * Remove "Order Files" button in preparation for the decomissioning of the data
@@ -8,7 +14,6 @@
   Files" button.
 * Cloud collections must have Harmony services available to be surfaced over ECS
   (DA-79).
-* Add Earthdata Download option order button (DA-99).
 
 # v2.1.0 (2024-06-24)
 
