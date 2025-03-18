@@ -5,26 +5,32 @@ import { OrderParameters, GranuleSorting } from "../../types/OrderParameters";
 import { EddHandoffButton } from "../EddHandoffButton";
 import { cmrGranuleParams } from "../../utils/CMR";
 import { CmrCollection } from "../../types/CmrCollection";
+import { IEnvironment } from "../../utils/environment";
 
 interface IEddOrderConfirmationProps {
   onCancel: () => void;
   orderParameters: OrderParameters;
+  environment: IEnvironment;
 }
 
 
-const eddDeepLinkFromOrderParams = (orderParameters: OrderParameters) => {
-  const getLinksUrl = buildGetLinksUrl(orderParameters.collection.short_name,
-                                            orderParameters.collection.version_id,
-                                            orderParameters.collection.provider,
-                                            orderParameters.boundingBox,
-                                            orderParameters.spatialSelection,
-                                            orderParameters.temporalFilterLowerBound,
-                                            orderParameters.temporalFilterUpperBound,
-                                            orderParameters.cmrGranuleFilter);
+const eddDeepLinkFromOrderParams = (orderParameters: OrderParameters, environment: IEnvironment) => {
+    const getLinksUrl = buildGetLinksUrl(
+        orderParameters.collection.short_name,
+        orderParameters.collection.version_id,
+        orderParameters.collection.provider,
+        orderParameters.boundingBox,
+        orderParameters.spatialSelection,
+        orderParameters.temporalFilterLowerBound,
+        orderParameters.temporalFilterUpperBound,
+        orderParameters.cmrGranuleFilter,
+        environment,
+    );
     const eddDeepLink = buildEddDeepLink(
       getLinksUrl,
       orderParameters.collection.short_name,
       orderParameters.collection.version_id,
+      environment,
     );
 
     return eddDeepLink;
@@ -38,7 +44,9 @@ const buildGetLinksUrl = (short_name: CmrCollection["short_name"],
                             spatialSelection: OrderParameters["spatialSelection"],
                             temporalStart: OrderParameters["temporalFilterLowerBound"],
                             temporalEnd: OrderParameters["temporalFilterUpperBound"],
-                            cmrGranuleFilter: OrderParameters["cmrGranuleFilter"]) => {
+                          cmrGranuleFilter: OrderParameters["cmrGranuleFilter"],
+                          environment: IEnvironment,
+) => {
 
   const params = cmrGranuleParams(
       short_name,
@@ -55,17 +63,17 @@ const buildGetLinksUrl = (short_name: CmrCollection["short_name"],
   const url_encoded_params = encodeURIComponent(params);
 
   // TODO: parameterize this url based on env or some other mechanism.
-  const url = `https://integration.nsidc.org/apps/data-access-tool/api/get-links?cmr_request_params=${url_encoded_params}`;
+  const url = `${environment.urls.datBackendApiUrl}/get-links?cmr_request_params=${url_encoded_params}`;
 
   const url_encoded_url = encodeURI(url);
 
   return url_encoded_url;
 }
 
-const buildEddDeepLink = (get_links_url: any, collection_short_name: any, collection_version: any) => {
+const buildEddDeepLink = (get_links_url: any, collection_short_name: any, collection_version: any, environment: IEnvironment) => {
   const client_id = `data_access_tool`;
   // TODO: parameterize this url based on env or some other mechanism.
-  const auth_url = `https://integration.nsidc.org/apps/data-access-tool/api/earthdata/auth?eddRedirect=earthdata-download%3A%2F%2FauthCallback`;
+  const auth_url = `${environment.urls.datBackendApiUrl}/earthdata/auth?eddRedirect=earthdata-download%3A%2F%2FauthCallback`;
   const download_id = `${collection_short_name}_${collection_version}`;
 
   const edd_deep_link = `earthdata-download://startDownload?getLinks=${get_links_url}`
@@ -84,7 +92,7 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
   }
 
     public render() {
-      const edd_deeplink = eddDeepLinkFromOrderParams(this.props.orderParameters);
+      const edd_deeplink = eddDeepLinkFromOrderParams(this.props.orderParameters, this.props.environment);
       window.open(edd_deeplink, "_self");
       return (
         <div style={{display: "flex"}}>

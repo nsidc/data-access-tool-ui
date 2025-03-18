@@ -108,6 +108,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
         <EddFlow
           onRequestClose={this.closeEddFlow}
           orderParameters={this.props.orderParameters}
+          environment={this.props.environment}
           show={this.state.showEddFlow} />
       </div>
       </div>

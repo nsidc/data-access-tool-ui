@@ -3,6 +3,7 @@ import * as React from "react";
 import * as ReactModal from "react-modal";
 
 import { OrderParameters } from "../types/OrderParameters";
+import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { EddOrderConfirmation } from "./ModalContent/EddOrderConfirmation";
 
@@ -10,6 +11,7 @@ interface IEddFlowProps {
   onRequestClose: () => void;
   orderParameters: OrderParameters;
   show: boolean;
+  environment: IEnvironment;
 }
 
 export class EddFlow extends React.Component<IEddFlowProps, {}> {
@@ -36,7 +38,8 @@ export class EddFlow extends React.Component<IEddFlowProps, {}> {
                   onRequestClose={this.props.onRequestClose}
                   parentSelector={() => document.getElementById("everest-ui") || document.body}>
         <EddOrderConfirmation onCancel={this.props.onRequestClose}
-          orderParameters={this.props.orderParameters} />
+                              orderParameters={this.props.orderParameters}
+                              environment={this.props.environment} />
       </ReactModal>
     );
   }
