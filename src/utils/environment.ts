@@ -39,7 +39,7 @@ function getEnvironmentDependentURLs() {
     };
   } else {
     return {
-      datBackendApiUrl: "/apps/data-access-tool/api",
+      datBackendApiUrl: `${window.location.protocol}//${window.location.host}/apps/data-access-tool/api`,
       // TODO: these will all be removed with the decom of hermes.
       hermesApiUrl: "/apps/orders/api",
       orderNotificationHost: `wss://${window.location.hostname}`,
