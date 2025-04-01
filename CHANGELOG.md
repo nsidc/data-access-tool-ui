@@ -3,6 +3,9 @@
 * Updates to cloud collections must have Harmony services available to be
   surfaced over ECS
 * Add Earthdata Download option order button (DA-99).
+* Use
+  [data-access-tool-backend](https://github.com/nsidc/data-access-tool-backend)
+  for serving the python script.
 
 # v3.0.0 (2024-07-24)
 

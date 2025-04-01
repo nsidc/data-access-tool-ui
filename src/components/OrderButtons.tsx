@@ -189,7 +189,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     };
 
     let responseHeaders: any = "";
-    fetch(`${this.props.environment.urls.hermesApiUrl}/downloader-script/`, {
+    fetch(`${this.props.environment.urls.datBackendApiUrl}/downloader-script/`, {
       body: JSON.stringify(body),
       credentials: "include",
       headers,
