@@ -102,7 +102,9 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
               in the dialog presented by your browser.
               If the dialog does not open automatically, click
               <strong> Open Earthdata Download </strong> below.
-              You can close this window once your download begins.
+              If you click and nothing happens, you may need download and
+              install the Earthdata Download application. You can close this
+              window once your download begins.
             </p>
 
             <p>

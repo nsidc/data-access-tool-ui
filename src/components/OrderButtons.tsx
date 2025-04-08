@@ -66,7 +66,10 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     const tooltipEdd = (
       <div>
-        <div>Fulfill order via Earthdata Download.</div>
+        <div>Download files with the Earthdata Download application, a data
+          download management tool. The application must be installed. Supports
+          direct download for any number of files.
+        </div>
       </div>
     );
 
@@ -80,7 +83,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onClick={this.handleScriptDownload} />
         <EddButton
           disabled={orderButtonDisabled}
-          buttonText={"Earthdata Download"}
+          buttonText={"Download Files"}
           buttonId={"orderEddFilesButton"}
           tooltip={tooltipEdd}
           onEddOrder={this.handleEddOrder} />
