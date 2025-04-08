@@ -16,7 +16,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
     </a>
   );
   return (
-    <div style={{display: "flex"}}>
+    <div style={{display: "flex", padding: "0.5em"}}>
       <span style={{width: "50%"}}>
         <h2>Your order will be redirected</h2>
 

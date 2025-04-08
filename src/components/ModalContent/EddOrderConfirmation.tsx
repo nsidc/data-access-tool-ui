@@ -94,7 +94,7 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
       window.open(edd_deeplink, "_self");
       return (
         <div style={{display: "flex"}}>
-          <span style={{width: "100%"}}>
+          <span style={{width: "100%", padding: "0.5em"}}>
             <h2>Opening Earthdata Download to download your files...</h2>
 
             <p>
