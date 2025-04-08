@@ -57,9 +57,10 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     const tooltipEarthdata = (
       <div>
-        <div>Fulfill order via Earthdata Search.
-          Use this option to apply customizations (e.g. subset, reformat).
-          Your current order will be transferred intact for completion.
+
+        <div>Use Earthdata Search to apply customizations (e.g., subset,
+          reformat) prior to downloading data files. Your current filter
+          selections will be automatically transferred.
         </div>
       </div>
     );
@@ -88,7 +89,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           tooltip={tooltipEdd}
           onEddOrder={this.handleEddOrder} />
         <SubmitButton
-          buttonText={"Order Data"}
+          buttonText={"Order via Earthdata Search"}
           buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
           disabled={orderButtonDisabled}
