@@ -39,6 +39,8 @@ function getEnvironmentDependentURLs() {
     };
   } else {
     return {
+      // Note: the backend API url must be fully specified for its use in the
+      // EDD deep link (it cannot be relative to the root)
       datBackendApiUrl: `${window.location.protocol}//${window.location.host}/apps/data-access-tool/api`,
       // TODO: these will all be removed with the decom of hermes.
       hermesApiUrl: "/apps/orders/api",
