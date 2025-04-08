@@ -40,9 +40,9 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
         </div>
       </span>
 
-      <span style={{width: "50%"}}>
+      <span style={{width: "50%", display: "inline-block"}}>
         <div>
-          <img src={"https://nsidc.org/sites/default/files/Earthdata_Screenshot.png"} />
+          <img src={"https://nsidc.org/sites/default/files/Earthdata_Screenshot.png"} style={{maxWidth: "100%", height: "auto", display: "block"}} />
           <div style={{textAlign: "center"}}>
             <em>Earthdata Search interface</em>
           </div>
