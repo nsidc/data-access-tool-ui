@@ -18,6 +18,8 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
   return (
     <div style={{display: "flex"}}>
       <span style={{width: "50%"}}>
+        <h2>Your order will be redirected</h2>
+
         <p>You will be directed to Earthdata Search to complete your order (see
         image). If available, you will be able to apply customizations such as
         subsetting or reformatting to your order. Your current filters will be
