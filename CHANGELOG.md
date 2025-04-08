@@ -6,6 +6,7 @@
 * Use
   [data-access-tool-backend](https://github.com/nsidc/data-access-tool-backend)
   for serving the python script.
+* Updates to button and modal language (DA-90).
 
 # v3.0.0 (2024-07-24)
 
