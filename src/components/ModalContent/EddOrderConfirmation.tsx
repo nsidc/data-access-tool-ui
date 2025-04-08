@@ -119,7 +119,7 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
                 onClick={this.props.onCancel}
                 eddDeeplink={edd_deeplink} />
 
-              <button className="cancel-button eui-btn--red"
+              <button className="cancel-button eui-btn--red modal-button"
                       onClick={this.props.onCancel}>
                 Close
               </button>

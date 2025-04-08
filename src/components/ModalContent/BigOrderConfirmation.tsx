@@ -32,7 +32,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
             onClick={props.onCancel}
             orderParameters={props.orderParameters} />
 
-          <button className="cancel-button eui-btn--red"
+          <button className="cancel-button eui-btn--red modal-button"
                   onClick={props.onCancel}>
             Cancel
           </button>
