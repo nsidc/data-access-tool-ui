@@ -6,7 +6,10 @@
 * Use
   [data-access-tool-backend](https://github.com/nsidc/data-access-tool-backend)
   for serving the python script.
-* Updates to button and modal language (DA-90).
+* Updates to button and modal language and style (DA-90).
+* Bugfix for python script: whitespace characters (e.g., `\t`) are stripped from
+  filename filters before being passed to the Data Access Tool backend's python
+  script endpoint.
 
 # v3.0.0 (2024-07-24)
 

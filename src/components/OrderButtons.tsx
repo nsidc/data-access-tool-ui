@@ -3,7 +3,7 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, combineGranuleFilters } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
@@ -154,7 +154,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     }
 
     const filenameFilter = params.cmrGranuleFilter ?
-      filterAddWildcards(params.cmrGranuleFilter) : "";
+     combineGranuleFilters(params.cmrGranuleFilter, ",", "") : "";
 
     let boundingBox = "";
     let polygon = "";
