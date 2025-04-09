@@ -62,7 +62,6 @@ const buildGetLinksUrl = (short_name: CmrCollection["short_name"],
 
   const url_encoded_params = encodeURIComponent(params);
 
-  // TODO: parameterize this url based on env or some other mechanism.
   const url = `${environment.urls.datBackendApiUrl}/get-links?cmr_request_params=${url_encoded_params}`;
 
   const url_encoded_url = encodeURI(url);
@@ -72,7 +71,6 @@ const buildGetLinksUrl = (short_name: CmrCollection["short_name"],
 
 const buildEddDeepLink = (get_links_url: any, collection_short_name: any, collection_version: any, environment: IEnvironment) => {
   const client_id = `data_access_tool`;
-  // TODO: parameterize this url based on env or some other mechanism.
   const auth_url = `${environment.urls.datBackendApiUrl}/earthdata/auth?eddRedirect=earthdata-download%3A%2F%2FauthCallback`;
   const download_id = `${collection_short_name}_${collection_version}`;
 
