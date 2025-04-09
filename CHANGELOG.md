@@ -1,4 +1,10 @@
-# v3.0.0 (TBD)
+# v3.1.0 (TBD)
+
+* Updates to cloud collections must have Harmony services available to be
+  surfaced over ECS
+* Add Earthdata Download option order button (DA-99).
+
+# v3.0.0 (2024-07-24)
 
 * Remove "Order Files" button in preparation for the decomissioning of the data
   ordering system (hermes).

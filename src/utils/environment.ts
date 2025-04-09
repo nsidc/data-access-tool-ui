@@ -2,6 +2,7 @@ import {IDrupalDataset} from "../types/DrupalDataset";
 import {constructAPI, IHermesAPI} from "./Hermes";
 
 interface IUrls {
+  datBackendApiUrl: string;
   hermesApiUrl: string;
   orderNotificationHost: string;
   orderNotificationPath: string;
@@ -13,6 +14,8 @@ export interface IEnvironment {
   exposeFunction: (name: string, callback: (...args: any[]) => any) => boolean;
   hermesAPI: IHermesAPI;
   inDrupal: boolean;
+  // TODO: add dat-backend api url here.
+  // TODO: consider adding a module for the dat API similar to Hermes.ts.
   urls: IUrls;
 }
 
@@ -25,14 +28,19 @@ export function getEnvironment(): string {
 }
 
 function getEnvironmentDependentURLs() {
+  // TODO: this function gives the same result in every case. Necessary?
   if (getEnvironment() === "dev") {
     return {
+      datBackendApiUrl: "https://integration.nsidc.org/apps/data-access-tool/api",
+      // TODO: these will all be removed with the decom of hermes.
       hermesApiUrl: "/apps/orders/api",
       orderNotificationHost: `wss://${window.location.hostname}`,
       orderNotificationPath: "/apps/orders/notification/",
     };
   } else {
     return {
+      datBackendApiUrl: `${window.location.protocol}//${window.location.host}/apps/data-access-tool/api`,
+      // TODO: these will all be removed with the decom of hermes.
       hermesApiUrl: "/apps/orders/api",
       orderNotificationHost: `wss://${window.location.hostname}`,
       orderNotificationPath: "/apps/orders/notification/",
