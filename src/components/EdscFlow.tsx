@@ -6,7 +6,7 @@ import { OrderParameters } from "../types/OrderParameters";
 import { hasChanged } from "../utils/hasChanged";
 import { EdscOrderConfirmation } from "./ModalContent/EdscOrderConfirmation";
 
-interface IEarthdataFlowProps {
+interface IEdscFlowProps {
   onRequestClose: () => void;
   onScriptDownloadClick: () => void;
   orderParameters: OrderParameters;
@@ -14,8 +14,8 @@ interface IEarthdataFlowProps {
   totalSize: number;
 }
 
-export class EarthdataFlow extends React.Component<IEarthdataFlowProps, {}> {
-  public shouldComponentUpdate(nextProps: IEarthdataFlowProps) {
+export class EdscFlow extends React.Component<IEdscFlowProps, {}> {
+  public shouldComponentUpdate(nextProps: IEdscFlowProps) {
     const propsChanged = hasChanged(this.props, nextProps, ["show"]);
     return propsChanged;
   }

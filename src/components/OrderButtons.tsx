@@ -8,7 +8,7 @@ import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
 import { ConfirmationFlow } from "./ConfirmationFlow";
-import { EarthdataFlow } from "./EarthdataFlow";
+import { EdscFlow } from "./EdscFlow";
 import { EddFlow } from "./EddFlow";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
@@ -24,7 +24,7 @@ interface IOrderButtonsProps {
 
 interface IOrderButtonsState {
   showConfirmationFlow: boolean;
-  showEarthdataFlow: boolean;
+  showEdscFlow: boolean;
   showEddFlow: boolean;
 }
 
@@ -35,7 +35,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     super(props);
     this.state = {
       showConfirmationFlow: false,
-      showEarthdataFlow: false,
+      showEdscFlow: false,
       showEddFlow: false,
     };
   }
@@ -46,7 +46,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
                                                             "orderParameters",
                                                             "orderSubmissionParameters",
                                                             "totalSize"]);
-    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEarthdataFlow", "showEddFlow"]);
+    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEdscFlow", "showEddFlow"]);
 
     return propsChanged || stateChanged;
   }
@@ -103,11 +103,11 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           orderSubmissionParameters={this.props.orderSubmissionParameters}
           show={this.state.showConfirmationFlow}
           totalSize={this.props.totalSize} />
-        <EarthdataFlow
-          onRequestClose={this.closeEarthdataFlow}
+        <EdscFlow
+          onRequestClose={this.closeEdscFlow}
           onScriptDownloadClick={this.handleScriptDownload}
           orderParameters={this.props.orderParameters}
-          show={this.state.showEarthdataFlow}
+          show={this.state.showEdscFlow}
           totalSize={this.props.totalSize} />
         <EddFlow
           onRequestClose={this.closeEddFlow}
@@ -123,8 +123,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     this.setState({showConfirmationFlow: false});
   }
 
-  private closeEarthdataFlow = () => {
-    this.setState({ showEarthdataFlow: false });
+  private closeEdscFlow = () => {
+    this.setState({ showEdscFlow: false });
   }
 
   private closeEddFlow = () => {
@@ -133,7 +133,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
   private handleEarthdataOrder = () => {
     this.setState({
-      showEarthdataFlow: true,
+      showEdscFlow: true,
     });
   }
 
