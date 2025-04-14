@@ -4,7 +4,7 @@ import * as ReactModal from "react-modal";
 
 import { OrderParameters } from "../types/OrderParameters";
 import { hasChanged } from "../utils/hasChanged";
-import { BigOrderConfirmation } from "./ModalContent/BigOrderConfirmation";
+import { EdscOrderConfirmation } from "./ModalContent/EdscOrderConfirmation";
 
 interface IEarthdataFlowProps {
   onRequestClose: () => void;
@@ -37,7 +37,7 @@ export class EarthdataFlow extends React.Component<IEarthdataFlowProps, {}> {
                   isOpen={this.props.show}
                   onRequestClose={this.props.onRequestClose}
                   parentSelector={() => document.getElementById("everest-ui") || document.body}>
-        <BigOrderConfirmation onCancel={this.props.onRequestClose}
+        <EdscOrderConfirmation onCancel={this.props.onRequestClose}
           onScriptDownloadClick={this.props.onScriptDownloadClick}
           orderParameters={this.props.orderParameters} />
       </ReactModal>

@@ -3,13 +3,13 @@ import * as React from "react";
 import { OrderParameters } from "../../types/OrderParameters";
 import { EarthdataSearchHandoffButton } from "../EarthdataSearchHandoffButton";
 
-interface IBigOrderConfirmationProps {
+interface IEdscOrderConfirmationProps {
   onCancel: () => void;
   onScriptDownloadClick: () => void;
   orderParameters: OrderParameters;
 }
 
-export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
+export const EdscOrderConfirmation = (props: IEdscOrderConfirmationProps) => {
   const downloadScriptLink = (
     <a onClick={() => { props.onScriptDownloadClick(); props.onCancel(); }} style={{cursor: "pointer"}}>
       download a Python script
@@ -55,4 +55,4 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
   );
 };
 
-(BigOrderConfirmation as React.SFC).displayName = "BigOrderConfirmation";
+(EdscOrderConfirmation as React.SFC).displayName = "EdscOrderConfirmation";
