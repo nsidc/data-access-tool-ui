@@ -7,7 +7,6 @@ import { boundingBoxMatch, combineGranuleFilters } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
-import { ConfirmationFlow } from "./ConfirmationFlow";
 import { EdscFlow } from "./EdscFlow";
 import { EddFlow } from "./EddFlow";
 import { ScriptButton } from "./ScriptButton";
@@ -23,7 +22,6 @@ interface IOrderButtonsProps {
 }
 
 interface IOrderButtonsState {
-  showConfirmationFlow: boolean;
   showEdscFlow: boolean;
   showEddFlow: boolean;
 }
@@ -34,7 +32,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   public constructor(props: IOrderButtonsProps) {
     super(props);
     this.state = {
-      showConfirmationFlow: false,
       showEdscFlow: false,
       showEddFlow: false,
     };
@@ -46,7 +43,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
                                                             "orderParameters",
                                                             "orderSubmissionParameters",
                                                             "totalSize"]);
-    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEdscFlow", "showEddFlow"]);
+    const stateChanged = hasChanged(this.state, nextState, ["showEdscFlow", "showEddFlow"]);
 
     return propsChanged || stateChanged;
   }
@@ -94,15 +91,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           tooltip={tooltipEarthdata}
           disabled={orderButtonDisabled}
           onSubmitOrder={this.handleEarthdataOrder} />
-        <ConfirmationFlow
-          cmrGranuleCount={this.props.cmrGranuleCount}
-          environment={this.props.environment}
-          onRequestClose={this.closeConfirmationFlow}
-          onScriptDownloadClick={this.handleScriptDownload}
-          orderParameters={this.props.orderParameters}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
-          show={this.state.showConfirmationFlow}
-          totalSize={this.props.totalSize} />
         <EdscFlow
           onRequestClose={this.closeEdscFlow}
           onScriptDownloadClick={this.handleScriptDownload}
@@ -117,10 +105,6 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       </div>
       </div>
     );
-  }
-
-  private closeConfirmationFlow = () => {
-    this.setState({showConfirmationFlow: false});
   }
 
   private closeEdscFlow = () => {
