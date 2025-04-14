@@ -16,14 +16,15 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
     </a>
   );
   return (
-    <div style={{display: "flex"}}>
+    <div style={{display: "flex", padding: "0.5em"}}>
       <span style={{width: "50%"}}>
         <h2>Your order will be redirected</h2>
 
-        <p>You will be redirected to Earthdata Search for fulfillment (see illustration).
-          Your current order will be transferred intact.</p>
-
-        <p>Alternatively, you can {downloadScriptLink} to retrieve your files.</p>
+        <p>You will be directed to Earthdata Search to complete your order (see
+        image). If available, you will be able to apply customizations such as
+        subsetting or reformatting to your order. Your current filters will be
+        transferred intact. Alternatively, you can {downloadScriptLink} or
+        use Earthdata Download to retrieve your files.</p>
 
         <div style={{display: "flex"}}>
 
@@ -31,7 +32,7 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
             onClick={props.onCancel}
             orderParameters={props.orderParameters} />
 
-          <button className="cancel-button eui-btn--red"
+          <button className="cancel-button eui-btn--red modal-button"
                   onClick={props.onCancel}>
             Cancel
           </button>
@@ -39,9 +40,12 @@ export const BigOrderConfirmation = (props: IBigOrderConfirmationProps) => {
         </div>
       </span>
 
-      <span style={{width: "50%"}}>
+      <span style={{width: "50%", display: "inline-block"}}>
         <div>
-          <img src={"https://nsidc.org/sites/default/files/Earthdata_Screenshot.png"} />
+          <img
+              src={"https://nsidc.org/sites/default/files/Earthdata_Screenshot.png"}
+              style={{maxWidth: "100%", height: "auto", display: "block", margin: "auto"}}
+          />
           <div style={{textAlign: "center"}}>
             <em>Earthdata Search interface</em>
           </div>

@@ -3,7 +3,7 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, combineGranuleFilters } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
@@ -57,16 +57,20 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
 
     const tooltipEarthdata = (
       <div>
-        <div>Fulfill order via Earthdata Search.
-          Use this option to apply customizations (e.g. subset, reformat).
-          Your current order will be transferred intact for completion.
+
+        <div>Use Earthdata Search to apply customizations (e.g., subset,
+          reformat) prior to downloading data files. Your current filter
+          selections will be automatically transferred.
         </div>
       </div>
     );
 
     const tooltipEdd = (
       <div>
-        <div>Fulfill order via Earthdata Download.</div>
+        <div>Download files with the Earthdata Download application, a data
+          download management tool. The application must be installed. Supports
+          direct download for any number of files.
+        </div>
       </div>
     );
 
@@ -80,12 +84,12 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
           onClick={this.handleScriptDownload} />
         <EddButton
           disabled={orderButtonDisabled}
-          buttonText={"Earthdata Download"}
+          buttonText={"Download Files"}
           buttonId={"orderEddFilesButton"}
           tooltip={tooltipEdd}
           onEddOrder={this.handleEddOrder} />
         <SubmitButton
-          buttonText={"Order Data"}
+          buttonText={"Order via Earthdata Search"}
           buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
           disabled={orderButtonDisabled}
@@ -150,7 +154,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     }
 
     const filenameFilter = params.cmrGranuleFilter ?
-      filterAddWildcards(params.cmrGranuleFilter) : "";
+     combineGranuleFilters(params.cmrGranuleFilter, ",", "") : "";
 
     let boundingBox = "";
     let polygon = "";

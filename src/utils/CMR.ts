@@ -80,7 +80,7 @@ export const filterAddWildcards = (filter: string): string => {
   return filter;
 };
 
-const combineGranuleFilters = (cmrGranuleFilter: string, separator: string, filterPrefix: string): string => {
+export const combineGranuleFilters = (cmrGranuleFilter: string, separator: string, filterPrefix: string): string => {
   const multipleFilters: string[] = [];
   // Remove whitespace and see if we have multiple filters separated by commas
   cmrGranuleFilter.replace(/\s*/g, "").split(",").forEach((singleFilter: string) => {

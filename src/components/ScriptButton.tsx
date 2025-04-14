@@ -44,7 +44,7 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
   }
 
   private renderScriptButton = () => {
-    const tooltip = <div><span>Download Python script (requires Python 2 or 3).</span></div>;
+    const tooltip = <div><span>Download Python script.</span></div>;
 
     return (
       <div className="tooltip" data-tip data-for="scriptbutton">

@@ -94,7 +94,7 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
       window.open(edd_deeplink, "_self");
       return (
         <div style={{display: "flex"}}>
-          <span style={{width: "50%"}}>
+          <span style={{width: "100%", padding: "0.5em"}}>
             <h2>Opening Earthdata Download to download your files...</h2>
 
             <p>
@@ -102,7 +102,9 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
               in the dialog presented by your browser.
               If the dialog does not open automatically, click
               <strong> Open Earthdata Download </strong> below.
-              You can close this window once your download begins.
+              If you click and nothing happens, you may need download and
+              install the Earthdata Download application. You can close this
+              window once your download begins.
             </p>
 
             <p>
@@ -117,7 +119,7 @@ export class EddOrderConfirmation extends React.Component<IEddOrderConfirmationP
                 onClick={this.props.onCancel}
                 eddDeeplink={edd_deeplink} />
 
-              <button className="cancel-button eui-btn--red"
+              <button className="cancel-button eui-btn--red modal-button"
                       onClick={this.props.onCancel}>
                 Close
               </button>

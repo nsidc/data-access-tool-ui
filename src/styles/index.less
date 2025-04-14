@@ -784,3 +784,11 @@
     }
   }
 }
+
+/* The `+` is the `next-sibling combinator. This applies `margin-left` when two
+   or more modal buttons are next to each other (matches the second element only
+   when it follows the first). See
+   https://developer.mozilla.org/en-US/docs/Web/CSS/Next-sibling_combinator */
+.modal-button + .modal-button {
+  margin-left: 0.5em;
+}

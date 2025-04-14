@@ -27,7 +27,7 @@ export class EddHandoffButton extends React.Component<IHandoffButtonProps> {
       <button
         id="confirmEdd"
         type="button"
-        className="handoff-button eui-btn--blue"
+        className="handoff-button eui-btn--blue modal-button"
         onClick={() => {
           window.open(this.props.eddDeeplink, "_self");
           }}>

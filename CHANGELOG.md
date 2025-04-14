@@ -6,6 +6,12 @@
 * Use
   [data-access-tool-backend](https://github.com/nsidc/data-access-tool-backend)
   for serving the python script.
+* Updates to button and modal language and style (DA-90).
+* Bugfix for python script: whitespace characters (e.g., `\t`) are stripped from
+  filename filters before being passed to the Data Access Tool backend's python
+  script endpoint.
+* Remove tooltip text about support for Python 2 from Download Script
+  option. Python 2 went end of life January 1, 2020.
 
 # v3.0.0 (2024-07-24)
 
