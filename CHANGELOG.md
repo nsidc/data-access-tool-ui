@@ -1,4 +1,4 @@
-# v3.1.0 (TBD)
+# v3.1.0 (2025-04-15)
 
 * Updates to cloud collections must have Harmony services available to be
   surfaced over ECS
