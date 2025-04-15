@@ -12,6 +12,8 @@
   script endpoint.
 * Remove tooltip text about support for Python 2 from Download Script
   option. Python 2 went end of life January 1, 2020.
+* Improve naming convention of components in code.
+* Cleanup OBE components related to Hermes order backend.
 
 # v3.0.0 (2024-07-24)
 
