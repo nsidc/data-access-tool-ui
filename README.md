@@ -3,7 +3,7 @@
 </p>
 
 
-# Data Access Tool
+# Data Access Tool UI
 
 Web interface to support granule-level discovery and access of NASA Earthdata for a
 given data collection.
