@@ -3,14 +3,15 @@ import * as React from "react";
 import { BoundingBox } from "../types/BoundingBox";
 import { OrderParameters } from "../types/OrderParameters";
 import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
-import { boundingBoxMatch, filterAddWildcards } from "../utils/CMR";
+import { boundingBoxMatch, combineGranuleFilters } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { UserContext } from "../utils/state";
-import { ConfirmationFlow } from "./ConfirmationFlow";
-import { EarthdataFlow } from "./EarthdataFlow";
+import { EdscFlow } from "./EdscFlow";
+import { EddFlow } from "./EddFlow";
 import { ScriptButton } from "./ScriptButton";
 import { SubmitButton } from "./SubmitButton";
+import { EddButton } from "./EddButton";
 
 interface IOrderButtonsProps {
   cmrGranuleCount?: number;
@@ -21,8 +22,8 @@ interface IOrderButtonsProps {
 }
 
 interface IOrderButtonsState {
-  showConfirmationFlow: boolean;
-  showEarthdataFlow: boolean;
+  showEdscFlow: boolean;
+  showEddFlow: boolean;
 }
 
 export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButtonsState> {
@@ -31,8 +32,8 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
   public constructor(props: IOrderButtonsProps) {
     super(props);
     this.state = {
-      showConfirmationFlow: false,
-      showEarthdataFlow: false,
+      showEdscFlow: false,
+      showEddFlow: false,
     };
   }
 
@@ -42,20 +43,30 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
                                                             "orderParameters",
                                                             "orderSubmissionParameters",
                                                             "totalSize"]);
-    const stateChanged = hasChanged(this.state, nextState, ["showConfirmationFlow", "showEarthdataFlow"]);
+    const stateChanged = hasChanged(this.state, nextState, ["showEdscFlow", "showEddFlow"]);
 
     return propsChanged || stateChanged;
   }
 
   public render() {
     const noGranules = !this.props.cmrGranuleCount;
-    const scriptButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
-    const earthdataButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
+    const orderButtonDisabled = !this.props.orderSubmissionParameters || noGranules;
+
     const tooltipEarthdata = (
       <div>
-        <div>Fulfill order via Earthdata Search.
-          Use this option to apply customizations (e.g. subset, reformat).
-          Your current order will be transferred intact for completion.
+
+        <div>Use Earthdata Search to apply customizations (e.g., subset,
+          reformat) prior to downloading data files. Your current filter
+          selections will be automatically transferred.
+        </div>
+      </div>
+    );
+
+    const tooltipEdd = (
+      <div>
+        <div>Download files with the Earthdata Download application, a data
+          download management tool. The application must be installed. Supports
+          direct download for any number of files.
         </div>
       </div>
     );
@@ -64,47 +75,55 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
       <div>
       <div id="order-buttons">
         <ScriptButton
-          disabled={scriptButtonDisabled}
+          disabled={orderButtonDisabled}
           environment={this.props.environment}
           orderParameters={this.props.orderParameters}
           onClick={this.handleScriptDownload} />
+        <EddButton
+          disabled={orderButtonDisabled}
+          buttonText={"Download Files"}
+          buttonId={"orderEddFilesButton"}
+          tooltip={tooltipEdd}
+          onEddOrder={this.handleEddOrder} />
         <SubmitButton
-          buttonText={"Order Data"}
+          buttonText={"Order via Earthdata Search"}
           buttonId={"orderEarthdataFilesButton"}
           tooltip={tooltipEarthdata}
-          disabled={earthdataButtonDisabled}
+          disabled={orderButtonDisabled}
           onSubmitOrder={this.handleEarthdataOrder} />
-        <ConfirmationFlow
-          cmrGranuleCount={this.props.cmrGranuleCount}
+        <EdscFlow
+          onRequestClose={this.closeEdscFlow}
+          onScriptDownloadClick={this.handleScriptDownload}
+          orderParameters={this.props.orderParameters}
+          show={this.state.showEdscFlow}
+          totalSize={this.props.totalSize} />
+        <EddFlow
+          onRequestClose={this.closeEddFlow}
+          orderParameters={this.props.orderParameters}
           environment={this.props.environment}
-          onRequestClose={this.closeConfirmationFlow}
-          onScriptDownloadClick={this.handleScriptDownload}
-          orderParameters={this.props.orderParameters}
-          orderSubmissionParameters={this.props.orderSubmissionParameters}
-          show={this.state.showConfirmationFlow}
-          totalSize={this.props.totalSize} />
-        <EarthdataFlow
-          onRequestClose={this.closeEarthdataFlow}
-          onScriptDownloadClick={this.handleScriptDownload}
-          orderParameters={this.props.orderParameters}
-          show={this.state.showEarthdataFlow}
-          totalSize={this.props.totalSize} />
+          show={this.state.showEddFlow} />
       </div>
       </div>
     );
   }
 
-  private closeConfirmationFlow = () => {
-    this.setState({showConfirmationFlow: false});
+  private closeEdscFlow = () => {
+    this.setState({ showEdscFlow: false });
   }
 
-  private closeEarthdataFlow = () => {
-    this.setState({ showEarthdataFlow: false });
+  private closeEddFlow = () => {
+    this.setState({ showEddFlow: false });
   }
 
   private handleEarthdataOrder = () => {
     this.setState({
-      showEarthdataFlow: true,
+      showEdscFlow: true,
+    });
+  }
+
+  private handleEddOrder = () => {
+    this.setState({
+      showEddFlow: true,
     });
   }
 
@@ -119,7 +138,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     }
 
     const filenameFilter = params.cmrGranuleFilter ?
-      filterAddWildcards(params.cmrGranuleFilter) : "";
+     combineGranuleFilters(params.cmrGranuleFilter, ",", "") : "";
 
     let boundingBox = "";
     let polygon = "";
@@ -158,7 +177,7 @@ export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButt
     };
 
     let responseHeaders: any = "";
-    fetch(`${this.props.environment.urls.hermesApiUrl}/downloader-script/`, {
+    fetch(`${this.props.environment.urls.datBackendApiUrl}/downloader-script/`, {
       body: JSON.stringify(body),
       credentials: "include",
       headers,

@@ -1,4 +1,21 @@
-# v3.0.0 (TBD)
+# v3.1.0 (2025-04-15)
+
+* Updates to cloud collections must have Harmony services available to be
+  surfaced over ECS
+* Add Earthdata Download option order button (DA-99).
+* Use
+  [data-access-tool-backend](https://github.com/nsidc/data-access-tool-backend)
+  for serving the python script.
+* Updates to button and modal language and style (DA-90).
+* Bugfix for python script: whitespace characters (e.g., `\t`) are stripped from
+  filename filters before being passed to the Data Access Tool backend's python
+  script endpoint.
+* Remove tooltip text about support for Python 2 from Download Script
+  option. Python 2 went end of life January 1, 2020.
+* Improve naming convention of components in code.
+* Cleanup OBE components related to Hermes order backend.
+
+# v3.0.0 (2024-07-24)
 
 * Remove "Order Files" button in preparation for the decomissioning of the data
   ordering system (hermes).

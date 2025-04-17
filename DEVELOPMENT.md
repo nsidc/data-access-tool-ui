@@ -25,6 +25,19 @@ These all need to be in sync (or ideally, only maintained in one place).
 refreshed automatically. Note that the webapp is served with a self-signed cert,
 so accept the risk and continue if your web browser blocks the request.
 
+> [!WARNING]
+> In a local development environment, the DAT currently points to the
+> integration data-access-tool-backend. To change this, manually modify the
+> `dev` section of the `getEnvironmentDependentURLs` function in
+> `environment.ts`. When deployed to a VM, the path will be based on the current
+> URL (e.g., in `qa`, the DAT backend API url would be
+> `https://qa.nsidc.org/apps/data-access-tool/api/`. Eventually, we may want to
+> get the API URL from a drupal-provided variable to support injection of the
+> current URL in non-NSIDC hosted DAT (when we move to earthdata landing pages)
+
+> [!WARNING]
+> The advice below does not work for the EDL login interaction on a local
+> machine. Develop against a drupal VM for testing all interactions (see below)
 You also need to run a proxy to Hermes: npx http-server -p 3000 -P https://nsidc.org/apps/orders/api
 See the config in webpack.config.cjs. Would like to proxy directly to Hermes URL, but couldn't get that to work.
 
