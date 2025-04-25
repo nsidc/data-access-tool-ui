@@ -20,9 +20,13 @@ export function getEnvironment(): string {
 }
 
 function getEnvironmentDependentURLs() {
-  // TODO: this function gives the same result in every case. Necessary?
   if (getEnvironment() === "dev") {
     return {
+      // TODO: this should be more easily configurable. Integration is nice to
+      // test against for the EDD interactions because it's easy to get changes
+      // there and the dev setup is a little simpler (behind Apache proxy and
+      // allow-listed by the EDD). But it is possible and often desirable to
+      // change this to reflect an individual dev's dev environment.
       datBackendApiUrl: "https://integration.nsidc.org/apps/data-access-tool/api",
     };
   } else {
