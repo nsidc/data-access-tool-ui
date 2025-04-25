@@ -9,4 +9,4 @@ given data collection.
 
 ## Development notes
 
-See [`DEVELOPMENT.md`](https://bitbucket.org/nsidc/everest-ui/src/master/DEVELOPMENT.md).
+See [`DEVELOPMENT.md`](./DEVELOPMENT.md).
