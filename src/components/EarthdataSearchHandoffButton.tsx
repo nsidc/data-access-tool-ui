@@ -31,7 +31,7 @@ export class EarthdataSearchHandoffButton extends React.Component<IHandoffButton
       <button
         id="confirmEarthdata"
         type="button"
-        className="handoff-button eui-btn--blue"
+        className="handoff-button eui-btn--blue modal-button"
         onClick={() => {
           this.edscRedirect(this.props.orderParameters);
           this.props.onClick();
