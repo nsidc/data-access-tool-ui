@@ -120,16 +120,6 @@ const config = {
             links,
             scripts
         }),
-        new HtmlWebpackPlugin({
-            title: 'Order History Interface',
-            chunks: ['order-history'],
-            inject: 'body',
-            template: './public/order-history.html',
-            filename: 'order-history.html',
-            appMountId: 'order-history',
-            links,
-            scripts
-        }),
         // Copy Cesium Assets, Widgets, and Workers to a static directory
         new CopyWebpackPlugin({
             patterns: [
