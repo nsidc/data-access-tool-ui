@@ -2,17 +2,12 @@ import {IDrupalDataset} from "../types/DrupalDataset";
 
 interface IUrls {
   datBackendApiUrl: string;
-  hermesApiUrl: string;
-  orderNotificationHost: string;
-  orderNotificationPath: string;
 }
 
 export interface IEnvironment {
   drupalDataset?: IDrupalDataset;
   exposeFunction: (name: string, callback: (...args: any[]) => any) => boolean;
   inDrupal: boolean;
-  // TODO: add dat-backend api url here.
-  // TODO: consider adding a module for the dat API similar to Hermes.ts.
   urls: IUrls;
 }
 
@@ -29,20 +24,12 @@ function getEnvironmentDependentURLs() {
   if (getEnvironment() === "dev") {
     return {
       datBackendApiUrl: "https://integration.nsidc.org/apps/data-access-tool/api",
-      // TODO: these will all be removed with the decom of hermes.
-      hermesApiUrl: "/apps/orders/api",
-      orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/orders/notification/",
     };
   } else {
     return {
       // Note: the backend API url must be fully specified for its use in the
       // EDD deep link (it cannot be relative to the root)
       datBackendApiUrl: `${window.location.protocol}//${window.location.host}/apps/data-access-tool/api`,
-      // TODO: these will all be removed with the decom of hermes.
-      hermesApiUrl: "/apps/orders/api",
-      orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/orders/notification/",
     };
   }
 }

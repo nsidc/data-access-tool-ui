@@ -30,13 +30,6 @@ const devConfig = {
 
     devServer : {
         server: "https",
-        proxy: {
-            "/apps/orders/api": {
-                target: "https://localhost:5000",
-                pathRewrite: { '^/apps/orders/api': '' },
-                secure: false,
-            }
-        }
     },
 };
 

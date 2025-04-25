@@ -38,8 +38,6 @@ so accept the risk and continue if your web browser blocks the request.
 > [!WARNING]
 > The advice below does not work for the EDL login interaction on a local
 > machine. Develop against a drupal VM for testing all interactions (see below)
-You also need to run a proxy to Hermes: npx http-server -p 3000 -P https://nsidc.org/apps/orders/api
-See the config in webpack.config.cjs. Would like to proxy directly to Hermes URL, but couldn't get that to work.
 
 ## Developer VM (no Drupal)
 
