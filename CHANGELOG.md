@@ -1,4 +1,4 @@
-# NEXT_RELEASE
+# v4.0.0 (TBD)
 
 * Remove Earthdata login button and user orders page.
 
