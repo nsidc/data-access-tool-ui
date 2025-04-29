@@ -6,7 +6,6 @@ import { OrderSubmissionParameters } from "../types/OrderSubmissionParameters";
 import { boundingBoxMatch, combineGranuleFilters } from "../utils/CMR";
 import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
-import { UserContext } from "../utils/state";
 import { EdscFlow } from "./EdscFlow";
 import { EddFlow } from "./EddFlow";
 import { ScriptButton } from "./ScriptButton";
@@ -27,7 +26,6 @@ interface IOrderButtonsState {
 }
 
 export class OrderButtons extends React.Component<IOrderButtonsProps, IOrderButtonsState> {
-  public static contextType = UserContext;
 
   public constructor(props: IOrderButtonsProps) {
     super(props);

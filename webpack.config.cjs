@@ -30,13 +30,6 @@ const devConfig = {
 
     devServer : {
         server: "https",
-        proxy: {
-            "/apps/orders/api": {
-                target: "https://localhost:5000",
-                pathRewrite: { '^/apps/orders/api': '' },
-                secure: false,
-            }
-        }
     },
 };
 
@@ -51,7 +44,6 @@ const prodConfig = {
 const config = {
     entry: {
       "order-data": ['./src/index.ts'],
-      "order-history": ['./src/profile.ts']
     },
     output: {
         filename: '[name].bundle.js',
@@ -118,16 +110,6 @@ const config = {
             template: './public/order-data.html',
             filename: 'order-data.html',
             appMountId: 'order-data',
-            links,
-            scripts
-        }),
-        new HtmlWebpackPlugin({
-            title: 'Order History Interface',
-            chunks: ['order-history'],
-            inject: 'body',
-            template: './public/order-history.html',
-            filename: 'order-history.html',
-            appMountId: 'order-history',
             links,
             scripts
         }),

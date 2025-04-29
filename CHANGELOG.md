@@ -1,3 +1,7 @@
+# v4.0.0 (2025-04-29)
+
+* Remove Earthdata login button and user orders page.
+
 # v3.1.0 (2025-04-15)
 
 * Updates to cloud collections must have Harmony services available to be

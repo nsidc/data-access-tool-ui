@@ -1,21 +1,13 @@
 import {IDrupalDataset} from "../types/DrupalDataset";
-import {constructAPI, IHermesAPI} from "./Hermes";
 
 interface IUrls {
   datBackendApiUrl: string;
-  hermesApiUrl: string;
-  orderNotificationHost: string;
-  orderNotificationPath: string;
-  profileUrl: string;
 }
 
 export interface IEnvironment {
   drupalDataset?: IDrupalDataset;
   exposeFunction: (name: string, callback: (...args: any[]) => any) => boolean;
-  hermesAPI: IHermesAPI;
   inDrupal: boolean;
-  // TODO: add dat-backend api url here.
-  // TODO: consider adding a module for the dat API similar to Hermes.ts.
   urls: IUrls;
 }
 
@@ -28,24 +20,20 @@ export function getEnvironment(): string {
 }
 
 function getEnvironmentDependentURLs() {
-  // TODO: this function gives the same result in every case. Necessary?
   if (getEnvironment() === "dev") {
     return {
+      // TODO: this should be more easily configurable. Integration is nice to
+      // test against for the EDD interactions because it's easy to get changes
+      // there and the dev setup is a little simpler (behind Apache proxy and
+      // allow-listed by the EDD). But it is possible and often desirable to
+      // change this to reflect an individual dev's dev environment.
       datBackendApiUrl: "https://integration.nsidc.org/apps/data-access-tool/api",
-      // TODO: these will all be removed with the decom of hermes.
-      hermesApiUrl: "/apps/orders/api",
-      orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/orders/notification/",
     };
   } else {
     return {
       // Note: the backend API url must be fully specified for its use in the
       // EDD deep link (it cannot be relative to the root)
       datBackendApiUrl: `${window.location.protocol}//${window.location.host}/apps/data-access-tool/api`,
-      // TODO: these will all be removed with the decom of hermes.
-      hermesApiUrl: "/apps/orders/api",
-      orderNotificationHost: `wss://${window.location.hostname}`,
-      orderNotificationPath: "/apps/orders/notification/",
     };
   }
 }
@@ -73,7 +61,6 @@ export default function setupEnvironment(): IEnvironment {
 
   let datasetFromDrupal: IDrupalDataset | undefined;
   let inDrupal: boolean = false;
-  let profileLocation: string = "/order-history.html";
   const drupalSettings: {[key: string]: any} = (window as {[key: string]: any}).drupalSettings;
 
   if (typeof (drupalSettings) !== "undefined") {
@@ -83,18 +70,15 @@ export default function setupEnvironment(): IEnvironment {
       version: drupalSettings.data_downloads?.dataset?.version,
       title: '',
     };
-    profileLocation = "/order-history";
     inDrupal = true;
   }
 
   const urls = {
     ...getEnvironmentDependentURLs(),
-    profileUrl: profileLocation,
   };
   return {
     drupalDataset: datasetFromDrupal,
     exposeFunction,
-    hermesAPI: constructAPI(urls),
     inDrupal,
     urls,
   };
