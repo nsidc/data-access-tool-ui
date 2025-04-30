@@ -7,6 +7,8 @@ import { IEnvironment } from "../utils/environment";
 import { hasChanged } from "../utils/hasChanged";
 import { LoadingIcon } from "./LoadingIcon";
 
+import "../styles/eui_buttons.less";
+
 interface IScriptButtonProps {
   disabled: boolean;
   environment: IEnvironment;

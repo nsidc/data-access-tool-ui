@@ -3,6 +3,8 @@ import ReactTooltip from "react-tooltip";
 
 import { hasChanged } from "../utils/hasChanged";
 
+import "../styles/eui_buttons.less";
+
 interface ISubmitButtonProps {
   buttonText: string;
   buttonId: string;

@@ -2,6 +2,8 @@ import * as React from "react";
 
 import { hasChanged } from "../utils/hasChanged";
 
+import "../styles/eui_buttons.less";
+
 interface IHandoffButtonProps {
   onClick: () => void;
   eddDeeplink: any;

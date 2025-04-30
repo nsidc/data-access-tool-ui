@@ -7,6 +7,8 @@ import { cmrGranuleParams } from "../../utils/CMR";
 import { CmrCollection } from "../../types/CmrCollection";
 import { IEnvironment } from "../../utils/environment";
 
+import "../../styles/eui_buttons.less";
+
 interface IEddOrderConfirmationProps {
   onCancel: () => void;
   orderParameters: OrderParameters;

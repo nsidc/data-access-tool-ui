@@ -6,6 +6,8 @@ import { OrderParameters } from "../types/OrderParameters";
 import { boundingBoxMatch, earthdataGranuleFilterParameters } from "../utils/CMR";
 import { hasChanged } from "../utils/hasChanged";
 
+import "../styles/eui_buttons.less";
+
 interface IHandoffButtonProps {
   onClick: () => void;
   orderParameters: OrderParameters;
