@@ -1,3 +1,9 @@
+# v4.0.1 (2025-04-30)
+
+* Bugfix: import `eui_buttons.less` where needed, providing expected eui-button
+  styles. This fixes an issue where the order buttons had a small shadow around
+  their edge.
+
 # v4.0.0 (2025-04-29)
 
 * Remove Earthdata login button and user orders page.

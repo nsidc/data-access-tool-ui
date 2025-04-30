@@ -3,6 +3,8 @@ import * as React from "react";
 import { OrderParameters } from "../../types/OrderParameters";
 import { EarthdataSearchHandoffButton } from "../EarthdataSearchHandoffButton";
 
+import "../../styles/eui_buttons.less";
+
 interface IEdscOrderConfirmationProps {
   onCancel: () => void;
   onScriptDownloadClick: () => void;
