@@ -35,19 +35,6 @@ so accept the risk and continue if your web browser blocks the request.
 > get the API URL from a drupal-provided variable to support injection of the
 > current URL in non-NSIDC hosted DAT (when we move to earthdata landing pages)
 
-## Developer VM (no Drupal)
-
-     $ npm run build:dev # Build with source maps for development environment, and development
-                         # settings.
-                         # Do "npm run build" if you don't need source maps.
-     $ rsync -av dist/ vagrant@dev.data-access-tools.USERNAME.dev.int.nsidc.org:/var/www/html/data-access-tools
-
-On VM:
-
-     $ sudo systemctl status nginx
-     $ sudo systemctl restart nginx
-
-
 ## Development with Drupal integration
 
 This application relies on NSIDC drupal-set parameters that provide dataset
