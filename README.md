@@ -31,7 +31,7 @@ contact nsidc@nsidc.org for more information.
 
 ## Contributing
 
-See [`DEVELOPMENT.md`](./DEVELOPMENT.md).
+See [`./doc/DEVELOPMENT.md`](./doc/DEVELOPMENT.md).
 
 
 ## Credit
