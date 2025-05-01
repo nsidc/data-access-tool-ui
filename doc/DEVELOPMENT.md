@@ -41,6 +41,9 @@ This application relies on NSIDC drupal-set parameters that provide dataset
 information (dataset ID and version) that drives CMR requests that populate
 items like the granules list and bounding box in the cesium map.
 
+Most importantly, Drupal provides CSS that the app relies on to look correct. To
+fully test style changes, it must be tested in Drupal.
+
 In order to test integration with drupal, create a dev VM from the
 `ansible_drupal_nsidc_org` repository, hosted on NSIDC's `gitsrv` server. To
 clone `ansible_drupal_nsidc_org`:
@@ -61,7 +64,7 @@ Once a VM has been brought up, run a
 [nsidc-drupal8](https://bitbucket.org/nsidc/nsidc-drupal8/) on the VM as
 described in the README, using e.g., the `staging` ref, or one that has updated
 the `web/libraries/package.json` with a new version of the `data-access-tools`
-(this project, aka Everest UI).
+(this project).
 
 To test code that has not yet been released to npmjs, use e.g,. `rsync` to copy
 the built application into the expected installation location on the drupal VM. E.g.:
