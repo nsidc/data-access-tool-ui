@@ -89,14 +89,14 @@ To see extra detail:
 
 ## Versioning
 
-When `master`\* is in a releasable state, [`npm
+When `main` is in a releasable state, [`npm
 version`](https://docs.npmjs.com/cli/version) can be used to bump the version. A
 tag and commit will automatically be created, which should then be pushed to
-`origin/master`\*, then the released version should be ready for deployment to
+`origin/main`, then the released version should be ready for deployment to
 QA.
 
-\* or another branch, if a special circumstance requires releasing from a
-non-`master` branch
+Or another branch, if a special circumstance requires releasing from a
+non-`main` branch. 
 
 Because we display the version to the user, after release, the version should be
 incremented and `-dev` appended to the version string, so that subsequent builds
