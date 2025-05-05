@@ -75,17 +75,30 @@ $ rsync -a --progress ./dist/* dev.nsidc.org.docker-drupal8.{YOUR_USERNAME}.dev.
 ```
 
 
-## Testing
+## Testing and Linting
 
-    npm test
+Tests and linting are run automatically on each push to pull requests and to the
+`main` branch. See the
+[../.github/workflows/test.yml](../.github/workflows/test.yml) GitHub action.
+
+To manually run tests:
+
+```
+npm test
+```
 
 To see extra detail:
 
-    npm test -- --debug
+```
+npm test -- --debug
+```
+    
+Run the linter with:
 
-## Linting
+```
+npm run lint
+```
 
-    npm run lint
 
 ## Versioning and releasing
 
