@@ -87,20 +87,46 @@ To see extra detail:
 
     npm run lint
 
-## Versioning
+## Versioning and releasing
 
-When `main` is in a releasable state, [`npm
-version`](https://docs.npmjs.com/cli/version) can be used to bump the version. A
-tag and commit will automatically be created, which should then be pushed to
-`origin/main`, then the released version should be ready for deployment to
-QA.
+When starting a new feature for that will eventually end up in production, bump
+the version using `npm version`. E.g.,:
 
-Or another branch, if a special circumstance requires releasing from a
-non-`main` branch. 
+```
+npm version v4.0.1-rc.1 --no-git-tag-version
+```
 
-Because we display the version to the user, after release, the version should be
-incremented and `-dev` appended to the version string, so that subsequent builds
-indicate that it is a new version.
+> [!NOTE]
+> Use `-rc` or `-alpha` to indicate a WIP version. It can be handy to release
+> multiple versions of the same planned release to integration and QA for
+> stakeholder testing and feedback. Once the software is ready for release to
+> production, drop the prerelease `-rc` tag.
+
+Update the CHANGELOG with the new version and the changes it includes.
+
+Once a ready for a release (for prod or testing purposes), create a tag with the
+version and push it to GitHub. E.g.,:
+
+```
+git tag v4.0.1-rc.1
+git push origin refs/tags/v4.0.1-rc.1
+```
+
+Once the a version tag is pushed to GitHub, an NPM package is built and pushed
+to
+[https://www.npmjs.com/package/@nsidc/data-access-tools](https://www.npmjs.com/package/@nsidc/data-access-tools)
+via the
+[../.github/workflows/publish_npm.yml](../.github/workflows/publish_npm.yml)
+GitHub action.
+
+Once published to npmjs, you should be ready for deployment to integration and
+qa. See the Deployment section below for more info.
+
+> [!NOTE]
+> The `release`, `setup:prerelease`, and `bump:prerelease` npm scripts are
+> available to assist with the process of preparing a release. See the
+> `package.json` for details.
+
 
 ## Deployment
 
