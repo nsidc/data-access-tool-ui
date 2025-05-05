@@ -8,6 +8,9 @@
 Web interface to support granule-level discovery and access of NASA Earthdata for a
 given data collection.
 
+<p align="center">
+  <img alt="DAT screenshot" src="./doc/dat_screenshot.jpg" />
+</p>
 
 ## Level of Support
 
