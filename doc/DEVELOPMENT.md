@@ -35,24 +35,14 @@ so accept the risk and continue if your web browser blocks the request.
 > get the API URL from a drupal-provided variable to support injection of the
 > current URL in non-NSIDC hosted DAT (when we move to earthdata landing pages)
 
-## Developer VM (no Drupal)
-
-     $ npm run build:dev # Build with source maps for development environment, and development
-                         # settings.
-                         # Do "npm run build" if you don't need source maps.
-     $ rsync -av dist/ vagrant@dev.data-access-tools.USERNAME.dev.int.nsidc.org:/var/www/html/data-access-tools
-
-On VM:
-
-     $ sudo systemctl status nginx
-     $ sudo systemctl restart nginx
-
-
 ## Development with Drupal integration
 
 This application relies on NSIDC drupal-set parameters that provide dataset
 information (dataset ID and version) that drives CMR requests that populate
 items like the granules list and bounding box in the cesium map.
+
+Most importantly, Drupal provides CSS that the app relies on to look correct. To
+fully test style changes, it must be tested in Drupal.
 
 In order to test integration with drupal, create a dev VM from the
 `ansible_drupal_nsidc_org` repository, hosted on NSIDC's `gitsrv` server. To
@@ -74,7 +64,7 @@ Once a VM has been brought up, run a
 [nsidc-drupal8](https://bitbucket.org/nsidc/nsidc-drupal8/) on the VM as
 described in the README, using e.g., the `staging` ref, or one that has updated
 the `web/libraries/package.json` with a new version of the `data-access-tools`
-(this project, aka Everest UI).
+(this project).
 
 To test code that has not yet been released to npmjs, use e.g,. `rsync` to copy
 the built application into the expected installation location on the drupal VM. E.g.:
@@ -85,32 +75,71 @@ $ rsync -a --progress ./dist/* dev.nsidc.org.docker-drupal8.{YOUR_USERNAME}.dev.
 ```
 
 
-## Testing
+## Testing and Linting
 
-    npm test
+Tests and linting are run automatically on each push to pull requests and to the
+`main` branch. See the
+[../.github/workflows/test.yml](../.github/workflows/test.yml) GitHub action.
+
+To manually run tests:
+
+```
+npm test
+```
 
 To see extra detail:
 
-    npm test -- --debug
+```
+npm test -- --debug
+```
+    
+Run the linter with:
 
-## Linting
+```
+npm run lint
+```
 
-    npm run lint
 
-## Versioning
+## Versioning and releasing
 
-When `master`\* is in a releasable state, [`npm
-version`](https://docs.npmjs.com/cli/version) can be used to bump the version. A
-tag and commit will automatically be created, which should then be pushed to
-`origin/master`\*, then the released version should be ready for deployment to
-QA.
+When starting a new feature for that will eventually end up in production, bump
+the version using `npm version`. E.g.,:
 
-\* or another branch, if a special circumstance requires releasing from a
-non-`master` branch
+```
+npm version v4.0.1-rc.1 --no-git-tag-version
+```
 
-Because we display the version to the user, after release, the version should be
-incremented and `-dev` appended to the version string, so that subsequent builds
-indicate that it is a new version.
+> [!NOTE]
+> Use `-rc` or `-alpha` to indicate a WIP version. It can be handy to release
+> multiple versions of the same planned release to integration and QA for
+> stakeholder testing and feedback. Once the software is ready for release to
+> production, drop the prerelease `-rc` tag.
+
+Update the CHANGELOG with the new version and the changes it includes.
+
+Once a ready for a release (for prod or testing purposes), create a tag with the
+version and push it to GitHub. E.g.,:
+
+```
+git tag v4.0.1-rc.1
+git push origin refs/tags/v4.0.1-rc.1
+```
+
+Once the a version tag is pushed to GitHub, an NPM package is built and pushed
+to
+[https://www.npmjs.com/package/@nsidc/data-access-tools](https://www.npmjs.com/package/@nsidc/data-access-tools)
+via the
+[../.github/workflows/publish_npm.yml](../.github/workflows/publish_npm.yml)
+GitHub action.
+
+Once published to npmjs, you should be ready for deployment to integration and
+qa. See the Deployment section below for more info.
+
+> [!NOTE]
+> The `release`, `setup:prerelease`, and `bump:prerelease` npm scripts are
+> available to assist with the process of preparing a release. See the
+> `package.json` for details.
+
 
 ## Deployment
 

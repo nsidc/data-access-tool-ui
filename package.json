@@ -26,8 +26,7 @@
     "test": "npx jest --config=jest.config.cjs",
     "setup:prerelease": "npm version pre$npm_config_semver_part --no-git-tag-version; npm version prerelease --preid=rc --no-git-tag-version",
     "bump:prerelease": "npm version prerelease --preid=rc",
-    "release": "npm version",
-    "version": "./scripts/release.sh",
+    "release": "./scripts/release.sh",
     "postversion": "git push --follow-tags"
   },
   "keywords": [],
