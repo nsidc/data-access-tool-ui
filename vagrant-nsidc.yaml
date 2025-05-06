@@ -1,7 +1,0 @@
----
-project: data-access-tools
-gitrepo: git@bitbucket.org:nsidc/everest-ui.git
-vsphere:
-  template:
-    default: bionic64-nsidc-puppet6
-    ci: bionic64-docker-puppet6-jenkins2
