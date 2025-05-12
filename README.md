@@ -12,6 +12,15 @@ given data collection.
   <img alt="DAT screenshot" src="./doc/dat_screenshot.jpg" />
 </p>
 
+
+The DAT is composed of:
+
+* [data-access-tool-backend](https://github.com/nsidc/data-access-tool-backend):
+  backend servcies that support the Python bulk download script and
+  Earthdata Download.
+* [data-access-tool-vm](https://github.com/nsidc/data-access-tool-vm): NSIDC
+  virtual machine configuration for deploying the backend service.
+
 ## Level of Support
 
 This repository is fully supported by NSIDC. If you discover any problems or
