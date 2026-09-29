@@ -24,7 +24,6 @@ export class Point {
   };
 
   public addBillboard = (billboardCollection: Cesium.BillboardCollection): Cesium.Billboard => {
-    // @ts-expect-error TS2345 - Cesium types
     this.billboard = billboardCollection.add(this.billboardProps);
     this.deactivate();
     return this.billboard;

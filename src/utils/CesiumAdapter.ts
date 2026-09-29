@@ -67,7 +67,6 @@ export class CesiumAdapter {
       fullscreenButton: false,
       geocoder: false,
       homeButton: false,
-      // @ts-ignore
       imageryProvider: gibsProvider,
       infoBox: false,
       maximumRenderTimeChange: Infinity,
