@@ -33,7 +33,7 @@ contact nsidc@nsidc.org for more information.
 
 ## Requirements
 
-* [Node.js](https://nodejs.org/en) v14.19.0
+* [Node.js](https://nodejs.org/en) v26.10.0
 * Access to NSIDC's internal Virtual Machine infrastructure to test deployments
   in Drupal (required for full loading of CSS assets).
 * [Optional] development instance of the

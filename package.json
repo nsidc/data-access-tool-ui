@@ -1,6 +1,6 @@
 {
   "name": "@nsidc/data-access-tools",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "UI to order NASA data.",
   "repository": "https://github.com/nsidc/data-access-tool-ui",
   "files": [
@@ -10,8 +10,8 @@
   ],
   "type": "module",
   "engines": {
-    "node": "^14.19.0",
-    "npm": "^6.14.16"
+    "node": "^26.10.0",
+    "npm": "^11.19.1"
   },
   "browser": {
     "fs": false
