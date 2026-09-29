@@ -10,8 +10,8 @@
   ],
   "type": "module",
   "engines": {
-    "node": "^14.19.0",
-    "npm": "^6.14.16"
+    "node": "^26.10.0",
+    "npm": "^11.19.1"
   },
   "browser": {
     "fs": false

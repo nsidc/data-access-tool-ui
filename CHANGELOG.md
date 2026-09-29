@@ -1,3 +1,7 @@
+# v4.0.2 (TBD)
+
+* Update `node` from `v14.19.0` to `v26.10.0`
+
 # v4.0.1 (2025-04-30)
 
 * Bugfix: import `eui_buttons.less` where needed, providing expected eui-button
