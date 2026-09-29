@@ -5,14 +5,19 @@ module.exports = {
     "<rootDir>/src",
     "<rootDir>/tests"
   ],
-  "setupFilesAfterEnv": ["jest-enzyme"],
-  "testEnvironment": "enzyme",
-  "testEnvironmentOptions": {
-    "enzymeAdapter": "react16"
-  },
+  "testEnvironment": "jsdom",
   "transform": {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.tsx?$": ["ts-jest", {
+    "tsconfig": {
+           "jsx": "react",
+           "esModuleInterop": true,
+           "allowSyntheticDefaultImports": true,
+         }
+       }]
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(cheerio)/)',
+  ],
   "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
   "moduleFileExtensions": [
     "ts",

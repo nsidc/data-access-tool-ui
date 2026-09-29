@@ -1,5 +1,6 @@
-import { shallow } from "enzyme";
+import {render} from "@testing-library/react"
 import * as React from "react";
+import '@testing-library/jest-dom';
 
 jest.mock("../src/utils/CesiumAdapter");
 import { Globe } from "../src/components/Globe";
@@ -29,14 +30,12 @@ const setup = () => {
     },
   };
 
-  return {
-    globe: shallow(<Globe {...props} />),
-  };
+  render(<Globe {...props} />)
 };
 
 describe("Globe component", () => {
   test("Renders a globe component", () => {
-    const globe = setup().globe;
-    expect(globe.find("#globe")).toEqual(expect.anything());
+    setup()
+    expect(document.querySelector("#globe")).toBeInTheDocument();
   });
 });

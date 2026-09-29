@@ -113,6 +113,7 @@ export class ImportPolygon {
         }
 
         if (!("properties" in feature)) {
+          // @ts-ignore
           feature = { ...feature, properties: {}};
         }
       }

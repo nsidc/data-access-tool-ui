@@ -1,5 +1,5 @@
 import { List, Map, Record } from "immutable";
-import * as moment from "moment";
+import moment from "moment";
 
 export interface ICmrGranule {
   dataset_id: string;

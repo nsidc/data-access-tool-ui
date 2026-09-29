@@ -1,5 +1,5 @@
 import { Record } from "immutable";
-import * as moment from "moment";
+import moment from "moment";
 
 import { BoundingBox } from "./BoundingBox";
 import { CmrCollection } from "./CmrCollection";

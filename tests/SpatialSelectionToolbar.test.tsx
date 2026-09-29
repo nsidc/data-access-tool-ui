@@ -1,20 +1,21 @@
-import { shallow } from "enzyme";
+import {render} from "@testing-library/react"
 import * as React from "react";
+import '@testing-library/jest-dom';
 
 import { SpatialSelectionToolbar } from "../src/components/SpatialSelectionToolbar";
 
 describe("Spatial toolbar component", () => {
   test("Renders toolbar", () => {
-    const toolbar = shallow(<SpatialSelectionToolbar
+    render(<SpatialSelectionToolbar
       disableExport={false}
       disableReset={false}
-      onClickBoundingBox={() => jest.fn()}
-      onClickExportPolygon={() => jest.fn()}
-      onClickHome={() => jest.fn()}
-      onClickImportPolygon={() => jest.fn()}
-      onClickPolygon={() => jest.fn()}
-      onClickReset={() => jest.fn()}/>);
+      onClickBoundingBox={jest.fn()}
+      onClickExportPolygon={jest.fn()}
+      onClickHome={jest.fn()}
+      onClickImportPolygon={jest.fn()}
+      onClickPolygon={jest.fn()}
+      onClickReset={jest.fn()}/>);
 
-    expect(toolbar.find("#toolbar")).toEqual(expect.anything());
+    expect(document.querySelector("#toolbar")).toBeInTheDocument();
   });
 });
