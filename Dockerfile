@@ -5,7 +5,7 @@ COPY package* ./
 RUN npm install
 
 COPY scripts ./scripts
-COPY .eslintrc.json webpack.config.cjs ts*.json ./
+COPY eslint.config.js webpack.config.cjs ts*.json ./
 COPY src ./src
 
 CMD ["npm", "start"]
