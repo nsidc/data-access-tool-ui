@@ -7,6 +7,18 @@ import importPlugin from "eslint-plugin-import";
 
 export default [
   {
+    ...js.configs.recommended,
+    files: ["src/**/*.{ts,tsx}"],
+  },
+  ...typescriptPlugin.configs["flat/recommended"].map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,tsx}"],
+  })),
+  ...typescriptPlugin.configs["flat/recommended-type-checked"].map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,tsx}"],
+  })),
+  {
     ignores: ["dist"],
   },
   {
@@ -44,8 +56,10 @@ export default [
       "@typescript-eslint/naming-convention": "off",
       "@typescript-eslint/no-empty-function": "error",
       "@typescript-eslint/no-empty-interface": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/prefer-promise-reject-errors": "off",
       "@typescript-eslint/no-implied-eval": "off",
       "@typescript-eslint/no-inferrable-types": "off",
       "@typescript-eslint/no-misused-new": "error",
@@ -58,8 +72,10 @@ export default [
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-function-type": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-wrapper-object-types": "off",
       "@typescript-eslint/no-unused-expressions": "error",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-use-before-define": "off",
