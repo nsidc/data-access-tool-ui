@@ -2,7 +2,7 @@ import { List } from "immutable";
 import moment from "moment";
 import * as React from "react";
 import SplitPane from "react-split-pane";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import { BoundingBox } from "../types/BoundingBox";
 import { CmrGranule } from "../types/CmrGranule";
 import { IDrupalDataset } from "../types/DrupalDataset";
@@ -137,7 +137,7 @@ export class EverestUI extends React.Component<IEverestProps, IEverestState> {
 
     const appJSX =  (
       <div id="everest-container" className={className}>
-        <ReactTooltip effect="solid" delayShow={500} multiline={true} />
+        <Tooltip delayShow={500} />
         <CmrDownBanner
           cmrStatusChecked={this.state.cmrStatusChecked}
           cmrStatusOk={this.state.cmrStatusOk}

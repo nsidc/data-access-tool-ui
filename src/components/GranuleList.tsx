@@ -1,7 +1,7 @@
 import { List } from "immutable";
 import moment from "moment";
 import * as React from "react";
-import ReactTooltip from "react-tooltip";
+import { Tooltip, TooltipRefProps } from "react-tooltip";
 
 import { faSortDown, faSortUp, faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +28,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   private static timeFormat = "YYYY-MM-DD HH:mm:ss";
   private containerId = "granule-list-container";
   private timeout = 0;
+
+  public tooltipRef = React.createRef<TooltipRefProps>()
 
   public shouldComponentUpdate(nextProps: IGranuleListProps) {
     const propsChanged = hasChanged(this.props, nextProps,
@@ -68,11 +70,12 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
       <div>
         <div id="granule-list-header">
           {granuleListCount}
-          <div data-tip data-for="granuleFilter">
-            <ReactTooltip id="granuleFilter" className="reactTooltip"
-              disable={this.props.cmrGranuleFilter !== ""}
-              effect="solid" delayShow={1000}>
-              {tooltip}</ReactTooltip>
+          <div data-tooltip-id="granuleFilter">
+            <Tooltip id="granuleFilter" className="reactTooltip"
+              ref={this.tooltipRef}
+              hidden={this.props.cmrGranuleFilter !== ""}
+              delayShow={1000}>
+              {tooltip}</Tooltip>
             <input id="granule-list-input" type="text"
               disabled={disableFilter}
               value={this.props.cmrGranuleFilter}
@@ -81,7 +84,8 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
             </input>
           </div>
           <div>
-            <button className="buttonReset" data-tip="Reset search filter"
+            <button className="buttonReset" data-tooltip-content="Reset search filter"
+              data-tooltip-id="reset-search-filter-tooltip"
               disabled={disableFilter}
               onClick={(e: any) => {
                 this.props.updateGranuleFilter("");
@@ -89,6 +93,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
               }}>
               <FontAwesomeIcon icon={faUndoAlt} size="lg" />
             </button>
+            <Tooltip id="reset-search-filter-tooltip" />
           </div>
         </div>
         <div id={this.containerId}>
@@ -100,7 +105,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
   }
 
   private granuleFilterChange = (e: any) => {
-    ReactTooltip.hide();
+    this.tooltipRef.current?.close();
     if (e.target.value === this.props.cmrGranuleFilter) { return; }
     if (this.timeout) { window.clearTimeout(this.timeout); }
     this.props.updateGranuleFilter(e.target.value);

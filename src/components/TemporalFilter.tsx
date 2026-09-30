@@ -4,6 +4,7 @@ import moment from "moment";
 import * as React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Tooltip } from "react-tooltip";
 
 import { hasChanged } from "../utils/hasChanged";
 
@@ -55,9 +56,11 @@ export class TemporalFilter extends React.Component<ITemporalFilterProps, {}> {
           onChange={(date: Date) =>
             this.props.onToDateChange(moment(date.toUTCString()).endOf("day"))} />
         <div onClick={this.props.onClick}>
-          <button className="buttonReset" data-tip="Reset dates to defaults">
+          <button className="buttonReset" data-tooltip-content="Reset dates to defaults" data-tooltip-id="reset-date-filter-tooltip">
+
             <FontAwesomeIcon icon={faUndoAlt} size="lg" />
           </button>
+          <Tooltip id="reset-date-filter-tooltip" />
         </div>
         <div className="timeError">{timeErrorDiv}</div>
       </div>

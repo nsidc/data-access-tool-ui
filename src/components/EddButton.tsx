@@ -1,5 +1,5 @@
 import * as React from "react";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 
 import { hasChanged } from "../utils/hasChanged";
 
@@ -20,9 +20,9 @@ export class EddButton extends React.Component<IEddButtonProps, {}> {
 
   public render() {
     return (
-      <div className="tooltip" data-tip data-for={this.props.buttonId}>
-        <ReactTooltip id={this.props.buttonId} className="reactTooltip"
-          effect="solid" delayShow={500}>{this.props.tooltip}</ReactTooltip>
+      <div className="tooltip" data-tooltip-id={this.props.buttonId}>
+        <Tooltip id={this.props.buttonId} className="reactTooltip"
+          delayShow={500}>{this.props.tooltip}</Tooltip>
         <button
           type="button"
           className="submit-button eui-btn--blue"

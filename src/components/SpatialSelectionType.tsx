@@ -2,7 +2,7 @@
 import * as React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import "../styles/index.less";
 import { hasChanged } from "../utils/hasChanged";
 
@@ -27,16 +27,16 @@ export class SpatialSelectionType extends React.Component <ISpatialSelectionType
     const divStyle = (this.props.disabled ? "toolbarButtonDisabled " : "") +
       "cesium-button cesium-toolbar-button";
     return (
-      <div className={divStyle} data-tip={this.props.title}
+      <div className={divStyle}
+        data-tooltip-id="spatial-selection-tooltip"
+        data-tooltip-content={this.props.title}
         onClick={
           (e: any) => {
             this.props.onClick(e.target.value);
-            // If button gets disabled (say for "Reset"), force Tooltip to hide
-            // since the button will no longer send the OnMouseOut event.
-            ReactTooltip.hide();
           }
         }
       >
+
         <button className="toolbarButton"
           disabled={this.props.disabled}>
           <FontAwesomeIcon icon={this.props.img} />
