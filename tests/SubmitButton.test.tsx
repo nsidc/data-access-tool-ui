@@ -1,6 +1,8 @@
-import { shallow } from "enzyme";
-import * as moment from "moment";
+import {render, screen} from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import moment from "moment";
 import * as React from "react";
+import '@testing-library/jest-dom';
 
 import { SubmitButton } from "../src/components/SubmitButton";
 
@@ -34,23 +36,22 @@ const setup = (setupProps = {}) => {
     ...setupProps,
   };
 
-  return {
-    button: shallow(<SubmitButton {...props} />),
-  };
+  render(<SubmitButton {...props} />)
 };
 
 describe("Submit button component", () => {
   test("Renders submit button", () => {
-    const button = setup().button;
-    expect(button.find("button").text()).toEqual("Order List of Links");
+    setup();
+    expect(screen.getByRole("button")).toHaveTextContent("Order List of Links");
   });
 });
 
 describe("Click submit", () => {
-  test("Responds to click", () => {
+  test("Responds to click", async () => {
     const onSubmitOrder = jest.fn();
-    const button = setup({onSubmitOrder}).button.find("button");
-    button.simulate("click");
+    setup({onSubmitOrder});
+    const button = screen.getByRole('button', { name: /order list of links/i });
+    await userEvent.click(button);
     expect(onSubmitOrder).toHaveBeenCalled();
   });
 });

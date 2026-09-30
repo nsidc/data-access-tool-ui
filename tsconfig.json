@@ -5,13 +5,21 @@
         "incremental": true,
         "jsx": "react",
         "lib": ["dom", "dom.iterable", "es5", "es6", "es2017"],
-        "module": "commonjs",
+        "module": "esnext",
         "noImplicitReturns": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "outDir": "./dist/",
         "sourceMap": true,
         "strict": true,
         "strictPropertyInitialization": false,
-        "target": "es5"
+        "target": "es2020",
+        "types": ["jest", "node"],
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "moduleResolution": "bundler",
+        "noEmit": false,
+        "declaration": false
     }
 }

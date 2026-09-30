@@ -1,5 +1,5 @@
 import { List, Map } from "immutable";
-import * as moment from "moment";
+import moment from "moment";
 
 import { CmrGranule } from "../src/types/CmrGranule";
 import { OrderParameters } from "../src/types/OrderParameters";

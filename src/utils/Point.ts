@@ -1,6 +1,6 @@
 import * as Cesium from "cesium";
 
-import * as dragImg from "../img/dragIcon.png";
+import dragImg from "../img/dragIcon.png";
 
 export class Point {
   public readonly cartesian: Cesium.Cartesian3;

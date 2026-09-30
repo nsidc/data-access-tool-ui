@@ -25,10 +25,7 @@
     outline: none;
     padding: 20px;
     position: absolute;
-    bottom: auto;
-    left: 50%;
-    right: auto;
-    top: 50%;
+    inset: 50% auto auto 50%;
     transform: translate(-50%, -50%);
     -webkit-overflow-scrolling: touch;
     z-index: 11;
@@ -337,8 +334,7 @@
 
   #granule-list-container {
     height: calc(var(--column-height) - 150px);
-    overflow-x: auto;
-    overflow-y: scroll;
+    overflow: auto scroll;
     width: 100%;
     border: 1px solid #999;
 

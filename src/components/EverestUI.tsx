@@ -1,5 +1,5 @@
 import { List } from "immutable";
-import * as moment from "moment";
+import moment from "moment";
 import * as React from "react";
 import SplitPane from "react-split-pane";
 import ReactTooltip from "react-tooltip";

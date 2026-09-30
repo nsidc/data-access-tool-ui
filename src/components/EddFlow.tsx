@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as React from "react";
-import * as ReactModal from "react-modal";
+import ReactModal from "react-modal";
 
 import { OrderParameters } from "../types/OrderParameters";
 import { IEnvironment } from "../utils/environment";

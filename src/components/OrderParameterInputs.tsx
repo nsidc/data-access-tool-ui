@@ -1,7 +1,7 @@
-import * as moment from "moment";
+import moment from "moment";
 import * as React from "react";
 
-import * as cesiumImg from "../img/cesium_credit.png";
+import cesiumImg from "../img/cesium_credit.png";
 import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
 import { OrderParameters } from "../types/OrderParameters";

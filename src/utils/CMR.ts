@@ -1,6 +1,6 @@
-import * as fetchMock from "fetch-mock";
+import fetchMock from "fetch-mock";
 import { List, Map } from "immutable";
-import * as moment from "moment";
+import moment from "moment";
 
 import { BoundingBox } from "../types/BoundingBox";
 import { IGeoJsonPolygon } from "../types/GeoJson";
@@ -134,7 +134,7 @@ const cmrFetch = (url: string, headers: Map<string, string> = Map()) => {
 let mockedRequests = 0;
 const mockRequests = 1;
 if (__DEV__) {
-  fetchMock.mock(CMR_STATUS_URL, 503);
+  fetchMock.mockGlobal().route(CMR_STATUS_URL, 503);
 }
 
 export const cmrStatusRequest = () => {
@@ -143,7 +143,7 @@ export const cmrStatusRequest = () => {
   // stop mocking the CMR call and start making real calls
   if (__DEV__) {
     if (++mockedRequests >= mockRequests) {
-      fetchMock.restore();
+      fetchMock.unmockGlobal();
     }
   }
 
@@ -161,7 +161,7 @@ export const cmrStatusRequest = () => {
 export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
 
   const allCloudHostedCollections: Promise<List<CmrCollection>> = cmrFetch(
-    CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}`
+    CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}`,
   )
     .then((response: Response) => response.json())
     .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_CLOUD_PROVIDER}}))));
@@ -169,7 +169,7 @@ export const cmrCollectionsRequest = (cmrCollectionFilters: string) => {
   // require that cloud collections include harmony services, for parity with
   // existing services exposed for ECS collections in Earthdata search.
   const cloudHostedHarmonyCollections: Promise<List<CmrCollection>> = cmrFetch(
-    CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}&service_type=Harmony`
+    CMR_COLLECTIONS_URL + cmrCollectionFilters + `&provider=${CMR_CLOUD_PROVIDER}&service_type=Harmony`,
   )
     .then((response: Response) => response.json())
     .then((json: any) => List(json.feed.entry.map((e: any) => new CmrCollection({...e, ...{provider: CMR_CLOUD_PROVIDER}}))));
@@ -207,7 +207,7 @@ export const cmrCollectionRequest = (shortName: string, version: number) => {
   return cmrCollectionsRequest(collectionDatasetFilters).then(
     (collections) => {
       return collections.first()
-    }
+    },
   );
 
 };
