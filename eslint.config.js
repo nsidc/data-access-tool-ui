@@ -33,7 +33,6 @@ export default [
     rules: {
       "@typescript-eslint/adjacent-overload-signatures": "error",
       "@typescript-eslint/array-type": ["error", { default: "array-simple" }],
-      "@typescript-eslint/ban-types": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/consistent-type-assertions": "error",
       "@typescript-eslint/consistent-type-definitions": "error",
