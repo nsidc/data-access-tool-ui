@@ -40,6 +40,7 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^14.6.7",
+    "@types/isomorphic-fetch": "^0.0.39",
     "@types/jest": "^30.0.0",
     "@types/jquery": "^4.0.1",
     "@types/node": "^26.6.3",
@@ -47,7 +48,7 @@
     "@types/react": "^17.0.39",
     "@types/react-datepicker": "^4.4.0",
     "@types/react-dom": "^17.0.14",
-    "@types/react-modal": "^3.13.1",
+    "@types/react-modal": "^3.16.3",
     "@types/react-transition-group": "^4.4.4",
     "@typescript-eslint/eslint-plugin": "^8.71.0",
     "@typescript-eslint/parser": "^8.71.0",
@@ -88,22 +89,20 @@
     "write-file-webpack-plugin": "^4.5.1"
   },
   "dependencies": {
-    "@fortawesome/free-regular-svg-icons": "^6.1.1",
-    "@types/isomorphic-fetch": "0.0.36",
+    "@fortawesome/free-regular-svg-icons": "^7.3.1",
     "cesium": "1.92.0",
     "es6-promise": "^4.2.4",
     "geojson": "^0.5.0",
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^3.0.0",
-    "jquery": "^3.4.1",
+    "jquery": "^4.0.0",
     "react": "^16.14.0",
     "react-datepicker": "^4.7.0",
     "react-dom": "^16.14.0",
-    "react-modal": "^3.14.4",
+    "react-modal": "^3.16.3",
     "react-split-pane": "^0.1.92",
     "react-tooltip": "^6.0.8",
-    "react-transition-group": "^4.4.2",
-    "shapefile": "^0.6.6",
-    "webpack-shell-plugin": "^0.5.0"
+    "react-transition-group": "^4.4.5",
+    "shapefile": "^0.6.6"
   }
 }

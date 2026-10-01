@@ -14,9 +14,10 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 // Also: https://github.com/AnalyticalGraphicsInc/cesium-webpack-example
 // https://github.com/CesiumGS/cesium-webpack-example/blob/main/webpack.config.js
 
-// TODO: Can JQuery go away? We'd have to rewrite some code that uses JQuery.
+// TODO: Can JQuery go away? We might not actually utilize jquery at all...
+// See: https://github.com/nsidc/data-access-tool-ui/tasks/6d6cf224-c813-4310-bddd-1307a4a98b0a
 links = ["https://cdn.earthdata.nasa.gov/eui/1.1.7/stylesheets/application.css"];
-scripts = ["https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"];
+scripts = ["https://code.jquery.com/jquery-4.0.0.min.js"];
 
 const devConfig = {
     plugins: [
