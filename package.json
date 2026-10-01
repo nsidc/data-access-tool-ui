@@ -102,7 +102,7 @@
     "react-modal": "^3.14.4",
     "react-split-pane": "^0.1.92",
     "react-tooltip": "^6.0.8",
-    "react-transition-group": "^4.4.2",
+    "react-transition-group": "^4.4.5",
     "shapefile": "^0.6.6"
   }
 }
