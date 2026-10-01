@@ -101,7 +101,7 @@
     "react-dom": "^16.14.0",
     "react-modal": "^3.14.4",
     "react-split-pane": "^0.1.92",
-    "react-tooltip": "4.2.21",
+    "react-tooltip": "^6.0.8",
     "react-transition-group": "^4.4.2",
     "shapefile": "^0.6.6",
     "webpack-shell-plugin": "^0.5.0"

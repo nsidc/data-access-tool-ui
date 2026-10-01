@@ -1,6 +1,7 @@
 import { faUndoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { Tooltip } from "react-tooltip";
 
 import { BoundingBox } from "../types/BoundingBox";
 import { boundingBoxMatch } from "../utils/CMR";
@@ -45,10 +46,12 @@ export class BoundingBoxFilter extends React.Component<IBoundingBoxFilterProps, 
         {this.inputBoundingBox("N", "north", this.props.hasPolygon)}
         <button className="buttonReset"
           onClick={this.props.onClick}
-          data-tip="Reset bounding box to entire dataset"
+          data-tooltip-id="boundingbox-button-tooltip"
+          data-tooltip-content="Reset bounding box to entire dataset"
           disabled={this.props.hasPolygon}>
           <FontAwesomeIcon icon={faUndoAlt} size="lg" />
         </button>
+        <Tooltip id="boundingbox-button-tooltip" />
       </div>
     );
   }

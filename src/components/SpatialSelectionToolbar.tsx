@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Tooltip } from "react-tooltip";
 
 import { faSquare } from "@fortawesome/free-regular-svg-icons";
 import { faDrawPolygon, faFolderOpen, faHome, faSave, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -62,6 +63,7 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
                               img={faTrashAlt}
                               disabled={this.props.disableReset}
                               title="Delete spatial filters"/>
+        <Tooltip id="spatial-selection-tooltip" openEvents={{mouseover: true}} />
       </div>
     );
   }

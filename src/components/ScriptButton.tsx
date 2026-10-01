@@ -1,6 +1,6 @@
 import * as React from "react";
 import ReactModal from "react-modal";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 
 import { OrderParameters } from "../types/OrderParameters";
 import { IEnvironment } from "../utils/environment";
@@ -49,9 +49,9 @@ export class ScriptButton extends React.Component<IScriptButtonProps, IScriptBut
     const tooltip = <div><span>Download Python script.</span></div>;
 
     return (
-      <div className="tooltip" data-tip data-for="scriptbutton">
-        <ReactTooltip id="scriptbutton" className="reactTooltip"
-          effect="solid" delayShow={500}>{tooltip}</ReactTooltip>
+      <div className="tooltip" data-tooltip-id="scriptbutton">
+        <Tooltip id="scriptbutton" className="reactTooltip"
+          delayShow={500}>{tooltip}</Tooltip>
         <button
           type="button"
           className="script-button eui-btn--blue"
