@@ -63,7 +63,7 @@ export class SpatialSelectionToolbar extends React.Component<ISpatialSelectionTo
                               img={faTrashAlt}
                               disabled={this.props.disableReset}
                               title="Delete spatial filters"/>
-        <Tooltip id="spatial-selection-tooltip" />
+        <Tooltip id="spatial-selection-tooltip" openEvents={{mouseover: true}} />
       </div>
     );
   }
