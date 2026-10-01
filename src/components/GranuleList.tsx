@@ -74,6 +74,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
             <Tooltip id="granuleFilter" className="reactTooltip"
               ref={this.tooltipRef}
               hidden={this.props.cmrGranuleFilter !== ""}
+              style={{ zIndex: 9999 }}
               delayShow={1000}>
               {tooltip}</Tooltip>
             <input id="granule-list-input" type="text"
@@ -93,7 +94,7 @@ export class GranuleList extends React.Component<IGranuleListProps, {}> {
               }}>
               <FontAwesomeIcon icon={faUndoAlt} size="lg" />
             </button>
-            <Tooltip id="reset-search-filter-tooltip" />
+            <Tooltip id="reset-search-filter-tooltip" style={{ zIndex: 9999 }} />
           </div>
         </div>
         <div id={this.containerId}>
