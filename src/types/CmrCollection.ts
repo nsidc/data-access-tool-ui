@@ -20,7 +20,7 @@ const defaultCmrCollection = {
   time_start: "",
   version_id: "",
   provider: "",
-};
+} as ICmrCollection;
 const CmrCollectionRecord = Record(defaultCmrCollection);
 
 // tslint:disable:variable-name
