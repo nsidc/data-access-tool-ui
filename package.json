@@ -2,7 +2,10 @@
   "name": "@nsidc/data-access-tools",
   "version": "4.0.2-rc1",
   "description": "UI to order NASA data.",
-  "repository": "https://github.com/nsidc/data-access-tool-ui",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nsidc/data-access-tool-ui.git"
+  },
   "files": [
     "dist",
     "CHANGELOG",
