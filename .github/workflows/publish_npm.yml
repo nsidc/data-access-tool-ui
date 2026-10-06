@@ -34,6 +34,6 @@ jobs:
 
       - name: "Publish to npmjs.com"
         run: |
-          npm publish --access public
+          npm publish --access public --tag ${{ github.ref_name }}
         env:
           NODE_AUTH_TOKEN: "${{secrets.NPM_DEPLOY_TOKEN}}"
