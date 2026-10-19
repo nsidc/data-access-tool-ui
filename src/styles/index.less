@@ -635,3 +635,11 @@
 .modal-button + .modal-button {
   margin-left: 0.5em;
 }
+
+/*Ensure the text color of react tooltip is white. If this is not set, then in
+  Drupal the text color ends up #051729 and is hardly readable.*/
+.react-tooltip,
+.react-tooltip p,
+.react-tooltip div {
+  color: white !important;
+}
