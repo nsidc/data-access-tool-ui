@@ -114,7 +114,9 @@ const cmrGranuleFilterParameters = (cmrGranuleFilter: string): string => {
 // return response.json() on a successful request; reject the Promise otherwise
 const cmrFetch = (url: string, headers: Map<string, string> = Map()) => {
   const init = {
-    headers: List(CMR_DEFAULT_HEADERS.merge(headers)).toJS(),
+    // TODO: This type casting does not make sense to me...can we change this?
+    // Or how the headers are constructed to be more clear?
+    headers: List(CMR_DEFAULT_HEADERS.merge(headers)).toJS() as unknown as Record<string,string>,
   };
 
   const onFulfilled = (response: Response) => {

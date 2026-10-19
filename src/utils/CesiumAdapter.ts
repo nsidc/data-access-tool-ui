@@ -282,8 +282,9 @@ export class CesiumAdapter {
   }
 
   private fixDatelineCoordinates(lonLatsIn: List<ILonLat>) {
+    if ( lonLatsIn.size === 0 ) { return lonLatsIn }
     const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
-    const crossesDateline = ((lons.max() - lons.min()) > 180);
+    const crossesDateline = ((lons.max()! - lons.min()!) > 180);
     let lonLats: List<ILonLat> = lonLatsIn;
     if (crossesDateline) {
       lonLats = lonLatsIn.map((lonLat) => {
@@ -295,10 +296,11 @@ export class CesiumAdapter {
   }
 
   private isCircumPolar(lonLatsIn: List<ILonLat>) {
+    if ( lonLatsIn.size === 0 ) { return lonLatsIn }
     const lons = lonLatsIn.map((lonLat) => lonLat!.lon);
     const lats = lonLatsIn.map((lonLat) => lonLat!.lat);
-    const circumPolar = ((lons.max() - lons.min()) > 180);
-    return circumPolar ? ((lats.max() >= 0) ? Circumpolar.North : Circumpolar.South) : Circumpolar.Neither;
+    const circumPolar = ((lons.max()! - lons.min()!) > 180);
+    return circumPolar ? ((lats.max()! >= 0) ? Circumpolar.North : Circumpolar.South) : Circumpolar.Neither;
   }
 
   // Find the difference between one longitude and the next;

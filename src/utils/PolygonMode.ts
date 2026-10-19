@@ -84,8 +84,10 @@ export class PolygonMode {
   public changeLonLat(sLonLat: string) {
     if (this.activePointIndex !== -1) {
       const point = this.activePoint();
-      if (CesiumUtils.getLonLatLabel(point.cartesian) === sLonLat) {
-        return;
+      if (point) {
+        if (CesiumUtils.getLonLatLabel(point.cartesian) === sLonLat) {
+          return;
+        }
       }
     }
     const lonLat = this.parseLonLat(sLonLat);
@@ -100,7 +102,9 @@ export class PolygonMode {
   public resetLonLat() {
     if (this.activePointIndex >= 0) {
       const point = this.activePoint();
-      this.updateLonLatLabel(point.cartesian);
+      if (point) {
+        this.updateLonLatLabel(point.cartesian);
+      }
     }
   }
 
@@ -206,7 +210,7 @@ export class PolygonMode {
       return;
     }
 
-    const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS();
+    const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS() as Cesium.Cartesian3[];
 
     const line1 = new Cesium.PolylineGeometry({
       positions: cartesiansArray,
@@ -235,7 +239,7 @@ export class PolygonMode {
   private renderPolygonFromPoints = (points: List<Point>): void => {
     this.points = this.reopenPolygonPoints(points);
 
-    const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS();
+    const cartesiansArray = this.points.map((p) => p && p.cartesian).toJS() as Cesium.Cartesian3[];
 
     const appearance = new Cesium.EllipsoidSurfaceAppearance({
       aboveGround: false,
@@ -329,10 +333,13 @@ export class PolygonMode {
 
   private updateActivePointFromCartesian = (cartesian: Cesium.Cartesian3) => {
     if (this.activePointIndex !== -1) {
-      this.activePoint().removeBillboard(this.billboards);
-      const point = new Point(cartesian);
-      this.points = this.points.update(this.activePointIndex, (v) => (point));
-      point!.addBillboard(this.billboards);
+      const current_point = this.activePoint()
+      if (current_point) {
+        current_point.removeBillboard(this.billboards);
+        const point = new Point(cartesian);
+        this.points = this.points.update(this.activePointIndex, (v) => (point));
+        point!.addBillboard(this.billboards);
+      }
     }
   }
 
@@ -351,20 +358,23 @@ export class PolygonMode {
     }
   }
 
+  private activePoint = (): Point | undefined => {
+    return this.points.get(this.activePointIndex);
+  }
+
   private removeActivePoint = () => {
     if (this.activePointIndex !== -1) {
-      this.points.get(this.activePointIndex).removeBillboard(this.billboards);
-      this.points = this.points.remove(this.activePointIndex);
+      const point = this.activePoint();
+      if (point) {
+        point.removeBillboard(this.billboards);
+        this.points = this.points.remove(this.activePointIndex);
+      }
     }
     this.deactivateActivePoint();
   }
 
   private deactivateActivePoint = () => {
     this.activePointIndex = -1;
-  }
-
-  private activePoint = (): Point => {
-    return this.points.get(this.activePointIndex);
   }
 
   private activatePoint = (index: number) => {
@@ -377,8 +387,9 @@ export class PolygonMode {
 
   private activePointCartesian = (): Cesium.Cartesian3 | null => {
     if (this.activePointIndex === -1) { return null; }
-
-    return this.activePoint().cartesian;
+    const point = this.activePoint()
+    if (!point) { return null; }
+    return point.cartesian;
   }
 
   private updateBillboardsAppearanceForActivePoint = () => {
@@ -548,7 +559,9 @@ export class PolygonMode {
             if (index >= 0) {
               // We clicked on one of the polygon points
               this.activatePoint(index);
-              this.prevPoint = this.points.get(this.activePointIndex);
+              const point = this.points.get(this.activePointIndex);
+              if (!point) { break; }
+              this.prevPoint = point;
               this.doStateTransition(PolygonState.movePoint);
               this.disableGlobeMovement();
               CesiumUtils.setCursorCrosshair();
@@ -650,9 +663,13 @@ export class PolygonMode {
   // "unclose" the polygon by removing the last point if it equals the first
   // point
   private reopenPolygonPoints = (points: List<Point>): List<Point> => {
-    const first = points.first().cartesian;
-    const last = points.last().cartesian;
+    const first = points.first();
+    const last = points.last();
 
-    return first.equals(last) ? points.pop() : List(points);
+    if (!first || !last) {
+      return points;
+    }
+
+    return first.cartesian.equals(last.cartesian) ? points.pop() : List(points);
   }
 }
