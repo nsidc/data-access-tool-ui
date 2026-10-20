@@ -1,4 +1,4 @@
-# v4.0.2 (TBD)
+# v4.0.2 (2026-10-20)
 
 * Update `node` from `v14.19.0` to `v26.10.0`
 * Update dev and core dependencies to address most `npm audit` listed
